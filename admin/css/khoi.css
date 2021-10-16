@@ -1,0 +1,346 @@
+.kh-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+.mg-row {
+  margin: 0 -10px;
+}
+.no-wrap {
+  flex-wrap: nowrap;
+}
+.kh-row .col-1 {
+  width: 8.33333%;
+}
+.kh-row .col-2 {
+  width: 16.66667%;
+}
+.kh-row .col-3 {
+  width: 25%;
+}
+.kh-row .col-4 {
+  width: 33.33333%;
+}
+.kh-row .col-5 {
+  width: 41.66667%;
+}
+.kh-row .col-6 {
+  width: 50%;
+}
+.kh-row .col-7 {
+  width: 58.33333%;
+}
+.kh-row .col-8 {
+  width: 66.66667%;
+}
+.kh-row .col-9 {
+  width: 75%;
+}
+.kh-row .col-10 {
+  width: 83.33333%;
+}
+.kh-row .col-11 {
+  width: 91.66667%;
+}
+.kh-row .col-12 {
+  width: 100%;
+}
+.a-center {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.a-start {
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+
+.a-end {
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+
+.j-center {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.j-start {
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+}
+
+.j-end {
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.j-between {
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.f-column{
+  flex-direction:column;
+}
+/*
+  spacing 5^n {n <= 6}
+  padding 5^n {n <= 6}
+  margin 5^n {n <= 6}
+*/
+.pt-5 {
+  padding-top: 5px;
+}
+
+.pr-5 {
+  padding-right: 5px;
+}
+
+.pl-5 {
+  padding-left: 5px;
+}
+
+.pb-5 {
+  padding-bottom: 5px;
+}
+
+.mt-5 {
+  margin-top: 5px;
+}
+
+.mr-5 {
+  margin-right: 5px;
+}
+
+.ml-5 {
+  margin-left: 5px;
+}
+
+.mb-5 {
+  margin-bottom: 5px;
+}
+
+.pt-10 {
+  padding-top: 10px;
+}
+
+.pr-10 {
+  padding-right: 10px;
+}
+
+.pl-10 {
+  padding-left: 10px;
+}
+
+.pb-10 {
+  padding-bottom: 10px;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.pt-15 {
+  padding-top: 15px;
+}
+
+.pr-15 {
+  padding-right: 15px;
+}
+
+.pl-15 {
+  padding-left: 15px;
+}
+
+.pb-15 {
+  padding-bottom: 15px;
+}
+
+.mt-15 {
+  margin-top: 15px;
+}
+
+.mr-15 {
+  margin-right: 15px;
+}
+
+.ml-15 {
+  margin-left: 15px;
+}
+
+.mb-15 {
+  margin-bottom: 15px;
+}
+
+.pt-20 {
+  padding-top: 20px;
+}
+
+.pr-20 {
+  padding-right: 20px;
+}
+
+.pl-20 {
+  padding-left: 20px;
+}
+
+.pb-20 {
+  padding-bottom: 20px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mr-20 {
+  margin-right: 20px;
+}
+
+.ml-20 {
+  margin-left: 20px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+.pt-25 {
+  padding-top: 25px;
+}
+.pt-25 {
+  padding-top: 25px;
+}
+
+.pr-25 {
+  padding-right: 25px;
+}
+
+.pl-25 {
+  padding-left: 25px;
+}
+
+.pb-25 {
+  padding-bottom: 25px;
+}
+
+.mt-25 {
+  margin-top: 25px;
+}
+
+.mr-25 {
+  margin-right: 25px;
+}
+
+.ml-25 {
+  margin-left: 25px;
+}
+
+.mb-25 {
+  margin-bottom: 25px;
+}
+
+.pt-30 {
+  padding-top: 30px;
+}
+
+.pt-60 {
+  padding-top: 60px;
+}
+
+.pr-30 {
+  padding-right: 30px;
+}
+
+.pr-80{
+  padding-right: 80px;
+}
+
+
+.pl-30 {
+  padding-left: 30px;
+}
+
+.pb-30 {
+  padding-bottom: 30px;
+}
+.pb-50 {
+  padding-bottom: 50px;
+}
+
+.mt-30 {
+  margin-top: 30px;
+}
+
+.mr-30 {
+  margin-right: 30px;
+}
+
+.ml-30 {
+  margin-left: 30px;
+}
+
+.mb-30 {
+  margin-bottom: 30px;
+}
+.mb-50 {
+  margin-bottom: 50px;
+}
+
+.mt-50{
+  margin-top: 50px;
+}
+.plr-5 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.plr-10 {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.plr-15 {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.plr-20 {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.plr-25 {
+  padding-left: 25px;
+  padding-right: 55px;
+}
+.plr-30 {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.plr-40 {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+.plr-50 {
+  padding-left: 50px;
+  padding-right: 50px;
+}
+.plr-60 {
+  padding-left: 60px;
+  padding-right: 60px;
+}
