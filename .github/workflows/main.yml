@@ -1,4 +1,7 @@
-on: push
+on: 
+  push:
+    branches:
+      - master
 name: 🚀 Deploy website on push
 jobs:
   web-deploy:
@@ -14,3 +17,4 @@ jobs:
         server: ftp://198.91.81.15
         username: khoi@tech-shop.x10host.com
         password: ${{ secrets.email }}
+        server-dir: /public_html/
