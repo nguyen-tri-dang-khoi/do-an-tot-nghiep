@@ -13,4 +13,4 @@ jobs:
       with:
         server: ftp://198.91.81.15
         username: khoi@tech-shop.x10host.com
-        password: Khoi17042000@
+        password: ${{ secrets.email }}
