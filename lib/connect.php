@@ -4,8 +4,8 @@
     $link = db_connect();
     function db_connect() {         
         $host = 'localhost';
-        $dbname = 'uguflupr_techshop'; //id16910140_do_an_tot_nghiep
-        $username = 'uguflupr_techshop';  //id16910140_khoi
+        $dbname = 'adizcvgx_techshop'; //id16910140_do_an_tot_nghiep
+        $username = 'adizcvgx_techshop';  //id16910140_khoi
         $password = 'Khoi17042000@'; //>iSxpL-6>Q{GbTq<
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
