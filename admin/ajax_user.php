@@ -5,12 +5,6 @@
     if($id) {
         $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,img_cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 and is_lock = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
-        /*$result = fetch_row([
-            's' => ['id','full_name','email','phone','address','birthday','img_cmnd','cmnd','username'],
-            'f' => ['user'],
-            'w_a' => [['id','='],['is_delete','='],['is_lock','=']],
-            'lim' => ['?']
-        ],[intval($_GET["id"]),0,0,1]);*/
 ?>
 <?php
     if($result['countt'] == 1) { 
