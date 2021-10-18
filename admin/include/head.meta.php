@@ -19,7 +19,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<!--khoi.css-->
 	<link rel="stylesheet" href="css/khoi.css">
+    <style>
+        .center {
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+            min-height:100vh;
+        }
+    </style>
 </head>
-<body>
+<body class="">
+<div class="wrapper <?php if(strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">
 
     

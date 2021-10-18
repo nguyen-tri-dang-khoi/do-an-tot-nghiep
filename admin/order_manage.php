@@ -15,6 +15,9 @@
         color: white;
     }
 </style>
+<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <!-- Main content -->
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
@@ -26,24 +29,34 @@
                 <h3 class="card-title">Quản lý đơn hàng</h3>
               </div>
               <div class="card-body">
-                <form style="margin-bottom: 17px;" action="<?php echo get_url_current_page();?>" method="get">
-                      <div class="row">
-                          <div class="col-md-3 input-group">
-                              <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
-                              <div class="input-group-append">
-                                  <button type="submit" class="btn btn-default">
-                                      <i class="fas fa-search"></i>
-                                  </button>
-                              </div>
-                          </div>
+                <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                  <form style="margin-bottom: 17px;display:flex;" action="<?php echo get_url_current_page();?>" method="get">
+                      <div class="">
+                        <select class="form-control" name="type">
+                            <option value="">Loại tìm kiếm</option>
+                            <option value="address">Địa chỉ</option>
+                            <option value="all">Tất cả</option>
+                        </select>
+                      </div>
+                      <div class="ml-10">
+                        <select class="form-control" name="type">
+                            <option value="">Tình trạng thanh toán</option>
+                            <option value="payment_ok">Đã thanh toán</option>
+                            <option value="payment_not_ok">Chưa thanh toán</option>
+                        </select>
+                      </div>
+                      <div class="ml-10" style="display:flex;">
+                        <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
+                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                       </div>
                   </form>
+                </div>
                 <table id="m-order" class="table table-bordered table-hover">
                   <thead>
                     <tr>
-					  <th>Số thứ tự</th>
+					            <th>Số thứ tự</th>
                       <th>Mã hoá đơn</th>
-                      <th>Mã người dùng</th>
+                      <th>Tên người dùng</th>
                       <th>Địa chỉ nhận hàng</th>
                       <th>Tổng tiền</th>
                       <th>Tình trạng thanh toán</th>
@@ -53,11 +66,11 @@
                   </thead>
                   <tbody id="list-san-pham">
                   <?php
-					// set get
-					$get = $_GET;
-					unset($get['page']);
-					$str_get = http_build_query($get);
-					// query
+                    // set get
+                    $get = $_GET;
+                    unset($get['page']);
+                    $str_get = http_build_query($get);
+                    // query
                     $arr_paras = [];
                     $where = "where 1 = 1";
                     $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
@@ -74,13 +87,13 @@
                     $sql_get_order = "select * from orders o inner join order_detail od on o.id = od.order_id inner join customer c on o.customer_id = c.id limit ?,?";
                     $rows = db_query($sql_get_order,$arr_paras);
                     $i = 0;
-					$cnt = 0;
+				          	$cnt = 0;
                     foreach($rows as $row) {
                   ?>
                     <tr>
-						<th><?=$total - ($start_page + $cnt);?></th>
+						            <td><?=$total - ($start_page + $cnt);?></td>
                         <td><?=$row['order_id']?></td>
-                        <td><?=$row['customer_id']?></td>
+                        <td><?=$row['full_name']?></td>
                         <td><?=$row['address']?></td>
                         <td><?=$row['total']?></td>
                         <?php
@@ -119,9 +132,9 @@
                   </tbody>
                   <tfoot>
                     <tr>
-					  <th>Số thứ tự</th>
+					            <th>Số thứ tự</th>
                       <th>Mã hoá đơn</th>
-                      <th>Mã người dùng</th>
+                      <th>Tên người dùng</th>
                       <th>Địa chỉ nhận hàng</th>
                       <th>Tổng tiền</th>
                       <th>Tình trạng thanh toán</th>
@@ -187,13 +200,18 @@
 <script>
     $(document).ready(function (e) {
         $("#m-order").DataTable({
-            "responsive": true, 
-            "lengthChange": false, 
-            "autoWidth": false,
-            "paging":false,
-	        "searching": false,
-            "searchHighlight": true,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+          "language": {
+            "emptyTable": "Không có dữ liệu",
+            "sZeroRecords": 'Không tìm thấy kết quả'
+          },
+          "responsive": true, 
+          "lengthChange": false, 
+          "autoWidth": false,
+          "paging":false,
+          "searching": false,
+          "order": [[ 0, "desc" ]],
+          "searchHighlight": true,
+          "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
     });
 </script>

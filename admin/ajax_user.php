@@ -3,7 +3,7 @@
     
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     if($id) {
-        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,img_cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 and is_lock = 0 limit 1";
+        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 and is_lock = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
 <?php
@@ -30,27 +30,15 @@
                 <input type="text" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân" value="<?=$result['cmnd']?>">
             </div>
             <div class="col-md-6 form-group">
-                <label for="image">Ảnh chụp chứng minh nhân dân</label>
+                <label for="image">Ảnh đại diện</label>
                 <div class="custom-file">
-                    <input name="img_cmnd_file" type="file" class="custom-file-input" id="fileInput">
-                    <label class="custom-file-label" for="fileInput">Chọn ảnh CMND</label>
+                    <input name="img_name" type="file" class="custom-file-input" id="fileInput">
+                    <label class="custom-file-label" for="fileInput">Chọn ảnh đại diện</label>
                 </div>
                 <!--_DIR_["IMG"]["ADMINS"];?>info/img-cmnd/echo $result["img_cmnd"]-->
-                <?php
-                    if($result['img_cmnd']) { 
-                ?>
-                        <div class="img-fluid" id="where-replace">
-                            <img src="<?php echo "upload/user/identify/{$result['img_cmnd']}";?>" class="img-fluid" id="display-image"/>
-                        </div>
-                <?php
-                    } else {
-                ?>
-                    <div class="img-fluid" id="where-replace">
-                        <img src="<?php echo "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
-                    </div>
-                <?php
-                    }
-                ?>
+                <div class="img-fluid" id="where-replace">
+                    <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -106,10 +94,10 @@
             <input type="email" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân" value="4354365463">
         </div>
         <div class="col-md-6 form-group">
-            <label for="image">Ảnh chụp chứng minh nhân dân</label>
+            <label for="image">Ảnh đại diện</label>
             <div class="custom-file">
-                <input name="img_cmnd_file" type="file" class="custom-file-input" id="fileInput">
-                <label class="custom-file-label" for="fileInput">Chọn ảnh CMND</label>
+                <input name="img_name" type="file" class="custom-file-input" id="fileInput">
+                <label class="custom-file-label" for="fileInput">Chọn ảnh đại diện</label>
             </div>
             <div class="img-fluid" id="where-replace">
                 <span></span>

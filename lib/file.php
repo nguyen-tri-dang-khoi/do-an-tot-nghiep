@@ -6,10 +6,10 @@
             $sql_check_old_image = "select {$column_name_old_img} from {$table_name_old_img} where id = ? limit 1";
             $old_image = fetch_row($sql_check_old_image,[$img_id]);
             if(count($old_image) == 1 && $old_image["$column_name_old_img"] != "") {
-                $test = file_exists($dir_storage_file.$old_image["$column_name_old_img"]) ? unlink($dir_storage_file.$old_image["$column_name_old_img"]) : false;
+                $test = file_exists($old_image["$column_name_old_img"]) ? unlink($dir_storage_file.$old_image["$column_name_old_img"]) : false;
             }
             $result = move_uploaded_file($_FILES[$file_post['file']]['tmp_name'], $dir_storage_file . $code.'.'.$ext);
-            $img_name = $code.'.'.$ext;
+            $img_name = $dir_storage_file. $code.'.'.$ext;
         }
     }
     function multiple_file_upload($__arr = []) {

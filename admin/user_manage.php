@@ -5,6 +5,26 @@
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         // code to be executed get method
+        $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+        $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+        $where = "where 1=1 ";
+        if($keyword || $keyword == 0 ) 
+        {
+            if($search_option == "fullname") {
+                $where .= "and lower(full_name) like lower('%$keyword%')";
+            } else if($search_option == "email") {
+                $where .= "and lower(email) like lower('%$keyword%')";
+            } else if($search_option == "phone") {
+                $where .= "and lower(phone) like lower('%$keyword%')";
+            } else if($search_option == "cmnd") {
+                $where .= "and lower(cmnd) like lower('%$keyword%')";
+            } else if($search_option == "all") {
+                $where .= "and lower(full_name) like lower('%$keyword%') or ";
+                $where .= "lower(email) like lower('%$keyword%') or ";
+                $where .= "lower(phone) like lower('%$keyword%') or ";
+                $where .= "lower(cmnd) like lower('%$keyword%') ";
+            }
+        }
 ?>
 <!--html & css section start-->
 <style>
@@ -32,16 +52,24 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <form style="margin-bottom: 17px;" action="<?php echo get_url_current_page();?>" method="get">
-                            <div class="row">
-                                <div class="col-md-3 input-group">
-                                    <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-default">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                        <form style="margin-bottom: 17px;display:flex;" action="user_manage.php" method="get">
+                            <div class="">
+                                <select class="form-control" name="search_option">
+                                    <option value="">Chọn cột tìm kiếm</option>
+                                    <option value="fullname" <?=$search_option == 'fullname' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
+                                    <option value="address" <?=$search_option == 'address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
+                                    <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
+                                    <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
+                                    <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Số chứng minh nhân dân</option>
+                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                </select>
+                            </div>
+                            <!--<div class="ml-10">
+                                <input type="text" name="birth" placeholder="Ngày sinh..." class="form-control">
+                            </div>-->
+                            <div class="ml-10" style="display:flex;">
+                                <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control" value="<?=$keyword;?>">
+                                <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
                             </div>
                         </form>
                         <?php
@@ -51,11 +79,11 @@
 							$str_get = http_build_query($get);
 							// query
                             $arr_paras = [];
-                            $where = "where 1 = 1 and is_delete = 0 and is_lock = 0";
-                            $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
+                            $where .= " and is_delete = 0 and is_lock = 0";
+                            /*$keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
                             if($keyword) {
                                 $where .= "";
-                            }
+                            }*/
                             $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
                             $limit = 10;
                             $start_page = $limit * ($page - 1);
@@ -64,8 +92,8 @@
                             array_push($arr_paras,$start_page);
                             array_push($arr_paras,$limit);
                             $sql_get_user = "select * from user $where limit ?,?";
-                            /*print_r($sql_get_user);
-                            print_r($arr_paras);*/
+                            print_r($sql_get_user);
+                            /*print_r($arr_paras);*/
 							$cnt=0;
                             $rows = db_query($sql_get_user,$arr_paras);
                         ?>
@@ -181,12 +209,17 @@
 <script>
    $(document).ready(function (e) {
         $("#m-user-table").DataTable({
+            "language": {
+                "emptyTable": "Không có dữ liệu",
+                "sZeroRecords": 'Không tìm thấy kết quả'
+            },
             "paging":true,
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
             "paging":false,
 			"searching": false,
+            "order": [[ 0, "desc" ]],
             "searchHighlight": true,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#m-user-table_wrapper .col-md-6:eq(0)');
@@ -206,30 +239,55 @@
             let username = $('#username').val();
             let password = $('#password').val();
             if(full_name == "") {
-                alert("Họ tên nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Họ tên nhân viên không được để trống."
+                });
                 test = false;
             } else if(email == "") {
-                alert("Email nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Email nhân viên không được để trống."
+                });
                 test = false;
             } else if(phone == "") {
-                alert("Số điện thoại nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Số điện thoại nhân viên không được để trống."
+                });
                 test = false;
             } else if(cmnd == "") {
-                alert("Số chứng minh nhân dân của nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Số chứng minh nhân dân của nhân viên không được để trống."
+                });
                 test = false;
             } else if(address == "") {
-                alert("Địa chỉ của nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Địa chỉ của nhân viên không được để trống."
+                });
                 test = false;
             } else if(birthday == "") {
-                alert("Ngày sinh của nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Ngày sinh của nhân viên không được để trống."
+                });
                 test = false;
             } else if(username == "") {
-                alert("Nickname của nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Nickname của nhân viên không được để trống."
+                });
                 test = false;
             } else if(password == "") {
-                alert("Mật khẩu của nhân viên không được để trống.");
+                $.alert({
+                    title: "",
+                    content: "Mật khẩu của nhân viên không được để trống."
+                });
                 test = false;
             }
+            test = true;
             return test;
         };
         // show image
@@ -278,7 +336,7 @@
         $(document).on('click','#btn-insert',(e) => {
             event.preventDefault();
             if(validate) {
-                let file = $('input[name="img_cmnd_file"]')[0].files;
+                let file = $('input[name="img_name"]')[0].files;
                 //let image = "";
                 let formData = new FormData($('#manage_user')[0]);
                 formData.append("token","<?php echo_token();?>");
@@ -294,7 +352,7 @@
                 if(file.length > 0) {
                     formData.append('img_cmnd_file',file[0]);
                 }
-                console.log(formData);
+                //console.log(formData);
                 $.ajax({
                     url:window.location.href,
                     type: "POST",
@@ -320,10 +378,18 @@
                             html += `<button class="btn-delete-row btn btn-danger" data-id="${data.id}">Xoá</button>`;
                             html += `</td>`;
                             html += `</tr>`;
-                            alert(data.success);
+                            $.alert({
+                                title: "Thông báo",
+                                content: data.success
+                            });
+                            //alert(data.success);
                             $('#m-user-body').append(html);
                         } else {
-                            alert(data.error);
+                            $.alert({
+                                title: "Thông báo",
+                                content: data.error
+                            });
+                            //alert(data.error);
                         }
                         $('#modal-xl').modal('hide');
                     },
@@ -354,7 +420,7 @@
                 formData.append("username",$('#username').val());
                 formData.append("password",$('#password').val());
                 if(file.length > 0) {
-                    formData.append('img_cmnd_file',file[0]); 
+                    formData.append('img_name',file[0]); 
                 }
                 if(validate()) {
                     $.ajax({
@@ -383,10 +449,17 @@
                             html += `<button class="btn-delete-row btn btn-danger" data-id="${id}">Xoá</button>`;
                             html += `</td>`;
                             html += "</tr>";
-                            alert(data.success);
+                            $.alert({
+                                title: "Thông báo",
+                                content: data.success,
+                            });
+                            //alert(data.success);
                             $("#user-" + id).replaceWith(html);
                         } else {
-                            alert(data.error);
+                            $.alert({
+                                title: "Thông báo",
+                                content: data.error
+                            });
                         }
                         $('#modal-xl').modal('hide');
                     },
@@ -402,30 +475,44 @@
         $(document).on('click','.btn-delete-row',(e) => {
             event.preventDefault();
             let id = $(e.currentTarget).attr('data-id');
-            if(confirm("Bạn có chắc chắn muốn xoá dòng này ?")) {
-                $.ajax({
-                    url:window.location.href,
-                    type:"POST",
-                    cache:false,
-                    data: {
-                        token: "<?php echo_token();?>",
-                        id: id,
-                        status: "Delete",
-                    },
-                    success:function(data){
-                        data = JSON.parse(data);
-                        if(data.msg == "ok") {
-                            alert(data.success);
-                            $('#user-' + id).remove();
-                        } else {
-                            alert(data.error);
-                        }
-                    },
-                    error:function(data) {
-                        console.log("Error:",data);
+            $.confirm({
+                title: 'Thông báo',
+			    content: 'Bạn có chắc chắn muốn xoá loại sản phẩm này ?',
+                buttons: {
+                    Có: function(){
+                        $.ajax({
+                            url:window.location.href,
+                            type:"POST",
+                            cache:false,
+                            data: {
+                                token: "<?php echo_token();?>",
+                                id: id,
+                                status: "Delete",
+                            },
+                            success:function(data){
+                                data = JSON.parse(data);
+                                if(data.msg == "ok") {
+                                    $.alert({
+                                        title: "Thông báo",
+                                        content: data.success,
+                                    });
+                                    $('#user-' + id).remove();
+                                } else {
+                                    $.alert({
+                                        title: "Thông báo",
+                                        content: data.error,
+                                    });
+                                }
+                            },
+                            error:function(data) {
+                                console.log("Error:",data);
+                            }
+                        });
+                    },Không: function(){
+
                     }
-                });
-            }
+                }
+            });
         });
     });
 </script>
@@ -482,14 +569,38 @@
                 echo_json(["msg" => "not_ok","error" => $error]);
             }
             $image = null;
-            file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$id,$image,'cmnd_');
+            //file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$id,$image,'cmnd_');
+            $dir = "upload/user/";
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            $dir = "upload/user/" . $id;
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            if($_FILES['img_name']['name'] != "") {
+               $sql_get_old_file = "select img_name from user where id = '$id'";
+               $old_file = fetch_row($sql_get_old_file)['img_name'];
+               if(file_exists($old_file)) {
+                   unlink($old_file);
+                   chmod($dir, 0777);
+               }
+               $ext = strtolower(pathinfo($_FILES['img_name']['name'],PATHINFO_EXTENSION));
+               $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+               $file_name = str_replace("_","",$file_name);
+               $path = $dir . "/" . $file_name ;
+               move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
+               $sql_update = "update user set img_name='$path' where id = '$id'";
+               db_query($sql_update);
+            }
             $password = password_hash($password,PASSWORD_DEFAULT);
             $__arr = [
                 "full_name" => $full_name,
                 "email" => $email,
                 "phone" => $phone,
                 "cmnd" => $cmnd,
-                "img_cmnd" => (($image != "") ? $image : NULL),
                 "address" => $address,
                 "birthday" => Date('Y-m-d',strtotime($birthday)),
                 "username" => $username,
@@ -532,14 +643,34 @@
                     $success = "Cập nhật dữ liệu thành công";
                     $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
                     $image = null;
-                    file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$insert,$image,'cmnd_');
-                    if(db_update_by_id('user',['img_cmnd' => $image],[$insert])) {
+                    //file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$insert,$image,'cmnd_');
+                    $dir = "upload/user/";
+                    if(!file_exists($dir)) {
+                        mkdir($dir, 0777); 
+                        chmod($dir, 0777);
+                    }
+                    $dir = "upload/user/" . $insert;
+                    if(!file_exists($dir)) {
+                        mkdir($dir, 0777); 
+                        chmod($dir, 0777);
+                    }
+                    if($_FILES['img_name']['name'] != "") {
+                        $ext = strtolower(pathinfo($_FILES['img_name']['name'],PATHINFO_EXTENSION));
+                        $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
+                        $file_name = str_replace("_","",$file_name);
+                        $path = $dir . "/" . $file_name ;
+                        move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
+                        $sql_update = "update user set img_name='$path' where id = '$insert'";
+                        db_query($sql_update);
+                    }
+                    echo_json(array_merge(['msg' => 'ok','success' => $success],$__arr));
+                    /*if(db_update_by_id('user',['img_cmnd' => $image],[$insert])) {
                         $__arr['img_cmnd'] = $image;
                         $__arr['id'] = $insert;
                         echo_json(array_merge(['msg' => 'ok','success' => $success],$__arr));
                     } else {
                         echo_json(['msg' => 'not_ok','error' => $error]);
-                    }
+                    }*/
                 }
             }
         }

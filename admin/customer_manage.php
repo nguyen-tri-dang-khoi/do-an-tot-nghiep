@@ -6,6 +6,26 @@
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         // code to be executed get method
+        $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+        $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+        $where = "where 1=1 ";
+        if($keyword || $keyword == 0 ) 
+        {
+            if($search_option == "fullname") {
+                $where .= "and lower(full_name) like lower('%$keyword%')";
+            } else if($search_option == "email") {
+                $where .= "and lower(email) like lower('%$keyword%')";
+            } else if($search_option == "phone") {
+                $where .= "and lower(phone) like lower('%$keyword%')";
+            } else if($search_option == "address") {
+                $where .= "and lower(address) like lower('%$keyword%')";
+            } else if($search_option == "all") {
+                $where .= "and lower(full_name) like lower('%$keyword%') or ";
+                $where .= "lower(email) like lower('%$keyword%') or ";
+                $where .= "lower(phone) like lower('%$keyword%') or ";
+                $where .= "lower(address) like lower('%$keyword%') ";
+            }
+        }
 ?>
 <!--html & css section start-->
 <style>
@@ -30,18 +50,24 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <form style="margin-bottom: 17px;" action="<?php echo get_url_current_page();?>" method="get">
-                            <div class="row">
-                                <div class="col-md-3 input-group">
-                                    <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
-                                    <div class="input-group-append">
-                                        <button type="submit" class="btn btn-default">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                    </div>
+                        <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                            <form style="margin-bottom: 17px;display:flex;" action="<?php echo get_url_current_page();?>" method="get">
+                                <div class="">
+                                    <select class="form-control" name="type">
+                                        <option value="">Chọn cột tìm kiếm</option>
+                                        <option value="fullname" <?=$search_option == 'fullname' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
+                                        <option value="address" <?=$search_option == 'address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
+                                        <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
+                                        <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
+                                        <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                    </select>
                                 </div>
-                            </div>
-                        </form>
+                                <div class="ml-10" style="display:flex;">
+                                    <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control" value="<?=$keyword;?>">
+                                    <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
                     <?php
 							// set get
 							$get = $_GET;
@@ -62,64 +88,64 @@
                             array_push($arr_paras,$start_page);
                             array_push($arr_paras,$limit);
                             $sql_get_customer = "select * from customer $where limit ?,?";
-                            print_r($sql_get_customer);
-                            print_r($arr_paras);
+                            //print_r($sql_get_customer);
+                            //print_r($arr_paras);
                             $rows = db_query($sql_get_customer,$arr_paras);
 							$cnt = 0;
                         ?>
-                    <table id="m-customer-table" class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-								<th>Số thứ tự</th>
-                                <th>Tên đầy đủ</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Địa chỉ</th>
-                                <th>Ngày sinh</th>
-                                <th>Tên đăng nhập</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach($rows as $row) { ?>
-                            <tr id="customer-<?=$row["id"]?>">
-							    <th><?=$total - ($start_page + $cnt);?></th>
-                                <td><?=$row["full_name"]?></td>
-                                <td><?=$row["email"]?></td>
-                                <td><?=$row["phone"]?></td>
-                                <td><?=$row["address"]?></td>
-                                <td><?=$row["birthday"]?></td>
-                                <td><?=$row["username"]?></td>
-                                <td><?=$row["created_at"]?></td>
-                                <td>
-                                    <button class="btn-update-user btn btn-primary"
-                                    data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>
-                                    <!--<button class="btn-send-notify btn btn-secondary" data-id="<?=$row["id"];?>">Gửi thông báo
-                                    </button>-->
-                                    <button class="btn-lock-user btn btn-danger" data-id="<?=$row["id"];?>">Khoá tài khoản
-                                    </button>
-                                </td>
-                            </tr>
-                            <?php 
-									$cnt++;
-								} 
-							?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-							    <th>Số thứ tự</th>
-                                <th>Tên đầy đủ</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Địa chỉ</th>
-                                <th>Ngày sinh</th>
-                                <th>Tên đăng nhập</th>
-                                <th>Ngày tạo</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                        <table id="m-customer-table" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Số thứ tự</th>
+                                    <th>Tên đầy đủ</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php foreach($rows as $row) { ?>
+                                <tr id="customer-<?=$row["id"]?>">
+                                    <th><?=$total - ($start_page + $cnt);?></th>
+                                    <td><?=$row["full_name"]?></td>
+                                    <td><?=$row["email"]?></td>
+                                    <td><?=$row["phone"]?></td>
+                                    <td><?=$row["address"]?></td>
+                                    <td><?=$row["birthday"]?></td>
+                                    <td><?=$row["username"]?></td>
+                                    <td><?=$row["created_at"]?></td>
+                                    <td>
+                                        <button class="btn-update-user btn btn-primary"
+                                        data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>
+                                        <!--<button class="btn-send-notify btn btn-secondary" data-id="<?=$row["id"];?>">Gửi thông báo
+                                        </button>-->
+                                        <button class="btn-lock-user btn btn-danger" data-id="<?=$row["id"];?>">Khoá tài khoản
+                                        </button>
+                                    </td>
+                                </tr>
+                                <?php 
+                                        $cnt++;
+                                    } 
+                                ?>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Số thứ tự</th>
+                                    <th>Tên đầy đủ</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Ngày tạo</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </tfoot>
+                        </table>
                         <div style="justify-content:center;" class="row">
                             <ul id="pagination" class="pagination">
                             </ul>
@@ -152,11 +178,16 @@
 <script>
     $(document).ready(function (e) {
         $("#m-customer-table").DataTable({
+            "language": {
+                "emptyTable": "Không có dữ liệu",
+                "sZeroRecords": 'Không tìm thấy kết quả'
+            },
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
 			"searching": false,
             "paging":false,
+            "order": [[ 0, "desc" ]],
 	        "searching": false,
             "searchHighlight": true,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]

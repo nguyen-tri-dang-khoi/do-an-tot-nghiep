@@ -76,7 +76,7 @@
                       <div class="form-group row">
                         <label for="birth" class="col-sm-2 col-form-label">Ngày sinh</label>
                         <div class="col-sm-10">
-                          <input name="birthday" type="text" class="form-control" id="ngay_sinh_admin" value="<?=Date("d-m-y",strtotime($admin_info["birthday"]));?>">
+                          <input name="birthday" type="text" class="form-control" id="ngay_sinh_admin" value="<?=Date("d-m-Y",strtotime($admin_info["birthday"]));?>">
                         </div>
                         <!-- loi ngay sinh -->
                         <div id="birth_err" class="text-danger"></div>
@@ -113,20 +113,7 @@
                                 <label class="custom-file-label" for="exampleInputFile">Upload ảnh đại diện</label>
                             </div>
                         </div>
-                        <?php
-                          if(trim($admin_info["img_name"]) == "") {
-                        ?>
-                            <div class="img-fluid" id="where-replace">
-                                <span></span>
-                            </div>
-                            <img width="200" height="200" src="upload/image.png" class='img-fluid' id='display-image'/>
-                        <?php
-                          } else {
-                        ?>
-                            <img width="200" height="200" src="upload/user/present/<?=$admin_info["img_name"];?>" data-img='<?=$admin_info["img_name"]?>' class='img-fluid' id='display-image'/>
-                        <?php
-                          }
-                        ?>
+                        <img width="200" height="200" src="<?=$admin_info["img_name"] ? $admin_info["img_name"] : "upload/image.png";?>" data-img='<?=$admin_info["img_name"]?>' class='img-fluid' id='display-image'/>
                         <!-- loi hinh anh -->
                         <div id="image_err" class="text-danger"></div>
                         <input type="hidden" name="token" value="<?php echo_token();?>">
@@ -138,21 +125,14 @@
                       </div>
                     </form>
                   </div>
-                  <!-- /.tab-pane -->
                 </div>
-                <!-- /.tab-content -->
-              </div><!-- /.card-body -->
+              </div>
             </div>
-            <!-- /.card -->
           </div>
-          <!-- /.col -->
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 <!--html & css section end-->
 
 
@@ -163,23 +143,23 @@
 <script>
     $(document).ready(function(){
         const readURL = (input) => {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                $('#display-image').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+            $('#display-image').attr('src', e.target.result);
             }
+            reader.readAsDataURL(input.files[0]);
+          }
         };
         $("#fileInput").on("change",function(){
-            $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-            readURL(this); 
+          $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+          readURL(this); 
         });
         // kích hoạt datepicker của jquery ui
         $( "#ngay_sinh_admin" ).datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-y'
+          changeMonth: true,
+          changeYear: true,
+          dateFormat: 'dd-mm-yy'
         });
         // cập nhật thông tin admin
         $(document).on('click','#btn-cap-nhat-admin',function(event){
@@ -193,13 +173,12 @@
             let address = $('input[name=address]').val();
             // let img = $('#display-image').attr('data-img');
             let token = "<?php echo_token();?>";
-
             if(old_pass == ""){
-				$.alert({
-					title: "Thông báo",
-					content: "Vui lòng không để trống mật khẩu xác thực."
-				});
-                return;
+              $.alert({
+                title: "Thông báo",
+                content: "Vui lòng không để trống mật khẩu xác thực."
+              });
+              return;
             } 
             var formData = new FormData($('#form-admin')[0]);
             // xu ly du lieu
@@ -234,17 +213,17 @@
                 processData: false,
                 data:formData,
                 success:function(res_json){
-                    if(res_json.msg == 'ok'){
-                        $.alert({
-							title: "Thông báo",
-							content: res_json.success
-						 });
-                    } else {
-                        $.alert({
-							title: "Thông báo",
-							content: res_json.error
-						 });
-                    }
+                  if(res_json.msg == 'ok'){
+                    $.alert({
+                      title: "Thông báo",
+                      content: res_json.success
+                    });
+                  } else {
+                    $.alert({
+                      title: "Thông báo",
+                      content: res_json.error
+                    });
+                  }
                 },
                 error: function (data) {
                     console.log('Error:', data);
@@ -274,17 +253,36 @@
       if($row['countt'] == 1) {
           // Xác thực mật khẩu admin
           if(password_verify($old_pass,$row['password'])){
-              $success = "Bạn đã cập nhật thông tin cá nhân thành công";
-              $error = "Đã có lỗi xảy ra, vui lòng tải lại trang.";
-              $img_admin = "";
-              file_upload(['file' => 'img_admin_file'],'user','img_name',"upload/user/present/",$session_id,$img_admin,);
-              if($img_admin != "") {
-                  $_SESSION["img_name"] = $img_admin;
-                  ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'username'=>$username,'phone'=>$phone,'address'=>$address,'img_name'=>$img_admin],[$session_id],['success' => $success],['error' => $error]);
-              } else {
-                  ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'username'=>$username,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
+            $success = "Bạn đã cập nhật thông tin cá nhân thành công";
+            $error = "Đã có lỗi xảy ra, vui lòng tải lại trang.";
+            $img_admin = "";
+            $dir = "upload/user/";
+            if(!file_exists($dir)) {
+                mkdir($dir, 0777); 
+                chmod($dir, 0777);
+            }
+            $dir = "upload/user/" . $session_id;
+            if(!file_exists($dir)) {
+                mkdir($dir, 0777); 
+                chmod($dir, 0777);
+            }
+            if($_FILES['img_admin_file']['name'] != "") {
+              $ext = strtolower(pathinfo($_FILES['img_admin_file']['name'],PATHINFO_EXTENSION));
+              $file_name = md5(rand(1,999999999)). $session_id . "." . $ext;
+              $file_name = str_replace("_","",$file_name);
+              $path = $dir . "/" . $file_name ;
+              $sql_get_old_file = "select img_name from user where id = '$session_id'";
+              $old_file=fetch_row($sql_get_old_file)[img_name];
+              if(file_exists($old_file)) {
+                unlink($old_file);
+                chmod($dir, 0777);
               }
-              
+              move_uploaded_file($_FILES['img_admin_file']['tmp_name'],$path);
+              $sql_update = "update user set img_name='$path' where id = '$session_id'";
+              db_query($sql_update);
+            }
+            ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'username'=>$username,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
+            $_SESSION["img_name"] = $path;
           } else {
               // Báo lỗi admin nhập sai mật khẩu xác thực
               $error_pass = "Mật khẩu xác thực bạn nhập không chính xác.";

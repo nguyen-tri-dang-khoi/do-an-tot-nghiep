@@ -4,13 +4,98 @@
    if(is_get_method()) {
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
-        // code to be executed get method
+      // code to be executed get method
+      $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+      $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+      $where = "where 1=1 ";
+      if($keyword || $keyword == 0 ) {
+         if($search_option == "type") {
+            $where .= "and lower(pt.name) like lower('%$keyword%')";
+         } else if($search_option == "name") {
+            $where .= "and lower(pi.name) like lower('%$keyword%')";
+         } else if($search_option == "count") {
+            $where .= "and lower(pi.count) like lower('%$keyword%')";
+         } else if($search_option == "price") {
+            $where .= "and lower(pi.price) like lower('%$keyword%')";
+         } else if($search_option == "all") {
+            $where .= "and lower(pi.name) like lower('%$keyword%') or ";
+            $where .= "lower(pi.count) like lower('%$keyword%') or ";
+            $where .= "lower(pi.price) like lower('%$keyword%') or ";
+            $where .= "lower(pt.name) like lower('%$keyword%') ";
+         } 
+      }
+      
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+<style>
+	.kh-file-lists {
+		display:flex;
+		flex-direction:column;
+	}
+	.kh-file-list {
+		display:flex;
+		flex-wrap:nowrap;
+		flex-direction:row;
+		position: relative;
+		cursor: pointer;
+		text-align: center;
+		background-size: 100%;
+		background-repeat: no-repeat;
+	}
+	.kh-custom-file {
+		position:relative;
+		border: 1px solid #ddd;
+		border-radius:5px;
+		width: 88px;
+		height: 90px;
+		margin-right:15px;
+		margin-bottom:15px;
+	}
+	.kh-custom-file input[type='file'] {
+		display: block;
+		position: absolute !important;
+		width: 90px;
+		height: 100%;
+		opacity: 0;
+		cursor: pointer;
+		left: 0;
+	}
+	.kh-custom-remove-img {
+		position:relative;
+	}
+	.kh-custom-btn-remove {
+		font-size:22px;
+		position: absolute;
+		right: -9px;
+		top: -15px;
+	}
+	.kh-custom-btn-remove::before {
+		content: "\2716";
+		font-size: 20px;
+		color: rebeccapurple
+	}
+	.kh-div-append-file{
+		width:90px;
+		height:90px;
+		
+	}
+	.kh-div-append-file button.kh-btn-append-file {
+		width:100%;
+		height:100%;
+		font-size:40px;
+		background-color:#fff;
+		border-radius:5px;
+		border: 1px solid #ddd;
+	}
+	.kh-files {
+		display:flex;
+		justify-content:space-between;
+	}
+</style>
 <style>
    .img-child {
       position: relative;
@@ -108,7 +193,7 @@
     /* padding: 5px; */
 </style>
 <div class="container-wrapper" style="margin-left:250px;">
-  <div class="container-fluid">
+  <div class="container-fluid" style="padding:0px;">
     <section class="content">
         <div class="row">
             <div class="col-12">
@@ -127,90 +212,96 @@
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body">
-                     <form style="margin-bottom: 17px;" action="<?php echo get_url_current_page();?>" method="get">
-                        <div class="row">
-                           <div class="col-md-3 input-group">
-                                 <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
-                                 <div class="input-group-append">
-                                    <button type="submit" class="btn btn-default">
-                                       <i class="fas fa-search"></i>
-                                    </button>
-                                 </div>
+                     <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                        <form style="margin-bottom: 17px;display:flex;" action="product_manage.php" method="get">
+                           <div class="" >
+                              <select class="form-control" name="search_option">
+                                 <option value="">Loại tìm kiếm</option>
+                                 <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
+                                 <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
+                                 <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
+                                 <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Phân loại sản phẩm</option>
+                                 <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                              </select>
                            </div>
-                        </div>
-                     </form>
+                           <div class="ml-10" style="display:flex;">
+                              <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control" value="<?=$keyword;?>">
+                              <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                           </div>
+                        </form>
+                     </div>
                      <table id="m-product-info" class="table table-bordered table-striped">
-                     <thead>
-                        <tr>
-						   <th>Số thứ tự</th>
-                           <th>Tên sản phẩm</th>
-                           <th>Số lượng</th>
-                           <th>Đơn giá</th>
-                           <th>Phân loại sản phẩm</th>
-                           <th>Hình ảnh</th>
-                           <th>Ngày đăng</th>
-                           <th>Thao tác</th>
-                        </tr>
-                     </thead>
-                     <tbody id="list-san-pham">
-                     <?php
-						// set get
-					  	$get = $_GET;
-						unset($get['page']);
-						$str_get = http_build_query($get);
-						// query
-                        $arr_paras = [];
-                        $where = "where 1 = 1 and pi.is_delete = 0";
-                        $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
-                        if($keyword) {
-                           $where .= "";
-                        }
-                        $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                        $limit = 10;
-                        $start_page = $limit * ($page - 1);
-                        $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                        $total = fetch_row($sql_get_total,$arr_paras)['countt'];
-                        array_push($arr_paras,$start_page);
-                        array_push($arr_paras,$limit);
-                        $sql_get_product = "select pi.id as 'pi_id', pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id limit ?,?";
-                        $rows = db_query($sql_get_product,$arr_paras);
-                        foreach($rows as $row) {
-                     ?>
-                        <tr id="san-pham<?=$row["pi_id"];?>">
-						   <td><?=$total - ($start_page + $cnt)?></td>
-                           <td><?=$row['pi_name']?></td>
-                           <td><?=$row['count']?></td>
-                           <td><?=$row['price']?></td>
-                           <td><?=$row['pt_name']?></td>
-                           <td><img width="100" height="100" src="<?php echo 'upload/product/'.$row['pi_img_name']?>" alt=""></td>
-                           <td><?=$row['created_at']?></td>
-                           <td>
-                              <button class="btn-sua-san-pham btn btn-primary"
-                              data-id="<?=$row["pi_id"];?>" >
-                              Update
-                              </button>
-                              <button class="btn-xoa-san-pham btn btn-danger" data-id="<?=$row["pi_id"];?>">
-                              Delete
-                              </button>
-                           </td>
-                        </tr>
-                     <?php
-						$cnt++;
-                     }
-                     ?>
-                     </tbody>
-                     <tfoot>
-                        <tr>
-						   <th>Số thứ tự</th>
-                           <th>Tên sản phẩm</th>
-                           <th>Số lượng</th>
-                           <th>Đơn giá</th>
-                           <th>Phân loại sản phẩm</th>
-                           <th>Hình ảnh</th>
-                           <th>Ngày đăng</th>
-                           <th>Thao tác</th>
-                        </tr>
-                     </tfoot>
+                        <thead>
+                           <tr>
+                              <th>Số thứ tự</th>
+                              <th>Tên sản phẩm</th>
+                              <th>Số lượng</th>
+                              <th>Đơn giá</th>
+                              <th>Phân loại sản phẩm</th>
+                              <th>Ngày đăng</th>
+                              <th>Thao tác</th>
+                           </tr>
+                        </thead>
+                        <tbody id="list-san-pham">
+                        <?php
+                        // set get
+                        $get = $_GET;
+                        unset($get['page']);
+                        $str_get = http_build_query($get);
+                        // query
+                           $arr_paras = [];
+                           $where .= " and pi.is_delete = 0";
+                           $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
+                           if($keyword) {
+                              $where .= "";
+                           }
+                           $cnt = 0;
+                           $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                           $limit = 10;
+                           $start_page = $limit * ($page - 1);
+                           $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
+                           $total = fetch_row($sql_get_total,$arr_paras)['countt'];
+                           array_push($arr_paras,$start_page);
+                           array_push($arr_paras,$limit);
+                           $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
+                           print_r($sql_get_product);
+                           $rows = db_query($sql_get_product,$arr_paras);
+                           foreach($rows as $row) {
+                           ?>
+                              <tr id="san-pham<?=$row["id"];?>">
+                                 <td><?=$total - ($start_page + $cnt);?></td>
+                                 <td><?=$row['pi_name']?></td>
+                                 <td><?=$row['count']?></td>
+                                 <td><?=$row['price']?></td>
+                                 <td><?=$row['pt_name']?></td>
+                                 <!--<td><img width="200" height="100" src="<?=$row['pi_img_name'] ? $row['pi_img_name'] : 'upload/noimage.jpg';?>" alt=""></td>-->
+                                 <td><?=$row['created_at']?></td>
+                                 <td>
+                                    <button class="btn-sua-san-pham btn btn-primary" data-number="<?=$total - ($start_page + $cnt);?>"
+                                    data-id="<?=$row["id"];?>" >
+                                    Update
+                                    </button>
+                                    <button class="btn-xoa-san-pham btn btn-danger" data-id="<?=$row["id"];?>">
+                                    Delete
+                                    </button>
+                                 </td>
+                              </tr>
+                           <?php
+                              $cnt++;
+                           }
+                           ?>
+                        </tbody>
+                        <tfoot>
+                           <tr>
+                              <th>Số thứ tự</th>
+                              <th>Tên sản phẩm</th>
+                              <th>Số lượng</th>
+                              <th>Đơn giá</th>
+                              <th>Phân loại sản phẩm</th>
+                              <th>Ngày đăng</th>
+                              <th>Thao tác</th>
+                           </tr>
+                        </tfoot>
                      </table>
                   </div>
                   <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
@@ -262,12 +353,189 @@
 <script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
 <script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
 <script>
+   var arr_list_file_del = [];
+	var arr_input_file = new Map();
+   function init_map_file(){
+      if($('input[name="list_file_del"]').val() != "") {
+         arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
+      }
+	
+      console.log(arr_list_file_del);
+      if(arr_list_file_del != ['']) {
+         arr_list_file_del.forEach((element) => {
+            arr_input_file.set(element,element + "_has");
+         });
+      }
+   }
+	console.log(arr_input_file);
+   //var arr_input_file = new Map();
+	// update
+	function readURLChange(input,key) {
+		// key = "file_" + key;
+		// 8_del, 8_upt
+		 let target = event.currentTarget;
+		 console.log(input.files);
+		 if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			if(arr_input_file.has(key)) {
+				//arr_input_file.set(key,key + "_upt");
+				if(arr_input_file.get(key).indexOf("_has") == -1) {
+					if(arr_input_file.get(key).indexOf("_del") > 0) {
+						//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
+						arr_input_file.set(key,key + "_upt");
+					} else {
+						console.log("aaaa");
+					}
+				} else {
+					console.log("true_upt" + arr_input_file.get(key));
+					//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
+					arr_input_file.set(key,key + "_upt");
+				}
+			} else {
+				arr_input_file.set(key,key + "_ins");
+				console.log(arr_input_file);
+			}
+			reader.onload = function (e) {
+			   $(target).parent().css({
+				'background-image' : 'url("' + e.target.result + '")',
+				'background-size': 'cover',
+				'background-position': '50%'
+			   });
+			  $(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
+			}
+			reader.readAsDataURL(input.files[0]);
+		 }
+	}
+	function removeImageChange(input,key){
+		//key = "file_" + key;
+		$(input).parent().css({'display':'none'});
+		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
+		arr_input_file.set(key,key + "_upt");
+	}
+	function removeImageDel(input,key) {
+		//key = "file_" + key;
+		$(input).parent().css({'display':'none'});
+		$(input).closest('.kh-custom-file').remove();
+		//console.log(file_img_del);
+		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
+		console.log(arr_input_file.get(key));
+		if(arr_input_file.has(key)) {
+			if(arr_input_file.get(key).indexOf("_has") == -1) {
+				//console.log("false_has : " + arr_input_file[key]);
+				if(arr_input_file.get(key).indexOf("_upt") > 0){
+					arr_input_file.set(key,key + "_del");
+				} else {
+					arr_input_file.delete(key);
+				}
+			} else {
+				//console.log("true_del" + arr_input_file[key]);
+				arr_input_file.set(key,key + "_del");
+			}
+		}
+		/*} else {
+			console.log("del_key_ins_upt : " + arr_input_file.get(key));
+			arr_input_file.delete(key);
+		}*/
+	}
+	function gameChange(){
+		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
+		console.log(Array.from(arr_input_file.values()).join(","));
+		//return true;
+	}
+	//
+
+	function readURL(input,key) {
+		// key = "file_" + key;
+		// 8_del, 8_upt
+		 let target = event.currentTarget;
+		 console.log(input.files);
+		 if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			arr_input_file.set(key,key);
+			console.log(arr_input_file);
+			reader.onload = function (e) {
+			   $(target).parent().css({
+				'background-image' : 'url("' + e.target.result + '")',
+				'background-size': 'cover',
+				'background-position': '50%'
+			   });
+			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
+			}
+			reader.readAsDataURL(input.files[0]);
+		 }
+	 };
+	 function removeImage(input,key){
+		//key = "file_" + key;
+		$(input).parent().css({'display':'none'});
+		$(input).closest('.kh-custom-file').remove();
+		arr_input_file.delete(key);
+	 }
+	 function game() {
+		$('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
+		console.log(Array.from(arr_input_file.keys()).join(","));
+		//return true;
+	 }
+	 function addFileInput(parent){
+		let game_start = $(".kh-custom-file").last().attr('data-id');
+		let count = $(".kh-file-list:last-child .kh-custom-file").length;
+		game_start = parseInt(game_start) + 1;
+		if(isNaN(game_start)) {
+			game_start = 1;
+		}
+	
+		let file_html = `
+		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+			<input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
+			<input type="hidden" name="image" value="">
+			<div class="kh-custom-remove-img" style="display:block;">
+				<span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
+			</div>
+		</div>`;
+		if(count % 6 == 0){
+			file_html = `<div class="kh-file-list">${file_html}</div>`;
+			$(file_html).appendTo('.kh-file-lists');
+		} else {
+			$(file_html).appendTo(parent);
+		}
+		
+	 }
+	 function addFileInputChange(parent){
+		let game_start = $(".kh-custom-file").last().attr('data-id');
+		let count = $(".kh-file-list:last-child > .kh-custom-file").length;
+		console.log(count);
+		game_start = parseInt(game_start) + 1;
+		if(isNaN(game_start)) {
+			game_start = 1;
+		}
+		
+		let file_html = `
+		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+			<input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
+			<input type="hidden" name="image" value="">
+			<div class="kh-custom-remove-img" style="display:block;">
+				<span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
+			</div>
+		</div>`;
+		if(count % 6 == 0){
+			file_html = `<div class="kh-file-list">${file_html}</div>`;
+			$(file_html).appendTo('.kh-file-lists');
+		} else {
+			$(file_html).appendTo(parent);
+		}
+	 }
+</script>
+<script>
     $(document).ready(function (e) {
         $("#m-product-info").DataTable({
+            "language": {
+               "emptyTable": "Không có dữ liệu",
+               "sZeroRecords": 'Không tìm thấy kết quả'
+            },
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
-			"searching": false,
+			   "searching": false,
+            "order": [[ 0, "desc" ]],
             "paging":false,
             "searchHighlight": true,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
@@ -312,32 +580,32 @@
 			$.alert({
 				title: "Thông báo",
 				content: "Tên sản phẩm không được để trống"
-			 });
-            test = false;
+			});
+         test = false;
         } else if(category.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Phân loại sản phẩm không được để trống"
 			 });
-            test = false;
+         test = false;
         } else if(count.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Số lượng không được để trống"
 			 });
-            test = false;
+         test = false;
         } else if(price.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Đơn giá không được để trống"
 			 });
-            test = false;
+         test = false;
         } else if(description.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Mô tả sản phẩm không được để trống"
 			 });
-            test = false;
+         test = false;
         }
          console.log($('input[name=id]').val());
          console.log($('input[name=ten_san_pham]').val());
@@ -346,13 +614,16 @@
          console.log($('input[name=don_gia]').val());
          console.log($('select[name=phan_loai_san_pham] > option:selected').val());
          console.log($('#btn-luu-san-pham').text());
+         test = true;
          return test;
       }
       $('#file_input_anh_mo_ta').on('change', function() {
          imagesPreview(this,'#image_preview');
       });
+      // Insert san pham
       $(document).on('click','#btn-them-san-pham',function(event){
-         $('#form-san-pham').load("ajax_product_info.php",() => {
+         let number = parseInt($('tbody tr').length) + 1;
+         $('#form-san-pham').load("ajax_product_info.php?number=" + number,() => {
             $('#modal-xl').modal('show');
             $('#btn-luu-san-pham').text("Insert");
             $(function(){
@@ -377,8 +648,8 @@
                      });
                   }
                })
+               init_map_file();
             });
-            
             $("#fileInput").on("change",function(){
                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
                readURL(this); 
@@ -391,9 +662,10 @@
       // Update sản phẩm
       $(document).on('click','.btn-sua-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
-         $('#form-san-pham').load("ajax_product_info.php?id=" + id,() => {
+         let number = $(event.currentTarget).attr('data-number');
+         $('#form-san-pham').load("ajax_product_info.php?id=" + id + "&number=" + number,() => {
             $('#modal-xl').modal('show');
-            $('#btn-luu-san-pham').text("Update ");
+            $('#btn-luu-san-pham').text("Update");
             $(function(){
                setTimeout(() => {
                   $('#summernote').summernote({height: 120});
@@ -416,6 +688,7 @@
                      });
                   }
                })
+               init_map_file();
             });
             $("#fileInput").on("change",function(){
                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
@@ -515,7 +788,9 @@
       // xử lý thao tác Insert Update
       $(document).on('click','#btn-luu-san-pham',function(event){
          event.preventDefault();
+         
          let formData = new FormData($('#form-san-pham')[0]);
+         let number = 1;
          formData.append('token',"<?php echo_token(); ?>");
          formData.append('id',$('input[name=id]').val());
          formData.append('name',$('input[name=ten_san_pham]').val());
@@ -525,16 +800,29 @@
          formData.append('category_id',$("input[name='category_id']").val());
          formData.append('category_name',$("input[name='category_name']").val());
          formData.append('status',$('#btn-luu-san-pham').text().trim());
+         if(status == "Insert"){
+            game();
+            number = parseInt($('tbody tr').length) + parseInt(number);
+         } else {
+            gameChange();
+            number = $('tbody tr td:first-child').text();
+         }
+         //console.log(number);
+         formData.append('list_file_del',$('input[name="list_file_del"]').val());
          // xu ly anh
+         let img = document.getElementsByName('img[]');
          let file = $('input[name=img_sanpham_file]')[0].files;
          console.log(file);
-         let file_anh_mo_ta = $('input[name="anh_mo_ta[]"]')[0].files;
-         let image = ""; 
+         //let file_anh_mo_ta = $('input[name="img[]"]')[0].files;
+         //let image = ""; 
          if(file.length > 0) {
             formData.append('img_sanpham_file',file[0]); 
          }
-         if(file_anh_mo_ta.length > 0) {
-            formData.append('anh_mo_ta',file_anh_mo_ta);
+         if(img.length > 0) {
+            let len = img.length;
+            for(let i = 0 ; i < len ;i++) {
+               formData.append('img',$('input[name="img[]"]')[i].files);
+            }
          }
          if(validate()) {
             // xử lý ajax
@@ -549,54 +837,51 @@
                success:function(res_json){
                   if(res_json.msg == 'ok'){
                      let status = $('#btn-luu-san-pham').text().trim();
-                     let record = "<tr id='san-pham" + res_json.id + "'>";
-                     record += "<td>" + res_json.name + "</td>";
-                     record += "<td>...</td>";
-                     record += "<td id='mo_ta_sp" + res_json.id +  "' style='display:none;'>" + res_json.description + "</td>";
-                     record += "<td>" + res_json.count+ "</td>";
-                     record += "<td>" + res_json.price + "</td>";
-                     record += "<td>" + res_json.category_name + "</td>";
-                     record += "<td><img width='100' height='100' src='upload/product/" + res_json.image + "'>" + "</td>";
-                     record += "<td>" + res_json.created_at + "</td>";
-                     record += "<td>"
-                     record += "<button class='btn-sua-san-pham btn btn-primary' ";
-                     record +=   "data-name='" + res_json.name + "'" + " data-count='" +res_json.count + "'";
-                     record +=   " data-price='" + res_json.price + "' data-name_type='" + res_json.category_id + "' " + " data-image='" +res_json.image + "'";    
-                     record += " data-id='" + res_json.id;
-                     record += "'>";
-                     record +=      "Update"
-                     record +  "</button>";
-                     record += "<button style='margin-left:3px;' class='btn-xoa-san-pham btn btn-danger' ";
-                     record +=   "data-id='" + res_json.id + "'>";
-                     record +=      "Delete"
-                     record += "</button>";
-                     record += "</td>"
-                     record +=    "</tr>";
+                     let record = `
+                        <tr id="san-pham${res_json.id}">
+                           <td>${res_json.number}</td>
+                           <td>${res_json.name}</td>
+                           <td>${res_json.count}</td>
+                           <td>${res_json.price}</td>
+                           <td id="mo_ta_sp${res_json.id}" style="display:none;">${res_json.description}</td>
+                           <td>${res_json.category_name}</td>
+                           <td>${res_json.created_at}</td>
+                           <td>
+                              <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" class="btn-sua-san-pham btn btn-primary">
+                                 Update
+                              </button>
+                              <button data-id="${res_json.id}" style="margin-left:3px;" class="btn-xoa-san-pham btn btn-danger">
+                                 Delete
+                              </button>
+                           </td>
+                        </tr>
+                     `;
                      let msg ="";
                      if(status == "Insert"){
-                           $('#list-san-pham').append(record);
-                           setTimeout(() => {
-                              $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
-                           },1000);
-                           msg = "Thêm dữ liệu thành công.";
-						   $.alert({
-								title: "Thông báo",
-								content: msg
-						   });
-                           //alert(msg);
-                           if($('#display-image').length){
-                              $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
-                           }
-                     } else if(status == "Update") {
-                           msg = "Xoá dữ liệu thành công.";
-						   $.alert({
-								title: "Thông báo",
-								content: msg
-						   });
-                           //alert(msg);
-                           $('#san-pham' + res_json.id).replaceWith(record);
-                           $('#san-pham' + res_json.id).css('background-color','#f7daf4');
+                        $('#list-san-pham').prepend(record);
+                        setTimeout(() => {
+                           $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
+                        },1000);
+                        msg = "Thêm dữ liệu thành công.";
+                        $.alert({
+                           title: "Thông báo",
+                           content: msg
+                        });
+                        //alert(msg);
+                        if($('#display-image').length){
                            $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
+                        }
+                     } else if(status == "Update") {
+                        console.log(res_json);
+                        msg = "Sửa dữ liệu thành công.";
+                        $.alert({
+                           title: "Thông báo",
+                           content: msg
+                        });
+                        //alert(msg);
+                        $('#san-pham' + res_json.id).replaceWith(record);
+                        $('#san-pham' + res_json.id).css('background-color','#f7daf4');
+                        $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
                      }
                      $('#form-san-pham').trigger('reset');
                      $("#msg_style").removeAttr('style');
@@ -605,9 +890,9 @@
 
                   } else if(res_json.msg == 'not_ok') {
                      $.alert({
-						title: "Thông báo",
-						content: res_json.error
-					});
+                        title: "Thông báo",
+                        content: res_json.error
+                     });
                   }
                },
                error: function (data) {
@@ -621,15 +906,15 @@
 <script>
   $(function() {
     $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
+      items: <?=$total;?>,
+      itemsOnPage: <?=$limit;?>,
 		currentPage: <?=$page;?>,
 		hrefTextPrefix: "<?php echo '?page='; ?>",
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
 		onPageClick: function(){
-			//window.location.href=""
+
 		},
-        cssStyle: 'light-theme'
+      cssStyle: 'light-theme'
     });
   });
 </script>
@@ -638,262 +923,207 @@
       $('.breadcrumb-item').click(function(){
          $('.kh-submenu').toggleClass('.kh-submenu-active');
       });
-      // load breadcrumb menus 
-
    });
 </script>
 <!--js section end-->
 <?php
         include_once("include/footer.php");
 ?>
-
 <?php
-    } else if (is_post_method()) {
-        $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-        $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
-        $count = isset($_REQUEST["count"]) ? $_REQUEST["count"] : null;
-        $description = isset($_REQUEST["description"]) ? $_REQUEST["description"] : null;
-        $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
-        $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
-        $price = isset($_REQUEST["price"]) ? $_REQUEST["price"] : null;
-        //$image_str = isset($_REQUEST["image_str"]) ? $_REQUEST["image_str"] : null;
-        if($status == 'Delete') {
-            $success = "Bạn đã Delete dữ liệu thành công";
-            $error = "Network has problem. Please try again.";
-            ajax_db_update_by_id('product_info',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
-        } else if($status == "Insert") {
-            $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
-            $row = fetch_row($sql_check_exist,[$id]);
-            if($row['countt'] > 0) {
-               $error = "Tên loại sản phẩm này đã tồn tại.";
-               echo_json(['msg' => 'not_ok', 'error' => $error]);
-            } else {
-               $insert = db_insert_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>null]);
-               if($insert > 0) {
-                  /**
-                  * $image = null;file_upload(['file' => 'img_cmnd_file'],'product_info','img_name',"upload/user/identify/",$id,$image,'cmnd_');
-                  */
-                  $image = null;
-                  file_upload(['file' => 'img_sanpham_file'],'product_info','img_name','upload/product/',$insert,$image);
-                  if($image) {
-                     db_update_by_id('product_info',["img_name" => $image],[$insert]);
-                  }
-                  
+	function getFileUpload($i_order,$id){
+		$sql = "select img_id from product_image where product_img_id = '$id' and i_order = '$i_order' limit 1";
+		$file_old_name = fetch_row($sql)['img_id'];
+		return $file_old_name;
+	}
+?>
+<?php
+   } else if (is_post_method()) {
+     // print_r($_FILES);
+     // print_r($_POST["list_file_del"]);
+      $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
+      $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
+      $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
+      $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+      $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
+      $count = isset($_REQUEST["count"]) ? $_REQUEST["count"] : null;
+      $description = isset($_REQUEST["description"]) ? $_REQUEST["description"] : null;
+      $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
+      $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
+      $price = isset($_REQUEST["price"]) ? $_REQUEST["price"] : null;
+      //
+      $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
+      if($list_file_del){
+         $list_file_del = explode(",",$list_file_del);
+      } else {
+         $list_file_del = [];
+      }
+      //
+      //$image_str = isset($_REQUEST["image_str"]) ? $_REQUEST["image_str"] : null;
+      if($status == 'Delete') {
+         $success = "Bạn đã Delete dữ liệu thành công";
+         $error = "Network has problem. Please try again.";
+         ajax_db_update_by_id('product_info',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
+      } else if($status == "Insert") {
+         $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
+         $row = fetch_row($sql_check_exist,[$id]);
+         if($row['countt'] > 0) {
+            $error = "Tên loại sản phẩm này đã tồn tại.";
+            echo_json(['msg' => 'not_ok', 'error' => $error]);
+         } else {
+            $insert = db_insert_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>null]);
+            if($insert > 0) {
+               $image = null;
+               //
+               $dir = "upload/product/";
+               if(!file_exists($dir)) {
+                  mkdir($dir, 0777); 
+                  chmod($dir, 0777);
+               }
+               $dir = "upload/product/" . $insert;
+               if(!file_exists($dir)) {
+                  mkdir($dir, 0777); 
+                  chmod($dir, 0777);
+               }
+               //
+               //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$insert,$image);
+               if($_FILES['img_sanpham_file']['name'] != "") {
+                  $ext = strtolower(pathinfo($_FILES['img_sanpham_file']['name'],PATHINFO_EXTENSION));
+                  $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+                  $file_name = str_replace("_","",$file_name);
+                  $path = $dir . "/" . $file_name ;
+                  move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
+                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
+                  db_query($sql_update);
+               }
+               $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
+               if(count($_FILES['img']['name']) > 0) {
                   $__arr = [];
-                  $__arr_ext = [];
-                  $sql_get_last_id = "Select id from product_image order by id desc limit 1";
-                  $id = fetch_row($sql_get_last_id);
-                  $id = ($id) ? $id["id"] : 0;
-                  $__arr_ext = multiple_file_upload(['file' => 'anh_mo_ta','dirname' => "upload/product/{$insert}/",'img_id' => $id,'file_name' => 'anh_mo_ta']);
-                  if(count($__arr_ext) > 0) {
-                     $len = count($__arr_ext) + $id;
-                     $j = 0;
-                     for($i = $id ; $i < $len ; $i++) {
-                        array_push($__arr,[$insert,"anh_mo_ta" . $i . "." . $__arr_ext[$j]]);
-                        $j++;
+                  $i = 0;
+                  foreach($_FILES['img']['error'] as $key => $error) {
+                     if($error == UPLOAD_ERR_OK) {
+                        $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
+                        $file_name = md5(rand(1,999999999)) . $insert . "." . $ext;
+                        $file_name = str_replace("_","",$file_name);
+                        $path = $dir . "/" . $file_name ;
+                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                        @chmod($dir, 0777);
+                        $j = $list_file_del[$i];
+                        array_push($__arr,"('$insert','$path',$j)");
                      }
-                     db_insert_more_row('product_image',['product_info_id','img_id'],$__arr);
+                     $i++;
                   }
-                  
-                  $success = "Insert dữ liệu thành công.";
-                  echo_json(["msg" => "ok","success" => $success,"id"=>$insert,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id" => $category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('Y-m-d H-i-s',time())]);
-               }
-            }
-        } else if($status == "Update") {
-            $image = null;
-            // print_r("khoi_dep_trai");
-            file_upload(['file' => 'img_sanpham_file'],'product_info','img_name','upload/product/',$id,$image);
-            $__arr = [];
-            $__arr_ext = [];
-            $sql_get_last_id = "Select id from product_image order by id desc limit 1";
-            $img_id = fetch_row($sql_get_last_id);
-            $img_id = ($img_id) ? $img_id["id"] : 0;
-            $__arr_ext = multiple_file_upload(['file' => 'anh_mo_ta','dirname' => "upload/product/{$id}/",'img_id' => $img_id,'file_name' => 'anh_mo_ta'],$__arr_ext);
-            if(count($__arr_ext) > 0) {
-               $len = count($__arr_ext) + $img_id;
-               $j = 0;
-               for($i = $img_id ; $i < $len ; $i++) {
-                  array_push($__arr,[$id,"anh_mo_ta" . $i . "." . $__arr_ext[$j]]);
-                  $j++;
-               }
-               db_insert_more_row('product_image',['product_info_id','img_id'],$__arr);
-            }
-            if($image) {
-               db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>$image],[$id]);
-            } else {
-               db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price],[$id]);
-            }
-            $success = "Update dữ liệu thành công.";
-            $sql_get_file_name = "select img_name from product_info where id = ?";
-            $image = fetch_row($sql_get_file_name,[$id]);
-            if($image) {
-               $image = $image['img_name'];
-            }
-            echo_json(["msg" => "ok",'success' => $success,"id" => $id,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id"=>$category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('Y-m-d H-i-s',time())]);
-        } else if($status == "Delete_img") {
-            $sql_get_img_id = "select img_id from product_image where id = ?";
-            $img_id = isset($_REQUEST["product_image_id"]) ? $_REQUEST["product_image_id"] : null;
-            if($img_id) {
-               $row = fetch_row($sql_get_img_id,[$img_id]);
-               if(count($row) == 1) {
-                  $success = "Bạn đã Delete ảnh mô tả thành công";
-                  $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang.";
-                  $url_image = "upload/product/{$id}/{$row['img_id']}";
-                  $bool = file_exists($url_image) ? unlink($url_image) : false;
-                  ($bool && db_delete_by_id("product_image",[$_POST["product_image_id"]])) ? echo_json(["msg" => "ok","success" => $success]) : echo_json(["msg" => "not_ok","error" => $error]);
-               }
-            }
-        }
-        // code to be executed post method
-        // if(isset($_POST["status"],$_POST["id"])) {
-            /*$result = php_validate([
-               $_POST["status"].'a' => ["required"=>"thao tác","equal"=>"Delete"],
-               $_POST["id"].'b' => ["required"=>""],
-            ]);*/
-            
-            // if(!array_key_exists("error",$result)){
-               // Thực thi chức năng Delete sản phẩm
-               
-            //}
-            // Ràng buộc dữ liệu đầu vào (chức năng Insert Update sản phẩm cần ràng buộc dữ liệu đầu vào)
-            //if(isset($_POST["name"],$_POST["count"],$_POST["name_desc"],$_POST["name_type"],$_POST["price"])) {
-               /*$result = php_validate([
-                  $_POST["name"].'b' => ["required"=>"Tên sản phẩm","max"=>255],
-                  $_POST["count"].'c' => ["required"=>"Số lượng","number_min" => 0],
-                  $_POST["name_desc"].'d' => ["required"=>"Mô tả sản phẩm"],
-                  $_POST["name_type"].'e' => ["required"=>"Tên loại sản phẩm"],
-                  $_POST["price"].'f' => ["required"=>"Đơn giá","number_min" => 0],
-               ]);*/
-               // print_r($result);
-               // if(!array_key_exists('error',$result)){
-                  // Upload ảnh mô tả sản phẩm
-                  // Admin thực hiện chức năng Insert sản phẩm
-                  /*$result = php_validate([
-                     $_POST["status"]. 'a' => ["required"=>"","equal"=>"Insert"],
-                  ]);*/
-                  // print_r($result);
-                  //if(!array_key_exists("error",$result)) {
-                     // Kiểm tra tên sản phẩm có bị trùng với tên sản phẩm nào đó trong csdl
-                     /*$isExist = db_query([
-                        's'=>['id'],
-                        'f'=>['product_info'],
-                        'w'=>['name','=']
-                     ],[$_POST["name"]]);*/
-                     //if(count($isExist) > 0) {
-                        // Báo lỗi nếu tên sản phẩm bị trùng với tên sản phẩm nào đó trong csdl
-                        // echo_json(['msg' => 'not_ok', 'error' => 'Tên loại sản phẩm này đã tồn tại.']);
-                    // } else {
-                        // Kiểm tra admin có upload hình ảnh sản phẩm
-                        // insert dữ liệu sản phẩm vào csdl
-                       /* $insert = db_insert_id('product_info',[
-                           'name'=>$_POST["name"],
-                           'user_id'=>(int)$_SESSION['id'],
-                           'category_id'=>$_POST["name_type"],
-                           'description'=>$_POST["name_desc"],
-                           'count'=>$_POST["count"],
-                           'price'=>$_POST["price"],
-                           'img_name'=>""
-                        ]);*/
-                        //if($insert > 0){
-                           //$image = "";
-                           /*file_upload(
-                              ['file' => 'img_sanpham_file','not_file' => 'img_sanpham'],
-                              'product_info','img_name',_DIR_['IMG']['ADMINS'].'product/',$insert,$image
-                           );*/
-                           
-                           // Sau khi insert thông tin sản phẩm thành công, lấy tên loại sản phẩm của sản phẩm đó
-                           //if(db_update_by_id('product_info',['img_name' => $image],[$insert])){
-                              /*$ten = fetch_row([
-                                 's'=>['product_type.name as "ten"'],
-                                 'ij'=>['product_info','product_type'],
-                                 'o' =>['product_info.category_id','product_type.id'],
-                                 'w_a'=>[['product_info.is_delete','='],['product_info.id','=']],
-                                 'lim' => ['?']
-                              ],[0,$insert,1])['ten'];*/
-                              // Thông báo cho admin biết dữ liệu insert thành công.
-                              
-                           /*} else {
-                              echo_json(["msg" => "not_ok","error" => "Network has problem. Please reload this page."]);
-                           }*/
-                       /* } else {
-                           echo_json(['msg' => 'not_ok','error' => 'Network has problem. Please reload this page']);
-                        }
-                     }
-                  }*/
-                  /*$result = php_validate([
-                     $_POST["status"].'a' => ["required"=>"","equal"=>"Update"],
-                     $_POST["id"].'b' => ["required"=>""],
-                  ]);*/
-                  // Admin thực hiện chức năng update sản phẩm
-                  //if(!array_key_exists("error",$result)){
-                     // upload ảnh đại diện của sản phẩm.
-                    /* $image = "";
-                     // print_r("khoi_dep_trai");
-                     file_upload(
-                        ['file' => 'img_sanpham_file','not_file' => 'img_sanpham'],
-                        'product_info','img_name',_DIR_['IMG']['ADMINS'].'product/',(int)$_POST["id"],$image
-                     );
-                     // upload ảnh mô tả sản phẩm
-                     $__arr = [];
-                     $__arr_ext = [];
-                     $id = fetch_row_1("select id from product_image order by id desc limit 1")["id"];
-                     $num_file_upload = multiple_file_upload(['file' => 'anh_mo_ta','dirname' => _DIR_['IMG']['ADMINS'].'product/'. $_POST["id"] . "/",'img_id' => $id,'file_name' => 'anh_mo_ta_'],$__arr_ext);
-                     if(array_key_exists('num_file_success',$num_file_upload)){
-                        $len = $num_file_upload['num_file_success'] + $id;
-                        $j = 0;
-                        for($i = $id ; $i < $len ; $i++) {
-                           array_push($__arr,[$_POST["id"],"anh_mo_ta_" . $i . "." . $__arr_ext[$j]]);
-                           $j++;
-                        }
-                        db_insert_more_row('product_image',['product_info_id','img_id'],$__arr);
-                     }*/
-                     
-                     // update dữ liệu sản phẩm vào csdl
-                     /*if(db_update_by_id('product_info',[
-                        'name'=>$_POST["name"],
-                        'user_id'=>(int)$_SESSION['id'],
-                        'category_id'=>(int)$_POST["name_type"],
-                        'description'=>$_POST["name_desc"],
-                        'count'=>(int)$_POST["count"],
-                        'price'=>(int)$_POST["price"],
-                        'img_name'=>(($image != "") ? $image : NULL)
-                     ],[(int)$_POST["id"]])){*/
-                        
-                        // Sau khi update thông tin sản phẩm thành công, lấy tên loại sản phẩm của sản phẩm đó
-                       /* $ten = fetch_row([
-                           's'=>['product_type.name'],
-                           'ij'=>['product_info','product_type'],
-                           'o' =>['product_info.category_id','product_type.id'],
-                           'w_a'=>[['product_info.is_delete','='],['product_info.id','=']],
-                           'lim' => ['?']
-                        ],[0,$_POST["id"],1])['name'];*/
-                        // Thông báo cho admin biết dữ liệu Update thành công.
-                        //echo_json(["msg" => "ok",'success' => "Update dữ liệu thành công.","id"=>$_POST["id"],"name"=>$_POST["name"],"name_desc"=>$_POST["name_desc"],"name_type"=>$ten,"image"=>$image,"price"=>$_POST["price"],"count"=>$_POST["count"],"created_at"=>date('Y-m-d H-i-s',time())]);
-                     /*}
+                  if(count($__arr) > 0) {
+                     $sql .= implode(",",$__arr);
+                     db_query($sql);
                   }
                }
-            } */
-            //if(isset($_POST["product_image_id"])){
-               // Delete ảnh mô tả của sản phẩm
-               /*$result = php_validate([
-                  $_POST["status"]. 'a' => ["required"=>"Thao tác","equal"=>"xoa_anh_mo_ta"],
-                  $_POST["id"].'b' => ["required"=>"Id"],
-                  $_POST["product_image_id"]."c" => ["required" => "Id hình ảnh"]
-               ]);*/
-              /* if(!array_key_exists('error',$result)){
-                  $img_id = fetch_row_1("select img_id from product_image where id = ?",[$_POST["product_image_id"]]);
-                  if(count($img_id) == 1) {
-                     $url_image = _DIR_["IMG"]["ADMINS"] . "product/" . $_POST["id"] . "/" . $img_id["img_id"];
-                     $bool = file_exists($url_image) ? unlink($url_image) : false;
-                     ($bool && db_delete_by_id("product_image",[$_POST["product_image_id"]])) ? echo_json(["msg" => "ok","success" => "Bạn đã Delete ảnh mô tả thành công"]) : echo_json(["msg" => "not_ok","error" => "Đã có lỗi xảy ra. Vui lòng reload lại trang."]);
-                  }
-               }
+               $success = "Insert dữ liệu thành công.";
+               echo_json(["msg" => "ok","number"=>$number,"success" => $success,"id"=>$insert,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id" => $category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('Y-m-d H-i-s',time())]);
             }
          }
-      } else {
-         echo "<script type='text/javascript'>alert('Token expired !');location.href='admin_san_pham.php';</script>";
-      }*/
-    }
+      } else if($status == "Update") {
+         $image = null;
+         $dir = "upload/product/" . $id;
+         if(!file_exists($dir)) {
+            mkdir($dir, 0777); 
+            chmod($dir, 0777);
+         }
+         //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$id,$image);
+         if($_FILES['img_sanpham_file']['name'] != "") {
+            $sql_get_old_file = "select img_name from product_info where id = '$id'";
+            $old_file = fetch_row($sql_get_old_file)['img_name'];
+            if(file_exists($old_file)){
+               unlink($old_file);
+            }
+            $ext = strtolower(pathinfo($_FILES['img_sanpham_file']['name'],PATHINFO_EXTENSION));
+            $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+            $file_name = str_replace("_","",$file_name);
+            $path = $dir . "/" . $file_name ;
+            move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
+            $sql_update = "Update product_info set img_name='$path' where id = '$id'";
+            db_query($sql_update);
+         }
+         
+         $list_file_del_length = count($list_file_del);
+         for($i = 0 ; $i < count($list_file_del) ; $i++) {
+            if(strpos($list_file_del[$i],"_del") !== false) {
+               $i_order = explode("_",$list_file_del[$i])[0];
+               $file_old_name = getFileUpload($i_order,$id);
+               if(file_exists($file_old_name)) {
+                  unlink($file_old_name);
+                  chmod($dir, 0777);
+               }
+               $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $i_order";
+               db_query($sql_delete_file);
+               array_splice($list_file_del,$i, 1);
+               $i--;
+            }
+         }
+         //print_r($list_file_del);
+         if(count($_FILES['img']['name']) > 0) {
+            $file_old_name = "";
+            $__arr = [];
+            $i = 0;
+            $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
+            foreach($_FILES['img']['error'] as $key => $error) {
+               if($error == UPLOAD_ERR_OK) {
+                  $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
+                  $file_name = md5(rand(1,999999999)). "." . $ext;
+                  $file_name = str_replace("_","",$file_name);
+                  $path = $dir . "/" . $file_name ;
+                  if(strpos($list_file_del[$i],"_ins") !== false) {
+                     move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                     @chmod($dir, 0777);
+                     $j = explode("_",$list_file_del[$i])[0];
+                     //print_r($j)
+                     array_push($__arr,"('$id','$path',$j)");
+                     //print_r($__arr);
+                  } else if(strpos($list_file_del[$i],"_upt") !== false) {
+                     $i_order = explode("_",$list_file_del[$i])[0];
+                     $file_old_name = getFileUpload($i_order,$id);
+                     if(file_exists($file_old_name)) {
+                        unlink($file_old_name);
+                        chmod($dir, 0777);
+                     }
+                     move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                     @chmod($dir, 0777);
+                     $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and i_order='$i_order'";
+                     db_query($sql_update_file);
+                  }
+               } 
+               $i++;
+            }
+            if(count($__arr) > 0) {
+               $sql .= implode(",",$__arr);
+               //print_r($sql);
+               db_query($sql);
+            }
+         }
+         if($image) {
+            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>$image],[$id]);
+         } else {
+            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price],[$id]);
+         }
+         $success = "Update dữ liệu thành công.";
+         $sql_get_file_name = "select img_name from product_info where id = ?";
+         $image = fetch_row($sql_get_file_name,[$id]);
+         if($image) {
+            $image = $image['img_name'];
+         }
+         echo_json(["msg" => "ok","number" => $number,'success' => $success,"id" => $id,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id"=>$category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('Y-m-d H-i-s',time())]);
+      } else if($status == "Delete_img") {
+         $sql_get_img_id = "select img_id from product_image where id = ?";
+         $img_id = isset($_REQUEST["product_image_id"]) ? $_REQUEST["product_image_id"] : null;
+         if($img_id) {
+            $row = fetch_row($sql_get_img_id,[$img_id]);
+            if(count($row) == 1) {
+               $success = "Bạn đã Delete ảnh mô tả thành công";
+               $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang.";
+               $url_image = "upload/product/{$id}/{$row['img_id']}";
+               $bool = file_exists($url_image) ? unlink($url_image) : false;
+               ($bool && db_delete_by_id("product_image",[$_POST["product_image_id"]])) ? echo_json(["msg" => "ok","success" => $success]) : echo_json(["msg" => "not_ok","error" => $error]);
+            }
+         }
+      }
+   }
 ?>

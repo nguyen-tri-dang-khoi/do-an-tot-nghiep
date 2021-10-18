@@ -344,3 +344,23 @@
   padding-left: 60px;
   padding-right: 60px;
 }
+a, input, textarea, button, select {
+  outline: none;
+}
+a, button, select {
+  cursor: pointer;
+}
+.container-fluid {
+  padding:0px;
+}
+@media (max-width: 991.98px) {
+  .main-header {
+    margin-left:0px;
+  }
+  .main-sidebar {
+    display: none;
+  }
+  .container-wrapper {
+    margin-left:0px !important;
+  }
+}

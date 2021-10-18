@@ -74,11 +74,17 @@
           let email = document.getElementById('email').value;
           let password = document.getElementById('password').value;
           if(!email){
-               alert("Email không được để trống");
-               test = false;
+            $.alert({
+                title: "Thông báo",
+                content: "Email không được để trống"
+            });
+            test = false;
           } else if(!password) {
-               alert("Mật khẩu không được để trống");
-               test = false;
+            $.alert({
+                title: "Thông báo",
+                content: "Mật khẩu không được để trống"
+            });
+            test = false;
           }
           return test;
      }

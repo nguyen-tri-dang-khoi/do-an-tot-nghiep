@@ -88,19 +88,38 @@
         let password = document.getElementById('password').value;
         let confirm_password = document.getElementById('confirm_password').value;
         if(!username){
-            alert("Tên đăng nhập không được để trống");
+            $.alert({
+                title: "Thông báo",
+                content: "Tên đăng nhập không được để trống"
+            });
+            //alert("Tên đăng nhập không được để trống");
             test = false;
         } else if(!email) {
-            alert("Email không được để trống");
+            $.alert({
+                title: "Thông báo",
+                content: "Email không được để trống"
+            });
+            //alert("Email không được để trống");
             test = false;
         } else if(!password) {
-            alert("Mật khẩu không được để trống");
+            $.alert({
+                title: "Thông báo",
+                content: "Mật khẩu không được để trống"
+            });
+            //alert("Mật khẩu không được để trống");
             test = false;
         } else if(!confirm_password) {
-            alert("Xác nhận mật khẩu không được để trống.");
+            $.alert({
+                title: "Thông báo",
+                content: "Xác nhận mật khẩu không được để trống."
+            });
+            //alert("Xác nhận mật khẩu không được để trống.");
             test = false;
         } else if(password !== confirm_password) {
-            alert("Bạn xác nhận mật khẩu không khớp với mật khẩu bạn nhập.");
+            $.alert({
+                title: "Thông báo",
+                content: "Bạn xác nhận mật khẩu không khớp với mật khẩu bạn nhập."
+            });
             test = false;
         }
         return test;
@@ -112,20 +131,6 @@
 ?>
 <?php
     } else if (is_post_method()) {
-        // code to be executed post method
-        /*$result = php_validate([
-            $_POST["username"]."a" => ['required' => "Username",'min' => 1,'max' => 200],
-            $_POST["email"]."b" => ['required' => "Email",'max' => 200],
-            $_POST["password"]."c" => ['required' => "Mật khẩu",'min' => 5,'max' => 20],
-            $_POST["confirm_password"]."d" => ['required' => "Xác nhận mật khẩu",'equal' => $_POST['password']],
-        ]);*/
-        //if(!array_key_exists("error",$result)){
-        /*$row = db_query([
-            's'=>['id'],
-            'f'=>['user'],
-            'w_o'=>[['username','='],['email','=']],
-            'lim' => ['?']
-        ],[$_POST["username"],$_POST["email"],1]);*/
         $username = isset($_REQUEST["username"]) ? $_REQUEST["username"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
@@ -144,10 +149,6 @@
                 exit();
             }
         }
-        //} else {
-            // Báo lỗi dữ liệu đầu vào không hợp lệ
-         //   $_SESSION['error'] = $result["error"];
-       // }
         header("location:register.php");
     }
 ?>
