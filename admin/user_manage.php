@@ -408,7 +408,7 @@
         $(document).on('click','#btn-update',(e) => {
             event.preventDefault();
             if(validate) {
-                let file = $('input[name="img_cmnd_file"]')[0].files;
+                let file = $('input[name="img_name"]')[0].files;
                 //let image = "";
                 let formData = new FormData($('#manage_user')[0]);
                 // let id = $('input[name=id]').val();
