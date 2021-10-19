@@ -44,9 +44,7 @@
                 </div>
               </div>
             </div>
-            <!-- /.card-header -->
             <div class="card-body">
-              
               <div class="row">
                 <div class="col-sm-12">
                 <ol class="breadcrumb float-sm-left">
@@ -90,18 +88,6 @@
 			  <div id="btn-file" class="row">
 				<div class="col-12">
 					<div class="col-12" style="padding-right:0px;padding-left:0px;">
-						<!--<form style="margin-bottom: 17px;display:flex;" action="<?php echo get_url_current_page();?>" method="get">
-							<div class="" >
-								<select class="form-control" name="type">
-									<option>Tên loại sản phẩm</option>
-									<option>Ngày thêm</option>
-								</select>
-							</div>
-							<div class="ml-10" style="display:flex;">
-								  <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control">
-								  <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-							  </div>
-						  </form>-->
 					</div>
 					 <table id="m-product-type" class="table table-bordered table-striped">
 						<thead>
@@ -116,7 +102,6 @@
 							$get = $_GET;
 							unset($get['page']);
 							$str_get = http_build_query($get);
-
 							$page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
 							$parent_id = isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : null;
 							$arr_paras = [];
@@ -144,18 +129,18 @@
 						<tbody id="list-loai-san-pham">
 						<?php foreach($product_types as $product_type) {?>
 						  <tr class="parent-type" style="cursor:pointer;" id="loai-san-pham<?=$product_type["id"];?>">
-							<td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
-							<td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["name"];?></td>
-							<td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["created_at"];?></td>
-							<td>
-							  <button class="btn-sua-loai-san-pham btn btn-primary"
-								data-id="<?php echo $product_type["id"];?>" data-number="<?php echo $total - ($start_page + $cnt);?>">
-								Update
-							  </button>
-							  <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="<?php echo $product_type["id"];?>">
-								Delete
-							  </button>
-							</td>
+                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
+                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["name"];?></td>
+                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["created_at"];?></td>
+                <td>
+                  <button class="btn-sua-loai-san-pham btn btn-primary"
+                  data-id="<?php echo $product_type["id"];?>" data-number="<?php echo $total - ($start_page + $cnt);?>">
+                  Update
+                  </button>
+                  <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="<?php echo $product_type["id"];?>">
+                  Delete
+                  </button>
+                </td>
 						  </tr>
 						  <?php 
 								$cnt++;
@@ -234,8 +219,9 @@
 
 </script>
 <script>
+    var dt_pt;
     $(document).ready(function (e) {
-        $("#m-product-type").DataTable({
+      dt_pt = $("#m-product-type").DataTable({
         "language": {
           "emptyTable": "Không có dữ liệu",
           "sZeroRecords": 'Không tìm thấy kết quả'
@@ -247,140 +233,152 @@
         "paging":false,
         "order": [[ 0, "desc" ]],
         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#m-product-type_wrapper .col-md-6:eq(0)');
+      });
+      dt_pt.buttons().container().appendTo('#m-product-type_wrapper .col-md-6:eq(0)');
     });
 </script>
 <script>
-   
    $(document).ready(function(){
       // thêm loại sản phẩm
-	  var max_number = "<?=$total - ($start_page - 1);?>";
+      var max_number = "<?=$total - ($start_page - 1);?>";
       $(document).on('click','#btn-them-loai-san-pham',function(event){
-		 let number = max_number;
-		 max_number++;
-	     console.log(number);
-         $('#form-loai-san-pham').load("ajax_category_manage.php?parent_id=<?=$parent_id;?>" + "&status=Insert&number=" + number,() => {
-            $('#modal-xl').modal('show');
-         });
+        let number = max_number;
+        max_number++;
+        console.log(number);
+        $('#form-loai-san-pham').load("ajax_category_manage.php?parent_id=<?=$parent_id;?>" + "&status=Insert&number=" + number,() => {
+          $('#modal-xl').modal('show');
+        });
       });
       // sửa loại sản phẩm
-	  var update_number;
+	    var click_number;
       $(document).on('click','.btn-sua-loai-san-pham',function(event){
-		 number = $(event.currentTarget).attr("data-number");
-	     console.log(number);
-         let id = $(event.currentTarget).attr('data-id');
-         $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Update&number=" + number,() => {
+        number = $(event.currentTarget).attr("data-number");
+        console.log(number);
+        click_number = $(this).closest('tr');
+        let id = $(event.currentTarget).attr('data-id');
+        $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Update&number=" + number,() => {
             $('#modal-xl').modal('show');
-         });
+        });
       });
       // xoá loại sản phẩm
       $(document).on('click','.btn-xoa-loai-san-pham',function(event){
-		console.log($(event.currentTarget).attr('data-id'));
-		 let id = $(event.currentTarget).attr('data-id');
-		 $.confirm({
-			title: 'Thông báo',
-			content: 'Bạn có chắc chắn muốn xoá loại sản phẩm này ?',
-			buttons: {
-				Có: function () {
-					$.ajax({
-					   url:window.location.href,
-					   type:"POST",
-					   cache:false,
-					   data:{
-						  token: "<?php echo_token();?>",
-						  id: id,
-						  status: "Delete",
-					   },
-					   success:function(res){
-						  res_json = JSON.parse(res);
-						  if(res_json.msg == "ok") {
-							 $.alert({
-								title: "Thông báo",
-								content: res_json.success
-							 });
-							 $('#loai-san-pham' + res_json.id).remove();
-						  } else {
-							  $.alert({
-								title: "Thông báo",
-								content: res.error
-							 });
-							 
-						  }
-					   }
-					});
-				},
-				Không: function () {
-				},
-			}
-		});
+		    console.log($(event.currentTarget).attr('data-id'));
+        click_number = $(this).closest('tr');
+		    let id = $(event.currentTarget).attr('data-id');
+        $.confirm({
+          title: 'Thông báo',
+          content: 'Bạn có chắc chắn muốn xoá loại sản phẩm này ?',
+          buttons: {
+            Có: function () {
+              $.ajax({
+                url:window.location.href,
+                type:"POST",
+                cache:false,
+                data:{
+                  token: "<?php echo_token();?>",
+                  id: id,
+                  status: "Delete",
+                },
+                success:function(res){
+                  res_json = JSON.parse(res);
+                  if(res_json.msg == "ok") {
+                  $.alert({
+                    title: "Thông báo",
+                    content: res_json.success
+                  });
+                  //$('#loai-san-pham' + res_json.id).remove();
+                  dt_pt.row(click_number).remove().draw();
+                  } else {
+                    $.alert({
+                    title: "Thông báo",
+                    content: res.error
+                  });
+                  
+                  }
+                }
+              });
+            },
+            Không: function () {
+            },
+          }
+        });
       });
       // xử lý thao tác thêm sửa
       $(document).on('click','#btn-luu-loai-san-pham',function(event){
          event.preventDefault();
          if(!$('input[name=ten_loai_san_pham]').val()) {
-          $.alert({
-            title: "Thông báo",
-            content: "Vui lòng không để trống tên loại sản phẩm"
-          });
+            $.alert({
+              title: "Thông báo",
+              content: "Vui lòng không để trống tên loại sản phẩm"
+            });
             return;
          }
          $.ajax({
-               url:window.location.href,
-               type:"POST",
-               cache:false,
-               data:{
-                  token: "<?php echo_token();?>",
-                  id: $('input[name=id]').val(),
-                  parent_id: "<?php echo $parent_id?>",
-                  name:$('input[name=ten_loai_san_pham]').val(),
-                  status: $('#btn-luu-loai-san-pham').text(),
-				          number: $('input[name=number]').val(),
-               },
-               success:function(res){
-                  let res_json = JSON.parse(res);
-                  console.log(res_json);
-                  $('#form-loai-san-pham').trigger('reset');
-                  $('#modal-xl').modal('hide');
+            url:window.location.href,
+            type:"POST",
+            cache:false,
+            data:{
+              token: "<?php echo_token();?>",
+              id: $('input[name=id]').val(),
+              parent_id: "<?php echo $parent_id?>",
+              name:$('input[name=ten_loai_san_pham]').val(),
+              status: $('#btn-luu-loai-san-pham').text(),
+              number: $('input[name=number]').val(),
+            },
+            success:function(res){
+              let res_json = JSON.parse(res);
+              console.log(res_json);
+              $('#form-loai-san-pham').trigger('reset');
+              $('#modal-xl').modal('hide');
 
-                  if(res_json.msg == "ok"){
-                    let status = $('#btn-luu-loai-san-pham').text();
-                    let record = `
-                      <tr style="cursor:pointer;" id="loai-san-pham${res_json.id}" role="row" class="odd">
-                        <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'" class="dtr-control sorting_1" tabindex="0">${res_json.number}</td>
-                        <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'">${res_json.name}</td>
-                        <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'">${res_json.created_at}</td>
-                        <td>
-                          <button class="btn-sua-loai-san-pham btn btn-primary" data-id="${res_json.id}" data-number="${res_json.number}">
-                            Update
-                          </button>
-                          <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="${res_json.id}" data-number="${res_json.number}">
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    `;
-                    if(status == "Insert"){
-                      $.alert({
-                      title: "Thông báo",
-                      content: "Thêm loại sản phẩm thành công"
-                      });
-                      $('#list-loai-san-pham').prepend(record);
-                    } else if(status == "Update") {
-                      $.alert({
-                        title: "Thông báo",
-                        content: "Sửa loại sản phẩm thành công"
-                      });
-					            $('#loai-san-pham' + res_json.id).replaceWith(record);
-                    }
-                  } else {
-                    alert(res_json.error);
-                  }
+              if(res_json.msg == "ok"){
+                let status = $('#btn-luu-loai-san-pham').text();
+                let record = `
+                  <tr style="cursor:pointer;" id="loai-san-pham${res_json.id}" role="row" class="odd">
+                    <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'" class="dtr-control sorting_1" tabindex="0">${res_json.number}</td>
+                    <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'">${res_json.name}</td>
+                    <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'">${res_json.created_at}</td>
+                    <td>
+                      <button class="btn-sua-loai-san-pham btn btn-primary" data-id="${res_json.id}" data-number="${res_json.number}">
+                        Update
+                      </button>
+                      <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="${res_json.id}" data-number="${res_json.number}">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                `;
+                record = $(record);
+                if(status == "Insert"){
+                  $.alert({
+                    title: "Thông báo",
+                    content: "Thêm loại sản phẩm thành công"
+                  });
+                  dt_pt.row.add(record[0]).draw();
+                } else if(status == "Update") {
+                  $.alert({
+                    title: "Thông báo",
+                    content: "Sửa loại sản phẩm thành công"
+                  });
+                  let one_row = dt_pt.row(click_number).data();
+                  one_row[0] = `${res_json.number}`;
+                  one_row[1] = `${res_json.name}`;
+                  one_row[2] = `${res_json.created_at}`;
+                  dt_pt.row(click_number).data(one_row).draw();
+                  
                 }
+              } else {
+                $.alert({
+                  title: "Thông báo",
+                  content: res_json.error,
+                });
+              }
+            }
           });
+          click_number="";
       });
    });
 </script>
-
 <script>
   $(function() {
     $('#pagination').pagination({
@@ -403,7 +401,7 @@
 <?php
     } else if (is_post_method()) {
         //echo "a";
-		$number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
+		    $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
         $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;

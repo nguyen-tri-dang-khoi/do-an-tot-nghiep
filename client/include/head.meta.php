@@ -31,6 +31,8 @@
 
         <!-- Theme Custom CSS -->
         <link rel="stylesheet" href="css/custom.css">
+        <!-- khoi.css  -->
+        <link rel="stylesheet" href="css/khoi.css">
 
         <!-- Head Libs -->
         <script src="js/modernizr.min.js"></script>

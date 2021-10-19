@@ -26,12 +26,12 @@
                 <div class="col-md-12 align-self-center p-static order-2 text-center">
                     <h1 class="font-weight-bold text-dark">Login</h1>
                 </div>
-                <div class="col-md-12 align-self-center order-1">
+                <!--<div class="col-md-12 align-self-center order-1">
                     <ul class="breadcrumb d-block text-center">
                         <li><a href="#">Home</a></li>
                         <li class="active">Pages</li>
                     </ul>
-                </div>
+                </div>-->
             </div>
         </div>
     </section>
@@ -39,17 +39,17 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5 mb-5 mb-lg-0">
                 <h2 class="font-weight-bold text-5 mb-0">Đăng nhập</h2>
-                <form action="/" id="frmSignIn" method="post" class="needs-validation">
+                <form action="login.php" id="frmSignIn" method="post" class="needs-validation">
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Email <span class="text-color-danger">*</span></label>
-                            <input type="text" value="" class="form-control form-control-lg text-4" required>
+                            <input name="email" type="text" value="" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Mật khẩu <span class="text-color-danger">*</span></label>
-                            <input type="password" value="" class="form-control form-control-lg text-4" required>
+                            <input name="password" type="password" value="" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
                     <div class="row justify-content-between">
@@ -63,6 +63,7 @@
                             <a class="text-decoration-none text-color-dark text-color-hover-primary font-weight-semibold text-2" href="#">Quên mật khẩu ?</a>
                         </div>
                     </div>
+                    <input type="hidden" name="token" value="<?php echo_token();?>">
                     <div class="row">
                         <div class="form-group col">
                             <button type="submit" class="btn btn-dark btn-modern w-100 text-uppercase rounded-0 font-weight-bold text-3 py-3">Đăng nhập</button>
@@ -102,7 +103,7 @@
         }
         if($row['countt'] > 0){
             if(password_verify($password,$row["password"])){
-                $_SESSION["isLoggedIn"] = true;
+                $_SESSION["isUserLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];
                 $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];

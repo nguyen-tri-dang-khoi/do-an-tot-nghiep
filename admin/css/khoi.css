@@ -364,3 +364,6 @@ a, button, select {
     margin-left:0px !important;
   }
 }
+li.nav-item {
+ /* background-color: #494e53;*/
+}

@@ -1,13 +1,26 @@
 <div class="body">
 <header id="header" class="header-effect-shrink" data-plugin-options="{'stickyEnabled': true, 'stickyEffect': 'shrink', 'stickyEnableOnBoxed': false, 'stickyEnableOnMobile': false, 'stickyStartAt': 70, 'stickyChangeLogo': false, 'stickyHeaderContainerHeight': 70}">
-    <div class="header-body border-top-0 box-shadow-none">
-        <div class="header-container header-container-md container">
+    <div class="header-body border-top-1 box-shadow-lighted" style="box-shadow: 2px 3px 4px #21252924;">
+        <div class="header-container header-container-md container" style="height: 75px !important;">
             <div class="header-row">
                 <div class="header-column">
                     <div class="header-row">
                         <div class="header-logo">
-                            <a href="index.html"><img alt="Porto" width="100" height="48" data-sticky-width="82" data-sticky-height="40" data-sticky-top="0" src="img/logo-default-slim.png"></a>
+                            <a href="index.php"><img alt="Porto" width="100" height="48" data-sticky-width="82" data-sticky-height="40" data-sticky-top="0" src="img/logo-default-slim.png"></a>
                         </div>
+                    </div>
+                </div>
+                <!--search-->
+                <div class="header-column">
+                    <div class="header-row">
+                        <form class="w-100" role="search" action="search.php" method="get">
+                            <div class="simple-search input-group">
+                                <input class="form-control text-1" id="headerSearch" name="q" type="search" value="" placeholder="Nhập tên sản phẩm tìm kiếm...">
+                                <button class="btn" type="submit">
+                                    <i class="fas fa-search header-nav-top-icon text-color-dark"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
                 <div class="header-column justify-content-end">
@@ -16,7 +29,7 @@
                             <div class="header-nav-main header-nav-main-square header-nav-main-dropdown-no-borders header-nav-main-effect-2 header-nav-main-sub-effect-1">
                                 <nav class="collapse">
                                     <ul class="nav nav-pills" id="mainNav">
-                                        <li class="dropdown">
+                                        <!--<li class="dropdown">
                                             <a class="dropdown-item dropdown-toggle" href="index.html">
                                                 Home
                                             </a>
@@ -925,28 +938,29 @@
                                                 <li><a class="dropdown-item" href="shop-checkout.html">Checkout</a></li>
                                                 <li><a class="dropdown-item" href="shop-order-complete.html">Order Complete</a></li>
                                             </ul>
-                                        </li>
+                                        </li>-->
                                     </ul>
                                 </nav>
                             </div>
-                            <button class="btn header-btn-collapse-nav" data-bs-toggle="collapse" data-bs-target=".header-nav-main nav">
+                            <!--<button class="btn header-btn-collapse-nav" data-bs-toggle="collapse" data-bs-target=".header-nav-main nav">
                                 <i class="fas fa-bars"></i>
-                            </button>
+                            </button>-->
                         </div>
                         <div class="header-nav-features header-nav-features-no-border header-nav-features-lg-show-border order-1 order-lg-2">
-                            <div class="header-nav-feature header-nav-features-search d-inline-flex">
-                                <a href="#" class="header-nav-features-toggle text-decoration-none" data-focus="headerSearch"><i class="fas fa-search header-nav-top-icon"></i></a>
-                                <div class="header-nav-features-dropdown header-nav-features-dropdown-mobile-fixed" id="headerTopSearchDropdown">
-                                    <form role="search" action="page-search-results.html" method="get">
-                                        <div class="simple-search input-group">
-                                            <input class="form-control text-1" id="headerSearch" name="q" type="search" value="" placeholder="Search...">
-                                            <button class="btn" type="submit">
-                                                <i class="fas fa-search header-nav-top-icon text-color-dark"></i>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        <div style="justify-content:space-between;" class="header-nav-feature header-nav-features-cart d-inline-flex ms-2">
+                            <?php
+                                if(!isset($_SESSION['isUserLoggedIn']) || $_SESSION['isUserLoggedIn'] == false) {
+                            ?>
+                                    <a href="login.php">Login</a>
+                                    <a class="ml-10 mr-10" href="register.php">Register</a>
+                            <?php
+                                } else {
+                            ?>
+                                    <p style="margin-bottom:0px;">Xin chào, <?=$_SESSION['username']?></p>
+                            <?php
+                                }
+                            ?>
+                        </div>
                             <div class="header-nav-feature header-nav-features-cart d-inline-flex ms-2">
                                 <a href="#" class="header-nav-features-toggle">
                                     <img src="img/icons/icon-cart.svg" width="14" alt="" class="header-nav-top-icon-img">

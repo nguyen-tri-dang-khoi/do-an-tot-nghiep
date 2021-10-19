@@ -25,6 +25,7 @@
         }
         return $menu;
     }
+    
     function generate_breadcrumb_menus($id = NULL){
         $sql = "";
         $__arr = [];
@@ -38,6 +39,30 @@
         }
         $menu = "<ol class='breadcrumb'>" . implode("",$__arr) . "</ol>";
         return $menu ;
+    }
+    function find_branch_by_root($id){
+        $branch = "";
+        $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
+        $id = fetch_row($sql,[$id]);
+        while($id['countt'] > 0) {
+            $branch = $id['id'];
+            $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
+            $id = fetch_row($sql,[$id['id']]);
+        }
+        return $branch;
+    }
+    function find_root_menu($id = NULL){
+        $root_id = "";
+        $sql = "";
+        $__arr = [];
+        $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+        $id = fetch_row($sql_get_product_type,[$id]);
+        while($id["countt"] > 0) {
+            $root_id = $id['id'];
+            $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+        }
+        return $root_id;
     }
     
 ?>

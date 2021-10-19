@@ -4,212 +4,87 @@
         include_once("include/head.meta.php");
         include_once("include/menu.php");
         // code to be executed get method
+		$id = isset($_REQUEST['id']) ? $_REQUEST['id'] : "";
+		$sql = "select * from product_info where id = '$id' limit 1";
+		$row = fetch_row($sql);
 ?>
 <!--html & css section start-->
 <div role="main" class="main shop py-4">
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-3">
-				<aside class="sidebar">
-					<form action="page-search-results.html" method="get">
-						<div class="input-group mb-3 pb-1">
-							<input class="form-control text-1" placeholder="Search..." name="s" id="s" type="text">
-							<button type="submit" class="btn btn-dark text-1 p-2"><i class="fas fa-search m-2"></i></button>
-						</div>
-					</form>
-					<h5 class="font-weight-semi-bold pt-3">Categories</h5>
-					<ul class="nav nav-list flex-column">
-						<li class="nav-item"><a class="nav-link" href="#">Arts & Crafts</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Automotive</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Baby</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Books</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Eletronics</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Women's Fashion</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Men's Fashion</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Health & Household</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Home & Kitchen</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Military Accessories</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Movies & Television</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Sports & Outdoors</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Tools & Home Improvement</a></li>
-						<li class="nav-item"><a class="nav-link" href="#">Toys & Games</a></li>
-					</ul>
-					<h5 class="font-weight-semi-bold pt-5">Tags</h5>
-					<div class="mb-3 pb-1">
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Nike</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Travel</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Sport</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">TV</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Books</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Tech</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Adidas</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Promo</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Reading</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Social</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Books</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">Tech</span></a>
-						<a href="#"><span class="badge badge-dark badge-sm rounded-pill text-uppercase px-2 py-1 me-1">New</span></a>
-					</div>
-					<div class="row mb-5">
-						<div class="col">
-							<h5 class="font-weight-semi-bold pt-5">Top Rated Products</h5>
-							<div class="product row row-gutter-sm align-items-center mb-4">
-								<div class="col-5 col-lg-5">
-									<div class="product-thumb-info border-0">
-										<a href="shop-product-sidebar-left.html">
-											<div class="product-thumb-info-image">
-												<img alt="" class="img-fluid" src="img/products/product-grey-6.jpg">
-											</div>
-										</a>
-									</div>
-								</div>
-								<div class="col-7 col-lg-7 ms-md-0 ms-lg-0 ps-lg-1 pt-1">
-									<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-2">hat</a>
-									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="shop-product-sidebar-right.html" class="text-color-dark text-color-hover-primary text-decoration-none">Blue Hat</a></h3>
-									<div title="Rated 5 out of 5">
-										<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'dark', 'size':'xs'}">
-									</div>
-									<p class="price text-4 mb-0">
-										<span class="sale text-color-dark font-weight-semi-bold">$299,00</span>
-										<span class="amount">$289,00</span>
-									</p>
-								</div>
-							</div>
-							<div class="product row row-gutter-sm align-items-center mb-4">
-								<div class="col-5 col-lg-5">
-									<div class="product-thumb-info border-0">
-										<a href="shop-product-sidebar-left.html">
-											<div class="product-thumb-info-image">
-												<img alt="" class="img-fluid" src="img/products/product-grey-8.jpg">
-											</div>
-										</a>
-									</div>
-								</div>
-								<div class="col-7 col-lg-7 ms-md-0 ms-lg-0 ps-lg-1 pt-1">
-									<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-2">accessories</a>
-									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="shop-product-sidebar-right.html" class="text-color-dark text-color-hover-primary text-decoration-none">Adventurer Bag</a></h3>
-									<div title="Rated 5 out of 5">
-										<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'dark', 'size':'xs'}">
-									</div>
-									<p class="price text-4 mb-0">
-										<span class="sale text-color-dark font-weight-semi-bold">$99,00</span>
-										<span class="amount">$79,00</span>
-									</p>
-								</div>
-							</div>
-							<div class="product row row-gutter-sm align-items-center mb-4">
-								<div class="col-5 col-lg-5">
-									<div class="product-thumb-info border-0">
-										<a href="shop-product-sidebar-left.html">
-											<div class="product-thumb-info-image">
-												<img alt="" class="img-fluid" src="img/products/product-grey-9.jpg">
-											</div>
-										</a>
-									</div>
-								</div>
-								<div class="col-7 col-lg-7 ms-md-0 ms-lg-0 ps-lg-1 pt-1">
-									<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-2">sports</a>
-									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="shop-product-sidebar-right.html" class="text-color-dark text-color-hover-primary text-decoration-none">Baseball Ball</a></h3>
-									<div title="Rated 5 out of 5">
-										<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'dark', 'size':'xs'}">
-									</div>
-									<p class="price text-4 mb-0">
-										<span class="sale text-color-dark font-weight-semi-bold">$399,00</span>
-										<span class="amount">$299,00</span>
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</aside>
-			</div>
-			<div class="col-lg-9">
-
+			<div class="col-lg-12">
 				<div class="row">
 					<div class="col-lg-6">
-
 						<div class="thumb-gallery-wrapper">
 							<div class="thumb-gallery-detail owl-carousel owl-theme manual nav-inside nav-style-1 nav-dark mb-3">
 								<div>
-									<img alt="" class="img-fluid" src="img/products/product-grey-7.jpg" data-zoom-image="img/products/product-grey-7.jpg">
+									<img alt="" class="img-fluid" src="<?='../admin/' . $row['img_name']?>" data-zoom-image="<?='../admin/' . $row['img_name']?>">
 								</div>
-								<div>
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-2.jpg" data-zoom-image="img/products/product-grey-7-2.jpg">
-								</div>
-								<div>
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-3.jpg" data-zoom-image="img/products/product-grey-7-3.jpg">
-								</div>
-								<div>
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-4.jpg" data-zoom-image="img/products/product-grey-7-4.jpg">
-								</div>
-								<div>
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-5.jpg" data-zoom-image="img/products/product-grey-7-5.jpg">
-								</div>
+								<?php
+									$sql_get_img_child = "select * from product_image pi where pi.product_info_id = '$id' order by img_order asc";
+									$imgs = db_query($sql_get_img_child);
+									foreach($imgs as $img) {
+								?>
+										<div class="cur-pointer">
+											<img alt="" class="img-fluid" src="<?='../admin/' . $img['img_id'];?>">
+										</div>
+								<?php
+									}
+								?>
 							</div>
 							<div class="thumb-gallery-thumbs owl-carousel owl-theme manual thumb-gallery-thumbs">
-								<div class="cur-pointer">
-									<img alt="" class="img-fluid" src="img/products/product-grey-7.jpg">
+								<div>
+									<img alt="" class="img-fluid" src="<?='../admin/' . $row['img_name']?>" data-zoom-image="<?='../admin/' . $row['img_name']?>">
 								</div>
-								<div class="cur-pointer">
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-2.jpg">
-								</div>
-								<div class="cur-pointer">
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-3.jpg">
-								</div>
-								<div class="cur-pointer">
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-4.jpg">
-								</div>
-								<div class="cur-pointer">
-									<img alt="" class="img-fluid" src="img/products/product-grey-7-5.jpg">
-								</div>
+								<?php
+									$sql_get_img_child = "select * from product_image pi where pi.product_info_id = '$id' order by img_order asc";
+									$imgs = db_query($sql_get_img_child);
+									foreach($imgs as $img) {
+								?>
+										<div class="cur-pointer">
+											<img alt="" class="img-fluid" src="<?='../admin/' . $img['img_id'];?>">
+										</div>
+								<?php
+									}
+								?>
 							</div>
 						</div>
-
 					</div>
-
 					<div class="col-lg-6">
-
 						<div class="summary entry-summary position-relative">
-
 							<div class="position-absolute top-0 right-0">
 								<div class="products-navigation d-flex">
 									<a href="#" class="prev text-decoration-none text-color-dark text-color-hover-primary border-color-hover-primary" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-original-title="Red Ladies Handbag"><i class="fas fa-chevron-left"></i></a>
 									<a href="#" class="next text-decoration-none text-color-dark text-color-hover-primary border-color-hover-primary" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-original-title="Green Ladies Handbag"><i class="fas fa-chevron-right"></i></a>
 								</div>
 							</div>
-
-							<h1 class="mb-0 font-weight-bold text-7">Porto Headphone</h1>
-
+							<h1 class="mb-0 font-weight-bold text-7"><?=$row['name'];?></h1>
 							<div class="pb-0 clearfix d-flex align-items-center">
 								<div title="Rated 3 out of 5" class="float-start">
 									<input type="text" class="opacity-0" value="3" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'primary', 'size':'xs'}">
 								</div>
-
 								<div class="review-num">
 									<a href="#description" class="text-decoration-none text-color-default text-color-hover-primary" data-hash data-hash-offset="75" data-hash-trigger-click=".nav-link-reviews" data-hash-trigger-click-delay="1000">
 										<span class="count text-color-inherit" itemprop="ratingCount">(2</span> reviews)
 									</a>
 								</div>
 							</div>
-
 							<div class="divider divider-small">
 								<hr class="bg-color-grey-scale-4">
 							</div>
-
 							<p class="price mb-3">
-								<span class="sale text-color-dark">$15,00</span>
-								<span class="amount">$22,00</span>
+								<span class="sale text-color-dark"><?=$row['price'];?></span>
+								<!--<span class="amount">$22,00</span>-->
 							</p>
+							<p class="text-3-5 mb-3"><?=$row['description'];?></p>
 
-							<p class="text-3-5 mb-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus nibh sed elimttis adipiscing. Fusce in hendrerit purus. Lorem ipsum dolor sit amet.</p>
-
-							<ul class="list list-unstyled text-2">
+							<!--<ul class="list list-unstyled text-2">
 								<li class="mb-0">AVAILABILITY: <strong class="text-color-dark">AVAILABLE</strong></li>
 								<li class="mb-0">SKU: <strong class="text-color-dark">1234567890</strong></li>
-							</ul>
+							</ul>-->
 
 							<form enctype="multipart/form-data" method="post" class="cart" action="shop-cart.html">
-								<table class="table table-borderless" style="max-width: 300px;">
+								<!--<table class="table table-borderless" style="max-width: 300px;">
 									<tbody>
 										<tr>
 											<td class="align-middle text-2 px-0 py-2">SIZE:</td>
@@ -238,7 +113,7 @@
 											</td>
 										</tr>
 									</tbody>
-								</table>
+								</table>-->
 								<hr>
 								<div class="quantity quantity-lg">
 									<input type="button" class="minus text-color-hover-light bg-color-hover-primary border-color-hover-primary" value="-">
@@ -248,28 +123,23 @@
 								<button type="submit" class="btn btn-dark btn-modern text-uppercase bg-color-hover-primary border-color-hover-primary">Add to cart</button>
 								<hr>
 							</form>
-
-							<div class="d-flex align-items-center">
+							<!--<div class="d-flex align-items-center">
 								<ul class="social-icons social-icons-medium social-icons-clean-with-border social-icons-clean-with-border-border-grey social-icons-clean-with-border-icon-dark me-3 mb-0">
-									<!-- Facebook -->
 									<li class="social-icons-facebook">
 										<a href="http://www.facebook.com/sharer.php?u=https://www.okler.net" target="_blank" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-placement="top" title="Share On Facebook">
 											<i class="fab fa-facebook-f"></i>
 										</a>
 									</li>
-									<!-- Google+ -->
 									<li class="social-icons-googleplus">
 										<a href="https://plus.google.com/share?url=https://www.okler.net" target="_blank" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-placement="top" title="Share On Google+">
 											<i class="fab fa-google-plus-g"></i>
 										</a>
 									</li>
-									<!-- Twitter -->
 									<li class="social-icons-twitter">
 										<a href="https://twitter.com/share?url=https://www.okler.net&amp;text=Simple%20Share%20Buttons&amp;hashtags=simplesharebuttons" target="_blank" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-placement="top" title="Share On Twitter">
 											<i class="fab fa-twitter"></i>
 										</a>
 									</li>
-									<!-- Email -->
 									<li class="social-icons-email">
 										<a href="mailto:?Subject=Share This Page&amp;Body=I%20saw%20this%20and%20thought%20of%20you!%20 https://www.okler.net" data-bs-toggle="tooltip" data-bs-animation="false" data-bs-placement="top" title="Share By Email">
 											<i class="far fa-envelope"></i>
@@ -279,25 +149,21 @@
 								<a href="#" class="d-flex align-items-center text-decoration-none text-color-dark text-color-hover-primary font-weight-semibold text-2">
 									<i class="far fa-heart me-1"></i> SAVE TO WISHLIST
 								</a>
-							</div>
-
+							</div>-->
 						</div>
-
 					</div>
 				</div>
-
 				<div class="row">
 					<div class="col">
 						<div id="description" class="tabs tabs-simple tabs-simple-full-width-line tabs-product tabs-dark mb-2">
 							<ul class="nav nav-tabs justify-content-start">
-								<li class="nav-item"><a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-bs-toggle="tab">Description</a></li>
-								<li class="nav-item"><a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-bs-toggle="tab">Additional Information</a></li>
-								<li class="nav-item"><a class="nav-link nav-link-reviews font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReviews" data-bs-toggle="tab">Reviews (2)</a></li>
+								<li class="nav-item"><a class="nav-link active font-weight-bold text-3 text-uppercase py-2 px-3" href="#productDescription" data-bs-toggle="tab">Mô tả sản phẩm</a></li>
+								<!--<li class="nav-item"><a class="nav-link font-weight-bold text-3 text-uppercase py-2 px-3" href="#productInfo" data-bs-toggle="tab">Additional Information</a></li>-->
+								<li class="nav-item"><a class="nav-link nav-link-reviews font-weight-bold text-3 text-uppercase py-2 px-3" href="#productReviews" data-bs-toggle="tab">Bình luận (2)</a></li>
 							</ul>
 							<div class="tab-content p-0">
 								<div class="tab-pane px-0 py-3 active" id="productDescription">
-									<p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, massa fringilla consequat blandit, mauris ligula porta nisi, non tristique enim sapien vel nisl. Suspendisse vestibulum lobortis dapibus. </p>
-									<p class="m-0">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sagittis, massa fringilla consequat blandit, mauris ligula porta nisi, non tristique enim sapien vel nisl. Suspendisse vestibulum lobortis dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae;</p>
+									<p><?=$row['description'];?></p>
 								</div>
 								<div class="tab-pane px-0 py-3" id="productInfo">
 									<table class="table table-striped m-0">
@@ -424,22 +290,16 @@
 						</div>
 					</div>
 				</div>
-
 				<hr class="solid my-5">
-
-				<h4 class="mb-3">Related <strong>Products</strong></h4>
+				<h4 class="mb-3">Các sản phẩm liên quan</h4>
 				<div class="products row">
 					<div class="col">
 						<div class="owl-carousel owl-theme show-nav-title nav-dark mb-0" data-plugin-options="{'loop': false, 'autoplay': false,'items': 4, 'nav': true, 'dots': false, 'margin': 20, 'autoplayHoverPause': true, 'autoHeight': true}">
-
 							<div class="product mb-0">
 								<div class="product-thumb-info border-0 mb-3">
-
 									<div class="product-thumb-info-badges-wrapper">
-<span class="badge badge-ecommerce badge-success">NEW</span>
-
+										<span class="badge badge-ecommerce badge-success">NEW</span>
 									</div>
-
 									<div class="addtocart-btn-wrapper">
 										<a href="shop-cart.html" class="text-decoration-none addtocart-btn" title="Add to Cart">
 											<i class="icons icon-bag"></i>
@@ -450,8 +310,8 @@
 									</a>
 									<a href="shop-product-sidebar-left.html">
 										<div class="product-thumb-info-image">
-											<img alt="" class="img-fluid" src="img/products/product-grey-1.jpg">
-
+											<!--<img alt="" class="img-fluid" src="img/products/product-grey-1.jpg">-->
+											<img alt="" class="img-fluid" src="<?="../admin/" . $row['img_name'];?>">
 										</div>
 									</a>
 								</div>
@@ -473,12 +333,10 @@
 
 							<div class="product mb-0">
 								<div class="product-thumb-info border-0 mb-3">
-
 									<div class="product-thumb-info-badges-wrapper">
-<span class="badge badge-ecommerce badge-success">NEW</span>
-<span class="badge badge-ecommerce badge-danger">27% OFF</span>
+										<span class="badge badge-ecommerce badge-success">NEW</span>
+										<span class="badge badge-ecommerce badge-danger">27% OFF</span>
 									</div>
-
 									<div class="addtocart-btn-wrapper">
 										<a href="shop-cart.html" class="text-decoration-none addtocart-btn" title="Add to Cart">
 											<i class="icons icon-bag"></i>
@@ -489,10 +347,8 @@
 									</a>
 									<a href="shop-product-sidebar-left.html">
 										<div class="product-thumb-info-image product-thumb-info-image-effect">
-											<img alt="" class="img-fluid" src="img/products/product-grey-7.jpg">
-
-												<img alt="" class="img-fluid" src="img/products/product-grey-7-2.jpg">
-
+											<img alt="" class="img-fluid" src="<?="../admin/" . $row['img_name'];?>">
+											<img alt="" class="img-fluid" src="img/products/product-grey-7-2.jpg">
 										</div>
 									</a>
 								</div>
@@ -525,7 +381,8 @@
 									</a>
 									<a href="shop-product-sidebar-left.html">
 										<div class="product-thumb-info-image">
-											<img alt="" class="img-fluid" src="img/products/product-grey-2.jpg">
+											<img alt="" class="img-fluid" src="<?="../admin/" . $row['img_name'];?>">
+											<!--<img alt="" class="img-fluid" src="img/products/product-grey-2.jpg">-->
 
 										</div>
 									</a>
@@ -545,15 +402,11 @@
 									<span class="amount">$19,00</span>
 								</p>
 							</div>
-
 							<div class="product mb-0">
 								<div class="product-thumb-info border-0 mb-3">
-
 									<div class="product-thumb-info-badges-wrapper">
-
-<span class="badge badge-ecommerce badge-danger">27% OFF</span>
+										<span class="badge badge-ecommerce badge-danger">27% OFF</span>
 									</div>
-
 									<div class="addtocart-btn-wrapper">
 										<a href="shop-cart.html" class="text-decoration-none addtocart-btn" title="Add to Cart">
 											<i class="icons icon-bag"></i>
@@ -564,8 +417,8 @@
 									</a>
 									<a href="shop-product-sidebar-left.html">
 										<div class="product-thumb-info-image">
-											<img alt="" class="img-fluid" src="img/products/product-grey-3.jpg">
-
+											<img alt="" class="img-fluid" src="<?="../admin/" . $row['img_name'];?>">
+											<!--<img alt="" class="img-fluid" src="img/products/product-grey-3.jpg">-->
 										</div>
 									</a>
 								</div>

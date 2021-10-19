@@ -24,13 +24,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12 align-self-center p-static order-2 text-center">
-                    <h1 class="font-weight-bold text-dark">Login</h1>
-                </div>
-                <div class="col-md-12 align-self-center order-1">
-                    <ul class="breadcrumb d-block text-center">
-                        <li><a href="#">Home</a></li>
-                        <li class="active">Pages</li>
-                    </ul>
+                    <h1 class="font-weight-bold text-dark">Register</h1>
                 </div>
             </div>
         </div>
@@ -39,29 +33,37 @@
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <h2 class="font-weight-bold text-5 mb-0">Đăng ký</h2>
-                <form action="/" id="frmSignUp" method="post">
+                <form action="register.php" id="frmSignUp" method="post">
+                    <div class="row">
+                        <div class="form-group col">
+                            <label class="form-label text-color-dark text-3">Tên đăng nhập <span class="text-color-danger">*</span></label>
+                            <input name="username" type="text" value="" class="form-control form-control-lg text-4" required>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Email <span class="text-color-danger">*</span></label>
-                            <input type="text" value="" class="form-control form-control-lg text-4" required>
+                            <input name="email" type="text" value="" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Mật khẩu <span class="text-color-danger">*</span></label>
-                            <input type="password" value="" class="form-control form-control-lg text-4" required>
+                            <input name="password" type="password" value="" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
-                    <div class="row">
+                    <!--<div class="row">
                         <div class="form-group col">
                             <p class="text-2 mb-2">Your personal data will be used to support your experience throughout this website, to manage access to your account, and for other purposes described in our <a href="#" class="text-decoration-none">privacy policy.</a></p>
                         </div>
-                    </div>
+                    </div>-->
+                    <input type="hidden" name="token" value="<?php echo_token();?>">
                     <div class="row">
                         <div class="form-group col">
                             <button type="submit" class="btn btn-dark btn-modern w-100 text-uppercase rounded-0 font-weight-bold text-3 py-3">Đăng ký</button>
                         </div>
                     </div>
+
                 </form>
             </div>
         </div>
@@ -88,12 +90,14 @@
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $sql = "select id,count(*) as 'countt' from customer where username = ? and email = ? limit 1";
         $row = fetch_row($sql,[$username,$email]);
+        //log_v($sql);
         if($row['countt'] > 0){
             $msg_error = "Tên đăng nhập hoặc email này đã tồn tại.";
             $_SESSION["error"] = $msg_error;
         }
         if(!isset($_SESSION["error"]))
         {
+            //log_v($password);
             $password = password_hash($password,PASSWORD_DEFAULT);
             if(db_insert('customer',['email'=>$email,'username'=>$username,'password'=>$password]))
             {

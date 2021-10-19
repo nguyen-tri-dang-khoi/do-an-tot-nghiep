@@ -265,7 +265,6 @@
                         $('#t_body > #cthd' + i).append('<td>' + total+ '</td>');
                         $('#t_body').append("</tr>");
                     }
-
                 },
                 error:function(data){
                     console.log('Error:', data);

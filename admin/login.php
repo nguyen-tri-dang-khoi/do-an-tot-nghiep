@@ -51,15 +51,11 @@
                 </div>
                 <input type="hidden" name="token" value="<?php echo_token();?>">
                 <div class="row">
-                <!-- /.col -->
-                <div class="col-4">
-                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
-                </div>
-                <!-- /.col -->
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                    </div>
                 </div>
             </form>
-            <!-- /.social-auth-links -->
-            <!-- /.login-card-body -->
         </div>
     </div>
 

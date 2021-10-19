@@ -274,7 +274,6 @@
                                  <td><?=$row['count']?></td>
                                  <td><?=$row['price']?></td>
                                  <td><?=$row['pt_name']?></td>
-                                 <!--<td><img width="200" height="100" src="<?=$row['pi_img_name'] ? $row['pi_img_name'] : 'upload/noimage.jpg';?>" alt=""></td>-->
                                  <td><?=$row['created_at']?></td>
                                  <td>
                                     <button class="btn-sua-san-pham btn btn-primary" data-number="<?=$total - ($start_page + $cnt);?>"
@@ -525,22 +524,24 @@
 	 }
 </script>
 <script>
-    $(document).ready(function (e) {
-        $("#m-product-info").DataTable({
-            "language": {
-               "emptyTable": "Không có dữ liệu",
-               "sZeroRecords": 'Không tìm thấy kết quả'
-            },
-            "responsive": true, 
-            "lengthChange": false, 
-            "autoWidth": false,
-			   "searching": false,
-            "order": [[ 0, "desc" ]],
-            "paging":false,
-            "searchHighlight": true,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
-    });
+   var dt_pi;
+   $(document).ready(function (e) {
+      dt_pi = $("#m-product-info").DataTable({
+         "language": {
+            "emptyTable": "Không có dữ liệu",
+            "sZeroRecords": 'Không tìm thấy kết quả'
+         },
+         "responsive": true, 
+         "lengthChange": false, 
+         "autoWidth": false,
+         "searching": false,
+         "order": [[ 0, "desc" ]],
+         "paging":false,
+         "searchHighlight": true,
+         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+      })
+      dt_pi.buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
+   });
 </script>
 <script>
    $(document).ready(function(){
@@ -607,13 +608,6 @@
 			 });
          test = false;
         }
-         console.log($('input[name=id]').val());
-         console.log($('input[name=ten_san_pham]').val());
-         console.log($('#summernote').summernote('code'));
-         console.log($('input[name=so_luong]').val());
-         console.log($('input[name=don_gia]').val());
-         console.log($('select[name=phan_loai_san_pham] > option:selected').val());
-         console.log($('#btn-luu-san-pham').text());
          test = true;
          return test;
       }
@@ -621,8 +615,10 @@
          imagesPreview(this,'#image_preview');
       });
       // Insert san pham
+      var click_number;
       $(document).on('click','#btn-them-san-pham',function(event){
          let number = parseInt($('tbody tr').length) + 1;
+         click_number = $(this).closest('tr');
          $('#form-san-pham').load("ajax_product_info.php?number=" + number,() => {
             $('#modal-xl').modal('show');
             $('#btn-luu-san-pham').text("Insert");
@@ -662,6 +658,7 @@
       // Update sản phẩm
       $(document).on('click','.btn-sua-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         click_number = $(this).closest('tr');
          let number = $(event.currentTarget).attr('data-number');
          $('#form-san-pham').load("ajax_product_info.php?id=" + id + "&number=" + number,() => {
             $('#modal-xl').modal('show');
@@ -701,44 +698,46 @@
       });
       // Delete sản phẩm
       $(document).on('click','.btn-xoa-san-pham',function(event){
-		 let id = $(event.currentTarget).attr('data-id');
-		 $.confirm({
-			title: 'Thông báo',
-			content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
-			buttons: {
-				Có: function () {
-					$.ajax({
-					   url:window.location.href,
-					   type:"POST",
-					   cache:false,
-					   data:{
-						  token: "<?php echo_token(); ?>",
-						  id: id,
-						  status: "Delete",
-					   },
-					   success:function(res){
-						  console.log(id);
-						  res_json = JSON.parse(res);
-						  if(res_json.msg == "ok") {
-							  $.alert({
-								title: "Thông báo",
-								content: res_json.success
-							 });
-							 $('#san-pham' + res_json.id).remove();
-						  } else {
-							  $.alert({
-								title: "Thông báo",
-								content: res.error
-							 });
-						  }
-					   }
-					});
-				},
-				Không: function () {
+         let id = $(event.currentTarget).attr('data-id');
+         click_number = $(this).closest('tr');
+         $.confirm({
+            title: 'Thông báo',
+            content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
+            buttons: {
+               Có: function () {
+                  $.ajax({
+                     url:window.location.href,
+                     type:"POST",
+                     cache:false,
+                     data:{
+                        token: "<?php echo_token(); ?>",
+                        id: id,
+                        status: "Delete",
+                     },
+                     success:function(res){
+                        console.log(id);
+                        res_json = JSON.parse(res);
+                        if(res_json.msg == "ok") {
+                           $.alert({
+                              title: "Thông báo",
+                              content: res_json.success
+                           });
+                           //$('#san-pham' + res_json.id).remove();
+                           dt_pi.row(click_number).remove().draw();
+                        } else {
+                           $.alert({
+                              title: "Thông báo",
+                              content: res.error
+                           });
+                        }
+                     }
+                  });
+               },
+               Không: function () {
 
-				},
-			}
-		 });
+               },
+            }
+         });
       });
       // Delete ảnh mô tả sản phẩm
       $(document).on('click','.btn-xoa-anh-mo-ta-san-pham',function(event){
@@ -788,7 +787,6 @@
       // xử lý thao tác Insert Update
       $(document).on('click','#btn-luu-san-pham',function(event){
          event.preventDefault();
-         
          let formData = new FormData($('#form-san-pham')[0]);
          let number = 1;
          formData.append('token',"<?php echo_token(); ?>");
@@ -807,14 +805,10 @@
             gameChange();
             number = $('tbody tr td:first-child').text();
          }
-         //console.log(number);
          formData.append('list_file_del',$('input[name="list_file_del"]').val());
-         // xu ly anh
          let img = document.getElementsByName('img[]');
          let file = $('input[name=img_sanpham_file]')[0].files;
-         console.log(file);
-         //let file_anh_mo_ta = $('input[name="img[]"]')[0].files;
-         //let image = ""; 
+         //console.log(file);
          if(file.length > 0) {
             formData.append('img_sanpham_file',file[0]); 
          }
@@ -843,7 +837,6 @@
                            <td>${res_json.name}</td>
                            <td>${res_json.count}</td>
                            <td>${res_json.price}</td>
-                           <td id="mo_ta_sp${res_json.id}" style="display:none;">${res_json.description}</td>
                            <td>${res_json.category_name}</td>
                            <td>${res_json.created_at}</td>
                            <td>
@@ -856,6 +849,7 @@
                            </td>
                         </tr>
                      `;
+                     record = $(record);
                      let msg ="";
                      if(status == "Insert"){
                         $('#list-san-pham').prepend(record);
@@ -867,6 +861,7 @@
                            title: "Thông báo",
                            content: msg
                         });
+                        dt_pi.row.add(record[0]).draw();
                         //alert(msg);
                         if($('#display-image').length){
                            $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
@@ -878,10 +873,20 @@
                            title: "Thông báo",
                            content: msg
                         });
-                        //alert(msg);
-                        $('#san-pham' + res_json.id).replaceWith(record);
-                        $('#san-pham' + res_json.id).css('background-color','#f7daf4');
-                        $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
+                        let one_row = dt_pi.row(click_number).data();
+                        one_row[0] = `${res_json.number}`;
+                        one_row[1] = `${res_json.name}`;
+                        one_row[2] = `${res_json.count}`;
+                        one_row[3] = `${res_json.price}`;
+                        one_row[4] = `${res_json.category_name}`;
+                        one_row[5] = `${res_json.created_at}`;
+                        one_row[6] = ` <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" class="btn-sua-san-pham btn btn-primary">
+                                          Update
+                                       </button>
+                                       <button data-id="${res_json.id}" style="margin-left:3px;" class="btn-xoa-san-pham btn btn-danger">
+                                          Delete
+                                       </button>`;
+                        dt_pi.row(click_number).data(one_row).draw();
                      }
                      $('#form-san-pham').trigger('reset');
                      $("#msg_style").removeAttr('style');

@@ -158,7 +158,6 @@
                             </ul>
                         </div>
                     </div>
-                    <!-- /.card-body -->
                 </div>
                 </div>
             </div>
@@ -183,11 +182,8 @@
             <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
         </div>
         </div>
-        <!-- /.modal-content -->
     </div>
-    <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
 <!--html & css section end-->
 <?php
         include_once("include/bottom.meta.php");
@@ -207,8 +203,9 @@
 <script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
 <script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
 <script>
-   $(document).ready(function (e) {
-        $("#m-user-table").DataTable({
+    var dt_user;
+    $(document).ready(function (e) {
+        dt_user = $("#m-user-table").DataTable({
             "language": {
                 "emptyTable": "Không có dữ liệu",
                 "sZeroRecords": 'Không tìm thấy kết quả'
@@ -222,7 +219,8 @@
             "order": [[ 0, "desc" ]],
             "searchHighlight": true,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-        }).buttons().container().appendTo('#m-user-table_wrapper .col-md-6:eq(0)');
+        });
+        dt_user.buttons().container().appendTo('#m-user-table_wrapper .col-md-6:eq(0)');
     });
 </script>
 <script>
@@ -301,8 +299,11 @@
          }
         };
         // mở modal thêm dữ liệu
+        var click_number;
         $(document).on('click','#btn-add-user',(e) => {
-            $('#manage_user').load("ajax_user.php",() => {
+            let number = parseInt($('tbody tr').length) + 1;
+            click_number = $(this).closest('tr');
+            $('#manage_user').load("ajax_user.php?number=" + number,() => {
                 $('#modal-xl').modal('show');
                 $("#birthday").datepicker({
                     changeMonth: true,
@@ -317,8 +318,10 @@
         });
         // mở modal sửa dữ liệu
         $(document).on('click','.btn-update-user',(e) => {  
+            click_number = $(this).closest('tr');
+            let number = $(e.currentTarget).attr('data-number');
             let id = $(e.currentTarget).attr('data-id');
-            $('#manage_user').load("ajax_user.php?id=" + id,() => {
+            $('#manage_user').load("ajax_user.php?id=" + id + "&number=" + number,() => {
                 $('#modal-xl').modal('show');
                 $("#birthday").datepicker({
                     changeMonth: true,
@@ -337,7 +340,6 @@
             event.preventDefault();
             if(validate) {
                 let file = $('input[name="img_name"]')[0].files;
-                //let image = "";
                 let formData = new FormData($('#manage_user')[0]);
                 formData.append("token","<?php echo_token();?>");
                 formData.append("status","Insert");
@@ -365,6 +367,7 @@
                         if(data.msg == "ok") {
                             let html = "";
                             html += `<tr style='background-color:#ef7a1752;' id='user-${data.id}'>`;
+                            html += `<td>${data.number}</td>`;
                             html += `<td>${data.full_name}</td>`;
                             html += `<td>${data.email}</td>`;
                             html += `<td>${data.phone}</td>`;
@@ -375,21 +378,21 @@
                             html += `<td>${data.created_at}</td>`;
                             html += `<td>`;
                             html += `<button class="btn-update-user btn btn-primary" data-id="${data.id}">Sửa</button>`;
-                            html += `<button class="btn-delete-row btn btn-danger" data-id="${data.id}">Xoá</button>`;
+                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${data.id}">Xoá</button>`;
                             html += `</td>`;
                             html += `</tr>`;
                             $.alert({
                                 title: "Thông báo",
                                 content: data.success
                             });
-                            //alert(data.success);
+                            html = $(html);
                             $('#m-user-body').append(html);
+                            dt_user.row.add(html[0]).draw();
                         } else {
                             $.alert({
                                 title: "Thông báo",
                                 content: data.error
                             });
-                            //alert(data.error);
                         }
                         $('#modal-xl').modal('hide');
                     },
@@ -397,7 +400,9 @@
                         console.log("Error:",data);
                     }
                 });
+                
             }
+            click_number = "";
         });
         // sửa 
         $(document).on('click','#btn-update',(e) => {
@@ -436,6 +441,7 @@
                             let id = $('input[name=id]').val();
                             let html = "";
                             html += `<tr style="background-color:#91c08552;" id='user-${id}'>`;
+                            html += `<td>${data.number}</td>`;
                             html += `<td>${data.full_name}</td>`;
                             html += `<td>${data.email}</td>`;
                             html += `<td>${data.phone}</td>`;
@@ -446,7 +452,7 @@
                             html += `<td>${data.created_at}</td>`;
                             html += `<td>`;
                             html += `<button class="btn-update-user btn btn-primary" data-id="${id}">Sửa</button>`;
-                            html += `<button class="btn-delete-row btn btn-danger" data-id="${id}">Xoá</button>`;
+                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${id}">Xoá</button>`;
                             html += `</td>`;
                             html += "</tr>";
                             $.alert({
@@ -455,6 +461,17 @@
                             });
                             //alert(data.success);
                             $("#user-" + id).replaceWith(html);
+                            let one_row = dt_user.row(click_number).data();
+                            one_row[0] = `${res_json.number}`;
+                            one_row[1] = `${res_json.full_name}`;
+                            one_row[2] = `${res_json.email}`;
+                            one_row[3] = `${res_json.phone}`;
+                            one_row[4] = `${res_json.cmnd}`;
+                            one_row[5] = `${res_json.address}`;
+                            one_row[6] = `${res_json.birthday}`;
+                            one_row[7] = `${res_json.username}`;
+                            one_row[8] = `${res_json.created_at}`;
+                            dt_user.row(click_number).data(one_row).draw();
                         } else {
                             $.alert({
                                 title: "Thông báo",
@@ -470,9 +487,11 @@
                 }
                 
             }
+            click_number = "";
         });
         // xoá 
         $(document).on('click','.btn-delete-row',(e) => {
+            click_number = $(this).closest('tr');
             event.preventDefault();
             let id = $(e.currentTarget).attr('data-id');
             $.confirm({
@@ -496,7 +515,8 @@
                                         title: "Thông báo",
                                         content: data.success,
                                     });
-                                    $('#user-' + id).remove();
+                                    //$('#user-' + id).remove();
+                                    dt_user.row(click_number).remove().draw();
                                 } else {
                                     $.alert({
                                         title: "Thông báo",
@@ -513,6 +533,7 @@
                     }
                 }
             });
+            click_number = "";
         });
     });
 </script>
@@ -540,6 +561,7 @@
     } else if (is_post_method()) {
         // code to be executed post method
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+        $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
         $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
         $cmnd = isset($_REQUEST["cmnd"]) ? $_REQUEST["cmnd"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
@@ -559,11 +581,11 @@
             $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
             $row = fetch_row($sql_check_exist,[$email,$cmnd,$phone,$id]);
             if($row['countt'] == 1) {
-                if($row['cmnd']) {
+                if($row['cmnd'] != "") {
                     $error = "Số chứng minh nhân dân bị trùng ";
-                } else if($row['email']) {
+                } else if($row['email'] != "") {
                     $error = "Email bị trùng";
-                } else if($row['phone']) {
+                } else if($row['phone'] != "") {
                     $error = "Phone bị trùng";
                 }
                 echo_json(["msg" => "not_ok","error" => $error]);
@@ -607,7 +629,7 @@
                 "password" => $password,
                 "created_at"=>date('Y-m-d H-i-s',time())
             ];
-            ajax_db_update_by_id('user',$__arr,[$id],array_merge(["success" => $success],$__arr) ,["error" => $error]);
+            ajax_db_update_by_id('user',$__arr,[$id],array_merge(["success" => $success,"number" => $number],$__arr) ,["error" => $error]);
         } else if($status == "Insert") {
             //validate zone
             $sql_check_exist = "Select cmnd,email,phone,count(*) as 'countt' from user where (email = ? or cmnd = ? or phone = ?) limit 1";
@@ -663,7 +685,8 @@
                         $sql_update = "update user set img_name='$path' where id = '$insert'";
                         db_query($sql_update);
                     }
-                    echo_json(array_merge(['msg' => 'ok','success' => $success],$__arr));
+                    $__arr['id'] = $insert;
+                    echo_json(array_merge(['msg' => 'ok',"number" => $number,'success' => $success],$__arr));
                     /*if(db_update_by_id('user',['img_cmnd' => $image],[$insert])) {
                         $__arr['img_cmnd'] = $image;
                         $__arr['id'] = $insert;
