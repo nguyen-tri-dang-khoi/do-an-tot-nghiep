@@ -33,7 +33,7 @@
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])?>" method="post" onsubmit="return validate()">
                 <div class="input-group mb-3">
                     <div class="input-group">
-                        <input id="email" type="email" name="email" class="form-control" placeholder="Email" value="admin@gmail.com">
+                        <input id="email" type="email" name="email" class="form-control" placeholder="Email" value="admin2@gmail.com">
                         <div class="input-group-text">
                         <span class="fas fa-envelope"></span>
                         </div>
@@ -94,7 +94,7 @@
     } else if (is_post_method()) {
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
-        $sql = "select id,username,email,password,img_name,count(*) as 'countt' from user where email = ? limit 1";
+        $sql = "select id,username,email,password,img_name,paging,count(*) as 'countt' from user where email = ? limit 1";
         $row = fetch_row($sql,[$email]);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
@@ -106,6 +106,7 @@
                 $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
+                $_SESSION["paging"] = $row["paging"];
                 redirect_if_login_success();
             } else {
                 $_SESSION["error"] = "Tài khoản hoặc mật khẩu bạn đăng nhập không chính xác";

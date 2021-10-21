@@ -4,9 +4,9 @@
     $link = db_connect();
     function db_connect() {         
         $host = 'localhost';
-        $dbname = 'adizcvgx_techshop'; //id16910140_do_an_tot_nghiep
-        $username = 'adizcvgx_techshop';  //id16910140_khoi
-        $password = 'Khoi17042000@'; //>iSxpL-6>Q{GbTq<
+        $dbname = 'shop_dien_thoai_2'; //id16910140_do_an_tot_nghiep
+        $username = 'root';  //id16910140_khoi
+        $password = ''; //>iSxpL-6>Q{GbTq<
         try {
             $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
            /* array(
@@ -22,5 +22,11 @@
             die("Could not connect to the database $dbname :" . $pe->getMessage());
         }
         return $conn;
+    }
+    function log_v($var){
+        echo "<script>". "console.log('". $var ."');</script>";
+    }
+    function log_a($array){
+        echo "<script>". "console.log('". json_encode($array) ."');</script>";
     }
 ?>

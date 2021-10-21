@@ -76,7 +76,7 @@
                       <div class="form-group row">
                         <label for="birth" class="col-sm-2 col-form-label">Ngày sinh</label>
                         <div class="col-sm-10">
-                          <input name="birthday" type="text" class="form-control" id="ngay_sinh_admin" value="<?=Date("d-m-Y",strtotime($admin_info["birthday"]));?>">
+                          <input name="birthday" type="text" data-date="<?=$admin_info["birthday"]?>" class="form-control" id="ngay_sinh_admin" value="<?=Date("d-m-Y",strtotime($admin_info["birthday"]));?>">
                         </div>
                         <!-- loi ngay sinh -->
                         <div id="birth_err" class="text-danger"></div>
@@ -86,7 +86,7 @@
                       <div class="form-group row">
                         <label for="inputExperience" class="col-sm-2 col-form-label">Ngày tạo tài khoản</label>
                         <div class="col-sm-10">
-                          <input type="text" class="form-control" value=<?=$admin_info["created_at"];?> readonly>
+                          <input type="text" class="form-control" value=<?=Date('d-m-Y',strtotime($admin_info["created_at"]));?> readonly>
                         </div>
                       </div>
                       <div class="form-group row">
@@ -159,7 +159,12 @@
         $( "#ngay_sinh_admin" ).datepicker({
           changeMonth: true,
           changeYear: true,
-          dateFormat: 'dd-mm-yy'
+          dateFormat: 'dd-mm-yy',
+          onSelect: function(dateText,inst) {
+            console.log(dateText.split("-"));
+            dateText = dateText.split("-")
+            $('input[name=birthday]').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+          }
         });
         // cập nhật thông tin admin
         $(document).on('click','#btn-cap-nhat-admin',function(event){
@@ -169,7 +174,7 @@
             let old_pass = $('input[name=old_pass]').val();
             let email = $('input[name=email]').val();
             let phone = $('input[name=phone]').val();
-            let birthday = $('input[name=birthday]').val();
+            let birthday = $('input[name=birthday]').attr('data-date');
             let address = $('input[name=address]').val();
             // let img = $('#display-image').attr('data-img');
             let token = "<?php echo_token();?>";

@@ -45,7 +45,7 @@
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="birthday">Ngày sinh</label>
-                <input type="text" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh" value="<?=$result['birthday']?>">
+                <input type="text" date-date="<?=$result['birthday']?>" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh" value="<?=Date('d-m-Y',strtotime($result['birthday']));?>">
             </div>
             <div class="col-md-6 form-group">
                 <label for="address">Địa chỉ</label>
@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-6 form-group">
                 <label for="password">Mật khẩu</label>
-                <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu đăng nhập">
+                <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập">
             </div>
         </div>
     </div>
@@ -108,7 +108,7 @@
     <div class="row">
         <div class="col-md-6 form-group">
             <label for="birthday">Ngày sinh</label>
-            <input type="text" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh">
+            <input date-date="" type="text" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh">
         </div>
         <div class="col-md-6 form-group">
             <label for="address">Địa chỉ</label>
@@ -122,7 +122,7 @@
         </div>
         <div class="col-md-6 form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu đăng nhập">
+            <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập">
         </div>
     </div>
 </div>

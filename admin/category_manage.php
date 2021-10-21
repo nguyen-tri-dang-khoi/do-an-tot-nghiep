@@ -113,7 +113,7 @@
 							  $where = "where 1 = 1 and parent_id = ? and is_delete = 0";
 							  array_push($arr_paras,$_REQUEST['parent_id']);
 							}
-							$limit = 5;
+							$limit = $_SESSION['paging'];
 							$start_page = $limit * ($page - 1);
 							
 							$sql_get_total = "select count(*) as 'countt' from product_type $where";
@@ -131,14 +131,14 @@
 						  <tr class="parent-type" style="cursor:pointer;" id="loai-san-pham<?=$product_type["id"];?>">
                 <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
                 <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["name"];?></td>
-                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?php echo $product_type["created_at"];?></td>
+                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>&count=<?php echo $_SESSION['count_lvl'];?>'"><?=Date("d-m-Y H:i:s",strtotime($product_type["created_at"]));?></td>
                 <td>
                   <button class="btn-sua-loai-san-pham btn btn-primary"
                   data-id="<?php echo $product_type["id"];?>" data-number="<?php echo $total - ($start_page + $cnt);?>">
-                  Update
+                  Sửa
                   </button>
                   <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="<?php echo $product_type["id"];?>">
-                  Delete
+                  Xoá
                   </button>
                 </td>
 						  </tr>
@@ -215,17 +215,18 @@
 <script src="js/buttons.colVis.min.js"></script>
 <script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
 <script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
-<script>	
-
-</script>
 <script>
     var dt_pt;
     $(document).ready(function (e) {
       dt_pt = $("#m-product-type").DataTable({
         "language": {
-          "emptyTable": "Không có dữ liệu",
-          "sZeroRecords": 'Không tìm thấy kết quả'
-        },
+            "emptyTable": "Không có dữ liệu",
+            "sZeroRecords": 'Không tìm thấy kết quả',
+            "infoEmpty": "",
+            "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
+            "search":"Tìm kiếm trong bảng này:",   
+            "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
+         },
         "responsive": true, 
         "lengthChange": false, 
         "autoWidth": false,
@@ -340,10 +341,10 @@
                     <td onclick="location.href='category_manage.php?parent_id=${res_json.id}&amp;count=1'">${res_json.created_at}</td>
                     <td>
                       <button class="btn-sua-loai-san-pham btn btn-primary" data-id="${res_json.id}" data-number="${res_json.number}">
-                        Update
+                        Sửa
                       </button>
                       <button class="btn-xoa-loai-san-pham btn btn-danger" data-id="${res_json.id}" data-number="${res_json.number}">
-                        Delete
+                        Xoá
                       </button>
                     </td>
                   </tr>
@@ -363,7 +364,6 @@
                   let one_row = dt_pt.row(click_number).data();
                   one_row[0] = `${res_json.number}`;
                   one_row[1] = `${res_json.name}`;
-                  one_row[2] = `${res_json.created_at}`;
                   dt_pt.row(click_number).data(one_row).draw();
                   
                 }
@@ -375,7 +375,6 @@
               }
             }
           });
-          click_number="";
       });
    });
 </script>
@@ -387,8 +386,10 @@
       currentPage: <?=$page;?>,
       hrefTextPrefix: "<?php echo '?page='; ?>",
       hrefTextSuffix: "<?php echo '&' . $str_get;?>",
+      prevText: "<",
+      nextText: ">",
       onPageClick: function(){
-        //window.location.href=""
+
       },
           cssStyle: 'light-theme'
       });
@@ -413,23 +414,23 @@
         } else if($status == "Update") {
             $sql_check_exist = "Select count(*) as 'countt' from product_type where name = ? and id <> ?";
             $row = fetch_row($sql_check_exist,[$name,$id]);
-            if($row['countt'] > 0) {
+            if(1 == 2) { //$row['countt'] > 0
                 $error = "Tên loại sản phẩm này đã tồn tại.";
                 echo_json(['msg' => 'not_ok','error' => $error]);
-            } else if($row['countt'] == 0) {
-                ajax_db_update_by_id('product_type', ['name' => $name],[$id],["id" => $id,"name"=>$name,"number"=>$number,"created_at"=>date('Y-m-d H-i-s',time())]);
+            } else if(1 == 1) { //$row['countt'] == 0
+                ajax_db_update_by_id('product_type', ['name' => $name],[$id],["id" => $id,"name"=>$name,"number"=>$number]);
             }
         } else if($status == "Insert") {
             $sql_check_exist = "Select count(*) as 'countt' from product_type where name = ?";
             $row = fetch_row($sql_check_exist,[$name]);
-            if($row['countt'] > 0) {
+            if(1 == 2) {
                 $error = "Tên loại sản phẩm này đã tồn tại.";
                 echo_json(['msg' => 'not_ok','error' => $error]);
-            } else if($row['countt'] == 0){
+            } else if(1 == 1){
                 if($parent_id) {
-                    ajax_db_insert_id('product_type',['name'=>$name,'parent_id' => $parent_id],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('Y-m-d H-i-s',time())]);
+                    ajax_db_insert_id('product_type',['name'=>$name,'parent_id' => $parent_id],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
                 } else {
-                    ajax_db_insert_id('product_type',['name'=>$name],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('Y-m-d H-i-s',time())]);
+                    ajax_db_insert_id('product_type',['name'=>$name],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
                 }
             }
         }

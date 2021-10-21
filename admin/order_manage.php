@@ -78,7 +78,7 @@
                         $where .= "";
                     }
                     $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                    $limit = 10;
+                    $limit = $_SESSION['paging'];
                     $start_page = $limit * ($page - 1);
                     $sql_get_total = "select count(*) as 'countt' from orders o inner join order_detail od on o.id = od.order_id inner join customer c on o.customer_id = c.id $where";
                     $total = fetch_row($sql_get_total,$arr_paras)['countt'];
@@ -107,7 +107,7 @@
                         <?php 
                           }
                         ?>
-                        <td><?=$row['created_at']?></td>
+                        <td><?=Date("d-m-Y H:i:s",strtotime($row['created_at']));?></td>
                         <td>
                             <button class="btn btn-secondary btn-xem-chi-tiet-hoa-don"
                             data-bill_id="<?=$row["order_id"];?>"
@@ -125,7 +125,7 @@
                       </td>
                     </tr>
                   <?php
-					  $cnt++;
+					            $cnt++;
                       $i++;
                     }
                   ?>
@@ -174,11 +174,8 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
       </div>
     </div>
-    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
 <!--html & css section end-->
 <?php
         include_once("include/bottom.meta.php");
@@ -202,13 +199,16 @@
         $("#m-order").DataTable({
           "language": {
             "emptyTable": "Không có dữ liệu",
-            "sZeroRecords": 'Không tìm thấy kết quả'
-          },
+            "sZeroRecords": 'Không tìm thấy kết quả',
+            "infoEmpty": "",
+            "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
+            "search":"Tìm kiếm trong bảng này:",   
+            "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
+         },
           "responsive": true, 
           "lengthChange": false, 
           "autoWidth": false,
           "paging":false,
-          "searching": false,
           "order": [[ 0, "desc" ]],
           "searchHighlight": true,
           "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
@@ -349,11 +349,13 @@
 <script>
   $(function() {
     $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
+    items: <?=$total;?>,
+    itemsOnPage: <?=$limit;?>,
 		currentPage: <?=$page;?>,
 		hrefTextPrefix: "<?php echo '?page='; ?>",
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
+    prevText: "<",
+    nextText: ">",
 		onPageClick: function(){
 			//window.location.href=""
 		},

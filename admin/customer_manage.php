@@ -81,7 +81,7 @@
                                 $where .= "";
                             }
                             $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                            $limit = 10;
+                            $limit = $_SESSION['paging'];
                             $start_page = $limit * ($page - 1);
                             $sql_get_total = "select count(*) as 'countt' from customer $where";
                             $total = fetch_row($sql_get_total,$arr_paras)['countt'];
@@ -115,7 +115,7 @@
                                     <td><?=$row["email"]?></td>
                                     <td><?=$row["phone"]?></td>
                                     <td><?=$row["address"]?></td>
-                                    <td><?=$row["birthday"]?></td>
+                                    <td><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
                                     <td><?=$row["username"]?></td>
                                     <td><?=$row["created_at"]?></td>
                                     <td>
@@ -180,15 +180,17 @@
         $("#m-customer-table").DataTable({
             "language": {
                 "emptyTable": "Không có dữ liệu",
-                "sZeroRecords": 'Không tìm thấy kết quả'
+                "sZeroRecords": 'Không tìm thấy kết quả',
+                "infoEmpty": "",
+                "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
+                "search":"Tìm kiếm trong bảng này:",   
+                "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
             },
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
-			"searching": false,
             "paging":false,
             "order": [[ 0, "desc" ]],
-	        "searching": false,
             "searchHighlight": true,
             "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
         }).buttons().container().appendTo('#m-customer-table_wrapper .col-md-6:eq(0)');
@@ -202,6 +204,8 @@
 		currentPage: <?=$page;?>,
 		hrefTextPrefix: "<?php echo '?page='; ?>",
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
+        prevText: "<",
+        nextText: ">",
 		onPageClick: function(){
 			//window.location.href=""
 		},
