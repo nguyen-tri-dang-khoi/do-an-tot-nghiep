@@ -117,7 +117,7 @@
                                     <td><?=$row["address"]?></td>
                                     <td><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
                                     <td><?=$row["username"]?></td>
-                                    <td><?=$row["created_at"]?></td>
+                                    <td><?=Date("d-m-Y h:i:s",strtotime($row["created_at"]));?></td>
                                     <td>
                                         <button class="btn-update-user btn btn-primary"
                                         data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>
@@ -192,7 +192,24 @@
             "paging":false,
             "order": [[ 0, "desc" ]],
             "searchHighlight": true,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "buttons": [
+            {
+                "extend": "copy",
+                "text": "Sao chép bảng",
+            },{
+                "extend": "excel",
+            },{
+                "extend": "pdf",
+            },{
+                "extend": "csv",
+            },{
+                "extend": "print",
+                "text": "In bảng",
+            },{
+                "extend": "colvis",
+                "text": "Ẩn / Hiện cột",
+            }
+        ]
         }).buttons().container().appendTo('#m-customer-table_wrapper .col-md-6:eq(0)');
     });
 </script>

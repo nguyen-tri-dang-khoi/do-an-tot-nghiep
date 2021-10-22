@@ -60,7 +60,7 @@
 								</a>-->
 								<a href="product_detail.php?id=<?=$res['id']?>">
 									<div class="product-thumb-info-image">
-										<img style="width:110px;height:172px;" alt="" class="img-fluid" src='<?="../admin/" . $res['img_name'];?>'>
+										<img style="" alt="" class="img-fluid" src='<?="../admin/" . $res['img_name'];?>'>
 									</div>
 								</a>
 							</div>

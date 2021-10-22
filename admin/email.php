@@ -20,7 +20,7 @@ $mail->isHTML(true);
 $mail->setFrom($email, $name);
 $mail->addAddress("khoiabcdef@gmail.com");
 $mail->Subject = $subject;
-$mail->Body = $body;
+$mail->Body = $html;
 
 if ($mail->send()) {
     $status = "success";

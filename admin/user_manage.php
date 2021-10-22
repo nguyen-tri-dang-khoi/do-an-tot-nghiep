@@ -218,7 +218,24 @@
             "paging":false,
             "order": [[ 0, "desc" ]],
             "searchHighlight": true,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+            "buttons": [
+          {
+            "extend": "copy",
+            "text": "Sao chép bảng",
+          },{
+            "extend": "excel",
+          },{
+            "extend": "pdf",
+          },{
+            "extend": "csv",
+          },{
+            "extend": "print",
+            "text": "In bảng",
+          },{
+            "extend": "colvis",
+            "text": "Ẩn / Hiện cột",
+          }
+        ]
         });
         dt_user.buttons().container().appendTo('#m-user-table_wrapper .col-md-6:eq(0)');
     });
@@ -588,7 +605,7 @@
             ajax_db_update_by_id('user',["is_delete" => 1],[$id],["success" => $success],["error" => $error]);
         } else if($status == "Update") {
             $sql_check_exist = "Select cmnd,email,phone,count(*) as 'countt' from user where (email = ? or cmnd = ? or phone = ?) and id <> ? limit 1";
-            $success = "Bạn đã Update dữ liệu thành công";
+            $success = "Bạn đã sửa dữ liệu thành công";
             $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
             $row = fetch_row($sql_check_exist,[$email,$cmnd,$phone,$id]);
             if(2 == 1) {
@@ -661,8 +678,8 @@
             //validate zone
             //print_r('Insert');
             $sql_check_exist = "Select cmnd,email,phone,count(*) as 'countt' from user where (email = ? or cmnd = ? or phone = ?) limit 1";
-            $success = "Bạn đã Update dữ liệu thành công";
-            $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
+            $success = "Bạn đã thêm dữ liệu thành công";
+            $error = "Đã có lỗi xảy ra. Vui lòng tải lại trang";
             $row = fetch_row($sql_check_exist,[$email,$cmnd,$phone]);
             if(2 == 1) {
                 if($row['cmnd'] != "") {
@@ -693,7 +710,7 @@
                 if($insert > 0) {
                     // insert
                     $success = "Cập nhật dữ liệu thành công";
-                    $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
+                    $error = "Đã có lỗi xảy ra. Vui lòng tải lại trang";
                     $image = null;
                     //file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$insert,$image,'cmnd_');
                     $dir = "upload/user/";

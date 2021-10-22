@@ -172,7 +172,24 @@
         "searchHighlight": true,
         "paging":false,
         "order": [[ 0, "desc" ]],
-        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        "buttons": [
+          {
+            "extend": "copy",
+            "text": "Sao chép bảng",
+          },{
+            "extend": "excel",
+          },{
+            "extend": "pdf",
+          },{
+            "extend": "csv",
+          },{
+            "extend": "print",
+            "text": "In bảng",
+          },{
+            "extend": "colvis",
+            "text": "Ẩn / Hiện cột",
+          }
+        ]
       });
       dt_pt.buttons().container().appendTo('#m-product-type_wrapper .col-md-6:eq(0)');
     });

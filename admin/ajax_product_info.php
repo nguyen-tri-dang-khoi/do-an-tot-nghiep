@@ -152,7 +152,7 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number;?>">
 <div class="card-footer">
-    <button id="btn-luu-san-pham" type="submit" class="btn btn-primary">Đăng sản phẩm lên</button>
+    <button id="btn-luu-san-pham" data-status="Update" type="submit" class="btn btn-primary">Đăng sản phẩm lên</button>
     <input type="hidden" name="id" value="<?=$result['pi_id'];?>">      
 </div>
 <?php
@@ -237,6 +237,6 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number;?>">
 <div class="card-footer">
-    <button id="btn-luu-san-pham" type="submit" class="btn btn-primary">Đăng sản phẩm lên</button>
+    <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="btn btn-primary">Đăng sản phẩm lên</button>
     <input type="hidden" name="id" >      
 </div>

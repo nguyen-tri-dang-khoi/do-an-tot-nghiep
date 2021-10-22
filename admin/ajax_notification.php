@@ -95,7 +95,7 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number;?>">
 <div class="card-footer">
-    <button id="btn-luu-bang-tin" type="button" class="btn btn-primary">Sửa bảng tin</button>
+    <button id="btn-luu-bang-tin" type="button" data-status="Update" class="btn btn-primary">Sửa bảng tin</button>
     <input type="hidden" name="id" value="<?=$result['id'];?>">      
 </div>
 <?php
@@ -152,6 +152,6 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number;?>">
 <div class="card-footer">
-    <button id="btn-luu-bang-tin" type="button" class="btn btn-primary">Đăng bảng tin lên</button>
+    <button id="btn-luu-bang-tin" data-status="Insert" type="button" class="btn btn-primary">Đăng bảng tin lên</button>
     <input type="hidden" name="id" >      
 </div>

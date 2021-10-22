@@ -400,7 +400,8 @@
 				'background-size': 'cover',
 				'background-position': '50%'
 			   });
-			  $(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
+			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
+            //$(target).first().siblings('.kh-custom-remove-img').css({'display': 'none'});
 			}
 			reader.readAsDataURL(input.files[0]);
 		 }
@@ -541,7 +542,24 @@
          "order": [[ 0, "desc" ]],
          "paging":false,
          "searchHighlight": true,
-         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+         "buttons": [
+          {
+            "extend": "copy",
+            "text": "Sao chép bảng",
+          },{
+            "extend": "excel",
+          },{
+            "extend": "pdf",
+          },{
+            "extend": "csv",
+          },{
+            "extend": "print",
+            "text": "In bảng",
+          },{
+            "extend": "colvis",
+            "text": "Ẩn / Hiện cột",
+          }
+        ]
       })
       dt_pi.buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
    });
@@ -624,7 +642,7 @@
          click_number = $(this).closest('tr');
          $('#form-san-pham').load("ajax_product_info.php?number=" + number,() => {
             $('#modal-xl').modal('show');
-            $('#btn-luu-san-pham').text("Insert");
+            $('#btn-luu-san-pham').text("Thêm");
             $(function(){
                setTimeout(() => {
                   $('#summernote').summernote({height: 120});
@@ -665,7 +683,7 @@
          let number = $(event.currentTarget).attr('data-number');
          $('#form-san-pham').load("ajax_product_info.php?id=" + id + "&number=" + number,() => {
             $('#modal-xl').modal('show');
-            $('#btn-luu-san-pham').text("Update");
+            $('#btn-luu-san-pham').text("Sửa");
             $(function(){
                setTimeout(() => {
                   $('#summernote').summernote({height: 120});
@@ -708,6 +726,7 @@
             content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
             buttons: {
                Có: function () {
+
                   $.ajax({
                      url:window.location.href,
                      type:"POST",
@@ -718,9 +737,12 @@
                         status: "Delete",
                      },
                      success:function(res){
+                        
                         console.log(id);
                         res_json = JSON.parse(res);
                         if(res_json.msg == "ok") {
+                           arr_input_file = new Map();
+                           arr_list_file_del = [];
                            $.alert({
                               title: "Thông báo",
                               content: res_json.success
@@ -800,7 +822,7 @@
          formData.append('price',$('input[name=don_gia]').val());
          formData.append('category_id',$("input[name='category_id']").val());
          formData.append('category_name',$("input[name='category_name']").val());
-         formData.append('status',$('#btn-luu-san-pham').text().trim());
+         formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
          if(status == "Insert"){
             game();
             number = parseInt($('tbody tr').length) + parseInt(number);
@@ -833,7 +855,10 @@
                data:formData,
                success:function(res_json){
                   if(res_json.msg == 'ok'){
-                     let status = $('#btn-luu-san-pham').text().trim();
+                     arr_input_file = new Map();
+                     arr_list_file_del = [];
+                     $("input[name='list_file_del']").val("");
+                     let status = $('#btn-luu-san-pham').attr('data-status').trim();
                      let record = `
                         <tr id="san-pham${res_json.id}">
                            <td>${res_json.number}</td>
@@ -932,14 +957,13 @@
         include_once("include/footer.php");
 ?>
 <?php
-	function getFileUpload($i_order,$id){
-		$sql = "select img_id from product_image where product_img_id = '$id' and i_order = '$i_order' limit 1";
-		$file_old_name = fetch_row($sql)['img_id'];
-		return $file_old_name;
-	}
-?>
-<?php
    } else if (is_post_method()) {
+      function getFileUpload($img_order,$id){
+         $sql = "select img_id from product_image where product_info_id = '$id' and img_order = '$img_order' limit 1";
+         //print_r($sql);
+         $file_old_name = fetch_row($sql)['img_id'];
+         return $file_old_name;
+      }
      // print_r($_FILES);
      // print_r($_POST["list_file_del"]);
       $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
@@ -962,7 +986,7 @@
       //
       //$image_str = isset($_REQUEST["image_str"]) ? $_REQUEST["image_str"] : null;
       if($status == 'Delete') {
-         $success = "Bạn đã Delete dữ liệu thành công";
+         $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
          ajax_db_update_by_id('product_info',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
       } else if($status == "Insert") {
@@ -1049,64 +1073,67 @@
          $list_file_del_length = count($list_file_del);
          for($i = 0 ; $i < count($list_file_del) ; $i++) {
             if(strpos($list_file_del[$i],"_del") !== false) {
-               $i_order = explode("_",$list_file_del[$i])[0];
-               $file_old_name = getFileUpload($i_order,$id);
+               $img_order = explode("_",$list_file_del[$i])[0];
+               $file_old_name = getFileUpload($img_order,$id);
                if(file_exists($file_old_name)) {
                   unlink($file_old_name);
                   chmod($dir, 0777);
                }
-               $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $i_order";
+               $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $img_order";
                db_query($sql_delete_file);
                array_splice($list_file_del,$i, 1);
                $i--;
             }
          }
          //print_r($list_file_del);
-         if(count($_FILES['img']['name']) > 0) {
-            $file_old_name = "";
-            $__arr = [];
-            $i = 0;
-            $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
-            foreach($_FILES['img']['error'] as $key => $error) {
-               if($error == UPLOAD_ERR_OK) {
-                  $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
-                  $file_name = md5(rand(1,999999999)). "." . $ext;
-                  $file_name = str_replace("_","",$file_name);
-                  $path = $dir . "/" . $file_name ;
-                  if(strpos($list_file_del[$i],"_ins") !== false) {
-                     move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                     @chmod($dir, 0777);
-                     $j = explode("_",$list_file_del[$i])[0];
-                     //print_r($j)
-                     array_push($__arr,"('$id','$path',$j)");
-                     //print_r($__arr);
-                  } else if(strpos($list_file_del[$i],"_upt") !== false) {
-                     $i_order = explode("_",$list_file_del[$i])[0];
-                     $file_old_name = getFileUpload($i_order,$id);
-                     if(file_exists($file_old_name)) {
-                        unlink($file_old_name);
-                        chmod($dir, 0777);
+         if(isset($_FILES['img'])) {
+            if(count($_FILES['img']['name']) > 0) {
+               $file_old_name = "";
+               $__arr = [];
+               $i = 0;
+               $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
+               foreach($_FILES['img']['error'] as $key => $error) {
+                  if($error == UPLOAD_ERR_OK) {
+                     $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
+                     $file_name = md5(rand(1,999999999)). "." . $ext;
+                     $file_name = str_replace("_","",$file_name);
+                     $path = $dir . "/" . $file_name ;
+                     if(strpos($list_file_del[$i],"_ins") !== false) {
+                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                        @chmod($dir, 0777);
+                        $j = explode("_",$list_file_del[$i])[0];
+                        //print_r($j)
+                        array_push($__arr,"('$id','$path',$j)");
+                        //print_r($__arr);
+                     } else if(strpos($list_file_del[$i],"_upt") !== false) {
+                        $img_order = explode("_",$list_file_del[$i])[0];
+                        $file_old_name = getFileUpload($img_order,$id);
+                        if(file_exists($file_old_name)) {
+                           unlink($file_old_name);
+                           chmod($dir, 0777);
+                        }
+                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                        @chmod($dir, 0777);
+                        $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and img_order='$img_order'";
+                        db_query($sql_update_file);
                      }
-                     move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                     @chmod($dir, 0777);
-                     $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and i_order='$i_order'";
-                     db_query($sql_update_file);
-                  }
-               } 
-               $i++;
-            }
-            if(count($__arr) > 0) {
-               $sql .= implode(",",$__arr);
-               //print_r($sql);
-               db_query($sql);
+                  } 
+                  $i++;
+               }
+               if(count($__arr) > 0) {
+                  $sql .= implode(",",$__arr);
+                  //print_r($sql);
+                  db_query($sql);
+               }
             }
          }
+         
          if($image) {
             db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>$image],[$id]);
          } else {
             db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price],[$id]);
          }
-         $success = "Update dữ liệu thành công.";
+         $success = "Sửa dữ liệu thành công.";
          $sql_get_file_name = "select img_name from product_info where id = ?";
          $image = fetch_row($sql_get_file_name,[$id]);
          if($image) {
