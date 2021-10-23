@@ -19,6 +19,7 @@
         <link rel="stylesheet" href="css/magnific-popup.min.css">
         <link rel="stylesheet" href="css/star-rating.min.css">
         <link rel="stylesheet" href="css/theme.min.css">
+        <link rel="stylesheet" href="css/jquery-confirm.min.css">
 
         <!-- Theme CSS -->
         <link rel="stylesheet" href="css/theme.css">

@@ -403,8 +403,8 @@
                             html += `<td>${data.username}</td>`;
                             html += `<td>${data.created_at}</td>`;
                             html += `<td>`;
-                            html += `<button class="btn-update-user btn btn-primary" data-id="${data.id}">Sửa</button>`;
-                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${data.id}">Xoá</button>`;
+                            html += `<button class="btn-update-user btn btn-primary" data-id="${data.id}" data-number="${data.number}">Sửa</button>`;
+                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${data.id}" data-number="${data.number}">Xoá</button>`;
                             html += `</td>`;
                             html += `</tr>`;
                             $.alert({

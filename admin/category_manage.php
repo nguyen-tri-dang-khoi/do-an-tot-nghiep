@@ -26,9 +26,9 @@
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <!-- /.row -->
-<div class="container-wrapper">
+<div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
-    <section class="content content-wrapper">
+    <section class="content">
       <div class="row">
         <div class="col-12">
           <div class="card">
@@ -191,12 +191,8 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
-    <!-- /.modal-content -->
   </div>
-  <!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
-<!--html & css section end-->
 <?php
     // js lib
     include_once("include/bottom.meta.php");
@@ -263,8 +259,24 @@
         let number = max_number;
         max_number++;
         console.log(number);
-        $('#form-loai-san-pham').load("ajax_category_manage.php?parent_id=<?=$parent_id;?>" + "&status=Insert&number=" + number,() => {
-          $('#modal-xl').modal('show');
+        $.ajax({
+            url: "ajax_get_number.php",
+            type: "POST",
+            data: {
+              status: "count_pt",
+              parent_id: '<?=$parent_id;?>',
+            },
+            success:function(data){
+              data = JSON.parse(data);
+              if(data.msg == 'ok') {
+                number = parseInt(data.count) + 1;
+                $('#form-loai-san-pham').load("ajax_category_manage.php?parent_id=<?=$parent_id;?>" + "&status=Insert&number=" + number,() => {
+                  $('#modal-xl').modal('show');
+                });
+              }
+            },error:function(data){
+              console.log("Error:" + data);
+            }
         });
       });
       // sửa loại sản phẩm
@@ -379,10 +391,8 @@
                     content: "Sửa loại sản phẩm thành công"
                   });
                   let one_row = dt_pt.row(click_number).data();
-                  one_row[0] = `${res_json.number}`;
                   one_row[1] = `${res_json.name}`;
                   dt_pt.row(click_number).data(one_row).draw();
-                  
                 }
               } else {
                 $.alert({

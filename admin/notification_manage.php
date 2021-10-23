@@ -581,39 +581,37 @@
       // Insert san pham
       var click_number;
       $(document).on('click','#btn-them-bang-tin',function(event){
-         let number = parseInt($('tbody tr').length) + 1;
          click_number = $(this).closest('tr');
-         $('#form-bang-tin').load("ajax_notification.php?number=" + number,() => {
-            $('#modal-xl').modal('show');
-            $('#btn-luu-bang-tin').text("Thêm");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120});
-               },100);
-               /*$(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     //console.log("nufew");
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     //console.log(id);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                        $("#breadcrumb-menu").parent().css({"margin-top":"-25px"});
+         let number;
+         $.ajax({
+            url: "ajax_get_number.php",
+            type: "POST",
+            data: {
+               status: "count_n",
+            },
+            success:function(data){
+               data = JSON.parse(data);
+               if(data.msg == 'ok'){
+                  number = parseInt(data.count) + 1;
+                  $('#form-bang-tin').load("ajax_notification.php?number=" + number,() => {
+                     $('#modal-xl').modal('show');
+                     $('#btn-luu-bang-tin').text("Thêm");
+                     $(function(){
+                        setTimeout(() => {
+                           $('#summernote').summernote({height: 120});
+                        },100);
+                        init_map_file();
                      });
-                  }
-               })*/
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
+                     $("#fileInput").on("change",function(){
+                        $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+                        readURL(this); 
+                     });
+                  });
+               }
+            },
+            error:function(data){
+               console.log("Error:" + data);
+            }
          });
       });
       // Update sản phẩm
@@ -628,72 +626,12 @@
                setTimeout(() => {
                   $('#summernote').summernote({height: 120});
                },100);
-               /*$(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                        $("#breadcrumb-menu").parent().css({"margin-top":"-25px"});
-                     });
-                  }
-               })*/
                init_map_file();
             });
             $("#fileInput").on("change",function(){
                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
                readURL(this); 
             });
-         });
-      });
-      // Delete sản phẩm
-      $(document).on('click','.btn-xoa-bang-tin',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         click_number = $(this).closest('tr');
-         $.confirm({
-            title: 'Thông báo',
-            content: 'Bạn có chắc chắn muốn xoá bảng tin này ?',
-            buttons: {
-               Có: function () {
-                  $.ajax({
-                     url:window.location.href,
-                     type:"POST",
-                     cache:false,
-                     data:{
-                        token: "<?php echo_token(); ?>",
-                        id: id,
-                        status: "Delete",
-                     },
-                     success:function(res){
-                        console.log(res);
-                        res_json = JSON.parse(res);
-                        if(res_json.msg == "ok") {
-                           arr_input_file = new Map();
-                           arr_list_file_del = [];
-                           $.alert({
-                              title: "Thông báo",
-                              content: res_json.success
-                           });
-                           dt_n.row(click_number).remove().draw();
-                        } else {
-                           $.alert({
-                              title: "Thông báo",
-                              content: res_json.error
-                           });
-                        }
-                     }
-                  });
-               },
-               Không: function () {
-
-               },
-            }
          });
       });
       // xử lý thao tác Insert Update
@@ -704,14 +642,13 @@
          formData.append('token',"<?php echo_token(); ?>");
          formData.append('id',$('input[name=id]').val());
          formData.append('title',$('input[name=title]').val());
+         formData.append('number',$('input[name=number]').val());
          formData.append('content',$('#summernote').summernote('code'));
          formData.append('status',$('#btn-luu-bang-tin').attr('data-status').trim());
          if(status == "Insert"){
-               game();
-               number = parseInt($('tbody tr').length) + parseInt(number);
+            game();
          } else {
-               gameChange();
-               number = $('tbody tr td:first-child').text();
+            gameChange();
          }
          formData.append('list_file_del',$('input[name="list_file_del"]').val());
          let img = document.getElementsByName('img[]');
@@ -750,10 +687,10 @@
                            <td>0</td>
                            <td>${res_json.created_at}</td>
                            <td>
-                              <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" class="btn-sua-bang-tin btn btn-primary">
+                              <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" data-number="${res_json.number}" class="btn-sua-bang-tin btn btn-primary">
                                  Sửa
                               </button>
-                              <button data-id="${res_json.id}" style="margin-left:3px;" class="btn-xoa-bang-tin btn btn-danger">
+                              <button data-id="${res_json.id}" data-number="${res_json.number}" style="margin-left:3px;" class="btn-xoa-bang-tin btn btn-danger">
                                  Xoá
                               </button>
                            </td>
@@ -779,11 +716,10 @@
                         console.log(res_json);
                         msg = "Sửa dữ liệu thành công.";
                         $.alert({
-                              title: "Thông báo",
-                              content: msg
+                           title: "Thông báo",
+                           content: msg
                         });
                         let one_row = dt_n.row(click_number).data();
-                        one_row[0] = `${res_json.number}`;
                         one_row[1] = `${res_json.title}`;
                         one_row[2] = `${res_json.content}`;
                         dt_n.row(click_number).data(one_row).draw();
@@ -824,7 +760,7 @@
       cssStyle: 'light-theme'
     });
   });
-</script>905
+</script>
 <script>
    $(function(){
       $('.breadcrumb-item').click(function(){
@@ -846,8 +782,6 @@
          $file_old_name = fetch_row($sql)['img_id'];
          return $file_old_name;
       }
-     // print_r($_FILES);
-     // print_r($_POST["list_file_del"]);
       $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
       $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
       $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;

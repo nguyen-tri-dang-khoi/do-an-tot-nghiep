@@ -6,7 +6,7 @@
                 <div class="header-column">
                     <div class="header-row">
                         <div class="header-logo">
-                            <a href="index.php"><img alt="Porto" width="100" height="48" data-sticky-width="82" data-sticky-height="40" data-sticky-top="0" src="img/logo-default-slim.png"></a>
+                            <a href="index.php"><img alt="Porto" width="100" height="48" data-sticky-width="82" data-sticky-height="40" data-sticky-top="0" src="img/image.png"></a>
                         </div>
                     </div>
                 </div>
@@ -951,12 +951,18 @@
                             <?php
                                 if(!isset($_SESSION['isUserLoggedIn']) || $_SESSION['isUserLoggedIn'] == false) {
                             ?>
-                                    <a href="login.php">Login</a>
-                                    <a class="ml-10 mr-10" href="register.php">Register</a>
+                                    <a href="login.php">Đăng nhập</a>
+                                    <a class="ml-10 mr-10" href="register.php">Đăng ký</a>
                             <?php
                                 } else {
                             ?>
-                                    <p style="margin-bottom:0px;">Xin chào, <?=$_SESSION['username']?></p>
+                                    <p style="margin-bottom:0px;margin-right:7px;">Xin chào, <?=$_SESSION['username']?>
+                                        
+                                    </p>
+                                    <div class="sample-icon ml-5">
+                                        <a href="logout.php"><i class="icon-logout icons"></i><span class="name"></span></a>
+                                    </div>
+
                             <?php
                                 }
                             ?>

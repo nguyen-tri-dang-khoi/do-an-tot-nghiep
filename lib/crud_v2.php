@@ -1,6 +1,6 @@
 <?php
     function sql_query($sql = "",$__arr = []) {
-        print_r($sql);
+        //print_r($sql);
         $pdo = $GLOBALS['link']->prepare($sql);
         if($pdo->execute($__arr)) return $pdo;
         return false;   

@@ -598,7 +598,7 @@
         let count = $('input[name=so_luong]').val();
         let price = $('input[name=don_gia]').val();
         let description = $('#summernote').summernote('code');
-        /*if(name.trim() == "") {
+        if(name.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Tên sản phẩm không được để trống"
@@ -607,7 +607,7 @@
         } else if(category.trim() == "") {
 			$.alert({
 				title: "Thông báo",
-				content: "Phân loại sản phẩm không được để trống"
+				content: "Danh mục sản phẩm không được để trống"
 			 });
          test = false;
         } else if(count.trim() == "") {
@@ -628,8 +628,7 @@
 				content: "Mô tả sản phẩm không được để trống"
 			 });
          test = false;
-        }*/
-         test = true;
+        }
          return test;
       }
       $('#file_input_anh_mo_ta').on('change', function() {
@@ -638,43 +637,62 @@
       // Insert san pham
       var click_number;
       $(document).on('click','#btn-them-san-pham',function(event){
-         let number = parseInt($('tbody tr').length) + 1;
-         click_number = $(this).closest('tr');
-         $('#form-san-pham').load("ajax_product_info.php?number=" + number,() => {
-            $('#modal-xl').modal('show');
-            $('#btn-luu-san-pham').text("Thêm");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120});
-               },100);
-               $(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     //console.log("nufew");
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     //console.log(id);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                        $("#breadcrumb-menu").parent().css({"margin-top":"-25px"});
+         let number;
+         $.ajax({
+            url: "ajax_get_number.php",
+            type: "POST",
+            data: {
+               status: "count_pi",
+            },
+            success:function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == 'ok') {
+                  number = parseInt(data.count) + 1;
+                  console.log(number);
+                  click_number = $(this).closest('tr');
+                  $('#form-san-pham').load("ajax_product_info.php?number=" + number,() => {
+                     $('#modal-xl').modal('show');
+                     $('#btn-luu-san-pham').text("Thêm");
+                     $(function(){
+                        setTimeout(() => {
+                           $('#summernote').summernote({height: 120});
+                        },100);
+                        $(".parent[data-id]").click(function(e){
+                           let child = $(e.currentTarget).find('li').length;
+                           if(!child){
+                              //console.log("nufew");
+                              let id = $(e.currentTarget).attr('data-id');
+                              let name = $(e.currentTarget).text();
+                              name = name.substr(0,name.length - 1);
+                              console.log(name);
+                              //console.log(id);
+                              $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
+                                 $("input[name='category_id']").val(id);
+                                 $("input[name='category_name']").val(name);
+                                 $("#breadcrumb-menu").empty();
+                                 $("#breadcrumb-menu").append(data);
+                                 $("#breadcrumb-menu").parent().css({"margin-top":"-25px"});
+                              });
+                           }
+                        })
+                        init_map_file();
                      });
-                  }
-               })
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
-            $('#file_input_anh_mo_ta').on('change', function() {
-               imagesPreview(this,'#image_preview');
-            });
+                     $("#fileInput").on("change",function(){
+                        $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+                        readURL(this); 
+                     });
+                     $('#file_input_anh_mo_ta').on('change', function() {
+                        imagesPreview(this,'#image_preview');
+                     });
+                  });
+               }
+            },
+            error:function(data){
+               console.log("Error:" + data);
+            }
          });
+         
       });
       // Update sản phẩm
       $(document).on('click','.btn-sua-san-pham',function(event){
@@ -814,21 +832,21 @@
          event.preventDefault();
          let formData = new FormData($('#form-san-pham')[0]);
          let number = 1;
+         console.log($('input[name=number]').val());
          formData.append('token',"<?php echo_token(); ?>");
          formData.append('id',$('input[name=id]').val());
          formData.append('name',$('input[name=ten_san_pham]').val());
          formData.append('description',$('#summernote').summernote('code'));
          formData.append('count',$('input[name=so_luong]').val());
+         formData.append('number',$('input[name=number]').val());
          formData.append('price',$('input[name=don_gia]').val());
          formData.append('category_id',$("input[name='category_id']").val());
          formData.append('category_name',$("input[name='category_name']").val());
          formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
          if(status == "Insert"){
             game();
-            number = parseInt($('tbody tr').length) + parseInt(number);
          } else {
             gameChange();
-            number = $('tbody tr td:first-child').text();
          }
          formData.append('list_file_del',$('input[name="list_file_del"]').val());
          let img = document.getElementsByName('img[]');
@@ -868,10 +886,10 @@
                            <td>${res_json.category_name}</td>
                            <td>${res_json.created_at}</td>
                            <td>
-                              <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" class="btn-sua-san-pham btn btn-primary">
+                              <button data-number="${res_json.number}" data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" class="btn-sua-san-pham btn btn-primary">
                                  Sửa
                               </button>
-                              <button data-id="${res_json.id}" style="margin-left:3px;" class="btn-xoa-san-pham btn btn-danger">
+                              <button data-number="${res_json.number}" data-id="${res_json.id}" style="margin-left:3px;" class="btn-xoa-san-pham btn btn-danger">
                                  Xoá
                               </button>
                            </td>
@@ -880,7 +898,7 @@
                      record = $(record);
                      let msg ="";
                      if(status == "Insert"){
-                        $('#list-san-pham').prepend(record);
+                        //$('#list-san-pham').prepend(record);
                         setTimeout(() => {
                            $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
                         },1000);

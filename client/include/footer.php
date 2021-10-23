@@ -2,24 +2,24 @@
     <div class="container">
         <div class="row py-4 my-5">
             <div class="col-md-6 col-lg-3 mb-5 mb-lg-0">
-                <h5 class="text-4 text-color-light mb-3">CONTACT INFO</h5>
+                <h5 class="text-4 text-color-light mb-3">Liên hệ</h5>
                 <ul class="list list-unstyled">
                     <li class="pb-1 mb-2">
-                        <span class="d-block font-weight-normal line-height-1 text-color-light">ADDRESS</span> 
+                        <span class="d-block font-weight-normal line-height-1 text-color-light">Địa chỉ</span> 
                         1234 Street Name, City, State, USA
                     </li>
                     <li class="pb-1 mb-2">
-                        <span class="d-block font-weight-normal line-height-1 text-color-light">PHONE</span>
+                        <span class="d-block font-weight-normal line-height-1 text-color-light">Số điện thoại</span>
                         <a href="tel:+1234567890">Toll Free (123) 456-7890</a>
                     </li>
                     <li class="pb-1 mb-2">
                         <span class="d-block font-weight-normal line-height-1 text-color-light">EMAIL</span>
                         <a href="mailto:mail@example.com">mail@example.com</a>
                     </li>
-                    <li class="pb-1 mb-2">
+                    <!--<li class="pb-1 mb-2">
                         <span class="d-block font-weight-normal line-height-1 text-color-light">WORKING DAYS/HOURS </span>
                         Mon - Sun / 9:00AM - 8:00PM
-                    </li>
+                    </li>-->
                 </ul>
                 <ul class="social-icons social-icons-clean-with-border social-icons-medium">
                     <li class="social-icons-instagram">
@@ -47,7 +47,7 @@
                 </ul>
             </div>
             <div class="col-md-6 col-lg-4 mb-5 mb-md-0">
-                <h5 class="text-4 text-color-light mb-3">RECENT NEWS</h5>
+                <h5 class="text-4 text-color-light mb-3">Hỗ trợ phương thức thanh toán</h5>
                 <article class="mb-3">
                     <a href="blog-post.html" class="text-color-light text-3-5">Why should I buy a Web Template?</a>
                     <p class="line-height-2 mb-0"><a href="#">Nov 25, 2020</a> in <a href="#">Design,</a> <a href="#">Coding</a></p>
@@ -87,7 +87,7 @@
         <div class="footer-copyright footer-copyright-style-2 pt-4 pb-5">
             <div class="row">
                 <div class="col-12 text-center">
-                    <p class="mb-0">Porto Template © 2021. All Rights Reserved</p>
+                    <p class="mb-0">techshop © 2021. All Rights Reserved</p>
                 </div>
             </div>
         </div>

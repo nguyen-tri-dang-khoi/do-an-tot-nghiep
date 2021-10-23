@@ -1,6 +1,7 @@
 <?php
     include_once("../lib/database.php");
     $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
+    $number2 = $number;
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     if($id) {
         $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
@@ -36,7 +37,6 @@
                 <?=generate_breadcrumb_menus($result['pi_type_id']);?>
             </nav>
         </div>
-        
         <input type="hidden" name="category_id" value="<?=$result['pi_type_id'];?>">
         <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
     </div>
@@ -141,7 +141,6 @@
                 <button type="button" class="kh-btn-append-file" onclick="addFileInputChange('.kh-file-list:last-child')">+</button>
             </div>
         </div>
-
     </div>
     <div class="form-group" style="width:100%;">
         <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
@@ -187,8 +186,8 @@
             <nav id="breadcrumb-menu" class="col-md-6" aria-label="breadcrumb"></nav>
         </div>
         
-        <input type="hidden" name="category_id">
-        <input type="hidden" name="category_name">
+        <input type="hidden" name="category_id" value="">
+        <input type="hidden" name="category_name" value="">
     </div>
     <div class="row">
         <div class="col-md-6 form-group">
@@ -235,7 +234,7 @@
     </div>
 </div>
 <input type="hidden" name="token" value="<?php echo_token();?>">
-<input type="hidden" name="number" value="<?=$number;?>">
+<input type="hidden" name="number" value="<?=$number2;?>">
 <div class="card-footer">
     <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="btn btn-primary">Đăng sản phẩm lên</button>
     <input type="hidden" name="id" >      

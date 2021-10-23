@@ -15,6 +15,7 @@
 <script src="js/star-rating.min.js"></script>
 <script src="js/theme.min.js"></script>
 <script src="js/jquery.countdown.min.js"></script>
+<script src="js/jquery-confirm.min.js"></script>
 
 <!-- Theme Base, Components and Settings -->
 <script src="js/theme.js"></script>

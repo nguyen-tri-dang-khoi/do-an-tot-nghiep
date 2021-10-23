@@ -195,8 +195,9 @@
 <script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
 <script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
 <script>
+    var dt_order;
     $(document).ready(function (e) {
-        $("#m-order").DataTable({
+      dt_order = $("#m-order").DataTable({
           "language": {
             "emptyTable": "Không có dữ liệu",
             "sZeroRecords": 'Không tìm thấy kết quả',
@@ -229,7 +230,8 @@
               "text": "Ẩn / Hiện cột",
             }
           ]
-        }).buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
+        });
+        dt_order.buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
     });
 </script>
 

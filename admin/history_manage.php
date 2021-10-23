@@ -31,9 +31,9 @@
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <!-- /.row -->
-<div class="container-wrapper">
+<div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
-    <section class="content content-wrapper">
+    <section class="content">
       <div class="row">
         <div class="col-12">
           <div class="card">

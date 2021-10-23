@@ -2,10 +2,6 @@
   $url = get_url_current_page();
 ?>
 <style>
-  *:focus {
-      outline: 0 !important;
-  }
-
   .kh-active {
     background-color: #494e53;
     

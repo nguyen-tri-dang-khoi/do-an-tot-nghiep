@@ -20,6 +20,9 @@
 	<!--khoi.css-->
 	<link rel="stylesheet" href="css/khoi.css">
     <style>
+        *:focus {
+            outline: 0 !important;
+        }
         .center {
             display:flex;
             justify-content:center;
@@ -30,6 +33,6 @@
     </style>
 </head>
 <body class="">
-<div class="wrapper <?php if(strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">
+<div class="wrapper <?php if(strpos(get_url_current_page(),"reset_password.php") || strpos(get_url_current_page(),"forgive_password.php") || strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">
 
     

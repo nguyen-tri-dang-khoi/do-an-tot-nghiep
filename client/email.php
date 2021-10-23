@@ -3,7 +3,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 require '../lib/vendor/autoload.php';
-function sendEmail($html,$email,$subject = "tech-shop@x10host.com"){
+function sendEmail($html,$email,$subject = "tech-shop-user@x10host.com"){
     $mail = new PHPMailer(true);
     //Server settings
     //$mail->SMTPDebug = SMTP::DEBUG_SERVER;

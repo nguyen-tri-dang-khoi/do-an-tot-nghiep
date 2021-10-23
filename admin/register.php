@@ -63,6 +63,8 @@
                     </div>
                     <div class="text-danger"></div>
                 </div>
+                
+                
                 <input type="hidden" name="token" value="<?php echo_token();?>">
                 <div class="row">
                     <div class="col-4">
@@ -123,7 +125,7 @@
             test = false;
         }
         return test;
-     }
+    }
 </script>
 <!--js section end-->
 <?php
@@ -143,11 +145,17 @@
         if(!isset($_SESSION["error"]))
         {
             $password = password_hash($password,PASSWORD_DEFAULT);
-            if(db_insert('user',['email'=>$email,'username'=>$username,'password'=>$password]))
-            {
-                header("location:login.php");
-                exit();
-            }
+            //$id = db_insert_id('user',['username'=>$username,'password'=>$password]);
+            $time = Date("d-m-Y h:i:s",time());
+            $hidden_key = "&!239yhf98@";
+            $rand = rand(0,999999);
+            $md5_str = md5($email.$time.$rand.$hidden_key);
+            setcookie("verify",$md5_str,time() + 600,"/");
+            setcookie("cookie_username",$username,time() + 600,"/");
+            setcookie("cookie_password",$password,time() + 600,"/");
+            setcookie("cookie_email",$email,time() + 600,"/");
+            header("location:email_tmp_verify.php?email={$email}");
+            exit();
         }
         header("location:register.php");
     }
