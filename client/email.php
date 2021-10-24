@@ -25,7 +25,8 @@ function sendEmail($html,$email,$subject = "tech-shop-user@x10host.com"){
 }
 function sendMailOk($html,$email,$subject = "tech-shop-user@x10host.com") {
     $header = "MIME-Version: 1.0" . "\r\n";
-    $header .= "Content-type;text/html;charset=UTF-8" . "\r\n" . "Reply-To:" . "nguyentridangkhoi@gmail.com" . "\r\n" . "X-Mailer: PHP/'" . phpversion();
+    $header .= "Content-type;text/html;charset=UTF-8" . "\r\n" ;
+    $header .= 'From:' . "nguyentridangkhoi@gmail.com" . "<" . "nguyentridangkhoi@gmail.com" . ">" .  "Reply-To:" . "nguyentridangkhoi@gmail.com" . "\r\n" . "X-Mailer: PHP/'" . phpversion();
     $result = mail($email,$subject,$html,$header);
     return $result;
 }
