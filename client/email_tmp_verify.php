@@ -4,7 +4,11 @@
         include_once("email.php");
         $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
         $verify = isset($_REQUEST['u_verify']) ? $_REQUEST['u_verify'] : null;
-        $link_mail = "http://localhost/project/client/email_tmp_verify.php?u_verify={$_COOKIE['u_verify']}";
+        if(strpos(get_url_current_page(),'tech-shop') !== false) {
+          $link_mail =  "https://tech-shop.x10host.com/client/email_tmp_verify.php?u_verify={$_COOKIE['u_verify']}";
+        } else {
+          $link_mail =  "http://localhost/project/client/email_tmp_verify.php?u_verify={$_COOKIE['u_verify']}";
+        }
         $alert= "";
         $login ="location.href='login.php';";
         $register ="location.href='register.php';";
