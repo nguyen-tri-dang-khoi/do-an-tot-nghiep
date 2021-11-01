@@ -2,7 +2,6 @@
     include_once("../lib/database_v2.php");
     redirect_if_login_status_false();
     if(is_get_method()) {
-        
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         // code to be executed get method
@@ -53,7 +52,7 @@
                         <div class="col-12" style="padding-right:0px;padding-left:0px;">
                             <form style="margin-bottom: 17px;display:flex;" action="<?php echo get_url_current_page();?>" method="get">
                                 <div class="">
-                                    <select class="form-control" name="type">
+                                    <select class="form-control" name="search_option">
                                         <option value="">Chọn cột tìm kiếm</option>
                                         <option value="fullname" <?=$search_option == 'fullname' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
                                         <option value="address" <?=$search_option == 'address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
@@ -75,7 +74,7 @@
 							$str_get = http_build_query($get);
 							// query
                             $arr_paras = [];
-                            $where = "where 1 = 1 and is_delete = 0 and is_lock = 0";
+                            $where .= " and is_delete = 0 and is_lock = 0";
                             $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
                             if($keyword) {
                                 $where .= "";

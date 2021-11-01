@@ -59,7 +59,7 @@
             </div>
             <div class="col-md-6 form-group">
                 <label for="password">Mật khẩu</label>
-                <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập">
+                <input type="password" class="form-control" value="" id="password" placeholder="Nhập mật khẩu đăng nhập">
             </div>
         </div>
     </div>
@@ -122,7 +122,7 @@
         </div>
         <div class="col-md-6 form-group">
             <label for="password">Mật khẩu</label>
-            <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập">
+            <input type="password" class="form-control" value="" id="password" placeholder="Nhập mật khẩu đăng nhập">
         </div>
     </div>
 </div>

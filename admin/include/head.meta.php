@@ -33,6 +33,6 @@
     </style>
 </head>
 <body class="">
-<div class="wrapper <?php if(strpos(get_url_current_page(),"reset_password.php") || strpos(get_url_current_page(),"forgive_password.php") || strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">
+<div style="min-width:fit-content;margin-right:0px;" class="wrapper <?php if(strpos(get_url_current_page(),"reset_password.php") || strpos(get_url_current_page(),"forgive_password.php") || strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">
 
     

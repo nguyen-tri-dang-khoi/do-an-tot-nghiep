@@ -91,8 +91,8 @@
                             $total = fetch_row($sql_get_total,$arr_paras)['countt'];
                             array_push($arr_paras,$start_page);
                             array_push($arr_paras,$limit);
-                            $sql_get_user = "select * from user $where limit ?,?";
-                            print_r($sql_get_user);
+                            $sql_get_user = "select * from user $where order by id desc limit ?,? ";
+                            //print_r($sql_get_user);
                             /*print_r($arr_paras);*/
 							$cnt=0;
                             $rows = db_query($sql_get_user,$arr_paras);
@@ -245,7 +245,7 @@
         // validate
         const validate = () => {
             let test = true;
-            /*let full_name = $('#full_name').val();
+            let full_name = $('#full_name').val();
             let email = $('#email').val();
             let cmnd = $('#email').val();
             let phone = $('#phone').val();
@@ -302,7 +302,6 @@
                 });
                 test = false;
             }
-            test = true;*/
             return test;
         };
         // show image
@@ -318,24 +317,41 @@
         // mở modal thêm dữ liệu
         var click_number;
         $(document).on('click','#btn-add-user',(e) => {
-            let number = parseInt($('tbody tr').length) + 1;
-            $('#manage_user').load("ajax_user.php?number=" + number,() => {
-                $('#modal-xl').modal('show');
-                $("#birthday").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+            let number;
+            $.ajax({
+                url: "ajax_get_number.php",
+                type: "POST",
+                data: {
+                    status: "count_user",
+                },
+                success:function(data){
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        number = parseInt(data.count) + 1;
+                        console.log(number);
+                        $('#manage_user').load("ajax_user.php?number=" + number,() => {
+                            $('#modal-xl').modal('show');
+                            $("#birthday").datepicker({
+                                changeMonth: true,
+                                changeYear: true,
+                                dateFormat: 'dd-mm-yy',
+                                onSelect: function(dateText,inst) {
+                                    console.log(dateText.split("-"));
+                                    dateText = dateText.split("-");
+                                    $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+                                }
+                            });
+                            $("#fileInput").on("change",function(){
+                                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+                                readURL(this); 
+                            });
+                        })
                     }
-                });
-                $("#fileInput").on("change",function(){
-                    $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-                    readURL(this); 
-                });
-            })
+                },
+                error: function(data) {
+                    console.log("Error:" + data);
+                }
+            });
         });
         // mở modal sửa dữ liệu
         $(document).on('click','.btn-update-user',function(e) {  

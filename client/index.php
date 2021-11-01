@@ -67,16 +67,16 @@
 							<div class="d-flex justify-content-between">
 								<div>
 									<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">electronics</a>
-									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="shop-product-sidebar-right.html" class="text-color-dark text-color-hover-primary"><?=$res['name'];?></a></h3>
+									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="product_detail.php?id=<?=$res['id']?>" class="text-color-dark text-color-hover-primary"><?=$res['name'];?></a></h3>
 								</div>
-								<!--<a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="far fa-heart"></i></a>-->
+								<a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="far fa-heart"></i></a>
 							</div>
 							<div title="Rated 5 out of 5">
 								<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
 							</div>
 							<p class="price text-5 mb-3">
 								<!--<span class="sale text-color-dark font-weight-semi-bold"></span>-->
-								<span class="amount"><?=$res['price']?></span>
+								<span class="amount"><?=$res['price']?> VNĐ</span>
 							</p>
 						</div>
 					</div>

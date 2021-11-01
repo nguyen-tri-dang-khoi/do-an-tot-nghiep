@@ -7,6 +7,7 @@
       // code to be executed get method
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
       $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+      $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
       $where = "where 1=1 ";
       if($keyword || $keyword == 0 ) {
          if($search_option == "type") {
@@ -31,6 +32,7 @@
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+
 <style>
 	.kh-file-lists {
 		display:flex;
@@ -182,20 +184,32 @@
       float:right;
       margin-right:5px;
    }
-  /*#m-product-info_wrapper .buttons-html5 {
-    margin-right: 5px;
-    border-radius: 10px;
-    height: 30px;
-    font-size: 15px;
-    width: 58px;
-    /* font-weight: 600; */
-    /*padding-top: 3px;*/
-    /* padding: 5px; */
+   table.dataTable tr th.select-checkbox.selected::after {
+      content: "\2713";
+      margin-top: -11px;
+      margin-left: -4px;
+      text-align: center;
+      color: #9900ff;
+      
+   }
 </style>
+<style>
+   .button-red {
+      color:red;
+      border:1px solid red;
+      background-color:#fff !important;
+   }
+   .button-green {
+      color:green;
+      border:1px solid green;
+      background-color:#fff !important;
+   }
+</style>
+<link rel="stylesheet" href="css/select.dataTables.min.css">
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
     <section class="content">
-        <div class="row">
+        <div class="row" style="">
             <div class="col-12">
                <div class="card">
                   <div class="card-header" style="display: flex;justify-content: space-between;">
@@ -230,13 +244,20 @@
                            </div>
                         </form>
                      </div>
+                     <div class="col-12 mb-2" style="padding-right:0px;padding-left:0px;">
+                        <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                        <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                     </div>
                      <table id="m-product-info" class="table table-bordered table-striped">
                         <thead>
                            <tr>
+                              <th></th>
                               <th>Số thứ tự</th>
                               <th>Tên sản phẩm</th>
                               <th>Số lượng</th>
                               <th>Đơn giá</th>
+                              <?=$upt_more == 1 ? "<th>Mô tả sản phẩm</th>" : "";?>
+                              
                               <th>Phân loại sản phẩm</th>
                               <th>Ngày đăng</th>
                               <th>Thao tác</th>
@@ -246,6 +267,7 @@
                         <?php
                         // set get
                         $get = $_GET;
+                        
                         unset($get['page']);
                         $str_get = http_build_query($get);
                         // query
@@ -263,19 +285,34 @@
                            $total = fetch_row($sql_get_total,$arr_paras)['countt'];
                            array_push($arr_paras,$start_page);
                            array_push($arr_paras,$limit);
-                           $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
-                           print_r($sql_get_product);
+                           if($upt_more == 1) {
+                              $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.description as 'pi_description' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
+                           } else {
+                              $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
+                           }
+                           //print_r($sql_get_product);
                            $rows = db_query($sql_get_product,$arr_paras);
                            foreach($rows as $row) {
                            ?>
-                              <tr id="san-pham<?=$row["id"];?>">
+                              <tr id="<?=$row["id"];?>">
+                                 <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
-                                 <td><?=$row['pi_name']?></td>
-                                 <td><?=$row['count']?></td>
-                                 <td><?=$row['price']?></td>
+                                 <td>
+                                    <?= ($upt_more == 1) ? "<input type='text' name='pi_name' value='" . $row['pi_name'] . "'>" : $row['pi_name'];?>
+                                 </td>
+                                 <td>
+                                    <?=($upt_more == 1) ? "<input type='number' name='pi_count' style='width:50px;' value='" . $row['count'] . "'>" : $row['count'];?>
+                                 </td>
+                                 <td>
+                                    <?=($upt_more == 1) ? "<input type='number' name='pi_price' style='width:90px;' value='" . $row['price'] . "'>" : $row['price'];?>
+                                 </td>
+                                 <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea></td>" : "";?>
                                  <td><?=$row['pt_name']?></td>
                                  <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
                                  <td>
+                                    <?php
+                                       if($upt_more != 1) {
+                                    ?>
                                     <button class="btn-sua-san-pham btn btn-primary" data-number="<?=$total - ($start_page + $cnt);?>"
                                     data-id="<?=$row["id"];?>" >
                                     Sửa
@@ -283,6 +320,15 @@
                                     <button class="btn-xoa-san-pham btn btn-danger" data-id="<?=$row["id"];?>">
                                     Xoá
                                     </button>
+                                    <?php
+                                       } else {
+                                    ?>
+                                       <button onclick="uptThisRow()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["id"];?>">
+                                    Sửa
+                                    </button>
+                                    <?php 
+                                       } 
+                                    ?>
                                  </td>
                               </tr>
                            <?php
@@ -292,10 +338,12 @@
                         </tbody>
                         <tfoot>
                            <tr>
+                              <th></th>
                               <th>Số thứ tự</th>
                               <th>Tên sản phẩm</th>
                               <th>Số lượng</th>
                               <th>Đơn giá</th>
+                              <?=$upt_more == 1 ? "<th>Mô tả sản phẩm</th>" : "";?>
                               <th>Phân loại sản phẩm</th>
                               <th>Ngày đăng</th>
                               <th>Thao tác</th>
@@ -339,10 +387,12 @@
 <!--js section start-->
 <script src="js/summernote.min.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.select.min.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
 <script src="js/dataTables.responsive.min.js"></script>
 <script src="js/responsive.bootstrap4.min.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
+
 <script src="js/jszip.min.js"></script>
 <script src="js/pdfmake.min.js"></script>
 <script src="js/vfs_fonts.js"></script>
@@ -528,6 +578,16 @@
    var dt_pi;
    $(document).ready(function (e) {
       dt_pi = $("#m-product-info").DataTable({
+         columnDefs: [
+            { "name":"pi-checkbox",orderable: false,className: 'select-checkbox',targets: 0}, 
+         ],
+         select: {
+            style: 'os',
+            selector: 'td:first-child'
+         },
+         order: [
+            [1, 'desc']
+         ],
          "language": {
             "emptyTable": "Không có dữ liệu",
             "sZeroRecords": 'Không tìm thấy kết quả',
@@ -539,7 +599,6 @@
          "responsive": true, 
          "lengthChange": false, 
          "autoWidth": false,
-         "order": [[ 0, "desc" ]],
          "paging":false,
          "searchHighlight": true,
          "buttons": [
@@ -562,10 +621,122 @@
         ]
       })
       dt_pi.buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
+      //
+      dt_pi.on("click", "th.select-checkbox", function() {
+         if ($("th.select-checkbox").hasClass("selected")) {
+            dt_pi.rows().deselect();
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            dt_pi.rows().select();
+            $("th.select-checkbox").addClass("selected");
+         }
+      }).on("select deselect", function() {
+         if (dt_pi.rows({
+                  selected: true
+            }).count() !== dt_pi.rows().count()) {
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            $("th.select-checkbox").addClass("selected");
+         }
+      });
+      //
+      
    });
+   function delMore(){
+      let arr_del = [];
+      let _data = dt_pi.rows(".selected").select().data();
+      for(i = 0 ; i < _data.length ; i++) {
+         arr_del.push(_data[i].DT_RowId);
+      }
+      if(_data.length > 0) {
+         $.confirm({
+            title: "Thông báo",
+            content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
+            buttons: {
+               "Có": function(){
+                  $.ajax({
+                     url: window.location.href,
+                     type: "POST",
+                     data: {
+                        status: "del_more",
+                        token: "<?php echo_token(); ?>",
+                        rows: arr_del.join(","),
+                     },
+                     success: function(data){
+                        data = JSON.parse(data);
+                        if(data.msg == "ok"){
+                           $.alert({
+                              title: "Thông báo",
+                              content: "Bạn đã xoá dữ liệu thành công",
+                              buttons: {
+                                 "Ok": function(){
+                                    location.href="product_manage.php";
+                                 }
+                              }
+                           })
+                        }
+                     },error: function(data){
+                        console.log("Error:" + data);
+                     }
+                  });
+               },"Không": function(){
+
+               }
+            }
+         });
+      } else {
+         $.alert({
+            title: "Thông báo",
+            content: "Bạn chưa chọn dòng cần xoá",
+         });
+      }
+   }
+   function uptMore(){
+      let arr_del = [];
+      let _data = dt_pi.rows(".selected").select().data();
+      for(i = 0 ; i < _data.length ; i++) {
+         arr_del.push(_data[i].DT_RowId);
+      }
+      let str_arr_upt = arr_del.join(",");
+      location.href="product_manage.php?upt_more=1&str=" + str_arr_upt;
+   }
+   function uptThisRow(){
+      let name = $(event.currentTarget).closest("tr").find("td input[name='pi_name']").val();
+      let count = $(event.currentTarget).closest("tr").find("td input[name='pi_count']").val();
+      let price = $(event.currentTarget).closest("tr").find("td input[name='pi_price']").val();
+      let description = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
+      console.log(name);
+      console.log(count);
+      console.log(price);
+      console.log(description);
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         data: {
+            status: "upt_more",
+            name: name,
+            count: count,
+            price: price,
+            description: description
+         },success: function(data){
+            data = JSON.parse(data);
+            if(data.msg == "ok"){
+               $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã sửa dữ liệu thành công",
+               });
+            }
+         },error:function(data){
+            console.log("Error: " + data);
+         }
+      });
+   }
 </script>
 <script>
    $(document).ready(function(){
+      $('.t-summernote').summernote({
+         height: 1,
+      });
       const imagesPreview = (input , parent) => {
          if (input.files) {
                var filesAmount = input.files.length;
@@ -744,7 +915,6 @@
             content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
             buttons: {
                Có: function () {
-
                   $.ajax({
                      url:window.location.href,
                      type:"POST",
@@ -781,51 +951,6 @@
                },
             }
          });
-      });
-      // Delete ảnh mô tả sản phẩm
-      $(document).on('click','.btn-xoa-anh-mo-ta-san-pham',function(event){
-		   let img_id = $(this).attr('data-img_id');
-		   let product_image_id = $(event.currentTarget).attr('data-img_id');
-		   $.confirm({
-				title: 'Thông báo',
-				content: 'Bạn có chắc chắn muốn xoá ảnh này ?',
-				buttons: {
-					Có: function() {
-						if (typeof img_id !== 'undefined' && img_id !== false) {
-						   $.ajax({
-							url:window.location.href,
-							type:"POST",
-							cache:false,
-							data:{
-								token: "<?php echo_token(); ?>",
-								id: $('input[name=id]').val(),
-								product_image_id: product_image_id,
-								status: "Delete_img",
-							},
-							success:function(res){
-								res_json = JSON.parse(res);
-								if(res_json.msg == "ok") {
-									$.alert({
-										title: "Thông báo",
-										content: res.success
-									});
-									$("[data-img_id='" + product_image_id + "']").parent().remove();
-								} else {
-									$.alert({
-										title: "Thông báo",
-										content: res.error
-									});
-								}
-							}
-						   });
-						} else {
-						   $(this).parent().remove();
-						}
-					},Không: function() {
-						
-					}
-				}
-		   });
       });
       // xử lý thao tác Insert Update
       $(document).on('click','#btn-luu-san-pham',function(event){
@@ -873,10 +998,11 @@
                data:formData,
                success:function(res_json){
                   if(res_json.msg == 'ok'){
-                     arr_input_file = new Map();
+                     let status = $('#btn-luu-san-pham').attr('data-status').trim();
+                    /* arr_input_file = new Map();
                      arr_list_file_del = [];
                      $("input[name='list_file_del']").val("");
-                     let status = $('#btn-luu-san-pham').attr('data-status').trim();
+                     
                      let record = `
                         <tr id="san-pham${res_json.id}">
                            <td>${res_json.number}</td>
@@ -896,7 +1022,7 @@
                         </tr>
                      `;
                      record = $(record);
-                     let msg ="";
+                     let msg ="";*/
                      if(status == "Insert"){
                         //$('#list-san-pham').prepend(record);
                         setTimeout(() => {
@@ -905,7 +1031,12 @@
                         msg = "Thêm dữ liệu thành công.";
                         $.alert({
                            title: "Thông báo",
-                           content: msg
+                           content: msg,
+                           buttons: {
+                              Ok : function(){
+                                 location.href="product_manage.php";
+                              }
+                           }
                         });
                         dt_pi.row.add(record[0]).draw();
                         //alert(msg);
@@ -917,15 +1048,20 @@
                         msg = "Sửa dữ liệu thành công.";
                         $.alert({
                            title: "Thông báo",
-                           content: msg
+                           content: msg,
+                           buttons: {
+                              Ok : function(){
+                                 location.href="product_manage.php";
+                              }
+                           }
                         });
-                        let one_row = dt_pi.row(click_number).data();
+                        /*let one_row = dt_pi.row(click_number).data();
                         one_row[0] = `${res_json.number}`;
                         one_row[1] = `${res_json.name}`;
                         one_row[2] = `${res_json.count}`;
                         one_row[3] = `${res_json.price}`;
                         one_row[4] = `${res_json.category_name}`;
-                        dt_pi.row(click_number).data(one_row).draw();
+                        dt_pi.row(click_number).data(one_row).draw();*/
                      }
                      $('#form-san-pham').trigger('reset');
                      $("#msg_style").removeAttr('style');
@@ -1158,6 +1294,14 @@
             $image = $image['img_name'];
          }
          echo_json(["msg" => "ok","number" => $number,'success' => $success,"id" => $id,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id"=>$category_id,"image"=>$image,"price"=>$price,"count"=>$count]);
+      } else if($status == "del_more") {
+         $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
+         $rows_arr = explode(",",$rows);
+         foreach($rows_arr as $row) {
+            $sql = "Update product_info set is_delete = 1 where id = '$row'";
+            sql_query($sql);
+         }
+         echo_json(["msg" => "ok"]);
       }
    }
 ?>

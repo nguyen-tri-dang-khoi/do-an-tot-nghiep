@@ -30,7 +30,7 @@
     border-radius: 7px;
   }
 </style>
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+<nav style="transition:unset;" class="main-header navbar navbar-expand navbar-white navbar-light">
   <!-- Left navbar links -->
   <ul class="navbar-nav">
     <li class="nav-item">
@@ -167,6 +167,5 @@
       $('.main-header').css({"margin-left":"250px"});
       $('.container-wrapper').css({"margin-left":"250px"});
     }
-      
   }
 </script>

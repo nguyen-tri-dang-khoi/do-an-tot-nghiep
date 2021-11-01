@@ -8,6 +8,14 @@
         $menu = generate_multilevel_menus($connection,NULL);
         return $menu;
     }
+    function show_menu_2($connection = NULL){
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        //$connection = db_connect();
+        $menu = generate_multilevel_menus_2($connection,NULL);
+        return $menu;
+    }
     function generate_multilevel_menus($connection,$parent_id = NULL){
         $sql = "";
         $menu = "";
@@ -39,6 +47,23 @@
         }
         $menu = "<ol class='breadcrumb'>" . implode("",$__arr) . "</ol>";
         return $menu ;
+    }
+    function generate_multilevel_menus_2($connection,$parent_id = NULL){
+        $sql = "";
+        $menu = "";
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_delete = 0";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $menu .= "<li class='dropdown-submenu' data-id='" ."{$result["id"]}".  "'><a class='dropdown-item' href='#'>" . $result["name"] . "</a>";
+            $menu .= "<ul class='dropdown-menu'>" . generate_multilevel_menus_2($connection,$result["id"]) . "</ul>";
+            $menu .= "</li>";
+        }
+        return $menu;
     }
     function find_branch_by_root($id){
         $branch = "";
