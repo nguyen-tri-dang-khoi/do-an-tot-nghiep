@@ -11,7 +11,7 @@
         if(isset($_SESSION["error"])){
     ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?php echo $_SESSION["error"]; ?>
+                <?=$_SESSION["error"];?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -58,11 +58,9 @@
                                 Nhớ tôi
                             </label>
                             <input name="remember" value="y"  type="checkbox" <?=(isset($_COOKIE['co_remember']) && $_COOKIE['co_remember']=='y') ? "checked" : "";?> id="remember">
-                            
                         </div>
                     </div>
                 </div>
-                
                 <input type="hidden" name="token" value="<?php echo_token();?>">
                 <div class="row">
                     <div class="col-5">
@@ -84,12 +82,14 @@
           let email = document.getElementById('email').value;
           let password = document.getElementById('password').value;
           if(!email){
+            document.getElementById('email').focus();
             $.alert({
                 title: "Thông báo",
                 content: "Email không được để trống"
             });
             test = false;
           } else if(!password) {
+            document.getElementById('password').focus();
             $.alert({
                 title: "Thông báo",
                 content: "Mật khẩu không được để trống"
@@ -106,22 +106,27 @@
 
 <?php
     } else if (is_post_method()) {
+        $test_lock = true;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,username,email,password,img_name,paging,count(*) as 'countt' from user where email = ? limit 1";
+        $sql = "select id,username,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? limit 1";
         $row = fetch_row($sql,[$email]);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
         }
-        if($row['countt'] > 0){
+        if($row['is_lock'] == 1) {
+            $_SESSION["error"] = "Tài khoản của bạn đã bị khoá, vui lòng liên hệ admin để mở khoá tài khoản";
+            $test_lock = false;
+        }
+        if($row['countt'] > 0 && $test_lock){
             if(password_verify($password,$row["password"])){
                 $_SESSION["isLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];
-                $_SESSION["username"] = $row["username"];
+                /*$_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
-                $_SESSION["paging"] = $row["paging"];
+                $_SESSION["paging"] = $row["paging"];*/
                 if($remember) {
                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
                     setcookie("co_remember","y",time() + 3600 * 24,"/");

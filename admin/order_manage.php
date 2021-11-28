@@ -8,16 +8,22 @@
 ?>
 <!--html & css section start-->
 <style>
-    table.dataTable span.highlight {
-        background-color: #17a2b8;
-        border-radius: 5px;
-        text-align: center;
-        color: white;
-    }
+    table.dataTable tr th.select-checkbox.selected::after {
+      content: "\2713";
+      margin-top: -11px;
+      margin-left: -4px;
+      text-align: center;
+      color: #9900ff;
+   }
+   .dt-buttons {
+       float:left;
+   }
 </style>
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="css/select.dataTables.min.css">
+<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <!-- Main content -->
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
@@ -54,6 +60,7 @@
                 <table id="m-order" class="table table-bordered table-hover">
                   <thead>
                     <tr>
+                      <th></th>
 					            <th>Số thứ tự</th>
                       <th>Mã hoá đơn</th>
                       <th>Tên người dùng</th>
@@ -90,7 +97,8 @@
 				          	$cnt = 0;
                     foreach($rows as $row) {
                   ?>
-                    <tr>
+                    <tr id="<?=$row['id']?>">
+                        <td></td>
 						            <td><?=$total - ($start_page + $cnt);?></td>
                         <td><?=$row['order_id']?></td>
                         <td><?=$row['full_name']?></td>
@@ -132,6 +140,7 @@
                   </tbody>
                   <tfoot>
                     <tr>
+                      <th></th>
 					            <th>Số thứ tự</th>
                       <th>Mã hoá đơn</th>
                       <th>Tên người dùng</th>
@@ -182,9 +191,9 @@
 ?>
 <!--js section start-->
 <script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.select.min.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.responsive.min.js"></script>
-<script src="js/responsive.bootstrap4.min.js"></script>
+<script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
 <script src="js/jszip.min.js"></script>
 <script src="js/pdfmake.min.js"></script>
@@ -192,12 +201,33 @@
 <script src="js/buttons.html5.min.js"></script>
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
-<script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script src="js/dataTables.searchHighlight.min.js"></script> 
+<script src="js/jquery.highlight.js"></script>
 <script>
     var dt_order;
     $(document).ready(function (e) {
       dt_order = $("#m-order").DataTable({
+         "sDom": 'RBlfrtip',
+         columnDefs: [
+            { 
+               "name":"pi-checkbox",
+               "orderable": false,
+               "className": 'select-checkbox',
+               "targets": 0
+            },{ 
+               "name":"manipulate",
+               "orderable": false,
+               "className": 'manipulate',
+               "targets": 7
+            }, 
+         ],
+          select: {
+              style: 'os',
+              selector: 'td:first-child'
+          },
+          order: [
+              [1, 'desc']
+          ],
           "language": {
             "emptyTable": "Không có dữ liệu",
             "sZeroRecords": 'Không tìm thấy kết quả',
@@ -205,33 +235,116 @@
             "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
             "search":"Tìm kiếm trong bảng này:",   
             "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-         },
+            "select": {
+              "rows": "Đã chọn %d dòng",
+            },
+            "buttons": {
+              "copy": 'Copy',
+              "copySuccess": {
+                  1: "Bạn đã sao chép một dòng thành công",
+                  _: "Bạn đã sao chép %d dòng thành công"
+              },
+              "copyTitle": 'Thông báo',
+            }
+          },
           "responsive": true, 
           "lengthChange": false, 
           "autoWidth": false,
           "paging":false,
-          "order": [[ 0, "desc" ]],
           "searchHighlight": true,
+          "oColReorder": {
+              "bAddFixed":false
+          },
           "buttons": [
             {
-              "extend": "copy",
-              "text": "Sao chép bảng",
+                "extend": "copy",
+                "text": "Sao chép bảng (1)",
+                "key": {
+                    "key": '1',
+                },
+                "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
+
             },{
-              "extend": "excel",
+                "extend": "excel",
+                "text": "Excel (2)",
+                "key": {
+                    "key": '2',
+                },
+                "autoFilter": true,
+                "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                "title": "Dữ liệu hoá đơn trích xuất ngày <?=Date("d-m-Y",time());?>",
+                "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
             },{
-              "extend": "pdf",
+                "extend": "pdf",
+                "text": "PDF (3)",
+                "key": {
+                    "key": '3',
+                },
+                "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                "title": "Dữ liệu hoá đơn trích xuất ngày <?=Date("d-m-Y",time());?>",
+                "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
             },{
-              "extend": "csv",
+                "extend": "csv",
+                "text": "CSV (4)",
+                "key": {
+                    "key": '4',
+                },
+                "charset": 'UTF-8',
+                "bom":true,
+                "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
             },{
-              "extend": "print",
-              "text": "In bảng",
+                "extend": "print",
+                "text": "In bảng (5)",
+                "key": {
+                    "key": '5',
+                },
+                "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                "title": "Dữ liệu hoá đơn trích xuất ngày <?=Date("d-m-Y",time());?>",
+                "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
             },{
-              "extend": "colvis",
-              "text": "Ẩn / Hiện cột",
+                "extend": "colvis",
+                "text": "Ẩn / Hiện cột (7)",
+                "columns": ':not(.select-checkbox)',
+                "key": {
+                  "key": '7',
+                },
             }
           ]
         });
-        dt_order.buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
+        //
+      dt_order.buttons.exportData( {
+         columns: ':visible'
+      });
+      dt_order.on("click", "th.select-checkbox", function() {
+         if ($("th.select-checkbox").hasClass("selected")) {
+            dt_order.rows().deselect();
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            dt_order.rows().select();
+            $("th.select-checkbox").addClass("selected");
+         }
+      }).on("select deselect", function() {
+         if (dt_order.rows({
+                  selected: true
+            }).count() !== dt_order.rows().count()) {
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            $("th.select-checkbox").addClass("selected");
+         }
+      });
+      //
+      dt_order.buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
     });
 </script>
 

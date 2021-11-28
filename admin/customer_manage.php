@@ -2,6 +2,20 @@
     include_once("../lib/database_v2.php");
     redirect_if_login_status_false();
     if(is_get_method()) {
+        // permission crud for user
+        $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
+        if(check_permission_crud("customer_manage.php","read")) {
+          $allow_read = true;
+        }
+        if(check_permission_crud("customer_manage.php","update")) {
+          $allow_update = true;
+        }
+        if(check_permission_crud("customer_manage.php","delete")) {
+          $allow_delete = true;
+        }
+        if(check_permission_crud("customer_manage.php","insert")) {
+          $allow_insert = true;
+        }
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         // code to be executed get method
@@ -27,17 +41,12 @@
         }
 ?>
 <!--html & css section start-->
-<style>
-    table.dataTable span.highlight {
-        background-color: #17a2b8;
-        border-radius: 5px;
-        text-align: center;
-        color: white;
-    }
-</style>
+
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="css/select.dataTables.min.css">
+<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
         <div class="content">
@@ -53,7 +62,7 @@
                             <form style="margin-bottom: 17px;display:flex;" action="<?php echo get_url_current_page();?>" method="get">
                                 <div class="">
                                     <select class="form-control" name="search_option">
-                                        <option value="">Chọn cột tìm kiếm</option>
+                                        <option value="">Bộ lọc tìm kiếm</option>
                                         <option value="fullname" <?=$search_option == 'fullname' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
                                         <option value="address" <?=$search_option == 'address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
                                         <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
@@ -95,6 +104,7 @@
                         <table id="m-customer-table" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th></th>
                                     <th>Số thứ tự</th>
                                     <th>Tên đầy đủ</th>
                                     <th>Email</th>
@@ -108,8 +118,9 @@
                             </thead>
                             <tbody>
                             <?php foreach($rows as $row) { ?>
-                                <tr id="customer-<?=$row["id"]?>">
-                                    <th><?=$total - ($start_page + $cnt);?></th>
+                                <tr id="<?=$row["id"]?>">
+                                    <td></td>
+                                    <td><?=$total - ($start_page + $cnt);?></td>
                                     <td><?=$row["full_name"]?></td>
                                     <td><?=$row["email"]?></td>
                                     <td><?=$row["phone"]?></td>
@@ -118,11 +129,11 @@
                                     <td><?=$row["username"]?></td>
                                     <td><?=Date("d-m-Y h:i:s",strtotime($row["created_at"]));?></td>
                                     <td>
-                                        <button class="btn-update-user btn btn-primary"
+                                        <button class="btn-update-user dt-button button-green"
                                         data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>
                                         <!--<button class="btn-send-notify btn btn-secondary" data-id="<?=$row["id"];?>">Gửi thông báo
                                         </button>-->
-                                        <button class="btn-lock-user btn btn-danger" data-id="<?=$row["id"];?>">Khoá tài khoản
+                                        <button class="btn-lock-user dt-button button-red" data-id="<?=$row["id"];?>">Khoá tài khoản
                                         </button>
                                     </td>
                                 </tr>
@@ -133,6 +144,7 @@
                             </tbody>
                             <tfoot>
                                 <tr>
+                                    <th></th>
                                     <th>Số thứ tự</th>
                                     <th>Tên đầy đủ</th>
                                     <th>Email</th>
@@ -162,9 +174,9 @@
 ?>
 <!--js section start-->
 <script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.select.min.js"></script>
+<script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.responsive.min.js"></script>
-<script src="js/responsive.bootstrap4.min.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
 <script src="js/jszip.min.js"></script>
 <script src="js/pdfmake.min.js"></script>
@@ -172,11 +184,33 @@
 <script src="js/buttons.html5.min.js"></script>
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
-<script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script src="js/dataTables.searchHighlight.min.js"></script> 
+<script src="js/jquery.highlight.js"></script>
 <script>
+    var dt_customer;
     $(document).ready(function (e) {
-        $("#m-customer-table").DataTable({
+        dt_customer = $("#m-customer-table").DataTable({
+            "sDom": 'RBlfrtip',
+            columnDefs: [
+                { 
+                    "name":"pi-checkbox",
+                    "orderable": false,
+                    "className": 'select-checkbox',
+                    "targets": 0
+                },{ 
+                    "name":"manipulate",
+                    "orderable": false,
+                    "className": 'manipulate',
+                    "targets": 9
+                }, 
+            ],
+            select: {
+                style: 'os',
+                selector: 'td:first-child'
+            },
+            order: [
+                [1, 'desc']
+            ],
             "language": {
                 "emptyTable": "Không có dữ liệu",
                 "sZeroRecords": 'Không tìm thấy kết quả',
@@ -184,32 +218,115 @@
                 "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
                 "search":"Tìm kiếm trong bảng này:",   
                 "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
+                "select": {
+                    "rows": "Đã chọn %d dòng",
+                },
+                "buttons": {
+                    "copy": 'Copy',
+                    "copySuccess": {
+                        1: "Bạn đã sao chép một dòng thành công",
+                        _: "Bạn đã sao chép %d dòng thành công"
+                    },
+                    "copyTitle": 'Thông báo',
+                }
             },
             "responsive": true, 
             "lengthChange": false, 
             "autoWidth": false,
             "paging":false,
-            "order": [[ 0, "desc" ]],
             "searchHighlight": true,
+            "oColReorder": {
+                "bAddFixed":false
+            },
             "buttons": [
-            {
-                "extend": "copy",
-                "text": "Sao chép bảng",
-            },{
-                "extend": "excel",
-            },{
-                "extend": "pdf",
-            },{
-                "extend": "csv",
-            },{
-                "extend": "print",
-                "text": "In bảng",
-            },{
-                "extend": "colvis",
-                "text": "Ẩn / Hiện cột",
+                {
+                    "extend": "copy",
+                    "text": "Sao chép bảng (1)",
+                    "key": {
+                        "key": '1',
+                    },
+                    "exportOptions":{
+                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
+                    },
+                },{
+                    "extend": "excel",
+                    "text": "Excel (2)",
+                    "key": {
+                        "key": '2',
+                    },
+                    "filename": "danh_sach_khach_hang_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                    "title": "Dữ liệu khách hàng trích xuất ngày <?=Date("d-m-Y",time());?>",
+                    "exportOptions":{
+                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
+                    },
+                },{
+                    "extend": "pdf",
+                    "text": "PDF (3)",
+                    "key": {
+                        "key": '3',
+                    },
+                    "filename": "danh_sach_khach_hang_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                    "title": "Dữ liệu khách hàng trích xuất ngày <?=Date("d-m-Y",time());?>",
+                    "exportOptions":{
+                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
+                    },
+                },{
+                    "extend": "csv",
+                    "text": "CSV (4)",
+                    "charset":"UTF-8",
+                    "filename": "danh_sach_khach_hang_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                    "bom": true,
+                    "key": {
+                        "key": '4',
+                    },
+                    "exportOptions":{
+                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
+                    },
+                },{
+                    "extend": "print",
+                    "text": "In bảng (5)",
+                    "filename": "danh_sach_khach_hang_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+                    "title": "Dữ liệu khách hàng trích xuất ngày <?=Date("d-m-Y",time());?>",
+                    "key": {
+                        "key": '5',
+                    },
+                    "exportOptions":{
+                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
+                    },
+                },{
+                    "extend": "colvis",
+                    "text": "Ẩn / Hiện cột (7)",
+                    "columns": ':not(.select-checkbox)',
+                    "key": {
+                        "key": '7',
+                    },
+                }
+            ]
+        });
+        dt_customer.buttons().container().appendTo('#m-customer-table_wrapper .col-md-6:eq(0)');
+        //
+        dt_customer.buttons.exportData( {
+            columns: ':visible'
+        });
+        dt_customer.on("click", "th.select-checkbox", function() {
+            if ($("th.select-checkbox").hasClass("selected")) {
+                dt_customer.rows().deselect();
+                $("th.select-checkbox").removeClass("selected");
+            } else {
+                dt_customer.rows().select();
+                $("th.select-checkbox").addClass("selected");
             }
-        ]
-        }).buttons().container().appendTo('#m-customer-table_wrapper .col-md-6:eq(0)');
+        }).on("select deselect", function() {
+            if (dt_customer.rows({
+                    selected: true
+                }).count() !== dt_customer.rows().count()) {
+                $("th.select-checkbox").removeClass("selected");
+            } else {
+                $("th.select-checkbox").addClass("selected");
+            }
+        });
+        //
+        
     });
 </script>
 <script>

@@ -16,20 +16,15 @@
 ?>
 <!--html & css section start-->
 <style>
-    table.dataTable span.highlight {
-      background-color: #17a2b8;
-      border-radius: 5px;
-      text-align: center;
-      color: white;
-    }
     .card-header::after{
       display:none;
     }
-
 </style>
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
+<link rel="stylesheet" href="css/select.dataTables.min.css">
+<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <!-- /.row -->
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
@@ -54,6 +49,7 @@
 					 <table id="m-product-type" class="table table-bordered table-striped">
 						<thead>
 						  <tr>
+              <th></th>
 							<th>Số thứ tự</th>
 							<th>Từ khoá</th>
 							<th>Ngày thêm</th>
@@ -79,9 +75,10 @@
 							// print_r($arr_paras);
 							// print_r($sql_get_keyword_history);
 						  ?>
-						<tbody id="list-loai-san-pham">
+						<tbody>
 						<?php foreach($keyword_historys as $keyword_history) {?>
-						  <tr>
+						  <tr id="<?=$keyword_history["id"];?>">
+                  <td></td>
                   <td><?php echo $total - ($start_page + $cnt);?></td>
                   <td><?php echo $keyword_history["keyword"];?></td>
                   <td><?=Date("d-m-Y",strtotime($keyword_history["created_at"]));?></td>
@@ -93,9 +90,10 @@
 						</tbody>
 						<tfoot>
 						  <tr>
-							<th>Số thứ tự</th>
-							<th>Từ khoá</th>
-							<th>Ngày thêm</th>
+                <th></th>
+                <th>Số thứ tự</th>
+                <th>Từ khoá</th>
+                <th>Ngày thêm</th>
 						  </tr>
 						</tfoot>
 					 </table>
@@ -142,9 +140,9 @@
 ?>
 <!--js section start-->
 <script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.select.min.js"></script>
+<script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.responsive.min.js"></script>
-<script src="js/responsive.bootstrap4.min.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
 <script src="js/jszip.min.js"></script>
 <script src="js/pdfmake.min.js"></script>
@@ -152,12 +150,33 @@
 <script src="js/buttons.html5.min.js"></script>
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
-<script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script src="js/dataTables.searchHighlight.min.js"></script> 
+<script src="js/jquery.highlight.js"></script>
 <script>
-    var dt_pt;
+    var dt_keyword;
     $(document).ready(function (e) {
-      dt_pt = $("#m-product-type").DataTable({
+      dt_keyword = $("#m-product-type").DataTable({
+        "sDom": 'RBlfrtip',
+        columnDefs: [
+          { 
+              "name":"pi-checkbox",
+              "orderable": false,
+              "className": 'select-checkbox',
+              "targets": 0
+          },{ 
+              "name":"manipulate",
+              "orderable": false,
+              "className": 'manipulate',
+              "targets": 3
+          }, 
+        ],
+         select: {
+            style: 'os',
+            selector: 'td:first-child'
+         },
+         order: [
+            [1, 'desc']
+         ],
         "language": {
             "emptyTable": "Không có dữ liệu",
             "sZeroRecords": 'Không tìm thấy kết quả',
@@ -165,33 +184,115 @@
             "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
             "search":"Tìm kiếm trong bảng này:",   
             "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-         },
+            "select": {
+              "rows": "Đã chọn %d dòng",
+            },
+            "buttons": {
+              "copy": 'Copy',
+              "copySuccess": {
+                  1: "Bạn đã sao chép một dòng thành công",
+                  _: "Bạn đã sao chép %d dòng thành công"
+              },
+              "copyTitle": 'Thông báo',
+            }
+          },
         "responsive": true, 
         "lengthChange": false, 
         "autoWidth": false,
         "searchHighlight": true,
         "paging":false,
-        "order": [[ 0, "desc" ]],
+        "oColReorder": {
+          "bAddFixed":false
+        },
         "buttons": [
-          {
-            "extend": "copy",
-            "text": "Sao chép bảng",
-          },{
-            "extend": "excel",
-          },{
-            "extend": "pdf",
-          },{
-            "extend": "csv",
-          },{
-            "extend": "print",
-            "text": "In bảng",
-          },{
-            "extend": "colvis",
-            "text": "Ẩn / Hiện cột",
-          }
+            {
+              "extend": "copy",
+              "text": "Sao chép bảng (1)",
+              "key": {
+                  "key": '1',
+              },
+              "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
+            },{
+              "extend": "excel",
+              "text": "Excel (2)",
+              "key": {
+                  "key": '2',
+              },
+              "autoFilter": true,
+              "filename": "danh_sach_tu_khoa_tim_kiem_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+              "title": "Dữ liệu từ khoá tìm kiếm trích xuất ngày <?=Date("d-m-Y",time());?>",
+              "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
+            },{
+              "extend": "pdf",
+              "text": "PDF (3)",
+              "key": {
+                  "key": '3',
+              },
+              "filename": "danh_sach_tu_khoa_tim_kiem_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+              "title": "Dữ liệu từ khoá tìm kiếm trích xuất ngày <?=Date("d-m-Y",time());?>",
+              "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
+            },{
+              "extend": "csv",
+              "text": "CSV (4)",
+              "key": {
+                  "key": '4',
+              },
+              "charset": 'UTF-8',
+              "bom":true,
+              "filename": "danh_sach_tu_khoa_tim_kiem_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+              "exportOptions":{
+                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
+               },
+            },{
+              "extend": "print",
+              "text": "In bảng (5)",
+              "key": {
+                  "key": '5',
+              },
+              "filename": "danh_sach_tu_khoa_tim_kiem_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
+              "title": "Dữ liệu từ khoá tìm kiếm trích xuất ngày <?=Date("d-m-Y",time());?>",
+              "exportOptions":{
+                columns: ':visible:not(.select-checkbox):not(.manipulate)'
+              },
+            },{
+              "extend": "colvis",
+              "text": "Ẩn / Hiện cột (7)",
+              "columns": ':not(.select-checkbox)',
+              "key": {
+                  "key": '7',
+              },
+            }
         ]
       });
-      dt_pt.buttons().container().appendTo('#m-product-type_wrapper .col-md-6:eq(0)');
+      //
+      dt_keyword.buttons.exportData( {
+         columns: ':visible'
+      });
+      dt_keyword.on("click", "th.select-checkbox", function() {
+         if ($("th.select-checkbox").hasClass("selected")) {
+            dt_keyword.rows().deselect();
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            dt_keyword.rows().select();
+            $("th.select-checkbox").addClass("selected");
+         }
+      }).on("select deselect", function() {
+         if (dt_keyword.rows({
+                  selected: true
+            }).count() !== dt_keyword.rows().count()) {
+            $("th.select-checkbox").removeClass("selected");
+         } else {
+            $("th.select-checkbox").addClass("selected");
+         }
+      });
+      //
+      dt_keyword.buttons().container().appendTo('#m-product-type_wrapper .col-md-6:eq(0)');
     });
 </script>
 <script>

@@ -11,12 +11,20 @@ class ComposerStaticInit7447cb775e79c9542108214ff5a061dc
         array (
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'G' => 
+        array (
+            'Gumlet\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'PHPMailer\\PHPMailer\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'Gumlet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gumlet/php-image-resize/lib',
         ),
     );
 

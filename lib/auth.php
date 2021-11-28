@@ -60,7 +60,6 @@
             exit();
         }
     }
-    //f_x
     function redirect_if_customer_login_success($uri_login_success_redirect = "index.php") {
         if(isset($_SESSION["isUserLoggedIn"]) && $_SESSION['isUserLoggedIn']) {
             if(isset($_SESSION["redirect"])) {
@@ -72,7 +71,6 @@
             exit();
         }
     }
-    //f_y
     function redirect_if_customer_login_status_false($uri_login_redirect = "login.php") {
         if(!isset($_SESSION["isUserLoggedIn"]) || $_SESSION["isUserLoggedIn"] !== true){
             $_SESSION["redirect"] = get_url_current_page();
@@ -80,7 +78,6 @@
             exit();
         }
     }
-    //f_z
     function encrypt_decrypt($string, $action = 'encrypt')
     {
         $encrypt_method = "AES-256-CBC";

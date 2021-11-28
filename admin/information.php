@@ -11,10 +11,7 @@
     $sql_get_info = "select * from user where id = ?";
     $admin_info = fetch_row($sql_get_info,[$session_id]);
 ?>
-
-<!-- Content Wrapper. Contains page content -->
 <div class="container-wrapper" style="margin-left:250px;">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -22,10 +19,8 @@
             <h1>Hồ sơ</h1>
           </div>
         </div>
-      </div><!-- /.container-fluid -->
+      </div>
     </section>
-
-    <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <div class="row">
@@ -35,7 +30,7 @@
                 <ul class="nav nav-pills">
                   <li class="nav-item"><a class="nav-link active" href="#settings" data-toggle="tab">Thông tin admin</a></li>
                 </ul>
-              </div><!-- /.card-header -->
+              </div>
               <div class="card-body">
                 <div class="tab-content">
                   <div style="display:block;" class="tab-pane" id="settings">
@@ -69,20 +64,15 @@
                         <div class="col-sm-10">
                           <input name="old_pass" type="password" class="form-control" required>
                         </div>
-                        <!-- loi mat khau -->
                         <div id="pass_err" class="text-danger"></div>
                       </div>
-
                       <div class="form-group row">
                         <label for="birth" class="col-sm-2 col-form-label">Ngày sinh</label>
                         <div class="col-sm-10">
                           <input name="birthday" type="text" data-date="<?=$admin_info["birthday"]?>" class="form-control" id="ngay_sinh_admin" value="<?=Date("d-m-Y",strtotime($admin_info["birthday"]));?>">
                         </div>
-                        <!-- loi ngay sinh -->
                         <div id="birth_err" class="text-danger"></div>
                       </div>
-
-
                       <div class="form-group row">
                         <label for="inputExperience" class="col-sm-2 col-form-label">Ngày tạo tài khoản</label>
                         <div class="col-sm-10">
@@ -94,7 +84,6 @@
                         <div class="col-sm-10">
                           <input name="phone" type="text" class="form-control" value="<?=$admin_info["phone"];?>" >
                         </div>
-                        <!-- loi so dien thoai -->
                         <div id="phone_err" class="text-danger"></div>
                       </div>
                       <div class="form-group row">
@@ -102,7 +91,6 @@
                         <div class="col-sm-10">
                           <input name="address" type="text" class="form-control" value="<?=$admin_info["address"];?>">
                         </div>
-                        <!-- loi dia chi -->
                         <div id="address_err" class="text-danger"></div>
                       </div>
                       <div class="form-group row">
@@ -134,8 +122,6 @@
     </section>
   </div>
 <!--html & css section end-->
-
-
 <?php
         include_once("include/bottom.meta.php");
 ?>
@@ -202,7 +188,6 @@
             console.log(address);
             console.log(old_pass);*/
             let url = window.location.href;
-
             // xu ly anh
             let file = $('input[name=img_admin_file]')[0].files;
             if(file.length > 0){
@@ -277,7 +262,7 @@
               $file_name = str_replace("_","",$file_name);
               $path = $dir . "/" . $file_name ;
               $sql_get_old_file = "select img_name from user where id = '$session_id'";
-              $old_file=fetch_row($sql_get_old_file)[img_name];
+              $old_file=fetch_row($sql_get_old_file)['img_name'];
               if(file_exists($old_file)) {
                 unlink($old_file);
                 chmod($dir, 0777);

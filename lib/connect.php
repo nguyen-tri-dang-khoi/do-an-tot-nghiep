@@ -25,9 +25,9 @@
         return $conn;
     }
     function log_v($var){
-        echo "<script>". "console.log('". $var ."');</script>";
+        echo "<script>". "console.log(`". $var ."`);</script>";
     }
     function log_a($array){
-        echo "<script>". "console.log('". json_encode($array) ."');</script>";
+        echo "<script>". "console.log(JSON.parse(`". json_encode($array) ."`));</script>";
     }
 ?>

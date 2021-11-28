@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Technology shop</title>
+    <link rel="stylesheet" href="css/select2.min.css">
     <!--AdminLTE-->
     <link rel="stylesheet" href="css/adminlte.min.css">
     <!--Jquery UI-->
     <link rel="stylesheet" href="css/jquery-ui.css">
+
     <!--Simple Pagination-->
     <link rel="stylesheet" href="css/simplePagination.css">
 	<!--Simple Pagination-->
@@ -20,8 +22,13 @@
 	<!--khoi.css-->
 	<link rel="stylesheet" href="css/khoi.css">
     <style>
+        /*th, td { white-space: nowrap; }*/
+        div.dataTables_wrapper {
+            width: 100%;
+            margin: 0 auto;
+        }
         *:focus {
-            outline: 0 !important;
+            outline:none !important;
         }
         .center {
             display:flex;
@@ -30,6 +37,28 @@
             flex-direction:column;
             min-height:100vh;
         }
+        .kh-inp-ctrl {
+            border-radius: 0.25rem;
+            /*border: none !important;*/
+            /*box-shadow: 0px 0px 5px 1px #86808882 !important;*/
+            padding: 4px !important;
+            padding-left: 10px !important;
+            border: 1px solid rgb(158 158 158 / 74%);
+            width:100%;
+        }
+        .kh-inp-ctrl:focus {
+            background-color: #fff;
+            border-color: #3594fb;
+            
+        }
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #3594fb !important;
+        }
+        /*ul:focus,div.note-editable.card-block:focus {
+            border: solid #3594fb 1px !important;
+        }*/
+         
     </style>
 </head>
 <body class="">

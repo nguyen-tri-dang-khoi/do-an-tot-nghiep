@@ -3,29 +3,26 @@
     $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
     $number2 = $number;
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-    if($id) {
+    $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+    if($id && $status == "Update") {
         $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
-       // print_r($sql_get_all);
         $result = fetch_row($sql_get_all,[$id]);
 ?>
-
 <div class="card-body">
     <div class="row">
         <div class="col-md-6 form-group">
             <label for="ten_san_pham">Tên sản phẩm</label>
             <input type="text" name="ten_san_pham" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo $result['pi_name']?>">
-            <div id="name_err" class="text-danger"></div>
         </div>
         <div class="col-md-6 form-group">
             <label for="so_luong">Số lượng</label>
             <input type="number" name="so_luong" min="1" class="form-control" placeholder="Nhập số lượng" value="<?php echo $result['count']?>">
-            <div id="count_err" class="text-danger"></div>
         </div>
     </div>
     <div class="row" style="margin-left:0px;flex-direction:column;">
-        <label for="danh_muc">Danh mục sản phẩm</label>
+        <label style="margin-bottom:-5px;" for="danh_muc">Danh mục sản phẩm</label>
         <div style="display:flex;flex-direction:row;align-items:center;">
-            <ul class="col-md-6" style="padding-left:0px;" id="menu">
+            <ul tabindex="1" class="col-md-6" style="padding-left:0px;height: 65px;" id="menu">
                 <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
                     <a href="#">Chọn danh mục</a>
                     <ul class="child" >
@@ -151,12 +148,12 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number;?>">
 <div class="card-footer">
-    <button id="btn-luu-san-pham" data-status="Update" type="submit" class="btn btn-primary">Đăng sản phẩm lên</button>
+    <button id="btn-luu-san-pham" data-status="Update" type="submit" class="dt-button button-purple">Đăng sản phẩm lên</button>
     <input type="hidden" name="id" value="<?=$result['pi_id'];?>">      
 </div>
 <?php
-        exit();
     }
+    if($status == "Insert") {
 ?>
 <div class="card-body">
     <div class="row">
@@ -174,11 +171,11 @@
     </div>
     <div class="row" style="margin-left:0px;flex-direction:column;">
         <label for="danh_muc">Danh mục sản phẩm</label>
-        <div style="display:flex;flex-direction:row;align-items:center;">
-            <ul class="col-md-6" style="padding-left:0px;" id="menu">
-                <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
+        <div style="display:flex;flex-direction:row;">
+            <ul tabindex="1" class="col-md-6" style="padding-left:0px;height: 65px;" id="menu">
+                <li class="parent" style="border: 1px solid #dce1e5;position:relative">
                     <a href="#">Chọn danh mục</a>
-                    <ul class="child" >
+                    <ul class="child" style="">
                         <?php echo show_menu();?>
                     </ul>
                 </li>
@@ -236,6 +233,207 @@
 <input type="hidden" name="token" value="<?php echo_token();?>">
 <input type="hidden" name="number" value="<?=$number2;?>">
 <div class="card-footer">
-    <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="btn btn-primary">Đăng sản phẩm lên</button>
+    <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="dt-button button-purple">Đăng sản phẩm lên</button>
     <input type="hidden" name="id" >      
 </div>
+<?php } if($id && $status == "Read") {?>
+    <?php
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
+        $result = fetch_row($sql_get_all,[$id]);    
+    ?>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tr>
+                <th class="w-250">Tên sản phẩm</th>
+                <td class="width-auto"><?=$result['pi_name']?></td>
+            </tr>
+            <tr>
+                <th class="w-250">Danh mục sản phẩm</th>
+                <td class="width-auto">
+                    <nav id="breadcrumb-menu" class="" aria-label="breadcrumb">
+                        <?=generate_breadcrumb_menus($result['pi_type_id']);?>
+                    </nav>
+                </td>
+            </tr>
+            <tr>
+                <th>Số lượng</th>
+                <td class="width-auto"><?=$result['count']?></td>
+            </tr>
+            <tr>
+                <th>Đơn giá</th>
+                <td class="width-auto"><?=$result['price']?></td>
+            </tr>
+            <tr>
+                <th>Ảnh đại diện</th>
+                <td class="width-auto">
+                    <div class="kh-file-list">
+                        <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url(<?=$result['img_name']?>);">
+                            
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Ảnh mô tả sản phẩm</th>
+                <td class="width-auto">
+                    <div class="kh-files">
+                        <div class="kh-file-lists">
+                            <?php
+                                $sql = "select * from product_image where product_info_id = '$id'";
+                                $result2 = db_query($sql);
+                                $list_file_del = [];
+                                $i = 0;
+                                foreach($result2 as $res){
+                                    array_push($list_file_del,$res['img_order']);
+                            ?>
+                            <?php
+                                if($i % 6 == 0) {
+                                    echo '<div class="kh-file-list">';
+                                }
+                            ?>
+                                <div data-id="<?=$res['img_order']?>"  class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url('<?=$res['img_id']?>');">
+                                    
+                                </div>
+                            <?php
+                                if($i % 6 == 5) {
+                                    echo '</div>';
+                                }	
+                            ?>
+                            <?php
+                                    $i++;
+                                }
+                            ?>
+                            <?php
+                                if($i % 6 != 0 && $i != 0) {
+                                    echo "</div>";
+                                }	
+                            ?>
+                            <?php if($i == 0) {?>
+                                <div class="kh-file-list">
+                                    <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                                       
+                                    </div>
+                                </div>
+                            <?php
+                                }
+                            ?>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>Nội dung mô tả sản phẩm</th>
+                <td class="width-auto">
+                    <div>
+                    <?=$result['description']?>
+                    </div> 
+                </td>
+            </tr>
+            <tr>
+                <th>Ngày tạo</th>
+                <td><?=Date("d-m-Y H:i:s",strtotime($result['created_at']));?></td>
+            </tr>
+        </table>
+    </div>
+<?php } ?>
+<?php 
+    if($status == "read_more") {
+        $str_arr_upt = isset($_REQUEST['str_arr_upt']) ? $_REQUEST['str_arr_upt'] : null;
+        $html = "";
+        $html_file = '<div class="kh-files"><div class="kh-file-lists">';
+        if($str_arr_upt) {
+            $arr = explode(",",$str_arr_upt);
+            $i = 1;
+            foreach($arr as $id) {
+                $html_file = '<div class="kh-files"><div class="kh-file-lists">';
+
+                $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
+                $result = fetch_row($sql_get_all,[$id]); 
+                //
+                $sql2 = "select * from product_image where product_info_id = '$id'";
+                $result2 = db_query($sql2);
+                $list_file_del = [];
+                $i2 = 0;
+                foreach($result2 as $res){
+                    array_push($list_file_del,$res['img_order']);
+                    if($i2 % 6 == 0) {
+                        $html_file .= '<div class="kh-file-list">';
+                    }
+                    $html_file .= '<div data-id="' . $res['img_order'] . '" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url(' . $res['img_id'] . '");">
+                    
+                    </div>';
+                    if($i2 % 6 == 5) {
+                        $html_file .= '</div>';
+                    }
+                    $i2++;
+                }
+                if($i2 % 6 != 0 && $i2 != 0) {
+                    $html_file.= "</div>";
+                }
+                if($i2 == 0) {
+                    $html_file .= '<div class="kh-file-list">
+                        <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
+                        </div>
+                    </div>';
+                }	
+                //
+                $html .= '<tbody style="display:none;" class="tb-read tb-read-' . $i .'">
+                    <tr>
+                        <th class="w-250">Tên sản phẩm</th>
+                        <td class="width-auto">' . $result['pi_name'] . '</td>
+                    </tr>
+                    <tr>
+                        <th class="w-250">Danh mục sản phẩm</th>
+                        <td class="width-auto">
+                            <nav id="breadcrumb-menu" class="" aria-label="breadcrumb">
+                                ' . generate_breadcrumb_menus($result['pi_type_id']) . '
+                            </nav>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Số lượng</th>
+                        <td class="width-auto">' . $result['count'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>Đơn giá</th>
+                        <td class="width-auto">' . $result['price'] . '</td>
+                    </tr>
+                    <tr>
+                        <th>Ảnh đại diện</th>
+                        <td class="width-auto">
+                            <div class="kh-file-list">
+                                <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url(' . $result['img_name'] . ')">
+                                    
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Ảnh mô tả sản phẩm</th>
+                        <td class="width-auto">'
+                           . $html_file .
+                        '</td>
+                    </tr>
+                    <tr>
+                        <th>Nội dung mô tả sản phẩm</th>
+                        <td class="width-auto">
+                            <div>'
+                                . $result['description'] . '
+                            </div> 
+                        </td>
+                    </tr>
+                </tbody>';
+                $i++;
+            }
+        }
+        $html = "
+            <div class='card-body'>
+                <table class='table table-bordered'>
+                    $html
+                </table>
+            </div>
+        ";
+        print_r($html);
+    }
+?>
+

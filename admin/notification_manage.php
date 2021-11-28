@@ -2,11 +2,27 @@
    include_once("../lib/database.php");
    redirect_if_login_status_false();
    if(is_get_method()) {
+      // permission crud for user
+      $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
+      if(check_permission_crud("notification_manage.php","read")) {
+        $allow_read = true;
+      }
+      if(check_permission_crud("notification_manage.php","update")) {
+        $allow_update = true;
+      }
+      if(check_permission_crud("notification_manage.php","delete")) {
+        $allow_delete = true;
+      }
+      if(check_permission_crud("notification_manage.php","insert")) {
+        $allow_insert = true;
+      }
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
       // code to be executed get method
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
       $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+      $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
+      $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
       $where = "where 1=1 ";
       if($keyword || $keyword == 0 ) {
         if($search_option == "title") {
@@ -26,69 +42,9 @@
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <style>
-	.kh-file-lists {
-		display:flex;
-		flex-direction:column;
-	}
-	.kh-file-list {
-		display:flex;
-		flex-wrap:nowrap;
-		flex-direction:row;
-		position: relative;
-		cursor: pointer;
-		text-align: center;
-		background-size: 100%;
-		background-repeat: no-repeat;
-	}
-	.kh-custom-file {
-		position:relative;
-		border: 1px solid #ddd;
-		border-radius:5px;
-		width: 88px;
-		height: 90px;
-		margin-right:15px;
-		margin-bottom:15px;
-	}
-	.kh-custom-file input[type='file'] {
-		display: block;
-		position: absolute !important;
-		width: 90px;
-		height: 100%;
-		opacity: 0;
-		cursor: pointer;
-		left: 0;
-	}
-	.kh-custom-remove-img {
-		position:relative;
-	}
-	.kh-custom-btn-remove {
-		font-size:22px;
-		position: absolute;
-		right: -9px;
-		top: -15px;
-	}
-	.kh-custom-btn-remove::before {
-		content: "\2716";
-		font-size: 20px;
-		color: rebeccapurple
-	}
-	.kh-div-append-file{
-		width:90px;
-		height:90px;
-		
-	}
-	.kh-div-append-file button.kh-btn-append-file {
-		width:100%;
-		height:100%;
-		font-size:40px;
-		background-color:#fff;
-		border-radius:5px;
-		border: 1px solid #ddd;
-	}
-	.kh-files {
-		display:flex;
-		justify-content:space-between;
-	}
+   .dt-buttons {
+      float:left;
+   }
 </style>
 <style>
    .img-child {
@@ -112,12 +68,6 @@
    }
    li[data-parent_id_2]:hover {
       cursor:pointer;
-   }
-   table.dataTable span.highlight {
-      background-color: #17a2b8;
-      border-radius: 5px;
-      text-align: center;
-      color: white;
    }
    .card-header::after{
       display:none;
@@ -186,6 +136,8 @@
     /*padding-top: 3px;*/
     /* padding: 5px; */
 </style>
+<link rel="stylesheet" href="css/select.dataTables.min.css">
+<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
     <section class="content">
@@ -197,9 +149,13 @@
                      <div class="card-tools">
                         <div class="input-group">
                         <div class="input-group-append">
-                           <button id="btn-them-bang-tin" class="btn btn-success">
+                           <?php
+                              if($allow_insert) {
+                           ?>
+                           <button id="btn-them-bang-tin" class="dt-button button-blue">
                               Tạo bảng tin
                            </button>
+                           <?php } ?>
                         </div>
                         </div>
                      </div>
@@ -222,9 +178,32 @@
                            </div>
                         </form>
                      </div>
+                     <div class="col-12 mb-3" style="padding-right:0px;padding-left:0px;">
+                        <?php
+                           if($allow_delete) {
+                        ?>
+                        <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                        <?php } ?>
+                        <?php
+                           if($allow_update) {
+                        ?>
+                        <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                        <?php } ?>
+                        <?php
+                           if($allow_read) {
+                        ?>
+                        <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                        <?php } ?>
+                        <?php
+                           if($allow_insert) {
+                        ?>
+                        <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                        <?php } ?>
+                     </div>
                      <table id="m-bang-tin" class="table table-bordered table-striped">
                         <thead>
                            <tr>
+                              <th></th>
                               <th>Số thứ tự</th>
                               <th>Tiêu đề</th>
                               <th>Nội dung</th>
@@ -245,6 +224,9 @@
                            if($keyword) {
                               $where .= "";
                            }
+                           if($str) {
+                              $where .= " and n.id in ($str)";
+                           }
                            $cnt = 0;
                            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
                            $limit = $_SESSION['paging'];
@@ -254,24 +236,55 @@
                            array_push($arr_paras,$start_page);
                            array_push($arr_paras,$limit);
                            $sql_get_product = "select * from notification n $where order by n.id desc limit ?,?";
-                           print_r($sql_get_product);
+                           //print_r($sql_get_product);
                            $rows = db_query($sql_get_product,$arr_paras);
                            foreach($rows as $row) {
                            ?>
-                              <tr id="bang-tin<?=$row["id"];?>">
+                              <tr id="<?=$row["id"];?>">
+                                 <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
-                                 <td><?=$row['title']?></td>
-                                 <td><?=$row['content']?></td>
+                                 <td><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'" : $row['title'];?></td>
+                                 <td><?=$upt_more == 1 ? "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea>" : $row['content']?></td>
                                  <td><?=$row['views']?></td>
                                  <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
                                  <td>
-                                    <button class="btn-sua-bang-tin btn btn-primary" data-number="<?=$total - ($start_page + $cnt);?>"
-                                    data-id="<?=$row["id"];?>" >
-                                    Sửa
-                                    </button>
-                                    <button class="btn-xoa-bang-tin btn btn-danger" data-id="<?=$row["id"];?>">
-                                    Xoá
-                                    </button>
+                                    <?php
+                                       if($upt_more != 1) {
+                                    ?>
+                                    <?php
+                                       if($allow_read) {
+                                    ?>
+                                       <button class="btn-xem-bang-tin dt-button button-grey"
+                                       data-id="<?=$row["id"];?>">
+                                       Xem
+                                       </button>
+                                    <?php } ?>
+                                    <?php 
+                                       if($allow_update) {
+                                    ?>
+                                       <button class="btn-sua-bang-tin dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
+                                       data-id="<?=$row["id"];?>" >
+                                       Sửa
+                                       </button>
+                                    <?php } ?>
+                                    <?php
+                                       if($allow_delete) {
+                                    ?>
+                                       <button class="btn-xoa-bang-tin dt-button button-red" data-id="<?=$row["id"];?>">
+                                       Xoá
+                                       </button>
+                                    <?php } ?>
+                                    <?php
+                                       } else {
+                                    ?>
+                                    <?php
+                                       if($allow_update) {
+                                    ?>
+                                       <button dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
+                                    <?php } ?>
+                                    <?php
+                                       }
+                                    ?>
                                  </td>
                               </tr>
                            <?php
@@ -281,6 +294,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
+                              <th></th>
                               <th>Số thứ tự</th>
                               <th>Tiêu đề</th>
                               <th>Nội dung</th>
@@ -300,7 +314,7 @@
     </section>
   </div>
 </div>
-<div class="modal fade" id="modal-xl">
+<div class="modal fade" id="modal-xl" >
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
@@ -323,10 +337,11 @@
 ?>
 <!--js section start-->
 <script src="js/summernote.min.js"></script>
+<script src="js/summernote-vi-VN.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
+<script src="js/dataTables.select.min.js"></script>
+<script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.responsive.min.js"></script>
-<script src="js/responsive.bootstrap4.min.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
 <script src="js/jszip.min.js"></script>
 <script src="js/pdfmake.min.js"></script>
@@ -334,8 +349,8 @@
 <script src="js/buttons.html5.min.js"></script>
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.25/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
-<script src="//bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script src="js/dataTables.searchHighlight.min.js"></script> 
+<script src="js/jquery.highlight.js"></script>
 <script>
    var arr_list_file_del = [];
 	var arr_input_file = new Map();
@@ -508,8 +523,34 @@
 </script>
 <script>
    var dt_n;
+   $('.t-summernote').summernote({
+      height: 1,
+      width: 400,
+      lang: 'vi-VN'
+   });
    $(document).ready(function (e) {
       dt_n = $("#m-bang-tin").DataTable({
+         "sDom": 'RBlfrtip',
+         "columnDefs": [
+            { 
+               "name":"pi-checkbox",
+               "orderable": false,
+               "className": 'select-checkbox',
+               "targets": 0
+            },{ 
+               "name":"manipulate",
+               "orderable": false,
+               "className": 'manipulate',
+               "targets": 6
+            },  
+         ],
+         "select": {
+            style: 'os',
+            selector: 'td:first-child'
+         },
+         "order": [
+            [1, 'desc']
+         ],
          "language": {
             "emptyTable": "Không có dữ liệu",
             "sZeroRecords": 'Không tìm thấy kết quả',
@@ -517,34 +558,528 @@
             "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
             "search":"Tìm kiếm trong bảng này:",   
             "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
+            "select": {
+               "rows": "Đã chọn %d dòng",
+            }
          },
          "responsive": true, 
          "lengthChange": false, 
          "autoWidth": false,
-         "order": [[ 0, "desc" ]],
          "paging":false,
          "searchHighlight": true,
+         "oColReorder": {
+            "bAddFixed":false
+         },
          "buttons": [
           {
             "extend": "copy",
-            "text": "Sao chép bảng",
+            "text": "Sao chép bảng (1)",
+            "key" : {
+               "key" : "1",
+            },
+            "exportOptions":{
+               columns: ':visible:not(.select-checkbox):not(.manipulate)'
+            },
           },{
             "extend": "excel",
+            "text": "Excel (2)",
+            "key" : {
+               "key" : "2",
+            },
+            "autoFilter": true,
+            "filename": "danh_sach_bang_tin_ngay_<?=Date("d-m-Y",time());?>",
+            "title": "Dữ liệu bảng tin trích xuất ngày <?=Date("d-m-Y",time());?>",
+            "exportOptions":{
+               columns: ':visible:not(.select-checkbox):not(.manipulate)'
+            },
           },{
             "extend": "pdf",
+            "text": "PDF (3)",
+            "key" : {
+               "key" : "3",
+            },
+            "filename": "danh_sach_bang_tin_ngay_<?=Date("d-m-Y",time());?>",
+            "title": "Dữ liệu bảng tin trích xuất ngày <?=Date("d-m-Y",time());?>",
+            "exportOptions":{
+               columns: ':visible:not(.select-checkbox):not(.manipulate)'
+            },
           },{
             "extend": "csv",
+            "text": "CSV (4)",
+            "filename": "danh_sach_bang_tin_ngay_<?=Date("d-m-Y",time());?>",
+            "charset": 'UTF-8',
+            "bom":true,
+            "key" : {
+               "key" : "4",
+            },
+            "exportOptions":{
+               columns: ':visible:not(.select-checkbox):not(.manipulate)'
+            },
           },{
             "extend": "print",
-            "text": "In bảng",
+            "text": "In bảng (5)",
+            "key" : {
+               "key" : "5",
+            },
+            "filename": "danh_sach_bang_tin_ngay_<?=Date("d-m-Y",time());?>",
+            "title": "Dữ liệu bảng tin trích xuất ngày <?=Date("d-m-Y",time());?>",
+            "exportOptions":{
+               columns: ':visible:not(.select-checkbox):not(.manipulate)'
+            },
           },{
             "extend": "colvis",
-            "text": "Ẩn / Hiện cột",
+            "text": "Ẩn / Hiện cột (7)",
+            "columns": ':not(.select-checkbox)',
+            "key" : {
+               "key" : "7",
+            }
           }
         ]
       })
       dt_n.buttons().container().appendTo('#m-bang-tin_wrapper .col-md-6:eq(0)');
+      //
+      dt_n.buttons.exportData( {
+         columns: ':visible'
+      });
+      dt_n.on("click", "th.select-checkbox", function() {
+         if ($("th.select-checkbox").hasClass("selected")) {
+               dt_n.rows().deselect();
+               $("th.select-checkbox").removeClass("selected");
+         } else {
+               dt_n.rows().select();
+               $("th.select-checkbox").addClass("selected");
+         }
+      }).on("select deselect", function() {
+         if (dt_n.rows({
+                  selected: true
+               }).count() !== dt_n.rows().count()) {
+               $("th.select-checkbox").removeClass("selected");
+         } else {
+               $("th.select-checkbox").addClass("selected");
+         }
+      });
+      //
    });
+   function insMore(){
+      //$('#modal-xl2').modal('show');
+      $('#modal-xl3').modal({backdrop: 'static', keyboard: false});
+   }
+   function insAll(){
+      let formData = new FormData();
+      let len = $('[data-plus]').attr('data-plus');
+      $('td input[name="name_p2"]').each(function(){
+         formData.append("name_p2[]",$(this).val());
+      });
+      $('td input[name="price_p2"]').each(function(){
+         formData.append("price_p2[]",$(this).val());
+      });
+      $('td textarea[name="desc_p2"]').each(function(){
+         formData.append("desc_p2[]",$(this).val());
+      });
+      $('td input[name="count_p2"]').each(function(){
+         formData.append("count_p2[]",$(this).val());
+      });
+      $('td input[name="category_id"]').each(function(){
+         formData.append("type_p2[]",$(this).val());
+      });
+      $('td input[name="img2[]"]').each(function(){
+         formData.append("img2[]",$(this)[0].files[0]);
+      });
+      formData.append("token","<?php echo_token(); ?>");
+      formData.append("status","ins_all");
+      formData.append("len",len);
+      console.log(formData.getAll("img2"));
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         data: formData,
+         cache: false,
+         contentType: false,
+         processData: false,
+         success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã thêm dữ liệu thành công",
+                  buttons: {
+                     "Ok": function(){
+                        location.reload();
+                     }
+                  }
+               });
+            }
+         },
+         error: function(data){
+            console.log("Error: " + data);
+         }
+      })
+   }
+   function insRow(){
+      let page = $('[data-plus]').attr('data-plus');
+      let html = "";
+      let count2 = parseInt(page / 7) + 1;
+      html = `
+         <tr data-row-id='${parseInt(page) + 1}'>
+            <td>${parseInt(page) + 1}</td>
+            <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
+            <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
+            <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
+            <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+            <td>
+               <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                  <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+               </div>
+            </td>
+            <td>
+               <div style="display:flex;flex-direction:column;outline:none !important;">
+                  <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
+                     <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                        <a href="#">Chọn danh mục</a>
+                        <ul class="child">
+                           <?php echo show_menu_3();?>
+                        </ul>
+                        <input type="hidden" name="category_id">
+                     </li>
+                  </ul>
+                  <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+               </div>
+            </td>
+            <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+         </tr>
+      `;
+      if(page % 7 != 0) {
+         $('.t-bd').css({"display":"none"});
+         $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
+         $(html).appendTo(`.t-bd-${count2}`);
+      } else {
+         $('.t-bd').css({"display":"none"});
+         html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
+         $(html).appendTo('#form-product2 table');
+      }
+      $('[data-plus]').attr('data-plus',parseInt(page) + 1);
+      $('input[name="count2"]').val(parseInt(page) + 1);
+      $('#pagination2').pagination({
+         items: parseInt(page) + 1,
+         itemsOnPage: 7,
+         currentPage: count2,
+         prevText: "<",
+         nextText: ">",
+         onPageClick: function(pageNumber,event){
+            showRow(pageNumber,false);
+         },
+         cssStyle: 'light-theme',
+      });
+   }
+   function delRow(){
+      let page = $('[data-plus]').attr('data-plus');
+      let currentPage1 = page / 7;
+      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+      $(`[data-row-id="${page}"]`).remove();
+      page--;
+      $('[data-plus]').attr('data-plus',page);
+      $('input[name="count2"]').val(page);
+      currentPage1 = page / 7;
+      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+      else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
+      $('.t-bd').css({"display":"none"});
+      $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
+      $('#pagination2').pagination({
+        items: parseInt(page),
+        itemsOnPage: 7,
+        currentPage: currentPage1,
+        prevText: "<",
+        nextText: ">",
+        onPageClick: function(pageNumber,event){
+          showRow(pageNumber,false);
+        },
+        cssStyle: 'light-theme',
+      });
+      count_row_z_index++;
+   }
+   function showRow(page,apply_dom = true){
+      let count = $('input[name="count2"]').val();
+      if(count == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống số dòng thêm",
+        })
+        return;
+      }
+      if(count < 1) {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng nhập số dòng lớn hơn 0",
+        })
+        return;
+      }
+      limit = 7;
+      if(apply_dom) {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
+        $('#form-product2 table').remove();
+        $('#form-product2 #paging').remove();
+        let html = `
+        <table class='table table-bordered' style="min-height:100px;height:auto;">
+          <thead>
+            <tr>
+              <th>Số thứ tự</th>
+              <th>Tên sp</th>
+              <th>Số lượng</th>
+              <th>Đơn giá</th>
+              <th>Mô tả sp</th>
+              <th>Ảnh đại diện</th>
+              <th class="w-300">Danh mục</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+        `;
+        count2 = parseInt(count / 7);
+        g = 1;
+        for(i = 0 ; i < count2 ; i++) {
+          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
+          for(j = 0 ; j < 7 ; j++) {
+            html += `
+              <tr data-row-id="${parseInt(g)}">
+                  <td>${parseInt(g)}</td>
+                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
+                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+                  <td>
+                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                     </div>
+                  </td>
+                  <td>
+                     <div style="display:flex;flex-direction:column;position:relative;">
+                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
+                           <li class="parent" style="border: 1px solid #dce1e5;">
+                              <a href="#">Chọn danh mục</a>
+                              <ul class="child" >
+                                 <?php echo show_menu();?>
+                              </ul>
+                              <input type="hidden" name="category_id">
+                           </li>
+                        </ul>
+                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+                     </div>
+                  </td>
+                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+              </tr>
+            `;
+            g++;
+          }
+          html += "</tbody>";
+        }
+        if(count % 7 != 0) {
+          count3 = count % 7;
+          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
+          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
+            html += `
+              <tr data-row-id="${parseInt(g)}">
+                <td>${parseInt(g)}</td>
+                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
+                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+                  <td>
+                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
+                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                     </div>
+                  </td>
+                  <td>
+                     <div style="display:flex;flex-direction:column;outline:none !important;">
+                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
+                           <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                              <a href="#">Chọn danh mục</a>
+                              <ul class="child">
+                                 <?php echo show_menu_3();?>
+                              </ul>
+                              <input type="hidden" name="category_id">
+                           </li>
+                        </ul>
+                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
+                     </div>
+                  </td>
+                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+              </tr>
+            `;
+            g++;
+          }
+          html += "</tbody>";
+        }
+        html += `
+          </table>
+        `;
+        html += `
+          <div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+          </div>
+        `;
+        $(html).appendTo('#form-product2');
+        apply_dom = false;
+        $('.t-bd-1').css({"display":"contents"});
+        console.log(html);
+      } else {
+        $('.t-bd').css({"display":"none"});
+        $('.t-bd-' + page).css({"display":"contents"});
+      }
+      $('#pagination2').pagination({
+        items: count,
+        itemsOnPage: limit,
+        currentPage: page,
+        prevText: "<",
+        nextText: ">",
+        onPageClick: function(pageNumber,event){
+          showRow(pageNumber,false);
+        },
+        cssStyle: 'light-theme',
+      });
+      $('#modal-xl2').on('hidden.bs.modal', function (e) {
+        $('#form-product2 table').remove();
+        $('#form-product2 #paging').remove();
+        $('input[name="count2"]').val("");
+      })
+   } 
+   function readMore(){
+      let arr_del = [];
+      let _data = dt_n.rows(".selected").select().data();
+      let count4 = _data.length;
+      for(i = 0 ; i < count4 ; i++) {
+         arr_del.push(_data[i].DT_RowId);
+      }
+      let str_arr_upt = arr_del.join(",");
+      if(arr_del.length == 0) {
+         $.alert({
+            title: "Thông báo",
+            content: "Bạn vui lòng chọn dòng cần xem",
+         });
+         return;
+      }
+      $('#form-bang-tin').load(`ajax_notification.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
+         let html2 = `
+            <div id="paging" style="justify-content:center;" class="row">
+               <nav id="pagination3">
+               </nav>
+            </div>
+         `;
+         $(html2).appendTo('#form-bang-tin');
+         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+         $('.t-bd-read').css({
+            "display":"none",
+         });
+         $('.t-bd-read-1').css({
+            "display":"contents",
+         });
+         $('#pagination3').pagination({
+            items: count4,
+            itemsOnPage: 1,
+            currentPage: 1,
+            prevText: "<",
+            nextText: ">",
+            onPageClick: function(pageNumber,event){
+               $(`.t-bd-read`).css({"display":"none"});
+               $(`.t-bd-read-${pageNumber}`).css({"display":"contents"});
+            },
+            cssStyle: 'light-theme',
+         });
+      });
+   }
+   function delMore(){
+        let arr_del = [];
+        let _data = dt_n.rows(".selected").select().data();
+        for(i = 0 ; i < _data.length ; i++) {
+            arr_del.push(_data[i].DT_RowId);
+        }
+        if(_data.length > 0) {
+            $.confirm({
+               title: "Thông báo",
+               content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
+               buttons: {
+                  "Có": function(){
+                     $.ajax({
+                           url: window.location.href,
+                           type: "POST",
+                           data: {
+                              status: "del_more",
+                              token: "<?php echo_token(); ?>",
+                              rows: arr_del.join(","),
+                           },
+                           success: function(data){
+                              data = JSON.parse(data);
+                              if(data.msg == "ok"){
+                              $.alert({
+                                 title: "Thông báo",
+                                 content: "Bạn đã xoá dữ liệu thành công",
+                                 buttons: {
+                                    "Ok": function(){
+                                       location.href="notification_manage.php";
+                                    }
+                                 }
+                              })
+                              }
+                           },error: function(data){
+                              console.log("Error:" + data);
+                           }
+                     });
+                  },"Không": function(){
+
+                  }
+               }
+            });
+        } else {
+            $.alert({
+                title: "Thông báo",
+                content: "Bạn chưa chọn dòng cần xoá",
+            });
+        }
+    }
+    function uptMore(){
+      let arr_del = [];
+      let _data = dt_n.rows(".selected").select().data();
+      for(i = 0 ; i < _data.length ; i++) {
+         arr_del.push(_data[i].DT_RowId);
+      }
+      let str_arr_upt = arr_del.join(",");
+      location.href="notification_manage.php?upt_more=1&str=" + str_arr_upt;
+    }
+    function uptThisRow(){
+        let title = $(event.currentTarget).closest("tr").find("td input[name='n_title']").val();
+        let content = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
+        let id = $(event.currentTarget).attr('data-id');
+        let this2 = $(event.currentTarget);
+        $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: {
+               status: "upt_more",
+               n_title: title,
+               n_content: content,
+               n_id: id,
+               token: '<?php echo_token();?>'
+            },success: function(data){
+                data = JSON.parse(data);
+                if(data.msg == "ok"){
+                $.alert({
+                    title: "Thông báo",
+                    content: "Bạn đã sửa dữ liệu thành công",
+                    buttons: {
+                       "Ok" : function(){
+                           let num_of_upt = this2.attr('dt-count');
+                           num_of_upt++;
+                           this2.attr('dt-count',num_of_upt);
+                           this2.text(`Sửa (${num_of_upt})`);
+                        }
+                    }
+                });
+                }
+            },error:function(data){
+                console.log("Error: " + data);
+            }
+        });
+    }
 </script>
 <script>
    $(document).ready(function(){
@@ -562,69 +1097,31 @@
         let test = true
         let title = $('input[name=ten_san_pham]').val();
         let content = $('#summernote').summernote('code');
-        /*if(title.trim() == "") {
+        if(title.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Tiêu đề không được để trống"
 			});
-            test = false;
+         test = false;
         } else if(content.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Nội dung bảng tin không được để trống"
-            });
-            test = false;
-        }*/
-        test = true;
+         });
+         test = false;
+        }
         return test;
       }
       // Insert san pham
       var click_number;
       $(document).on('click','#btn-them-bang-tin',function(event){
          click_number = $(this).closest('tr');
-         let number;
-         $.ajax({
-            url: "ajax_get_number.php",
-            type: "POST",
-            data: {
-               status: "count_n",
-            },
-            success:function(data){
-               data = JSON.parse(data);
-               if(data.msg == 'ok'){
-                  number = parseInt(data.count) + 1;
-                  $('#form-bang-tin').load("ajax_notification.php?number=" + number,() => {
-                     $('#modal-xl').modal('show');
-                     $('#btn-luu-bang-tin').text("Thêm");
-                     $(function(){
-                        setTimeout(() => {
-                           $('#summernote').summernote({height: 120});
-                        },100);
-                        init_map_file();
-                     });
-                     $("#fileInput").on("change",function(){
-                        $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-                        readURL(this); 
-                     });
-                  });
-               }
-            },
-            error:function(data){
-               console.log("Error:" + data);
-            }
-         });
-      });
-      // Update sản phẩm
-      $(document).on('click','.btn-sua-bang-tin',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         click_number = $(this).closest('tr');
-         let number = $(event.currentTarget).attr('data-number');
-         $('#form-bang-tin').load("ajax_notification.php?id=" + id + "&number=" + number,() => {
-            $('#modal-xl').modal('show');
-            $('#btn-luu-bang-tin').text("Sửa");
+         $('#form-bang-tin').load("ajax_notification.php?status=Insert",() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $('#btn-luu-bang-tin').text("Thêm");
             $(function(){
                setTimeout(() => {
-                  $('#summernote').summernote({height: 120});
+                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
                },100);
                init_map_file();
             });
@@ -632,6 +1129,76 @@
                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
                readURL(this); 
             });
+         });
+      });
+      // Update sản phẩm
+      $(document).on('click','.btn-sua-bang-tin',function(event){
+         let id = $(event.currentTarget).attr('data-id');
+         click_number = $(this).closest('tr');
+         $('#form-bang-tin').load("ajax_notification.php?status=Update&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $('#btn-luu-bang-tin').text("Sửa");
+            $(function(){
+               setTimeout(() => {
+                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
+               },100);
+               init_map_file();
+            });
+            $("#fileInput").on("change",function(){
+               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+               readURL(this); 
+            });
+         });
+      });
+      // Delete sản phẩm
+      $(document).on('click','.btn-xoa-bang-tin',function(event){
+         let id = $(event.currentTarget).attr('data-id');
+         $.confirm({
+            title: 'Thông báo',
+            content: 'Bạn có chắc chắn muốn xoá bảng tin này ?',
+            buttons: {
+               Có: function () {
+                  $.ajax({
+                     url:window.location.href,
+                     type:"POST",
+                     cache:false,
+                     data:{
+                        token: "<?php echo_token(); ?>",
+                        id: id,
+                        status: "Delete",
+                     },
+                     success:function(res){
+                        console.log(id);
+                        res_json = JSON.parse(res);
+                        if(res_json.msg == "ok") {
+                           arr_input_file = new Map();
+                           arr_list_file_del = [];
+                           $.alert({
+                              title: "Thông báo",
+                              content: res_json.success
+                           });
+                           dt_n.row(click_number).remove().draw();
+                        } else {
+                           $.alert({
+                              title: "Thông báo",
+                              content: res.error
+                           });
+                        }
+                     }
+                  });
+               },
+               Không: function () {
+
+               },
+            }
+         });
+      });
+      // xem bang tin
+      $(document).on('click','.btn-xem-bang-tin',function(event){
+         let id = $(event.currentTarget).attr('data-id');
+         click_number = $(this).closest('tr');
+         $('#form-bang-tin').load("ajax_notification.php?status=Read&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
          });
       });
       // xử lý thao tác Insert Update
@@ -679,56 +1246,35 @@
                      arr_list_file_del = [];
                      $("input[name='list_file_del']").val("");
                      let status = $('#btn-luu-bang-tin').attr('data-status').trim();
-                     let record = `
-                     <tr id="bang-tin${res_json.id}">
-                           <td>${res_json.number}</td>
-                           <td>${res_json.title}</td>
-                           <td>${res_json.content}</td>
-                           <td>0</td>
-                           <td>${res_json.created_at}</td>
-                           <td>
-                              <button data-id="${res_json.id}" data-name="${name}" data-count="${res_json.count}" data-price="${res_json.price}" data-name_type="${res_json.category_id}" data-image="${res_json.image}" data-number="${res_json.number}" class="btn-sua-bang-tin btn btn-primary">
-                                 Sửa
-                              </button>
-                              <button data-id="${res_json.id}" data-number="${res_json.number}" style="margin-left:3px;" class="btn-xoa-bang-tin btn btn-danger">
-                                 Xoá
-                              </button>
-                           </td>
-                     </tr>`;
-                     record = $(record);
                      let msg ="";
                      if(status == "Insert"){
-                        $('#list-bang-tin').prepend(record);
-                        setTimeout(() => {
-                              $("#bang-tin" + res_json.id).css('background-color','#d4efecc2');
-                        },1000);
                         msg = "Thêm dữ liệu thành công.";
                         $.alert({
-                              title: "Thông báo",
-                              content: msg
+                           title: "Thông báo",
+                           content: msg,
+                           buttons: {
+                              Ok : function(){
+                                 location.href="notification_manage.php";
+                              }
+                           }
                         });
-                        dt_n.row.add(record[0]).draw();
-                        //alert(msg);
-                        if($('#display-image').length){
-                              $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
-                        }
                      } else if(status == "Update") {
                         console.log(res_json);
                         msg = "Sửa dữ liệu thành công.";
                         $.alert({
                            title: "Thông báo",
-                           content: msg
+                           content: msg,
+                           buttons: {
+                              Ok : function(){
+                                 location.reload();
+                              }
+                           }
                         });
-                        let one_row = dt_n.row(click_number).data();
-                        one_row[1] = `${res_json.title}`;
-                        one_row[2] = `${res_json.content}`;
-                        dt_n.row(click_number).data(one_row).draw();
                      }
                      $('#form-bang-tin').trigger('reset');
                      $("#msg_style").removeAttr('style');
                      $("#msg").text(msg);
                      $('#modal-xl').modal('hide');
-
                   } else if(res_json.msg == 'not_ok') {
                      $.alert({
                         title: "Thông báo",
@@ -770,7 +1316,7 @@
 </script>
 <!--js section end-->
 <?php
-        include_once("include/footer.php");
+   include_once("include/footer.php");
 ?>
 <?php
 	
@@ -798,7 +1344,7 @@
       //
       //$image_str = isset($_REQUEST["image_str"]) ? $_REQUEST["image_str"] : null;
       if($status == 'Delete') {
-         $success = "Bạn đã Delete dữ liệu thành công";
+         $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
          ajax_db_update_by_id('notification',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
       } else if($status == "Insert") {
@@ -952,6 +1498,21 @@
             $image = $image['img_name'];
          }
          echo_json(["msg" => "ok","number" => $number,'success' => $success,"id" => $id,"title"=>$title,"content"=>$content]);
+      } else if($status == "upt_more") {
+         $n_id = isset($_REQUEST["n_id"]) ? $_REQUEST["n_id"] : null;
+         $n_title = isset($_REQUEST["n_title"]) ? $_REQUEST["n_title"] : null;
+         $n_content = isset($_REQUEST["n_content"]) ? $_REQUEST["n_content"] : null;
+         $sql = "Update notification set title='$n_title',content='$n_content' where id='$n_id'";
+         sql_query($sql);
+         echo_json(["msg" => "ok"]);
+      } else if($status == "del_more") {
+         $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
+         $rows = explode(",",$rows);
+         foreach($rows as $row) {
+            $sql = "Update notification set is_delete = 1 where id = '$row'";
+            sql_query($sql);
+         }
+         echo_json(["msg" => "ok"]);
       }
    }
 ?>

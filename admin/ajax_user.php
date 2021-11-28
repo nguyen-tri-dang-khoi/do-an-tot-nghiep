@@ -2,9 +2,9 @@
     include_once("../lib/database.php");
     
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-    $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
-    if($id) {
-        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 and is_lock = 0 limit 1";
+    $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+    if($id && $status == "Update") {
+        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
 <?php
@@ -22,13 +22,13 @@
             </div>
             <div class="col-md-4 form-group">
                 <label for="phone">Số điện thoại</label>
-                <input type="text" class="form-control" id="phone" placeholder="Nhập số điện thoại" value="<?=$result['phone']?>">
+                <input type="number" min="1" class="form-control" id="phone" placeholder="Nhập số điện thoại" value="<?=$result['phone']?>">
             </div>
         </div>
         <div class="row">
             <div class="col-md-6 form-group">
                 <label for="email">Số chứng minh nhân dân</label>
-                <input type="text" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân" value="<?=$result['cmnd']?>">
+                <input type="number" min="1" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân" value="<?=$result['cmnd']?>">
             </div>
             <div class="col-md-6 form-group">
                 <label for="image">Ảnh đại diện</label>
@@ -36,7 +36,6 @@
                     <input name="img_name" type="file" class="custom-file-input" id="fileInput">
                     <label class="custom-file-label" for="fileInput">Chọn ảnh đại diện</label>
                 </div>
-                <!--_DIR_["IMG"]["ADMINS"];?>info/img-cmnd/echo $result["img_cmnd"]-->
                 <div class="img-fluid" id="where-replace">
                     <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
                 </div>
@@ -65,14 +64,15 @@
     </div>
     <input type="hidden" name="token" value="<?php echo_token();?>">
     <input type="hidden" name="id" value="<?php echo $id;?>">
-    <input type="hidden" name="number" value="<?php echo $number;?>">
     <div class="card-footer">
-        <button id="btn-update" type="submit" class="btn btn-primary">Sửa dữ liệu</button>
+        <button id="btn-update" type="submit" class="dt-button button-purple">Sửa dữ liệu</button>
     </div>
 <?php 
-        } 
-        exit();
-    }
+    } 
+}
+?>
+<?php
+    if($status == "Insert") {
 ?>
 <div class="card-body">
     <div class="row">
@@ -86,13 +86,13 @@
         </div>
         <div class="col-md-4 form-group">
             <label for="phone">Số điện thoại</label>
-            <input type="email" class="form-control" id="phone" placeholder="Nhập số điện thoại">
+            <input type="number" min="1" class="form-control" id="phone" placeholder="Nhập số điện thoại">
         </div>
     </div>
     <div class="row">
         <div class="col-md-6 form-group">
             <label for="email">Số chứng minh nhân dân</label>
-            <input type="email" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân">
+            <input type="number" min="1" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân">
         </div>
         <div class="col-md-6 form-group">
             <label for="image">Ảnh đại diện</label>
@@ -127,8 +127,115 @@
     </div>
 </div>
 <input type="hidden" name="token" value="<?php echo_token();?>">
-<input type="hidden" name="number" value="<?php echo $number;?>">
 <!-- /.card-body -->
 <div class="card-footer">
-    <button id="btn-insert" type="submit" class="btn btn-primary">Thêm dữ liệu</button>
+    <button id="btn-insert" type="submit" class="dt-button button-purple">Thêm dữ liệu</button>
 </div>
+<?php } ?>
+<?php
+    if($id && $status == "Read") {
+        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
+        $result = fetch_row($sql_get_user_info,[$id]);
+?>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <tr>
+                <th>Tên đầy đủ</th>
+                <td><?=$result['full_name']?></td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td><?=$result['email']?></td>
+            </tr>
+            <tr>
+                <th>Số điện thoại</th>
+                <td><?=$result['phone']?></td>
+            </tr>
+            <tr>
+                <th>Số chứng minh nhân dân</th>
+                <td><?=$result['cmnd']?></td>
+            </tr>
+            <tr>
+                <th>Ảnh đại diện</th>
+                <td>
+                    <img style="width:100px;height:100px;" src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg"?>" alt="">
+                </td>
+            </tr>
+            <tr>
+                <th>Ngày sinh</th>
+                <td><?=Date("d-m-Y",strtotime($result['birthday']))?></td>
+            </tr>
+            <tr>
+                <th>Địa chỉ</th>
+                <td><?=$result['address']?></td>
+            </tr>
+            <tr>
+                <th>Tên đăng nhập</th>
+                <td><?=$result['username']?></td>
+            </tr>
+            <tr>
+                <th>Ngày tạo</th>
+                <td><?=Date("d-m-Y H:i:s",strtotime($result['created_at']))?></td>
+            </tr>
+        </table>
+    </div>
+<?php
+    } if($status == "read_more") {
+        $str_arr_upt = isset($_REQUEST['str_arr_upt']) ? $_REQUEST['str_arr_upt'] : null;
+        $html = "";
+        if($str_arr_upt) {
+            $sql = "select * from user where id in ($str_arr_upt)";
+            $result2 = fetch_all(sql_query($sql));
+            $i = 1;
+            foreach($result2 as $res) {
+                $file_src = $res['img_name'] ? $res['img_name'] : "upload/noimage.jpg";
+                $html .= "<tbody style='display:none;' class='t-bd-read t-bd-read-$i'>
+                <tr>
+                    <th>Tên đầy đủ</th>
+                    <td>" . $res['full_name'] . "</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>" . $res['email'] . "</td>
+                </tr>
+                <tr>
+                    <th>Số điện thoại</th>
+                    <td>" . $res['phone'] . "</td>
+                </tr>
+                <tr>
+                    <th>Số chứng minh nhân dân</th>
+                    <td>" . $res['cmnd'] . "</td>
+                </tr>
+                <tr>
+                    <th>Ảnh đại diện</th>
+                    <td>
+                        <img style='width:100px;height:100px;' src='" . $file_src . "'>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Ngày sinh</th>
+                    <td>" . Date('d-m-Y',strtotime($res['birthday'])) . "</td>
+                </tr>
+                <tr>
+                    <th>Địa chỉ</th>
+                    <td>" . $res['address'] . "</td>
+                </tr>
+                <tr>
+                    <th>Tên đăng nhập</th>
+                    <td>" . $res['username'] . "</td>
+                </tr>
+                <tr>
+                    <th>Ngày tạo</th>
+                    <td>" . Date("d-m-Y H:i:s",strtotime($res['created_at'])) . "</td>
+                </tr>
+                </tbody>";
+                $i++;
+            }
+            $html = "<div class='card-body'>
+            <table class='table table-bordered'>
+                $html
+            </table></div>";
+            print_r($html);
+        }
+    }
+?>
