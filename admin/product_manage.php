@@ -3,7 +3,7 @@
    redirect_if_login_status_false();
    if(is_get_method()) {
       // permission crud for user
-      $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
+      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
       }
@@ -15,6 +15,9 @@
       }
       if(check_permission_crud("product_manage.php","insert")) {
         $allow_insert = true;
+      }
+      if(check_permission_crud("product_manage.php","check_product")) {
+         $allow_check_product = true;
       }
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
@@ -493,6 +496,11 @@
                               if($allow_insert) {
                            ?>
                            <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                           <?php } ?>
+                           <?php
+                              if($allow_check_product) {
+                           ?>
+                           <button onclick="checkProduct()" class="dt-button button-blue">Duyệt nhanh</button>
                            <?php } ?>
                         </div>
                         <div class="section-save">
@@ -1402,7 +1410,7 @@
             console.log("Error: " + data);
          }
       })
-    }
+   }
    var count_row_z_index = 1000000;
    function showRow(page,apply_dom = true){
       let count = $('input[name="count2"]').val();

@@ -85,6 +85,7 @@
         </div>
     </div>-->
     <div class="form-group" style="width:100%;">
+        <label for="">Ảnh mô tả sản phẩm</label>
         <div class="kh-files">
             <div class="kh-file-lists">
                 <?php
@@ -207,6 +208,7 @@
         </div>
     </div>
     <div class="form-group" style="width:100%;">
+        <label for="">Ảnh mô tả sản phẩm</label>
         <div class="kh-files">
             <div class="kh-file-lists">
                 <div class="kh-file-list">

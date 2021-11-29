@@ -179,119 +179,121 @@
                             $rows = db_query($sql_get_user,$arr_paras);
                         ?>
                         <!--Table user-->
-                        <table id="m-user-table" class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th></th>
-									<th>Số thứ tự</th>
-                                    <th>Tên đầy đủ</th>
-                                    <th>Email</th>
-                                    <th>Số điện thoại</th>
-                                    <th>Số chứng minh nhân dân</th>
-                                    <th>Địa chỉ</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Tên đăng nhập</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="m-user-body">
-                                <?php foreach($rows as $row) { ?>
-                                    <?php $cnt1 = $cnt + 1;?>
-                                    <tr id="<?=$row["id"];?>">
-                                        <td></td>
-										<td><?=$total - ($start_page + $cnt);?></td>
-                                        <td>
-                                            <?php
-                                                if($upt_more == 1) {
-                                                    echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'>";
-                                                } else {
-                                                    if($row['is_lock'] == 1){
-                                                        echo '<i class="fas fa-lock mr-1"></i>';
-                                                    }
-                                                    echo $row["full_name"];
-                                                }
-                                            ?>
-                                        </td>
-                                        <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'>" : $row["email"]?></td>
-                                        <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'>" : $row["phone"]?></td>
-                                        <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'>" : $row["cmnd"]?></td>
-                                        <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address' value='$row[address]'>" : $row["address"]?></td>
-                                        <td>
-                                            <?php 
-                                                if($upt_more == 1) {
-                                                    if(strlen($row["birthday"]) > 0) {
-                                                        echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'>";
-                                                    } else {
-                                                        echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''>";
-                                                    }
-                                                } else {
-                                                    if(strlen($row["birthday"]) > 0) {
-                                                        echo Date("d-m-Y",strtotime($row["birthday"]));
-                                                    } else {
-                                                        echo "";
-                                                    }
-                                                }
-                                            ?>
-                                        </td>
-                                        <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'>" : $row["username"]?></td>
-                                        <td><?=$row["created_at"] ? Date("d-m-Y H:i:s",strtotime($row["created_at"])) : "";?></td>
-                                        <td>
-                                            <?php
-                                                if($upt_more != 1) {
-                                            ?>
-                                            <?php
-                                                if($allow_read) {
-                                            ?>
-                                            <button class="btn-read-user dt-button button-grey"
-                                            data-id="<?=$row["id"];?>">Xem</button>
-                                            <?php } ?>
-                                            <?php
-                                                if($allow_update) {
-                                            ?>
-                                            <button class="btn-update-user dt-button button-green"
-                                            data-id="<?=$row["id"];?>">Sửa</button>
-                                            <?php } ?>
-                                            <?php
-                                                if($allow_delete) {
-                                            ?>
-                                            <button class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
-                                            </button>
-                                            <?php } ?>
-                                            <?php
-                                                } else {
-                                            ?>
-                                            <?php
-                                                if($allow_update) {
-                                            ?>
-                                            <button tabindex="0" dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
-                                            <?php } ?>
-                                            <?php
-                                                }
-                                            ?>
-                                        </td>
+                        <div class="table-responsive">
+                            <table id="m-user-table" class="table table-bordered table-striped ">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Số thứ tự</th>
+                                        <th>Tên đầy đủ</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Số chứng minh nhân dân</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Tên đăng nhập</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Thao tác</th>
                                     </tr>
-                                <?php 
-										$cnt++;
-									} 
-								?>
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th></th>
-								    <th>Số thứ tự</th>
-                                    <th>Tên đầy đủ</th>
-                                    <th>Email</th>
-                                    <th>Số điện thoại</th>
-                                    <th>Số chứng minh nhân dân</th>
-                                    <th>Địa chỉ</th>
-                                    <th>Ngày sinh</th>
-                                    <th>Tên đăng nhập</th>
-                                    <th>Ngày tạo</th>
-                                    <th>Thao tác</th>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </thead>
+                                <tbody id="m-user-body">
+                                    <?php foreach($rows as $row) { ?>
+                                        <?php $cnt1 = $cnt + 1;?>
+                                        <tr id="<?=$row["id"];?>">
+                                            <td></td>
+                                            <td><?=$total - ($start_page + $cnt);?></td>
+                                            <td>
+                                                <?php
+                                                    if($upt_more == 1) {
+                                                        echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'>";
+                                                    } else {
+                                                        if($row['is_lock'] == 1){
+                                                            echo '<i class="fas fa-lock mr-1"></i>';
+                                                        }
+                                                        echo $row["full_name"];
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'>" : $row["email"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'>" : $row["phone"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'>" : $row["cmnd"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address' value='$row[address]'>" : $row["address"]?></td>
+                                            <td>
+                                                <?php 
+                                                    if($upt_more == 1) {
+                                                        if(strlen($row["birthday"]) > 0) {
+                                                            echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'>";
+                                                        } else {
+                                                            echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''>";
+                                                        }
+                                                    } else {
+                                                        if(strlen($row["birthday"]) > 0) {
+                                                            echo Date("d-m-Y",strtotime($row["birthday"]));
+                                                        } else {
+                                                            echo "";
+                                                        }
+                                                    }
+                                                ?>
+                                            </td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'>" : $row["username"]?></td>
+                                            <td><?=$row["created_at"] ? Date("d-m-Y H:i:s",strtotime($row["created_at"])) : "";?></td>
+                                            <td>
+                                                <?php
+                                                    if($upt_more != 1) {
+                                                ?>
+                                                <?php
+                                                    if($allow_read) {
+                                                ?>
+                                                <button class="btn-read-user dt-button button-grey"
+                                                data-id="<?=$row["id"];?>">Xem</button>
+                                                <?php } ?>
+                                                <?php
+                                                    if($allow_update) {
+                                                ?>
+                                                <button class="btn-update-user dt-button button-green"
+                                                data-id="<?=$row["id"];?>">Sửa</button>
+                                                <?php } ?>
+                                                <?php
+                                                    if($allow_delete) {
+                                                ?>
+                                                <button class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
+                                                </button>
+                                                <?php } ?>
+                                                <?php
+                                                    } else {
+                                                ?>
+                                                <?php
+                                                    if($allow_update) {
+                                                ?>
+                                                <button tabindex="0" dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
+                                                <?php } ?>
+                                                <?php
+                                                    }
+                                                ?>
+                                            </td>
+                                        </tr>
+                                    <?php 
+                                            $cnt++;
+                                        } 
+                                    ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th>Số thứ tự</th>
+                                        <th>Tên đầy đủ</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Số chứng minh nhân dân</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Tên đăng nhập</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                         <div style="justify-content:center;" class="row">
                             <ul id="pagination" class="pagination">
                                 
@@ -615,7 +617,7 @@
             onSelect: function(dateText,inst) {
                 console.log(dateText.split("-"));
                 dateText = dateText.split("-");
-                $('input[name="u_birthday2"]').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+                $(this).attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
             }
         });
     }
@@ -683,7 +685,7 @@
       $('td input[name="u_email2"]').each(function(){
          formData.append("u_email2[]",$(this).val());
       });
-      $('td textarea[name="u_phone2"]').each(function(){
+      $('td input[name="u_phone2"]').each(function(){
          formData.append("u_phone2[]",$(this).val());
       });
       $('td input[name="u_cmnd2"]').each(function(){
@@ -695,7 +697,7 @@
       $('td input[name="u_username2"]').each(function(){
          formData.append("u_username2[]",$(this).val());
       });
-      $('td input[name="u_birthday2[]"]').each(function(){
+      $('td input[name="u_birthday2"]').each(function(){
          formData.append("u_birthday2[]",$(this).attr('data-date'));
       });
       formData.append("token","<?php echo_token(); ?>");
@@ -923,25 +925,25 @@
         for(i = 0 ; i < _data.length ; i++) {
             formData.append("user_id[]",_data[i].DT_RowId);
         }
-        $('td input[name="u_fullname2"]').each(function(){
+        $('tr.selected input[name="u_fullname2"]').each(function(){
             formData.append("u_fullname2[]",$(this).val());
         });
-        $('td input[name="u_email2"]').each(function(){
+        $('tr.selected input[name="u_email2"]').each(function(){
             formData.append("u_email2[]",$(this).val());
         });
-        $('td textarea[name="u_phone2"]').each(function(){
+        $('tr.selected textarea[name="u_phone2"]').each(function(){
             formData.append("u_phone2[]",$(this).val());
         });
-        $('td input[name="u_cmnd2"]').each(function(){
+        $('tr.selected input[name="u_cmnd2"]').each(function(){
             formData.append("u_cmnd2[]",$(this).val());
         });
-        $('td textarea[name="u_address2"]').each(function(){
+        $('tr.selected textarea[name="u_address2"]').each(function(){
             formData.append("u_address2[]",$(this).val());
         });
-        $('td input[name="u_username2"]').each(function(){
+        $('tr.selected input[name="u_username2"]').each(function(){
             formData.append("u_username2[]",$(this).val());
         });
-        $('td input[name="u_birthday2[]"]').each(function(){
+        $('tr.selected input[name="u_birthday2[]"]').each(function(){
             formData.append("u_birthday2[]",$(this).attr('data-date'));
         });
         formData.append("token","<?php echo_token(); ?>");
@@ -2038,10 +2040,11 @@
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
             $u_username2 = isset($_REQUEST["u_username2"]) ? $_REQUEST["u_username2"] : null;
-            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? Date('Y-m-d',strtotime($_REQUEST["u_birthday2"])) : null;
+            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday,username) values('$u_fullname2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$u_birthday2[$i]','$u_username2[$i]')";
+                    $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;
+                    $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday,username) values('$u_fullname2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth','$u_username2[$i]')";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
@@ -2055,16 +2058,15 @@
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
             $u_username2 = isset($_REQUEST["u_username2"]) ? $_REQUEST["u_username2"] : null;
-            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? Date('Y-m-d',strtotime($_REQUEST["u_birthday2"])) : null;
+            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
             if($len) {
-                for($i = 0 ; $i < $len ; $i++) {                    
-                    $sql = "Update user set full_name='$u_fullname2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$u_birthday2[$i]',username='$u_username2[$i]' where id = '$user_id[$i]'";
+                for($i = 0 ; $i < $len ; $i++) {  
+                    $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;                 
+                    $sql = "Update user set full_name='$u_fullname2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth',username='$u_username2[$i]' where id = '$user_id[$i]'";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
             }
-        } else if($status == "upt_all") {
-
         }
     }
 ?>

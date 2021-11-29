@@ -178,27 +178,36 @@
                            </div>
                         </form>
                      </div>
-                     <div class="col-12 mb-3" style="padding-right:0px;padding-left:0px;">
-                        <?php
-                           if($allow_delete) {
-                        ?>
-                        <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                        <?php } ?>
-                        <?php
-                           if($allow_update) {
-                        ?>
-                        <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                        <?php } ?>
-                        <?php
-                           if($allow_read) {
-                        ?>
-                        <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                        <?php } ?>
-                        <?php
-                           if($allow_insert) {
-                        ?>
-                        <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                        <?php } ?>
+                     <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                        <div>
+                           <?php
+                              if($allow_delete) {
+                           ?>
+                           <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                           <?php } ?>
+                           <?php
+                              if($allow_update) {
+                           ?>
+                           <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                           <?php } ?>
+                           <?php
+                              if($allow_read) {
+                           ?>
+                           <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                           <?php } ?>
+                           <?php
+                              if($allow_insert) {
+                           ?>
+                           <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                           <?php } ?>
+                        </div>
+                        <div class="section-save">
+                           <?php
+                              if($upt_more == 1 && $allow_update){
+                           ?>
+                           <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                           <?php } ?>
+                        </div>
                      </div>
                      <table id="m-bang-tin" class="table table-bordered table-striped">
                         <thead>
@@ -327,6 +336,38 @@
         <form id="form-bang-tin" method="post" enctype='multipart/form-data'>
             
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-xl2">
+  <div class="modal-dialog modal-xl" style="min-width:1650px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="msg-del" class="modal-title">Thêm dữ liệu bảng tin nhanh</h4>
+        <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div id="form-notify2" class="modal-body">
+            <div class="row j-between">
+               <div style="margin-left: 7px;" class="form-group">
+                  <label for="">Nhập số dòng cần thêm: </label>
+                  <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
+                  <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
+               </div>
+               <div class="d-flex j-between">
+                  <div class="k-plus">
+                     <button data-plus="1" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                  </div>
+                  <div class="k-minus">
+                     <button data-minus="1" onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
     </div>
   </div>
@@ -667,28 +708,18 @@
    function insAll(){
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      $('td input[name="name_p2"]').each(function(){
-         formData.append("name_p2[]",$(this).val());
+      $('td input[name="n_title2"]').each(function(){
+         formData.append("n_title2[]",$(this).val());
       });
-      $('td input[name="price_p2"]').each(function(){
-         formData.append("price_p2[]",$(this).val());
+      $('td input[name="n_content2"]').each(function(){
+         formData.append("n_content2[]",$(this).val());
       });
-      $('td textarea[name="desc_p2"]').each(function(){
-         formData.append("desc_p2[]",$(this).val());
-      });
-      $('td input[name="count_p2"]').each(function(){
-         formData.append("count_p2[]",$(this).val());
-      });
-      $('td input[name="category_id"]').each(function(){
-         formData.append("type_p2[]",$(this).val());
-      });
-      $('td input[name="img2[]"]').each(function(){
-         formData.append("img2[]",$(this)[0].files[0]);
+      $('td input[name="img3[]"]').each(function(){
+         formData.append("img3[]",$(this)[0].files[0]);
       });
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
-      console.log(formData.getAll("img2"));
       $.ajax({
          url: window.location.href,
          type: "POST",
@@ -716,34 +747,132 @@
          }
       })
    }
-   function insRow(){
+   function insMore(){
+      //$('#modal-xl2').modal('show');
+      $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
+   }
+   function showRow(page,apply_dom = true){
+      let count = $('input[name="count2"]').val();
+      if(count == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống số dòng thêm",
+        })
+        return;
+      }
+      if(count < 1) {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng nhập số dòng lớn hơn 0",
+        })
+        return;
+      }
+      limit = 7;
+      if(apply_dom) {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
+        $('#form-notify2 table').remove();
+        $('#form-notify2 #paging').remove();
+        let html = `
+        <table class='table table-bordered' style="min-height:100px;height:auto;">
+          <thead>
+            <tr>
+              <th>Số thứ tự</th>
+              <th>Tiêu đề</th>
+              <th>Nội dung</th>
+              <th>Ảnh đại diện</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+        `;
+        count2 = parseInt(count / 7);
+        g = 1;
+        for(i = 0 ; i < count2 ; i++) {
+          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
+          for(j = 0 ; j < 7 ; j++) {
+            html += `
+              <tr data-row-id="${parseInt(g)}">
+               <td>${parseInt(g)}</td>
+               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
+               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
+               <td>
+                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                     <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
+                  </div>
+               </td>
+               <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+              </tr>
+            `;
+            g++;
+          }
+          html += "</tbody>";
+        }
+        if(count % 7 != 0) {
+          count3 = count % 7;
+          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
+          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
+            html += `
+              <tr data-row-id="${parseInt(g)}">
+               <td>${parseInt(g)}</td>
+               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
+               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
+               <td>
+                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                     <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
+                  </div>
+               </td>
+               <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+              </tr>
+            `;
+            g++;
+          }
+          html += "</tbody>";
+        }
+        html += `
+          </table>
+        `;
+        html += `
+          <div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+          </div>
+        `;
+        $(html).appendTo('#form-notify2');
+        apply_dom = false;
+        $('.t-bd-1').css({"display":"contents"});
+        console.log(html);
+      } else {
+        $('.t-bd').css({"display":"none"});
+        $('.t-bd-' + page).css({"display":"contents"});
+      }
+      $('#pagination2').pagination({
+        items: count,
+        itemsOnPage: limit,
+        currentPage: page,
+        prevText: "<",
+        nextText: ">",
+        onPageClick: function(pageNumber,event){
+          showRow(pageNumber,false);
+        },
+        cssStyle: 'light-theme',
+      });
+      $('#modal-xl2').on('hidden.bs.modal', function (e) {
+        $('#form-notify2 table').remove();
+        $('#form-notify2 #paging').remove();
+        $('input[name="count2"]').val("");
+      })
+   } 
+   function insRow(){ 
       let page = $('[data-plus]').attr('data-plus');
       let html = "";
       let count2 = parseInt(page / 7) + 1;
       html = `
          <tr data-row-id='${parseInt(page) + 1}'>
             <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-            <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
-            <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+            <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
+            <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
             <td>
                <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                  <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-               </div>
-            </td>
-            <td>
-               <div style="display:flex;flex-direction:column;outline:none !important;">
-                  <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                     <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                        <a href="#">Chọn danh mục</a>
-                        <ul class="child">
-                           <?php echo show_menu_3();?>
-                        </ul>
-                        <input type="hidden" name="category_id">
-                     </li>
-                  </ul>
-                  <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+                  <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
                </div>
             </td>
             <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
@@ -756,7 +885,7 @@
       } else {
          $('.t-bd').css({"display":"none"});
          html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-         $(html).appendTo('#form-product2 table');
+         $(html).appendTo('#form-notify2 table');
       }
       $('[data-plus]').attr('data-plus',parseInt(page) + 1);
       $('input[name="count2"]').val(parseInt(page) + 1);
@@ -771,6 +900,113 @@
          },
          cssStyle: 'light-theme',
       });
+   }
+   function insMore2(){
+      let name_p2 = $(event.currentTarget).closest('tr').find('td input[name="name_p2"]').val();
+      let price_p2 = $(event.currentTarget).closest('tr').find('td input[name="price_p2"]').val();
+      let count_p2 = $(event.currentTarget).closest('tr').find('td input[name="count_p2"]').val();
+      let desc_p2 = $(event.currentTarget).closest('tr').find('td textarea[name="desc_p2"]').val();
+      let type_p2 = $(event.currentTarget).closest('tr').find('td input[name="category_id"]').val();
+      let file = $(event.currentTarget).closest('tr').find('input[name="img2[]"]')[0].files;
+      console.log(name_p2);
+      console.log(price_p2);
+      console.log(count_p2);
+      console.log(type_p2);
+      let formData = new FormData();
+      formData.append("name_p2",name_p2);
+      formData.append("price_p2",price_p2);
+      formData.append("count_p2",count_p2);
+      formData.append("type_p2",type_p2);
+      formData.append("desc_p2",desc_p2);
+      formData.append("status","ins_more");
+      formData.append("token","<?php echo_token();?>");
+      if(file.length > 0) {
+         formData.append('file_p2',file[0]); 
+      }
+      let this2 = $(event.currentTarget);
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         cache: false,
+         contentType: false,
+         processData: false,
+         data:formData,
+         success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã thêm dữ liệu thành công",
+                  buttons: {
+                     "Ok": function(){
+                        this2.text("Đã thêm");
+                        this2.prop("disabled",true);
+                        this2.css({
+                           "border": "1px solid #cac0c0",
+                           "color": "#cac0c0",
+                           "pointer-events": "none",
+                        });
+                     }
+                  }
+               });
+            }
+         },error: function(data){
+            console.log("Error: " + data);
+         }
+      })
+   }
+   function uptAll(){
+      let formData = new FormData();
+      let _data = dt_pi.rows(".selected").select().data();
+      if(_data.length == 0) {
+         $.alert({
+            title:"Thông báo",
+            content:"Vui lòng chọn dòng cần lưu",
+         });
+         return;
+      }
+      for(i = 0 ; i < _data.length ; i++) {
+         formData.append("n_id2[]",_data[i].DT_RowId);
+      }
+      $('tr.selected input[name="n_title2"]').each(function(){
+         formData.append("n_title2[]",$(this).val());
+      });
+      $('tr.selected input[name="n_content2"]').each(function(){
+         formData.append("n_content2[]",$(this).val());
+      });
+      $('tr.selected input[name="img3[]"]').each(function(){
+         formData.append("img3[]",$(this)[0].files[0]);
+      });
+      formData.append("token","<?php echo_token(); ?>");
+      formData.append("status","upt_all");
+      formData.append("len",_data.length);
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         data: formData,
+         cache: false,
+         contentType: false,
+         processData: false,
+         success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã sửa dữ liệu thành công",
+                  buttons: {
+                     "Ok": function(){
+                        location.reload();
+                     }
+                  }
+               });
+            }
+         },
+         error: function(data){
+            console.log("Error: " + data);
+         }
+      })
    }
    function delRow(){
       let page = $('[data-plus]').attr('data-plus');
@@ -796,153 +1032,7 @@
         },
         cssStyle: 'light-theme',
       });
-      count_row_z_index++;
    }
-   function showRow(page,apply_dom = true){
-      let count = $('input[name="count2"]').val();
-      if(count == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống số dòng thêm",
-        })
-        return;
-      }
-      if(count < 1) {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng nhập số dòng lớn hơn 0",
-        })
-        return;
-      }
-      limit = 7;
-      if(apply_dom) {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-product2 table').remove();
-        $('#form-product2 #paging').remove();
-        let html = `
-        <table class='table table-bordered' style="min-height:100px;height:auto;">
-          <thead>
-            <tr>
-              <th>Số thứ tự</th>
-              <th>Tên sp</th>
-              <th>Số lượng</th>
-              <th>Đơn giá</th>
-              <th>Mô tả sp</th>
-              <th>Ảnh đại diện</th>
-              <th class="w-300">Danh mục</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-        `;
-        count2 = parseInt(count / 7);
-        g = 1;
-        for(i = 0 ; i < count2 ; i++) {
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(j = 0 ; j < 7 ; j++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                  </td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;position:relative;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child" >
-                                 <?php echo show_menu();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                     </div>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        if(count % 7 != 0) {
-          count3 = count % 7;
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                  </td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;outline:none !important;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child">
-                                 <?php echo show_menu_3();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
-                     </div>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        html += `
-          </table>
-        `;
-        html += `
-          <div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-          </div>
-        `;
-        $(html).appendTo('#form-product2');
-        apply_dom = false;
-        $('.t-bd-1').css({"display":"contents"});
-        console.log(html);
-      } else {
-        $('.t-bd').css({"display":"none"});
-        $('.t-bd-' + page).css({"display":"contents"});
-      }
-      $('#pagination2').pagination({
-        items: count,
-        itemsOnPage: limit,
-        currentPage: page,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product2 table').remove();
-        $('#form-product2 #paging').remove();
-        $('input[name="count2"]').val("");
-      })
-   } 
    function readMore(){
       let arr_del = [];
       let _data = dt_n.rows(".selected").select().data();
@@ -1513,6 +1603,89 @@
             sql_query($sql);
          }
          echo_json(["msg" => "ok"]);
+      } else if($status == "ins_more") {
+         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
+         if($user_id) {
+            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
+            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
+            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
+            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
+            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
+            $dir = "upload/product/";
+            $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2','$user_id','$name_p2','1','$desc_p2','$count_p2','$price_p2')";
+            sql_query($sql);
+            $insert = ins_id();
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            $dir = "upload/product/" . $insert;
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            if($_FILES['file_p2']['name'] != "") {
+               $ext = strtolower(pathinfo($_FILES['file_p2']['name'],PATHINFO_EXTENSION));
+               $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+               $file_name = str_replace("_","",$file_name);
+               $path = $dir . "/" . $file_name ;
+               move_uploaded_file($_FILES['file_p2']['tmp_name'],$path);
+               $sql_update = "update product_info set img_name='$path' where id = '$insert'";
+               db_query($sql_update);
+            }
+            echo_json(["msg" => "ok"]);
+         }
+      } else if($status == "ins_all") {
+         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
+         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
+         if($user_id) {
+            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
+            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
+            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
+            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
+            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
+            $file_p2 = isset($_FILES["file_p2"]) ? $_FILES["file_p2"] : null;
+            for($i = 0 ; $i < $len ; $i++) {
+               $dir = "upload/product/";
+               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p2[$i]','$price_p2[$i]')";
+               //print_r($sql);
+               sql_query($sql);
+               $insert = ins_id();
+               if(!file_exists($dir)) {
+                  mkdir($dir, 0777); 
+                  chmod($dir, 0777);
+               }
+               $dir = "upload/product/" . $insert;
+               if(!file_exists($dir)) {
+                  mkdir($dir, 0777); 
+                  chmod($dir, 0777);
+               }
+               if($_FILES['img2']['name'][$i] != "") {
+                  $ext = strtolower(pathinfo($_FILES['img2']['name'][$i],PATHINFO_EXTENSION));
+                  $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
+                  $file_name = str_replace("_","",$file_name);
+                  $path = $dir . "/" . $file_name ;
+                  move_uploaded_file($_FILES['img2']['tmp_name'][$i],$path);
+                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
+                  sql_query($sql_update);
+               }
+            }
+            echo_json(["msg" => "ok"]);
+         }
+      } else if($status == "upt_all") {
+         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
+         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
+         $pi_count = isset($_REQUEST["pi_count"]) ? $_REQUEST["pi_count"] : null;
+         $pi_price = isset($_REQUEST["pi_price"]) ? $_REQUEST["pi_price"] : null;
+         $pi_desc = isset($_REQUEST["pi_desc"]) ? $_REQUEST["pi_desc"] : null;
+         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
+         if($len && is_numeric($len)) {
+            for($i = 0 ; $i < $len ; $i++){
+               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count[$i]',price='$pi_price[$i]',description='$pi_desc[$i]' where id='$pi_id[$i]'";
+               sql_query($sql);
+            }
+            echo_json(["msg" => "ok"]);
+         }
       }
    }
 ?>
