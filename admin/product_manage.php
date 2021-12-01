@@ -251,7 +251,6 @@
 </style>
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
-<!--<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">-->
 
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
@@ -500,7 +499,7 @@
                            <?php
                               if($allow_check_product) {
                            ?>
-                           <button onclick="checkProduct()" class="dt-button button-blue">Duyệt nhanh</button>
+                           <button onclick="checkProduct()" class="dt-button button-blue">Xuất bản nhanh</button>
                            <?php } ?>
                         </div>
                         <div class="section-save">
@@ -521,6 +520,7 @@
                               <th>Đơn giá</th>
                               <?=$upt_more == 1 ? "<th >Mô tả sản phẩm</th>" : "";?>
                               <th>Danh mục</th>
+                              <th>Tình trạng</th>
                               <th>Ngày đăng</th>
                               <th>Thao tác</th>
                            </tr>
@@ -551,9 +551,9 @@
                            array_push($arr_paras,$start_page);
                            array_push($arr_paras,$limit);
                            if($upt_more == 1) {
-                              $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.description as 'pi_description' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
+                              $sql_get_product = "select pi.id,pi.is_public, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.description as 'pi_description' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
                            } else {
-                              $sql_get_product = "select pi.id, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
+                              $sql_get_product = "select pi.id,pi.is_public, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where order by pi.id desc limit ?,?";
                            }
                            //print_r($sql_get_product);
                            $rows = db_query($sql_get_product,$arr_paras);
@@ -567,13 +567,14 @@
                                     <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'>" : $row['pi_name'];?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_count' style='' value='" . $row['count'] . "'>" : $row['count'];?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_count' style='' value='" . $row['count'] . "'>" : number_format($row['count'],0,'','.');?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_price' style='' value='" . $row['price'] . "'>" : $row['price'];?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_price' style='' value='" . $row['price'] . "'>" : number_format($row['price'],0,'','.') . "đ";?>
                                  </td>
                                  <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea></td>" : "";?>
                                  <td><?=$row['pt_name']?></td>
+                                 <td><?=$row['is_public'] == 0 ? "Chưa xuất bản" : "Đã xuất bản";?></td>
                                  <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
                                  <td>
                                     <?php
@@ -627,6 +628,7 @@
                               <th>Đơn giá</th>
                               <?=$upt_more == 1 ? "<th>Mô tả sản phẩm</th>" : "";?>
                               <th>Phân loại sản phẩm</th>
+                              <th>Tình trạng</th>
                               <th>Ngày đăng</th>
                               <th>Thao tác</th>
                            </tr>
@@ -1537,6 +1539,7 @@
         $('.t-bd-1').css({"display":"contents"});
         console.log(html);
       } else {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
         $('.t-bd').css({"display":"none"});
         $('.t-bd-' + page).css({"display":"contents"});
       }
@@ -1653,6 +1656,49 @@
             target.closest('.ul_menu').next().append(data);
          });
       }
+   }
+   function checkProduct(){
+      let _data = dt_pi.rows(".selected").select().data();
+      let formData = new FormData();
+      if(_data.length == 0) {
+         $.alert({
+            title:"Thông báo",
+            content:"Vui lòng dòng sản phẩm cần kiểm tra",
+         });
+         return;
+      }
+      for(i = 0 ; i < _data.length ; i++) {
+         formData.append("pi_id[]",_data[i].DT_RowId);
+      }
+      formData.append("token","<?php echo_token(); ?>");
+      formData.append("status","check_all");
+      formData.append("len",_data.length);
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         data: formData,
+         cache: false,
+         contentType: false,
+         processData: false,
+         success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã xuất bản sản phẩm thành công",
+                  buttons: {
+                     "Ok": function(){
+                        location.reload();
+                     }
+                  }
+               });
+            }
+         },
+         error: function(data){
+            console.log("Error: " + data);
+         }
+      });
    }
    function readMore(){
       let arr_del = [];
@@ -2048,12 +2094,9 @@
    } else if (is_post_method()) {
       function getFileUpload($img_order,$id){
          $sql = "select img_id from product_image where product_info_id = '$id' and img_order = '$img_order' limit 1";
-         //print_r($sql);
          $file_old_name = fetch_row($sql)['img_id'];
          return $file_old_name;
       }
-     // print_r($_FILES);
-     // print_r($_POST["list_file_del"]);
       $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
       $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
       $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
@@ -2325,6 +2368,13 @@
             }
             echo_json(["msg" => "ok"]);
          }
+      } else if($status == "check_all") {
+         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
+         foreach($pi_id as $id) {
+            $sql = "update product_info set is_public='1' where id = '$id'";
+            sql_query($sql);
+         }
+         echo_json(["msg" => "ok"]);
       }
    }
 ?>

@@ -711,7 +711,7 @@
       $('td input[name="n_title2"]').each(function(){
          formData.append("n_title2[]",$(this).val());
       });
-      $('td input[name="n_content2"]').each(function(){
+      $('td textarea[name="n_content2"]').each(function(){
          formData.append("n_content2[]",$(this).val());
       });
       $('td input[name="img3[]"]').each(function(){
@@ -841,6 +841,7 @@
         $('.t-bd-1').css({"display":"contents"});
         console.log(html);
       } else {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
         $('.t-bd').css({"display":"none"});
         $('.t-bd-' + page).css({"display":"contents"});
       }
@@ -902,26 +903,17 @@
       });
    }
    function insMore2(){
-      let name_p2 = $(event.currentTarget).closest('tr').find('td input[name="name_p2"]').val();
-      let price_p2 = $(event.currentTarget).closest('tr').find('td input[name="price_p2"]').val();
-      let count_p2 = $(event.currentTarget).closest('tr').find('td input[name="count_p2"]').val();
-      let desc_p2 = $(event.currentTarget).closest('tr').find('td textarea[name="desc_p2"]').val();
-      let type_p2 = $(event.currentTarget).closest('tr').find('td input[name="category_id"]').val();
-      let file = $(event.currentTarget).closest('tr').find('input[name="img2[]"]')[0].files;
-      console.log(name_p2);
-      console.log(price_p2);
-      console.log(count_p2);
-      console.log(type_p2);
+      let n_title2 = $(event.currentTarget).closest('tr').find('td input[name="n_title2"]').val();
+      let n_content2 = $(event.currentTarget).closest('tr').find('td textarea[name="n_content2"]').val();
+      let img3 = $(event.currentTarget).closest('tr').find('input[name="img3[]"]')[0].files;
       let formData = new FormData();
-      formData.append("name_p2",name_p2);
-      formData.append("price_p2",price_p2);
-      formData.append("count_p2",count_p2);
-      formData.append("type_p2",type_p2);
-      formData.append("desc_p2",desc_p2);
+      formData.append("n_title2",n_title2);
+      formData.append("n_content2",n_content2);
+      formData.append("img3",img3);
       formData.append("status","ins_more");
       formData.append("token","<?php echo_token();?>");
-      if(file.length > 0) {
-         formData.append('file_p2',file[0]); 
+      if(img3.length > 0) {
+         formData.append('img3',img3[0]); 
       }
       let this2 = $(event.currentTarget);
       $.ajax({
@@ -958,7 +950,7 @@
    }
    function uptAll(){
       let formData = new FormData();
-      let _data = dt_pi.rows(".selected").select().data();
+      let _data = dt_n.rows(".selected").select().data();
       if(_data.length == 0) {
          $.alert({
             title:"Thông báo",
@@ -967,16 +959,13 @@
          return;
       }
       for(i = 0 ; i < _data.length ; i++) {
-         formData.append("n_id2[]",_data[i].DT_RowId);
+         formData.append("n_id[]",_data[i].DT_RowId);
       }
-      $('tr.selected input[name="n_title2"]').each(function(){
-         formData.append("n_title2[]",$(this).val());
+      $('tr.selected input[name="n_title"]').each(function(){
+         formData.append("n_title[]",$(this).val());
       });
-      $('tr.selected input[name="n_content2"]').each(function(){
-         formData.append("n_content2[]",$(this).val());
-      });
-      $('tr.selected input[name="img3[]"]').each(function(){
-         formData.append("img3[]",$(this)[0].files[0]);
+      $('tr.selected textarea[name="n_content"]').each(function(){
+         formData.append("n_content[]",$(this).summernote('code'));
       });
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","upt_all");
@@ -1424,15 +1413,12 @@
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
       $title = isset($_REQUEST["title"]) ? $_REQUEST["title"] : null;
       $content = isset($_REQUEST["content"]) ? $_REQUEST["content"] : null;
-      //
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
       if($list_file_del){
          $list_file_del = explode(",",$list_file_del);
       } else {
          $list_file_del = [];
       }
-      //
-      //$image_str = isset($_REQUEST["image_str"]) ? $_REQUEST["image_str"] : null;
       if($status == 'Delete') {
          $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
@@ -1604,84 +1590,70 @@
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "ins_more") {
-         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-         if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
-            $dir = "upload/product/";
-            $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2','$user_id','$name_p2','1','$desc_p2','$count_p2','$price_p2')";
+         $n_title2 = isset($_REQUEST["n_title2"]) ? $_REQUEST["n_title2"] : null;
+         $n_content2 = isset($_REQUEST["n_content2"]) ? $_REQUEST["n_content2"] : null;
+         $img3 = isset($_FILES["img3"]) ? $_FILES["img3"] : null;
+         $dir = "upload/product/";
+         $sql = "Insert into notification(title,content,img_name) values('$n_title2','$n_content2','1')";
+         sql_query($sql);
+         $insert = ins_id();
+         if(!file_exists($dir)) {
+            mkdir($dir, 0777); 
+            chmod($dir, 0777);
+         }
+         $dir = "upload/product/" . $insert;
+         if(!file_exists($dir)) {
+            mkdir($dir, 0777); 
+            chmod($dir, 0777);
+         }
+         if($_FILES['img3']['name'] != "") {
+            $ext = strtolower(pathinfo($_FILES['img3']['name'],PATHINFO_EXTENSION));
+            $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+            $file_name = str_replace("_","",$file_name);
+            $path = $dir . "/" . $file_name ;
+            move_uploaded_file($_FILES['img3']['tmp_name'],$path);
+            $sql_update = "update notification set img_name='$path' where id = '$insert'";
+            db_query($sql_update);
+         }
+         echo_json(["msg" => "ok"]);
+      } else if($status == "ins_all") {
+         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
+         $n_title2 = isset($_REQUEST["n_title2"]) ? $_REQUEST["n_title2"] : null;
+         $n_content2 = isset($_REQUEST["n_content2"]) ? $_REQUEST["n_content2"] : null;
+         $img3 = isset($_FILES["img3"]) ? $_FILES["img3"] : null;
+         $dir = "upload/notify/";
+         for($i = 0 ; $i < $len ; $i++) {
+            $sql = "Insert into notification(title,content,img_name) values('$n_title2[$i]','$n_content2[$i]','1')";
             sql_query($sql);
             $insert = ins_id();
             if(!file_exists($dir)) {
                mkdir($dir, 0777); 
                chmod($dir, 0777);
             }
-            $dir = "upload/product/" . $insert;
+            $dir = "upload/notify/" . $insert;
             if(!file_exists($dir)) {
                mkdir($dir, 0777); 
                chmod($dir, 0777);
             }
-            if($_FILES['file_p2']['name'] != "") {
-               $ext = strtolower(pathinfo($_FILES['file_p2']['name'],PATHINFO_EXTENSION));
-               $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+            if($_FILES['img3']['name'][$i] != "") {
+               $ext = strtolower(pathinfo($_FILES['img3']['name'][$i],PATHINFO_EXTENSION));
+               $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
                $file_name = str_replace("_","",$file_name);
                $path = $dir . "/" . $file_name ;
-               move_uploaded_file($_FILES['file_p2']['tmp_name'],$path);
-               $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-               db_query($sql_update);
+               move_uploaded_file($_FILES['img3']['tmp_name'][$i],$path);
+               $sql_update = "update notification set img_name='$path' where id = '$insert'";
+               sql_query($sql_update);
             }
-            echo_json(["msg" => "ok"]);
          }
-      } else if($status == "ins_all") {
-         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-         if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
-            $file_p2 = isset($_FILES["file_p2"]) ? $_FILES["file_p2"] : null;
-            for($i = 0 ; $i < $len ; $i++) {
-               $dir = "upload/product/";
-               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p2[$i]','$price_p2[$i]')";
-               //print_r($sql);
-               sql_query($sql);
-               $insert = ins_id();
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               $dir = "upload/product/" . $insert;
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               if($_FILES['img2']['name'][$i] != "") {
-                  $ext = strtolower(pathinfo($_FILES['img2']['name'][$i],PATHINFO_EXTENSION));
-                  $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
-                  $file_name = str_replace("_","",$file_name);
-                  $path = $dir . "/" . $file_name ;
-                  move_uploaded_file($_FILES['img2']['tmp_name'][$i],$path);
-                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-                  sql_query($sql_update);
-               }
-            }
-            echo_json(["msg" => "ok"]);
-         }
+         echo_json(["msg" => "ok"]);
       } else if($status == "upt_all") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? $_REQUEST["pi_count"] : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? $_REQUEST["pi_price"] : null;
-         $pi_desc = isset($_REQUEST["pi_desc"]) ? $_REQUEST["pi_desc"] : null;
+         $n_id = isset($_REQUEST["n_id"]) ? $_REQUEST["n_id"] : null;
+         $n_title = isset($_REQUEST["n_title"]) ? $_REQUEST["n_title"] : null;
+         $n_content = isset($_REQUEST["n_content"]) ? $_REQUEST["n_content"] : null;
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
          if($len && is_numeric($len)) {
             for($i = 0 ; $i < $len ; $i++){
-               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count[$i]',price='$pi_price[$i]',description='$pi_desc[$i]' where id='$pi_id[$i]'";
+               $sql = "Update notification set title='$n_title[$i]',content='$n_content[$i]' where id='$n_id[$i]'";
                sql_query($sql);
             }
             echo_json(["msg" => "ok"]);

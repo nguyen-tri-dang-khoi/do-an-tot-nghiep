@@ -259,11 +259,11 @@
             </tr>
             <tr>
                 <th>Số lượng</th>
-                <td class="width-auto"><?=$result['count']?></td>
+                <td class="width-auto"><?=number_format($result['price'],0,'','.');?></td>
             </tr>
             <tr>
                 <th>Đơn giá</th>
-                <td class="width-auto"><?=$result['price']?></td>
+                <td class="width-auto"><?=number_format($result['price'],0,'','.') . "đ";?></td>
             </tr>
             <tr>
                 <th>Ảnh đại diện</th>
@@ -394,11 +394,11 @@
                     </tr>
                     <tr>
                         <th>Số lượng</th>
-                        <td class="width-auto">' . $result['count'] . '</td>
+                        <td class="width-auto">' . number_format($result['count'],0,'','.') . '</td>
                     </tr>
                     <tr>
                         <th>Đơn giá</th>
-                        <td class="width-auto">' . $result['price'] . '</td>
+                        <td class="width-auto">' . number_format($result['price'],0,'','.') . "đ" . '</td>
                     </tr>
                     <tr>
                         <th>Ảnh đại diện</th>

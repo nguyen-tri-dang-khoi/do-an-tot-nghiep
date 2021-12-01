@@ -125,7 +125,7 @@
         </div>
     </div>
     <div class="form-group" style="width:100%;">
-    <label for="">Danh sách File đính kèm</label>
+        <label for="">Danh sách File đính kèm</label>
         <div class="kh-files">
             <div class="kh-file-lists">
                 <div class="kh-file-list">

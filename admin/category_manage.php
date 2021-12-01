@@ -635,6 +635,7 @@
         $('.t-bd-1').css({"display":"contents"});
         console.log(html);
       } else {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
         $('.t-bd').css({"display":"none"});
         $('.t-bd-' + page).css({"display":"contents"});
       }
@@ -1119,7 +1120,6 @@
 ?>
 <?php
     } else if (is_post_method()) {
-        //echo "a";
 		    $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
         $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
@@ -1200,8 +1200,6 @@
             }
             echo_json(["msg" => "ok"]);
           }
-          
-          
         }
     }
     

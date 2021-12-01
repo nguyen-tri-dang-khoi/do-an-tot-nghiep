@@ -184,16 +184,16 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Số thứ tự</th>
+                                        <th class="w-100">Số thứ tự</th>
                                         <th>Tên đầy đủ</th>
                                         <th>Email</th>
                                         <th>Số điện thoại</th>
-                                        <th>Số chứng minh nhân dân</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Ngày sinh</th>
+                                        <th class="w-200">Số chứng minh nhân dân</th>
+                                        <th class="w-200">Địa chỉ</th>
+                                        <th class="w-150">Ngày sinh</th>
                                         <th>Tên đăng nhập</th>
                                         <th>Ngày tạo</th>
-                                        <th>Thao tác</th>
+                                        <th class="w-100">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody id="m-user-body">
@@ -736,7 +736,7 @@
       let count2 = parseInt(page / 7) + 1;
       html = `
         <tr data-row-id='${parseInt(page) + 1}'>
-            <td>${parseInt(g)}</td>
+            <td>${parseInt(page) + 1}</td>
             <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''></td>
             <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''></td>
             <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''></td>
@@ -891,6 +891,7 @@
         $('.t-bd-1').css({"display":"contents"});
         console.log(html);
       } else {
+        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
         $('.t-bd').css({"display":"none"});
         $('.t-bd-' + page).css({"display":"contents"});
       }
