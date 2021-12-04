@@ -32,17 +32,43 @@
       $date_min = isset($_REQUEST['date_min']) ? $_REQUEST['date_min'] : null;
       $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
       $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-      $is_search = isset($_REQUEST['is_search']) ? true : false;
       $where = "where 1=1 ";
       $wh_child = [];
       $arr_search = [];
       if($keyword && is_array($keyword)) {
          $wh_child = [];
-         foreach($keyword as $key) {
-            if($key != "") {
-               array_push($wh_child,"(lower(pi.name) like lower('%$key%') or lower(pi.count) like lower('%$key%') or lower(pi.price) like lower('%$key%') or lower(pt.name) like lower('%$key%'))");
+         if($search_option == "all") {
+            foreach($keyword as $key) {
+               if($key != "") {
+                  array_push($wh_child,"(lower(pi.name) like lower('%$key%') or lower(pi.count) like lower('%$key%') or lower(pi.price) like lower('%$key%') or lower(pt.name) like lower('%$key%'))");
+               }
+            }
+         } else if($search_option == "name") {
+            foreach($keyword as $key) {
+               if($key != "") {
+                  array_push($wh_child,"(lower(pi.name) like lower('%$key%'))");
+               }
+            }
+         } else if($search_option == "price") {
+            foreach($keyword as $key) {
+               if($key != "") {
+                  array_push($wh_child,"(lower(pi.price) like lower('%$key%'))");
+               }
+            }
+         } else if($search_option == "count") {
+            foreach($keyword as $key) {
+               if($key != "") {
+                  array_push($wh_child,"(lower(pi.count) like lower('%$key%'))");
+               }
+            }
+         } else if($search_option == "type") {
+            foreach($keyword as $key) {
+               if($key != "") {
+                  array_push($wh_child,"(lower(pt.name) like lower('%$key%'))");
+               }
             }
          }
+         
          $wh_child = implode(" or ",$wh_child);
          if($wh_child != "") {
             $where .= " and ($wh_child)";
@@ -64,10 +90,14 @@
          $wh_child = [];
          foreach(array_combine($price_min,$price_max) as $p_min => $p_max) {
             if($p_min != "" && $p_max != "") {
+               $p_min = str_replace(".","",$p_min);
+               $p_max = str_replace(".","",$p_max);
                array_push($wh_child,"(pi.price >= '$p_min' and pi.price <= '$p_max')");
             } else if($p_min == "" && $p_max != ""){
+               $p_max = str_replace(".","",$p_max);
                array_push($wh_child,"(pi.price <= '$p_max')");
             } else if($p_min != "" && $p_max == ""){
+               $p_min = str_replace(".","",$p_min);
                array_push($wh_child,"(pi.price >= '$p_min')");
             }
          }
@@ -80,10 +110,14 @@
          $wh_child = [];
          foreach(array_combine($count_min,$count_max) as $c_min => $c_max) {
             if($c_min != "" && $c_max != "") {
+               $c_min = str_replace(".","",$c_min);
+               $c_max = str_replace(".","",$c_max);
                array_push($wh_child,"(pi.count >= '$c_min' and pi.count <= '$c_max')");
             } else if($c_min == "" && $c_max != ""){
+               $c_max = str_replace(".","",$c_max);
                array_push($wh_child,"(pi.count <= '$c_max')");
             } else if($c_min != "" && $c_max == ""){
+               $c_min = str_replace(".","",$c_min);
                array_push($wh_child,"(pi.count >= '$c_min')");
             }
          }
@@ -131,26 +165,7 @@
       margin: auto;
       padding-top: 3px;
    }
-   .ele-count2 ,.ele-date2, .ele-price2 ,.ele-type2 ,.ele-cols {
-      display:flex;
-      justify-content:space-between;
-      width:100%;
-   }
-   #s-count2 .ele-count2:first-child {
-      margin-top:0px;
-   }
-   #s-date2 .ele-date2:first-child {
-      margin-top:0px;
-   }
-   #s-price2 .ele-price2:first-child {
-      margin-top:0px;
-   }
-   #s-type2 .ele-type2:first-child {
-      margin-top:0px;
-   }
-   #s-cols .ele-cols:first-child {
-      margin-top:0px;
-   }
+
 </style>
 <style>
    .img-child {
@@ -251,7 +266,6 @@
 </style>
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
-
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
     <section class="content">
@@ -281,9 +295,6 @@
                            <div class="" style="margin-top:5px;">
                               <select onchange="choose_type_search()" class="form-control" name="search_option">
                                  <option value="">Bộ lọc tìm kiếm</option>
-                                 <!--<option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
-                                 <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
-                                 <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>-->
                                  <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
                                  <option value="price2" <?=$search_option == 'price2' ? 'selected="selected"' : '' ?>>Khoảng giá</option>
                                  <option value="count2" <?=$search_option == 'count2' ? 'selected="selected"' : '' ?>>Khoảng số lượng</option>
@@ -295,7 +306,15 @@
                            <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
                               <span class="k-select-opt-remove"></span>
                               <span class="k-select-opt-ins"></span>
-                              <div class="ele-cols">
+                              <div class="ele-cols d-flex f-column">
+                                 <select name="search_option" class="form-control mb-10">
+                                    <option value="">Chọn cột tìm kiếm</option>
+                                    <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
+                                    <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
+                                    <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
+                                    <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
+                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                 </select>
                                  <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                               </div>
                               <?php
@@ -322,10 +341,10 @@
                               <span class="k-select-opt-ins"></span>
                               <div class="ele-price2">
                                  <div class="" style="display:flex;">
-                                    <input type="number" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" value=""  >
+                                    <input type="text" name="price_min[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value=""  >
                                  </div>
                                  <div class="ml-10" style="display:flex;">
-                                    <input type="number" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" value="" >
+                                    <input type="text" name="price_max[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="" >
                                  </div>
                               </div>
                               <?php
@@ -337,10 +356,10 @@
                                  ?>
                                  <div class="ele-select ele-price2 mt-10">
                                     <div class="" style="display:flex;">
-                                       <input type="number" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" value="<?=$p_min;?>"  >
+                                       <input type="text" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_min;?>"  >
                                     </div>
                                     <div class="ml-10" style="display:flex;">
-                                       <input type="number" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" value="<?=$p_max;?>" >
+                                       <input type="text" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_max;?>"  >
                                     </div>
                                     <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
                                  </div>
@@ -356,10 +375,10 @@
                               <span class="k-select-opt-ins"></span>
                               <div class="ele-count2">
                                  <div class="" style="display:flex;">
-                                    <input type="number" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="" >
+                                    <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
                                  </div>
                                  <div class="ml-10" style="display:flex;">
-                                    <input type="number" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="" >
+                                    <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
                                  </div>
                                  <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
                               </div>
@@ -372,10 +391,10 @@
                                  ?>
                                  <div class="ele-select ele-count2 mt-10">
                                     <div class="" style="display:flex;">
-                                       <input type="number" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="<?=$c_min;?>" >
+                                       <input type="text" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="<?=$c_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
                                     </div>
                                     <div class="ml-10" style="display:flex;">
-                                       <input type="number" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="<?=$c_max;?>" >
+                                       <input type="text" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="<?=$c_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
                                     </div>
                                     <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
                                     <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
@@ -426,9 +445,8 @@
                            <div id="s-type2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($pt_type && $pt_type != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
                               <span class="k-select-opt-remove"></span>
                               <span class="k-select-opt-ins"></span>
-                              
                               <div class="ele-type2">
-                                 <select class="select-type2" style="width:300px" class="form-control" name="pt_type[]">
+                                 <select class="select-type2" style="width:100%;" class="form-control" name="pt_type[]">
                                     <option value="">Chọn danh mục cần tìm</option>
                                     <?php
                                        $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
@@ -740,10 +758,10 @@
          file_html = `
             <div class="ele-select ele-count2 mt-10">
                <div class="" style="display:flex;">
-                  <input type="number" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onkeypress="allow_zero_to_nine(event)">
+                  <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
                </div>
                <div class="ml-10" style="display:flex;">
-                  <input type="number" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onkeypress="allow_zero_to_nine(event)">
+                  <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
                </div>
                <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
             </div>
@@ -782,10 +800,10 @@
          file_html = `
          <div class="ele-select ele-price2 mt-10">
             <div class="" style="display:flex;">
-               <input type="number" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" value="" onkeypress="allow_zero_to_nine(event)">
+               <input type="text" name="price_min[]" placeholder="Giá 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
             </div>
             <div class="ml-10" style="display:flex;">
-               <input type="number" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" value="" onkeypress="allow_zero_to_nine(event)">
+               <input type="text" name="price_max[]" placeholder="Giá 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
             </div>
             <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
          </div>
@@ -796,7 +814,6 @@
             <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
             <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
          </div>
-         
          `;
       }
       $(file_html).appendTo($(this).parent());
@@ -816,12 +833,6 @@
             }
          });
       } 
-      $("input[type='number']").bind('paste',function(e){
-         var pastedData = e.originalEvent.clipboardData.getData('text');
-         if (!pastedData.match(/^[0-9]+$/)){
-               e.preventDefault();
-         }
-      })
       $('.select-type2').select2();
    });
    function select_remove_child(_class){
@@ -1024,7 +1035,7 @@
             }, 
          ],
          select: {
-            style: 'os',
+            style: 'multi+shift',
             selector: 'td:first-child'
          },
          order: [
@@ -2088,7 +2099,7 @@
 </script>
 <!--js section end-->
 <?php
-        include_once("include/footer.php");
+      include_once("include/footer.php");
 ?>
 <?php
    } else if (is_post_method()) {

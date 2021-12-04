@@ -586,7 +586,7 @@
             },  
          ],
          "select": {
-            style: 'os',
+            style: 'multi+shift',
             selector: 'td:first-child'
          },
          "order": [

@@ -190,6 +190,29 @@
   cursor: pointer;
   margin:0 auto;
 }
+.ele-count2 ,.ele-date2, .ele-price2 ,.ele-type2 ,.ele-cols {
+  display:flex;
+  justify-content:space-between;
+  width:100%;
+}
+#s-count2 .ele-count2:first-child {
+  margin-top:0px;
+}
+#s-date2 .ele-date2:first-child {
+  margin-top:0px;
+}
+#s-price2 .ele-price2:first-child {
+  margin-top:0px;
+}
+#s-type2 .ele-type2:first-child {
+  margin-top:0px;
+}
+#s-cols .ele-cols:first-child {
+  margin-top:0px;
+}
+.f-column {
+  flex-direction: column !important;
+}
 .k-select-opt-remove::after{
   position: absolute;
   content: "\00d7";

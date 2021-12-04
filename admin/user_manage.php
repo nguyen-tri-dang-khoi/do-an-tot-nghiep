@@ -27,29 +27,98 @@
         }
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
-        // code to be executed get method
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
         $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+        $birthday_min = isset($_REQUEST['birthday_min']) ? $_REQUEST['birthday_min'] : null;
+        $birthday_max = isset($_REQUEST['birthday_max']) ? $_REQUEST['birthday_max'] : null;
+        $date_min = isset($_REQUEST['date_min']) ? $_REQUEST['date_min'] : null;
+        $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $where = "where 1=1 ";
-        if($keyword || $keyword == 0 ) 
-        {
-            if($search_option == "fullname") {
-                $where .= "and lower(full_name) like lower('%$keyword%')";
-            } else if($search_option == "email") {
-                $where .= "and lower(email) like lower('%$keyword%')";
-            } else if($search_option == "phone") {
-                $where .= "and lower(phone) like lower('%$keyword%')";
-            } else if($search_option == "cmnd") {
-                $where .= "and lower(cmnd) like lower('%$keyword%')";
-            } else if($search_option == "all") {
-                $where .= "and lower(full_name) like lower('%$keyword%') or ";
-                $where .= "lower(email) like lower('%$keyword%') or ";
-                $where .= "lower(phone) like lower('%$keyword%') or ";
-                $where .= "lower(cmnd) like lower('%$keyword%') ";
+        $wh_child = [];
+        $arr_search = [];
+        if($keyword && is_array($keyword)) {
+            $wh_child = [];
+            if($search_option) {
+                if($search_option == "all") {
+                    foreach($keyword as $key) {
+                    if($key != "") {
+                        array_push($wh_child,"(lower(phone) like lower('%$key%') or lower(address) like lower('%$key%') or lower(email) like lower('%$key%') or lower(full_name) like lower('%$key%'))");
+                    }
+                    }
+                } else if($search_option == "phone") {
+                    foreach($keyword as $key) {
+                    if($key != "") {
+                        array_push($wh_child,"(lower(phone) like lower('%$key%'))");
+                    }
+                    }
+                } else if($search_option == "address") {
+                    foreach($keyword as $key) {
+                    if($key != "") {
+                        array_push($wh_child,"(lower(address) like lower('%$key%'))");
+                    }
+                    }
+                } else if($search_option == "email") {
+                    foreach($keyword as $key) {
+                    if($key != "") {
+                        array_push($wh_child,"(lower(email) like lower('%$key%'))");
+                    }
+                    }
+                } else if($search_option == "full_name") {
+                    foreach($keyword as $key) {
+                        if($key != "") {
+                            array_push($wh_child,"(lower(full_name) like lower('%$key%'))");
+                        }
+                    }
+                }
+            }
+            $wh_child = implode(" or ",$wh_child);
+            if($wh_child != "") {
+                $where .= " and ($wh_child)";
             }
         }
+        if($birthday_min && is_array($birthday_min) && $birthday_max && is_array($birthday_max)) {
+            $wh_child = [];
+            foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max) {
+                if($b_min != "" && $b_max != "") {
+                    $b_min = Date("Y-m-d",strtotime($b_min));
+                    $b_max = Date("Y-m-d",strtotime($b_max));
+                    array_push($wh_child,"(birthday >= '$b_min 00:00:00' and birthday <= '$b_max 23:59:59')");
+                } else if($b_min == "" && $b_max != ""){
+                    $b_min = Date("Y-m-d",strtotime($b_min));
+                    array_push($wh_child,"(birthday >= '$b_min 00:00:00')");
+                } else if($b_min != "" && $b_max == ""){
+                    $b_max = Date("Y-m-d",strtotime($b_max));
+                    array_push($wh_child,"(birthday <= '$b_max 23:59:59')");
+                }
+            }
+            $wh_child = implode(" or ",$wh_child);
+            if($wh_child != "") {
+                $where .= " and ($wh_child)";
+            }
+        }
+        if($date_min && is_array($date_min) && $date_max && is_array($date_max)) {
+            $wh_child = [];
+            foreach(array_combine($date_min,$date_max) as $d_min => $d_max) {
+                if($d_min != "" && $d_max != "") {
+                    $d_min = Date("Y-m-d",strtotime($d_min));
+                    $d_max = Date("Y-m-d",strtotime($d_max));
+                    array_push($wh_child,"(created_at >= '$d_min 00:00:00' and created_at <= '$d_max 23:59:59')");
+                } else if($d_min != "" && $d_max == "") {
+                    $d_min = Date("Y-m-d",strtotime($d_min));
+                    array_push($wh_child,"(created_at >= '$d_min 00:00:00')");
+                } else if($d_min == "" && $d_max != "") {
+                    $d_max = Date("Y-m-d",strtotime($d_max));
+                    array_push($wh_child,"(created_at <= '$d_max 23:59:59')");
+                }
+            }
+            $wh_child = implode(" or ",$wh_child);
+            if($wh_child != "") {
+                $where .= " and ($wh_child)";
+            }
+        }
+        log_v($where);
 ?>
 <!--html & css section start-->
 <style>
@@ -59,11 +128,10 @@
       margin-left: -4px;
       text-align: center;
       color: #9900ff;
-   }
-   .dt-buttons {
+    }
+    .dt-buttons {
        float:left;
-   }
-   
+    }
 </style>
 <link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
@@ -88,25 +156,120 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <form style="margin-bottom: 17px;display:flex;" action="user_manage.php" method="get">
-                            <div class="">
-                                <select class="form-control" name="search_option">
+                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" action="user_manage.php" method="get">
+                            <div class="" style="margin-top:5px;">
+                              <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                 <option value="">Bộ lọc tìm kiếm</option>
+                                 <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                 <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                 <option value="birthday2" <?=$search_option == 'birthday2' ? 'selected="selected"' : '' ?>>Ngày sinh</option>
+                                 <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                              </select>
+                           </div>
+                           <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                              <span class="k-select-opt-remove"></span>
+                              <span class="k-select-opt-ins"></span>
+                              <div class="ele-cols d-flex f-column">
+                                 <select name="search_option" class="form-control mb-10">
                                     <option value="">Chọn cột tìm kiếm</option>
-                                    <option value="fullname" <?=$search_option == 'fullname' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
-                                    <option value="address" <?=$search_option == 'address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
-                                    <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
                                     <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
-                                    <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Số chứng minh nhân dân</option>
+                                    <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
+                                    <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
+                                    <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
                                     <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                </select>
-                            </div>
-                            <!--<div class="ml-10">
-                                <input type="text" name="birth" placeholder="Ngày sinh..." class="form-control">
-                            </div>-->
-                            <div class="ml-10" style="display:flex;">
-                                <input type="text" name="keyword" placeholder="Nhập từ khoá..." class="form-control" value="<?=$keyword;?>">
-                                <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-                            </div>
+                                 </select>
+                                 <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                              </div>
+                              <?php
+                              if(is_array($keyword)) {
+                                 foreach($keyword as $key) {
+                              ?>
+                                 <?php
+                                 if($key != "") {
+                                 ?>
+                                 <div class="ele-select ele-cols mt-10">
+                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
+                                 }
+                                 ?>
+                              <?php   
+                                 }
+                              }
+                              ?>
+                           </div>
+                           <div id="s-birthday2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($birthday_min && $birthday_min != [""] || $birthday_max && $birthday_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                              <span class="k-select-opt-remove"></span>
+                              <span class="k-select-opt-ins"></span>
+                              <div class="ele-date2">
+                                 <div class="" style="display:flex;">
+                                    <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
+                                 </div>
+                                 <div class="ml-10" style="display:flex;">
+                                    <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
+                                 </div>
+                              </div>
+                              <?php
+                                 if(is_array($birthday_min) && is_array($birthday_max)) {
+                                    foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max){
+                              ?>
+                              <?php
+                                 if($b_min != "" || $b_max != "") {
+                              ?>
+                              <div class="ele-select ele-date2 mt-10">
+                                 <div class="" style="display:flex;">
+                                    <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker-ym form-control" value="<?=$b_min ? Date("d-m-Y",strtotime($b_min)) : "";?>">
+                                 </div>
+                                 <div class="ml-10" style="display:flex;">
+                                    <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker-ym form-control" value="<?=$b_max ? Date("d-m-Y",strtotime($b_max)) : "";?>">
+                                 </div>
+                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                              </div>
+                              <?php
+                              }
+                              ?>
+                              <?php 
+                                    }
+                                 }
+                              ?>
+                           </div>
+                           <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                              <span class="k-select-opt-remove"></span>
+                              <span class="k-select-opt-ins"></span>
+                              <div class="ele-date2">
+                                 <div class="" style="display:flex;">
+                                    <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
+                                 </div>
+                                 <div class="ml-10" style="display:flex;">
+                                    <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
+                                 </div>
+                              </div>
+                              <?php
+                                 if(is_array($date_min) && is_array($date_max)) {
+                                    foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                              ?>
+                              <?php
+                                 if($d_min != "" || $d_max != "") {
+                              ?>
+                              <div class="ele-select ele-date2 mt-10">
+                                 <div class="" style="display:flex;">
+                                    <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                                 </div>
+                                 <div class="ml-10" style="display:flex;">
+                                    <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                                 </div>
+                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                              </div>
+                              <?php
+                              }
+                              ?>
+                              <?php 
+                                    }
+                                 }
+                              ?>
+                           </div>
+                           <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                         </form>
                         <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
                             <div>
@@ -189,11 +352,11 @@
                                         <th>Email</th>
                                         <th>Số điện thoại</th>
                                         <th class="w-200">Số chứng minh nhân dân</th>
-                                        <th class="w-200">Địa chỉ</th>
-                                        <th class="w-150">Ngày sinh</th>
+                                        <th class="w-150">Địa chỉ</th>
+                                        <th class="w-100">Ngày sinh</th>
                                         <th>Tên đăng nhập</th>
                                         <th>Ngày tạo</th>
-                                        <th class="w-100">Thao tác</th>
+                                        <th class="w-200">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody id="m-user-body">
@@ -217,7 +380,7 @@
                                             <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'>" : $row["email"]?></td>
                                             <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'>" : $row["phone"]?></td>
                                             <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'>" : $row["cmnd"]?></td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address' value='$row[address]'>" : $row["address"]?></td>
+                                            <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea>" : $row["address"]?></td>
                                             <td>
                                                 <?php 
                                                     if($upt_more == 1) {
@@ -448,8 +611,90 @@
 <script src="js/dataTables.searchHighlight.min.js"></script> 
 <script src="js/jquery.highlight.js"></script>
 <script src="js/select2.min.js"></script>
+<!--searching filter-->
+<script>
+   function choose_type_search(){
+      let _option = $("select[name='search_option'] > option:selected").val();
+      if(_option.indexOf("2") > -1) {
+         if(_option.indexOf("all") > -1) {
+            $(".s-all2").css({"display": "flex"});
+         } else {
+            $(`#s-${_option}`).css({"display": "flex"});
+         }
+      } else {
+         $('#s-cols').css({"display": "flex"});
+      }
+      $("select[name='search_option'] > option[value='']").prop('selected',true);
+   }
+   $('.k-select-opt-remove').click(function(){
+      $(event.currentTarget).siblings('.ele-select').remove()
+      $(event.currentTarget).siblings("div").find("input").val("");
+      $(event.currentTarget).closest('div').css({"display":"none"});
+   });
+   $('.k-select-opt-ins').click(function(){
+        let file_html = "";
+        if($(event.currentTarget).closest('#s-date2').length) {
+            file_html = `
+            <div class="ele-select ele-date2 mt-10">
+                <div class="" style="display:flex;">
+                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
+                </div>
+                <div class="ml-10" style="display:flex;">
+                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
+                </div>
+                <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+            </div>
+            `;
+        } else if($(event.currentTarget).closest('#s-birthday2').length) {
+            file_html = `
+            <div class="ele-select ele-date2 mt-10">
+                <div class="" style="display:flex;">
+                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
+                </div>
+                <div class="ml-10" style="display:flex;">
+                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
+                </div>
+                <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+            </div>
+            `;
+        } else if($(event.currentTarget).closest('#s-cols').length) {
+            file_html = `
+            <div class="ele-select ele-cols mt-10">
+                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+            </div>
+            
+            `;
+        }
+        $(file_html).appendTo($(this).parent());
+        $(this).parent().css({
+            "flex-direction": "column",
+            "justify-content": "space-between",
+        });
+        $(".kh-datepicker2").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'dd-mm-yy',
+            onSelect: function(dateText, inst) {
+                dateText = dateText.split("-");
+                $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+            }
+        })
+        $("input[type='number']").bind('paste',function(e){
+            var pastedData = e.originalEvent.clipboardData.getData('text');
+            if (!pastedData.match(/^[0-9]+$/)){
+                e.preventDefault();
+            }
+        })
+   });
+   function select_remove_child(_class){
+      $(event.currentTarget).closest(_class).remove();
+   }
+   
+</script>
 <script>
     var dt_user;
+    
     $(".kh-datepicker2").datepicker({
         changeMonth: true,
         changeYear: true,
@@ -483,7 +728,7 @@
                 }, 
             ],
             "select": {
-                style: 'os',
+                style: 'multi+shift',
                 selector: 'td:first-child'
             },
             "order": [
@@ -608,7 +853,11 @@
             }
         });
         //
+        // php auto select all rows when focus update all function execute
+        <?=$upt_more == 1 ? 'dt_user.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
     });
+    
+   
     function showPicker(){
         $('input[name="u_birthday2"]').datepicker({
             changeMonth: true,
@@ -915,7 +1164,7 @@
     } 
     function uptAll(){
         let formData = new FormData();
-        let _data = dt_pi.rows(".selected").select().data();
+        let _data = dt_user.rows(".selected").select().data();
         if(_data.length == 0) {
             $.alert({
                 title:"Thông báo",
@@ -926,30 +1175,30 @@
         for(i = 0 ; i < _data.length ; i++) {
             formData.append("user_id[]",_data[i].DT_RowId);
         }
-        $('tr.selected input[name="u_fullname2"]').each(function(){
+        $('tr.selected input[name="u_fullname"]').each(function(){
             formData.append("u_fullname2[]",$(this).val());
         });
-        $('tr.selected input[name="u_email2"]').each(function(){
+        $('tr.selected input[name="u_email"]').each(function(){
             formData.append("u_email2[]",$(this).val());
         });
-        $('tr.selected textarea[name="u_phone2"]').each(function(){
+        $('tr.selected input[name="u_phone"]').each(function(){
             formData.append("u_phone2[]",$(this).val());
         });
-        $('tr.selected input[name="u_cmnd2"]').each(function(){
+        $('tr.selected input[name="u_cmnd"]').each(function(){
             formData.append("u_cmnd2[]",$(this).val());
         });
-        $('tr.selected textarea[name="u_address2"]').each(function(){
+        $('tr.selected textarea[name="u_address"]').each(function(){
             formData.append("u_address2[]",$(this).val());
         });
-        $('tr.selected input[name="u_username2"]').each(function(){
+        $('tr.selected input[name="u_username"]').each(function(){
             formData.append("u_username2[]",$(this).val());
         });
-        $('tr.selected input[name="u_birthday2[]"]').each(function(){
-            formData.append("u_birthday2[]",$(this).attr('data-date'));
+        $('tr.selected input[name="u_birthday"]').each(function(){
+            formData.append("u_birthday2[]",$(this).attr('data-date2'));
         });
         formData.append("token","<?php echo_token(); ?>");
         formData.append("status","upt_all");
-        formData.append("len",len);
+        formData.append("len",_data.length);
         $.ajax({
             url: window.location.href,
             type: "POST",
@@ -1372,7 +1621,7 @@
         let name = $(event.currentTarget).closest("tr").find("td input[name='u_fullname']").val();
         let email = $(event.currentTarget).closest("tr").find("td input[name='u_email']").val();
         let phone = $(event.currentTarget).closest("tr").find("td input[name='u_phone']").val();
-        let address = $(event.currentTarget).closest("tr").find("td input[name='u_address']").val();
+        let address = $(event.currentTarget).closest("tr").find("td textarea[name='u_address']").val();
         let cmnd = $(event.currentTarget).closest("tr").find("td input[name='u_cmnd']").val();
         let birthday = $(event.currentTarget).closest("tr").find("td input[name='u_birthday']").attr('data-date2');
         let username = $(event.currentTarget).closest("tr").find("td input[name='u_username']").val();

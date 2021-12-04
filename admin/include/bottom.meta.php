@@ -8,25 +8,40 @@
 <script>
     $('.ui-icon.ui-icon-circle-triangle-w').removeClass('.ui-icon.ui-icon-circle-triangle-w');
     $("input[type='number']").attr("min",0);
-    $("input[type='number']").on('keypress',function(e){
+    function pasteAutoFormat(e){
         e = e || window.event;
-        var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
-        var charStr = String.fromCharCode(charCode);
-        if (!charStr.match(/^[0-9]+$/)){
-            e.preventDefault();
+        let pastedData = e.clipboardData.getData('text');
+        if (pastedData.match(/^\d+(\.\d+)*$/)){
+            let n = parseInt(pastedData.replace(/\./g,''),10);
+            if(!isNaN(n)){
+                $(e.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
+            } else {
+                $(e.currentTarget).val("");
+            }
         }
-    })
-    $("input[type='number']").bind('paste',function(e){
-        var pastedData = e.originalEvent.clipboardData.getData('text');
-        if (!pastedData.match(/^[0-9]+$/)){
-            e.preventDefault();
-        }
-    })
+        e.preventDefault();
+    }
     function allow_zero_to_nine(e){
         e = e || window.event;
-        var charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
-        var charStr = String.fromCharCode(charCode);
-        if (!charStr.match(/^[0-9]+$/)){
+        let charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;
+        if(e.keyCode == '8') {
+            if (e.which != 110 ){
+                let n = parseInt($(e.currentTarget).val().replace(/\./g, ",").replace(/\,/g,''),10);
+                if(!isNaN(n)){
+                    $(e.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
+                }   
+            }
+            return;
+        }
+        let charStr = String.fromCharCode(charCode);
+        if (charStr.match(/^[0-9]+$/)){
+            if (e.which != 110 ){
+                let n = parseInt($(e.currentTarget).val().replace(/\./g, ",").replace(/\,/g,''),10);
+                if(!isNaN(n)){
+                    $(e.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
+                }   
+            }
+        } else {
             e.preventDefault();
         }
     }

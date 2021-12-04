@@ -259,7 +259,7 @@
             </tr>
             <tr>
                 <th>Số lượng</th>
-                <td class="width-auto"><?=number_format($result['price'],0,'','.');?></td>
+                <td class="width-auto"><?=number_format($result['count'],0,'','.');?></td>
             </tr>
             <tr>
                 <th>Đơn giá</th>
