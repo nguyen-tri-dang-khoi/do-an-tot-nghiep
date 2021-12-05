@@ -1,5 +1,6 @@
 <?php
     include_once("../lib/database.php");
+	redirect_if_customer_login_status_false();
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/menu.php");
@@ -12,13 +13,13 @@
 			<div class="col-lg-8">
 				<ul class="breadcrumb breadcrumb-dividers-no-opacity font-weight-bold text-6 justify-content-center my-5">
 					<li class="text-transform-none me-2">
-						<a href="shop-cart.html" class="text-decoration-none text-color-dark text-color-hover-primary">Shopping Cart</a>
+						<a href="cart.php" class="text-decoration-none text-color-grey-lighten">Giỏ hàng</a>
 					</li>
-					<li class="text-transform-none text-color-dark me-2">
-						<a href="shop-checkout.html" class="text-decoration-none text-color-dark text-color-hover-primary">Checkout</a>
+					<li class="text-transform-none text-color-grey-lighten me-2">
+						<a href="checkout.php" class="text-decoration-none text-color-grey-lighten text-color-hover-primary">Thanh toán</a>
 					</li>
-					<li class="text-transform-none text-color-dark">
-						<a href="shop-order-complete.html" class="text-decoration-none text-color-primary">Order Complete</a>
+					<li class="text-transform-none text-color-grey-lighten">
+						<a href="order_complete.php" class="text-decoration-none text-color-grey-lighten  text-color-primary text-color-hover-primary">Đơn hàng hoàn tất</a>
 					</li>
 				</ul>
 			</div>

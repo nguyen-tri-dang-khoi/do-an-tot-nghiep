@@ -730,6 +730,7 @@
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
 <script src="js/dataTables.searchHighlight.min.js"></script> 
+<script src="js/sort.js"></script>
 <script src="js/jquery.highlight.js"></script>
 <script src="js/select2.min.js"></script>
 <!--searching filter-->
@@ -1031,8 +1032,11 @@
                "name":"manipulate",
                "orderable": false,
                "className": 'manipulate',
-               "targets": 7
-            }, 
+               "targets": <?=$upt_more == 1 ? 9 : 8;?>
+            },{
+               "type": 'formatted-num',
+               "targets": [4,3],
+            },
          ],
          select: {
             style: 'multi+shift',

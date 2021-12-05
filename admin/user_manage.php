@@ -138,6 +138,7 @@
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
+<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
         <div class="content">
@@ -600,6 +601,7 @@
 <script src="js/jquery.dataTables.min.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
 <script src="js/dataTables.select.min.js"></script>
+<script src="js/dataTables.fixedColumns.min.js"></script>
 <script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
 <script src="js/jszip.min.js"></script>
@@ -734,7 +736,6 @@
             "order": [
                 [1, 'desc']
             ],
-            
             "language": {
                 "emptyTable": "Không có dữ liệu",
                 "sZeroRecords": 'Không tìm thấy kết quả',

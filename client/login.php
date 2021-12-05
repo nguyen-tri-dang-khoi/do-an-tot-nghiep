@@ -105,7 +105,7 @@
         if($row['countt'] > 0){
             if(password_verify($password,$row["password"])){
                 $_SESSION["isUserLoggedIn"] = true;
-                $_SESSION["id"] = $row["id"];
+                $_SESSION["customer_id"] = $row["id"];
                 $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];

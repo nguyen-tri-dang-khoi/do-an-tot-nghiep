@@ -121,9 +121,12 @@
                                     <img src="img/icons/icon-cart.svg" width="14" alt="" class="header-nav-top-icon-img">
                                     <span class="cart-info">
                                         <?php
-                                            if(!isset($_SESSION['cart']))
+                                            log_a($_SESSION);
+                                            if(!isset($_SESSION['cart'])) {
+                                                //$ccc = $_SESSION['cart'];
                                         ?>
-                                        <span class="cart-qty"><?=count($_SESSION['cart']) == 0 ? "" : count($_SESSION['cart']);?></span>
+                                            <span class="cart-qty"></span>
+                                        <?php } ?>
                                     </span>
                                 </a>
                                 <div class="header-nav-features-dropdown" id="headerTopCartDropdown">

@@ -269,6 +269,9 @@
                         <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                     </form>
                   </div>
+                <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button>
+                </div>
                 <table id="m-order" class="table table-bordered table-hover">
                   <thead>
                     <tr>
@@ -373,26 +376,44 @@
   </div>
 </div>
 
-<!-- /.modal -->
+<!-- /.Xem chi tiết đơn hàng -->
 <div class="modal fade" id="modal-xl">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Extra Large Modal</h4>
+        <h4 class="modal-title">Xem chi tiết đơn hàng</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-          <table class="table table-bordered table-hover">
-            <thead id="t_head">
-            </thead>
-            <tbody id="t_body">
-            </tbody>
-          </table>
+        <div id="form-order-detail">
+
+        </div>
       </div>
       <div class="modal-footer justify-content-between">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.Quản lý phương thức thanh toán -->
+<div class="modal fade" id="modal-xl2">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Phương thức thanh toán</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div id="form-payment">
+
+         </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        
       </div>
     </div>
   </div>
@@ -516,6 +537,17 @@
       $("select[name='select_payment_method']").css({"cursor":"not-allowed"});
       $("select[name='select_payment_method'] > option[value='']").prop('selected',true);
     }
+  }
+  function showListPayment(){
+    $('#form-payment').load(`ajax_order_manage.php?status=show_list_payment`,() => {
+      $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
+    });
+  }
+  function showOrderDetail(){
+    let order_id = $(event.currentTarget).attr('data-order-id');
+    $('#form-order-detail').load(`ajax_order_manage.php?status=show_order_detail&order_id=${order_id}`,() => {
+      $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+    });
   }
    
 </script>
