@@ -138,7 +138,7 @@
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
-<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">
+<!--<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">-->
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
         <div class="content">
@@ -595,7 +595,7 @@
 </div>
 <!--html & css section end-->
 <?php
-        include_once("include/bottom.meta.php");
+    include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
 <script src="js/jquery.dataTables.min.js"></script>
@@ -857,8 +857,6 @@
         // php auto select all rows when focus update all function execute
         <?=$upt_more == 1 ? 'dt_user.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
     });
-    
-   
     function showPicker(){
         $('input[name="u_birthday2"]').datepicker({
             changeMonth: true,

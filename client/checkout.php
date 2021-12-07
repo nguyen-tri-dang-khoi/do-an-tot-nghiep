@@ -120,10 +120,15 @@
 					<label class="form-label">Phương thức thanh toán <span class="text-color-danger">*</span></label>
 					<div class="custom-select-1">
 						<select class="form-select form-control h-auto py-2" name="payment_method" >
-							<option value="" selected>Chọn phương thức thanh toán</option>
-							<option value="usa">Momo</option>
-							<option value="spa">Paypal</option>
-							<option value="fra">Thanh toán tại quầy</option>
+							<option value="">Phương thức thanh toán</option>
+                            <?php
+							  $payment_method = "";
+                              $sql = "select * from payment_method";
+                              $payment = fetch_all(sql_query($sql));
+                              foreach($payment as $pay) {
+                            ?>
+                                <option value="<?=$pay['id']?>" <?=$payment_method == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
+                            <?php } ?>
 						</select>
 					</div>
 				</div>

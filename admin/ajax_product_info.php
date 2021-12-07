@@ -16,7 +16,7 @@
         </div>
         <div class="col-md-6 form-group">
             <label for="so_luong">Số lượng</label>
-            <input type="number" name="so_luong" min="1" class="form-control" placeholder="Nhập số lượng" value="<?php echo $result['count']?>">
+            <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng" value="<?=number_format($result['count'],0,'','.');?>">
         </div>
     </div>
     <div class="row" style="margin-left:0px;flex-direction:column;">
@@ -40,7 +40,7 @@
     <div class="row">
         <div class="col-md-6 form-group">
             <label for="don_gia">Đơn giá</label>
-            <input type="number" name="don_gia" min="1" max="100000000000" class="form-control" placeholder="Nhập đơn giá" value="<?php echo $result['price']?>">
+            <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
             <div id="price_err" class="text-danger"></div>
         </div>
         <div class="col-md-6 form-group">
@@ -166,7 +166,7 @@
         
         <div class="col-md-6 form-group">
             <label for="so_luong">Số lượng</label>
-            <input type="number" name="so_luong" min="1" class="form-control" placeholder="Nhập số lượng">
+            <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng">
             <div id="count_err" class="text-danger"></div>
         </div>
     </div>
@@ -190,7 +190,7 @@
     <div class="row">
         <div class="col-md-6 form-group">
             <label for="don_gia">Đơn giá</label>
-            <input type="number" name="don_gia" min="1" max="100000000000" class="form-control" placeholder="Nhập đơn giá">
+            <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia" class="form-control" placeholder="Nhập đơn giá">
             <div id="price_err" class="text-danger"></div>
         </div>
         <div class="col-md-6 form-group">

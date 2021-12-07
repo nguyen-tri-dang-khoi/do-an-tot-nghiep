@@ -22,6 +22,7 @@
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+      $select_publish = isset($_REQUEST['select_publish']) ? $_REQUEST['select_publish'] : null;
       $price_min = isset($_REQUEST['price_min']) ? $_REQUEST['price_min'] : null;
       $price_max = isset($_REQUEST['price_max']) ? $_REQUEST['price_max'] : null;
       $count_min = isset($_REQUEST['count_min']) ? $_REQUEST['count_min'] : null;
@@ -145,6 +146,9 @@
          if($wh_child != "") {
             $where .= " and ($wh_child)";
          }
+      }
+      if($select_publish != "") {
+         $where .= " and pi.is_public='$select_publish'";
       }
       log_v($where);
 ?>
@@ -291,205 +295,218 @@
                   <!-- /.card-header -->
                   <div class="card-body">
                      <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">
-                           <div class="" style="margin-top:5px;">
-                              <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                 <option value="">Bộ lọc tìm kiếm</option>
-                                 <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                 <option value="price2" <?=$search_option == 'price2' ? 'selected="selected"' : '' ?>>Khoảng giá</option>
-                                 <option value="count2" <?=$search_option == 'count2' ? 'selected="selected"' : '' ?>>Khoảng số lượng</option>
-                                 <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
-                                 <option value="type2" <?=$search_option == 'type2' ? 'selected="selected"' : '' ?>>Danh mục</option>
-                                 <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                              </select>
-                           </div>
-                           <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-cols d-flex f-column">
-                                 <select name="search_option" class="form-control mb-10">
-                                    <option value="">Chọn cột tìm kiếm</option>
-                                    <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
-                                    <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
-                                    <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
-                                    <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
-                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                        <form style="margin-bottom: 17px;" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">\
+                           <div class="d-flex a-start">
+                              <div class="" style="margin-top:5px;">
+                                 <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                    <option value="">Bộ lọc tìm kiếm</option>
+                                    <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                    <option value="price2" <?=$search_option == 'price2' ? 'selected="selected"' : '' ?>>Khoảng giá</option>
+                                    <option value="count2" <?=$search_option == 'count2' ? 'selected="selected"' : '' ?>>Khoảng số lượng</option>
+                                    <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                    <option value="type2" <?=$search_option == 'type2' ? 'selected="selected"' : '' ?>>Danh mục</option>
+                                    <option value="publish2" <?=$search_option == 'publish2' ? 'selected="selected"' : '' ?>>Tình trạng xuất bản</option>
+                                    <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
                                  </select>
-                                 <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                               </div>
-                              <?php
-                              if(is_array($keyword)) {
-                                 foreach($keyword as $key) {
-                              ?>
-                                 <?php
-                                 if($key != "") {
-                                 ?>
-                                 <div class="ele-select ele-cols mt-10">
-                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                              <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-cols d-flex f-column">
+                                    <select name="search_option" class="form-control mb-10">
+                                       <option value="">Chọn cột tìm kiếm</option>
+                                       <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
+                                       <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
+                                       <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
+                                       <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
+                                       <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                    </select>
+                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                                  </div>
                                  <?php
-                                 }
+                                 if(is_array($keyword)) {
+                                    foreach($keyword as $key) {
                                  ?>
-                              <?php   
-                                 }
-                              }
-                              ?>
-                           </div>
-                           <div id="s-price2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($price_min && $price_min != [""] || $price_max && $price_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-price2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="price_min[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value=""  >
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="price_max[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="" >
-                                 </div>
-                              </div>
-                              <?php
-                                 if(is_array($price_min) && is_array($price_max)) {
-                                    foreach(array_combine($price_min,$price_max) as $p_min => $p_max){
-                              ?>
-                                 <?php
-                                 if($p_min != "" || $p_max != "") {
-                                 ?>
-                                 <div class="ele-select ele-price2 mt-10">
-                                    <div class="" style="display:flex;">
-                                       <input type="text" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_min;?>"  >
+                                    <?php
+                                    if($key != "") {
+                                    ?>
+                                    <div class="ele-select ele-cols mt-10">
+                                       <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                       <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
                                     </div>
-                                    <div class="ml-10" style="display:flex;">
-                                       <input type="text" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_max;?>"  >
-                                    </div>
-                                    <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-                                 </div>
-                                 <?php
-                                 }?>
-                              <?php 
+                                    <?php
+                                    }
+                                    ?>
+                                 <?php   
                                     }
                                  }
-                              ?>
-                           </div>
-                           <div id="s-count2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($count_min && $count_min != [""] || $count_max && $count_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-count2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                 </div>
-                                 <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
-                              </div>
-                              <?php
-                                 if(is_array($count_min) && is_array($count_max)) {
-                                    foreach(array_combine($count_min,$count_max) as $c_min => $c_max){
-                              ?>
-                                 <?php
-                                 if($c_min != "" || $c_max != "") {
                                  ?>
-                                 <div class="ele-select ele-count2 mt-10">
+                              </div>
+                              <div id="s-price2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($price_min && $price_min != [""] || $price_max && $price_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-price2">
                                     <div class="" style="display:flex;">
-                                       <input type="text" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="<?=$c_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       <input type="text" name="price_min[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value=""  >
                                     </div>
                                     <div class="ml-10" style="display:flex;">
-                                       <input type="text" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="<?=$c_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       <input type="text" name="price_max[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="" >
                                     </div>
-                                    <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
+                                    if(is_array($price_min) && is_array($price_max)) {
+                                       foreach(array_combine($price_min,$price_max) as $p_min => $p_max){
+                                 ?>
+                                    <?php
+                                    if($p_min != "" || $p_max != "") {
+                                    ?>
+                                    <div class="ele-select ele-price2 mt-10">
+                                       <div class="" style="display:flex;">
+                                          <input type="text" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_min;?>"  >
+                                       </div>
+                                       <div class="ml-10" style="display:flex;">
+                                          <input type="text" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_max;?>"  >
+                                       </div>
+                                       <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
+                                    </div>
+                                    <?php
+                                    }?>
+                                 <?php 
+                                       }
+                                    }
+                                 ?>
+                              </div>
+                              <div id="s-count2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($count_min && $count_min != [""] || $count_max && $count_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-count2">
+                                    <div class="" style="display:flex;">
+                                       <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                    </div>
+                                    <div class="ml-10" style="display:flex;">
+                                       <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                    </div>
                                     <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
                                  </div>
                                  <?php
+                                    if(is_array($count_min) && is_array($count_max)) {
+                                       foreach(array_combine($count_min,$count_max) as $c_min => $c_max){
+                                 ?>
+                                    <?php
+                                    if($c_min != "" || $c_max != "") {
+                                    ?>
+                                    <div class="ele-select ele-count2 mt-10">
+                                       <div class="" style="display:flex;">
+                                          <input type="text" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="<?=$c_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       </div>
+                                       <div class="ml-10" style="display:flex;">
+                                          <input type="text" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="<?=$c_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       </div>
+                                       <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
+                                       <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
+                                    </div>
+                                    <?php
+                                    }
+                                    ?>
+                                 <?php 
+                                       }
+                                    }
+                                 ?>
+                              </div>
+                              <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-date2">
+                                    <div class="" style="display:flex;">
+                                       <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                    </div>
+                                    <div class="ml-10" style="display:flex;">
+                                       <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                                    </div>
+                                 </div>
+                                 <?php
+                                    if(is_array($date_min) && is_array($date_max)) {
+                                       foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                                 ?>
+                                 <?php
+                                    if($d_min != "" || $d_max != "") {
+                                 ?>
+                                 <div class="ele-select ele-date2 mt-10">
+                                    <div class="" style="display:flex;">
+                                       <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                                    </div>
+                                    <div class="ml-10" style="display:flex;">
+                                       <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                                    </div>
+                                    <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
                                  }
                                  ?>
-                              <?php 
-                                    }
-                                 }
-                              ?>
-                           </div>
-                           <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-date2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                              </div>
-                              <?php
-                                 if(is_array($date_min) && is_array($date_max)) {
-                                    foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                              ?>
-                              <?php
-                                 if($d_min != "" || $d_max != "") {
-                              ?>
-                              <div class="ele-select ele-date2 mt-10">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                                 </div>
-                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                              </div>
-                              <?php
-                              }
-                              ?>
-                              <?php 
-                                    }
-                                 }
-                              ?>
-                           </div>
-                           <div id="s-type2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($pt_type && $pt_type != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-type2">
-                                 <select class="select-type2" style="width:100%;" class="form-control" name="pt_type[]">
-                                    <option value="">Chọn danh mục cần tìm</option>
-                                    <?php
-                                       $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                       $rows2 = db_query($sql);
-                                       foreach($rows2 as $row2) {
-                                    ?>
-                                       <option value="<?=$row2['id']?>"><?=$row2['name'];?></option>
-                                    <?php
+                                 <?php 
                                        }
-                                    ?>
-                                 </select>
-                              </div>
-                              <?php
-                              if(is_array($pt_type)) {
-                                 foreach($pt_type as $pt){
-                              ?>
-                              <?php
-                                 if($pt != "") {
+                                    }
                                  ?>
-                              <div class="ele-select ele-type2 mt-10">
-                                 <select class="select-type2" style="width:300px" class="form-control" name="pt_type[]">
-                                    <option value="">Chọn danh mục cần tìm</option>
-                                    <?php
-                                       $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                       $rows2 = db_query($sql);
-                                       foreach($rows2 as $row2) {
-                                    ?>
-                                       <option value="<?=$row2['id']?>" <?=$pt == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
-                                    <?php
-                                       }
-                                    ?>
-                                 </select>
-                                 <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
                               </div>
-                              <?php
-                              }?>
-                              <?php
+                              <div id="s-type2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($pt_type && $pt_type != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-type2">
+                                    <select class="select-type2" style="width:100%;" class="form-control" name="pt_type[]">
+                                       <option value="">Chọn danh mục cần tìm</option>
+                                       <?php
+                                          $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
+                                          $rows2 = db_query($sql);
+                                          foreach($rows2 as $row2) {
+                                       ?>
+                                          <option value="<?=$row2['id']?>"><?=$row2['name'];?></option>
+                                       <?php
+                                          }
+                                       ?>
+                                    </select>
+                                 </div>
+                                 <?php
+                                 if(is_array($pt_type)) {
+                                    foreach($pt_type as $pt){
+                                 ?>
+                                 <?php
+                                    if($pt != "") {
+                                    ?>
+                                 <div class="ele-select ele-type2 mt-10">
+                                    <select class="select-type2" style="width:300px" class="form-control" name="pt_type[]">
+                                       <option value="">Chọn danh mục cần tìm</option>
+                                       <?php
+                                          $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
+                                          $rows2 = db_query($sql);
+                                          foreach($rows2 as $row2) {
+                                       ?>
+                                          <option value="<?=$row2['id']?>" <?=$pt == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
+                                       <?php
+                                          }
+                                       ?>
+                                    </select>
+                                    <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
+                                 }?>
+                                 <?php
+                                    }
                                  }
-                              }
-                              ?>
+                                 ?>
+                              </div>
+                              <input type="hidden" name="is_search" value="true">
+                              <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                           </div> 
+                           <div class="d-flex a-start mt-20">
+                              <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$select_publish != "" ? "display:block;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <select name="select_publish" class="form-control">
+                                    <option value="">Tình trạng xuất bản</option>
+                                    <option value="1" <?=$select_publish == 1 ? "selected='selected'" : "";?>>Đã xuất bản</option>
+                                    <option value="00" <?=$select_publish == "00" ? "selected='selected'" : "";?>>Chưa xuất bản</option>
+                                 </select>
+                              </div>
                            </div>
-                           <input type="hidden" name="is_search" value="true">
-                           <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                         </form>
                      </div>
                      <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
@@ -585,10 +602,10 @@
                                     <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'>" : $row['pi_name'];?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_count' style='' value='" . $row['count'] . "'>" : number_format($row['count'],0,'','.');?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'>" : number_format($row['count'],0,'','.');?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='number' name='pi_price' style='' value='" . $row['price'] . "'>" : number_format($row['price'],0,'','.') . "đ";?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'>" : number_format($row['price'],0,'','.') . "đ";?>
                                  </td>
                                  <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea></td>" : "";?>
                                  <td><?=$row['pt_name']?></td>
@@ -749,6 +766,8 @@
       $("select[name='search_option'] > option[value='']").prop('selected',true);
    }
    $('.k-select-opt-remove').click(function(){
+      $(event.currentTarget).siblings('select').find('option').prop("selected",false);
+      $(event.currentTarget).siblings('select').find("option[value='']").prop("selected",true);
       $(event.currentTarget).siblings('.ele-select').remove()
       $(event.currentTarget).siblings("div").find("input").val("");
       $(event.currentTarget).closest('div').css({"display":"none"});
@@ -1159,59 +1178,100 @@
          }
       });
       //
-      
+      // php auto select all rows when focus update all function execute
+      <?=$upt_more == 1 ? 'dt_pi.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
    });
    function insAll(){
+      let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
       $('td input[name="name_p2"]').each(function(){
-         formData.append("name_p2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("name_p2[]",$(this).val());
+            $(this).siblings("p").text("");
+         } else {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;
+         }
       });
       $('td input[name="price_p2"]').each(function(){
-         formData.append("price_p2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("price_p2[]",$(this).val());
+            $(this).siblings("p").text("");
+         } else {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;
+         }
       });
       $('td textarea[name="desc_p2"]').each(function(){
-         formData.append("desc_p2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("desc_p2[]",$(this).val());
+            $(this).siblings("p").text("");
+         } else {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;
+         }
       });
       $('td input[name="count_p2"]').each(function(){
-         formData.append("count_p2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("count_p2[]",$(this).val());
+            $(this).siblings("p").text("");
+         } else {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;
+         }
       });
       $('td input[name="category_id"]').each(function(){
-         formData.append("type_p2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("type_p2[]",$(this).val());
+            $(this).closest('td').find("p").text("");
+         } else {
+            $(this).closest('td').find("p").text("Phải chọn danh mục");
+            test = false;
+         }
       });
       $('td input[name="img2[]"]').each(function(){
-         formData.append("img2[]",$(this)[0].files[0]);
+         if($(this).val() != "") {
+            formData.append("img2[]",$(this)[0].files[0]);
+            $(this).closest('td').find("p").text("");
+         } else {
+            $(this).closest('td').find("p").text("Ko để trống ảnh");
+            test = false;
+         }
       });
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
       console.log(formData.getAll("img2"));
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã thêm dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
+      if(test) {
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã thêm dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           location.reload();
+                        }
                      }
-                  }
-               });
+                  });
+               }
+            },
+            error: function(data){
+               console.log("Error: " + data);
             }
-         },
-         error: function(data){
-            console.log("Error: " + data);
-         }
-      })
+         })
+      }
+      
    }
    function uptAll(){
       let formData = new FormData();
@@ -1374,59 +1434,103 @@
       $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
    }
    function insMore2(){
+      let test = true;
+      let this2 = $(event.currentTarget);
       let name_p2 = $(event.currentTarget).closest('tr').find('td input[name="name_p2"]').val();
       let price_p2 = $(event.currentTarget).closest('tr').find('td input[name="price_p2"]').val();
       let count_p2 = $(event.currentTarget).closest('tr').find('td input[name="count_p2"]').val();
       let desc_p2 = $(event.currentTarget).closest('tr').find('td textarea[name="desc_p2"]').val();
       let type_p2 = $(event.currentTarget).closest('tr').find('td input[name="category_id"]').val();
       let file = $(event.currentTarget).closest('tr').find('input[name="img2[]"]')[0].files;
-      console.log(name_p2);
-      console.log(price_p2);
-      console.log(count_p2);
-      console.log(type_p2);
-      let formData = new FormData();
-      formData.append("name_p2",name_p2);
-      formData.append("price_p2",price_p2);
-      formData.append("count_p2",count_p2);
-      formData.append("type_p2",type_p2);
-      formData.append("desc_p2",desc_p2);
-      formData.append("status","ins_more");
-      formData.append("token","<?php echo_token();?>");
-      if(file.length > 0) {
-         formData.append('file_p2',file[0]); 
+      console.log(file);
+      // validate 
+      if(name_p2 == "") {
+         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("");
       }
-      let this2 = $(event.currentTarget);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         cache: false,
-         contentType: false,
-         processData: false,
-         data:formData,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã thêm dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        this2.text("Đã thêm");
-                        this2.prop("disabled",true);
-                        this2.css({
-                           "border": "1px solid #cac0c0",
-                           "color": "#cac0c0",
-                           "pointer-events": "none",
-                        });
-                     }
-                  }
-               });
-            }
-         },error: function(data){
-            console.log("Error: " + data);
+      //
+      if(price_p2 == "") {
+         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("");
+      }
+      //
+      if(count_p2 == "") {
+         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else  {
+         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("");
+      } 
+      //
+      if(desc_p2 == "") {
+         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else  {
+         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("");
+      } 
+      //
+      if(type_p2 == "") {
+         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("Phải chọn danh mục");
+         test = false;
+      } else {
+         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("");
+      }
+      //
+      if(file.length == 0) {
+         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("Ko để trống ảnh");
+         test = false;
+      } else {
+         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("");
+      }
+      //
+      console.log(test);
+      if(test) {
+         let formData = new FormData();
+         formData.append("name_p2",name_p2);
+         formData.append("price_p2",price_p2);
+         formData.append("count_p2",count_p2);
+         formData.append("type_p2",type_p2);
+         formData.append("desc_p2",desc_p2);
+         formData.append("status","ins_more");
+         formData.append("token","<?php echo_token();?>");
+         if(file.length > 0) {
+            formData.append('file_p2',file[0]); 
          }
-      })
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã thêm dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           this2.text("Đã thêm");
+                           this2.prop("disabled",true);
+                           this2.css({
+                              "border": "1px solid #cac0c0",
+                              "color": "#cac0c0",
+                              "pointer-events": "none",
+                           });
+                        }
+                     }
+                  });
+               }
+            },error: function(data){
+               console.log("Error: " + data);
+            }
+         })
+      }
    }
    var count_row_z_index = 1000000;
    function showRow(page,apply_dom = true){
@@ -1473,14 +1577,15 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                   <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
                   <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
                   <td>
                      <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
                         <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
                      </div>
+                     <p class='text-danger'></p>
                   </td>
                   <td>
                      <div style="display:flex;flex-direction:column;position:relative;">
@@ -1494,6 +1599,7 @@
                            </li>
                         </ul>
                         <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+                        <p class='text-danger'></p>
                      </div>
                   </td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
@@ -1510,14 +1616,15 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                 <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
                   <td>
                      <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
                         <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
                      </div>
+                     <p class='text-danger'></p>
                   </td>
                   <td>
                      <div style="display:flex;flex-direction:column;outline:none !important;">
@@ -1531,6 +1638,7 @@
                            </li>
                         </ul>
                         <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
+                        <p class='text-danger'></p>
                      </div>
                   </td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
@@ -1582,14 +1690,15 @@
       html = `
          <tr data-row-id='${parseInt(page) + 1}'>
             <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='count_p2' type='number' value=''></td>
-            <td><input class='kh-inp-ctrl' name='price_p2' type='number' value=''></td>
+            <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
             <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
             <td>
                <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
                   <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
                </div>
+               <p class='text-danger'></p>
             </td>
             <td>
                <div style="display:flex;flex-direction:column;outline:none !important;">
@@ -1603,6 +1712,7 @@
                      </li>
                   </ul>
                   <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+                  <p class='text-danger'></p>
                </div>
             </td>
             <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
@@ -2117,11 +2227,11 @@
       $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
       $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
-      $count = isset($_REQUEST["count"]) ? $_REQUEST["count"] : null;
+      $count = isset($_REQUEST["count"]) ? str_replace(".","",$_REQUEST["count"]) : null;
       $description = isset($_REQUEST["description"]) ? $_REQUEST["description"] : null;
       $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
       $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
-      $price = isset($_REQUEST["price"]) ? $_REQUEST["price"] : null;
+      $price = isset($_REQUEST["price"]) ? str_replace(".","",$_REQUEST["price"]) : null;
       //
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
       if($list_file_del){
@@ -2294,8 +2404,8 @@
       } else if($status == "upt_more") {
          $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
          $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? $_REQUEST["pi_count"] : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? $_REQUEST["pi_price"] : null;
+         $pi_count = isset($_REQUEST["pi_count"]) ? str_replace(".","",$_REQUEST["pi_count"]) : null;
+         $pi_price = isset($_REQUEST["pi_price"]) ? str_replace(".","",$_REQUEST["pi_price"]) : null;
          $pi_description = isset($_REQUEST["pi_description"]) ? $_REQUEST["pi_description"] : null;
          $sql = "Update product_info set name='$pi_name',count='$pi_count',price='$pi_price',description='$pi_description' where id='$pi_id'";
          sql_query($sql);
@@ -2304,8 +2414,8 @@
          $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
          if($user_id) {
             $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
+            $count_p2 = isset($_REQUEST["count_p2"]) ? str_replace(".","",$_REQUEST["count_p2"]) : null;
+            $price_p2 = isset($_REQUEST["price_p2"]) ? str_replace(".","",$_REQUEST["price_p2"]) : null;
             $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
             $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
             $dir = "upload/product/";
@@ -2343,8 +2453,10 @@
             $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
             $file_p2 = isset($_FILES["file_p2"]) ? $_FILES["file_p2"] : null;
             for($i = 0 ; $i < $len ; $i++) {
+               $count_p22 = str_replace(".","",$count_p2[$i]);
+               $price_p22 = str_replace(".","",$price_p2[$i]);
                $dir = "upload/product/";
-               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p2[$i]','$price_p2[$i]')";
+               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p22','$price_p22')";
                //print_r($sql);
                sql_query($sql);
                $insert = ins_id();
@@ -2378,7 +2490,9 @@
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
          if($len && is_numeric($len)) {
             for($i = 0 ; $i < $len ; $i++){
-               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count[$i]',price='$pi_price[$i]',description='$pi_desc[$i]' where id='$pi_id[$i]'";
+               $pi_count2 = str_replace(".","",$pi_count[$i]);
+               $pi_price2 = str_replace(".","",$pi_price[$i]);
+               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count2',price='$pi_price2',description='$pi_desc[$i]' where id='$pi_id[$i]'";
                sql_query($sql);
             }
             echo_json(["msg" => "ok"]);

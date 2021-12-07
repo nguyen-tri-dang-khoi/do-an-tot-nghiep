@@ -260,9 +260,13 @@
                         <div id="s-payment_method2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
                           <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
                             <option value="">Phương thức thanh toán</option>
-                            <option value="MoMo" <?=$search_option == 'MoMo' ? 'selected="selected"' : '' ?>>MoMo</option>
-                            <option value="PayPal" <?=$search_option == 'PayPal' ? 'selected="selected"' : '' ?>>PayPal</option>
-                            <option value="Money" <?=$search_option == 'Money' ? 'selected="selected"' : '' ?>>Tiền mặt</option>
+                            <?php
+                              $sql = "select * from payment_method";
+                              $payment = fetch_all(sql_query($sql));
+                              foreach($payment as $pay) {
+                            ?>
+                                <option value="<?=$pay['id']?>" <?=$search_option == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
+                            <?php } ?>
                             <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
                           </select>
                         </div>
@@ -318,7 +322,7 @@
                         <td><?=$row['order_id']?></td>
                         <td><?=$row['full_name']?></td>
                         <td><?=$row['address']?></td>
-                        <td><?=$row['total']?></td>
+                        <td><?=number_format($row['total'],0,"",".");?></td>
                         <?php
                           if($row['payment_status'] == 1) {
                         ?>
@@ -547,6 +551,42 @@
     let order_id = $(event.currentTarget).attr('data-order-id');
     $('#form-order-detail').load(`ajax_order_manage.php?status=show_order_detail&order_id=${order_id}`,() => {
       $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+    });
+  }
+  function changeActivePayment(){
+    let id = $(event.currentTarget).attr('data-id');
+    let yn = $(event.currentTarget).attr('data-active');
+    let this2 = $(event.currentTarget);
+    $.ajax({
+      url: window.location.href,
+      type: "POST",
+      data: {
+        token: "<?php echo_token();?>",
+        status: "active_payment",
+        yn: yn,
+        payment_id: id,
+      },
+      success: function(data) {
+        console.log(data);
+        data = JSON.parse(data);
+        if(data.msg == "ok") {
+          if(data.yn == "y") {
+            this2.removeClass("button-red");
+            this2.addClass("button-green");
+            this2.attr("data-active",'n');
+            this2.text("Active");
+            this2.closest("tr").find("td").eq(2).text("Ngưng Hoạt động");
+          } else if(data.yn == "n") {
+            this2.removeClass("button-green");
+            this2.addClass("button-red");
+            this2.attr("data-active",'y');
+            this2.text("Inactive");
+            this2.closest("tr").find("td").eq(2).text("Hoạt động");
+          }
+        }
+      },error:function(data) {
+        console.log("Error: " + data);
+      }
     });
   }
    
@@ -851,18 +891,25 @@
     } else if (is_post_method()) {
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-        if($status == 1) {
+        /*if($status == 1) {
            ajax_db_update_by_id('orders',['payment_status'=>1],[$id]);
-        } 
-        // Nếu $_POST['func'] == -1 : load chi tiết hoá đơn theo hoa_don_id
-        else if($status == -1) {
+        } else if($status == -1) {
             $sql_load_order_detail = "select pi.name,pi.img_name as 'image',od.count,od.price from product_info pi inner join order_detail od on pi.id = od.product_info_id where od.order_id = ?";
             ajax_db_query($sql_load_order_detail,[$id]);
-        } 
-        // Nếu $_POST['func'] == 0 : load thông tin cá nhân người dùng
-        else if($status == 0) {
-           $sql_get_client_info = "select username,email,birthday,phone,address,img_name from customer where id = ? limit 1";
-           ajax_fetch_row($sql_get_client_info,[$id]);
+        } else if($status == 0) {
+          $sql_get_client_info = "select username,email,birthday,phone,address,img_name from customer where id = ? limit 1";
+          ajax_fetch_row($sql_get_client_info,[$id]);
+        } else*/
+        if($status == "active_payment") {
+          $payment_id = isset($_REQUEST["payment_id"]) ? $_REQUEST["payment_id"] : null;
+          $yn = isset($_REQUEST["yn"]) ? $_REQUEST["yn"] : null;
+          if($yn == "n") {
+            $sql_update = "update payment_method set is_active='1' where id = '$payment_id'";
+          } else if($yn == "y") {
+            $sql_update = "update payment_method set is_active='0' where id = '$payment_id'";
+          }
+          sql_query($sql_update);
+          echo_json(["msg" => "ok","yn" => $yn]);
         }
     }
 ?>

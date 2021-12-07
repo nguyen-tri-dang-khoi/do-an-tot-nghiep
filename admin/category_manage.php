@@ -494,6 +494,8 @@
           $("th.select-checkbox").addClass("selected");
         }
       });
+      // php auto select all rows when focus update all function execute
+      <?=$upt_more == 1 ? 'dt_pt.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
     
     });
     function createDataUptAll(){
@@ -598,7 +600,7 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                 <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='name2' type='text' value=''></td>
+                <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -613,7 +615,7 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                 <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='name2' type='text' value=''></td>
+                <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -663,7 +665,7 @@
       html = `
         <tr data-row-id='${parseInt(page) + 1}'>
           <td>${parseInt(page) + 1}</td>
-          <td><input class='kh-inp-ctrl' name='name2' type='text' value=''></td>
+          <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
           <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
         </tr>
       `;
@@ -899,70 +901,60 @@
       });
     }
     function insAll(){
+      let test = true;
       let arr_ins_all = [];
       let count = 0;
       $("td input[name='name2']").each(function(){
         let temp = $(this).val();
         if(temp != "" && temp != null) {
           arr_ins_all.push(temp);
+          $(this).siblings("p.text-danger").text("");
           count++;
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
         }
       });
-      if(count == 0){
-        $.alert({
+      if(test) {
+        $.confirm({
           title: "Thông báo",
-          content: "Vui lòng không để trống tên danh mục",
-        });
-        return;
-      }
-      $.confirm({
-        title: "Thông báo",
-        content: `Bạn có chắc chắn muốn sửa ${count} dòng này ?`,
-        buttons: {
-          "Có": function(){
-            $.ajax({
-              url: window.location.href,
-              type: "POST",
-              data: {
-                status: "upt_all",
-                rows: arr_ins_all.join(","),
-                token: "<?php echo_token();?>"
-              },
-              success: function(data) {
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                  $.alert({
-                    title: "Thông báo",
-                    content: "Bạn đã sửa dữ liệu thành công",
-                    buttons: {
-                      "Ok": function(){
-                        location.reload();
+          content: `Bạn có chắc chắn muốn thêm ${count} dòng này ?`,
+          buttons: {
+            "Có": function(){
+              $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: {
+                  status: "ins_all",
+                  rows: arr_ins_all.join(","),
+                  token: "<?php echo_token();?>"
+                },
+                success: function(data) {
+                  data = JSON.parse(data);
+                  if(data.msg == "ok") {
+                    $.alert({
+                      title: "Thông báo",
+                      content: "Bạn đã thêm dữ liệu thành công",
+                      buttons: {
+                        "Ok": function(){
+                          location.reload();
+                        }
                       }
-                    }
-                  });
+                    });
+                  }
+                },
+                error: function(data){
+                  console.log("Error: " + data);
                 }
-              },
-              error: function(data){
-                console.log("Error: " + data);
-              }
-            });
-          },"Không": function(){
+              });
+            },"Không": function(){
 
-          }
-        },
-      })
-      console.log(arr_ins_all);
-    }
-    function uptAll(){
-      let arr_upt_all = [];
-      let count = 0;
-      $("td input[name='name2']").each(function(){
-        let temp = $(this).val();
-        if(temp != "" && temp != null) {
-          arr_upt_all.push(temp);
-          count++;
-        }
-      });
+            }
+          },
+        })
+        console.log(arr_ins_all);
+      }
+      
     }
 </script>
 <script>

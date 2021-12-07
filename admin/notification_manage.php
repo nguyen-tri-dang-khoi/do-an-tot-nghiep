@@ -951,6 +951,8 @@
          }
       });
       //
+      // php auto select all rows when focus update all function execute
+      <?=$upt_more == 1 ? 'dt_n.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
    });
    function insMore(){
       //$('#modal-xl2').modal('show');

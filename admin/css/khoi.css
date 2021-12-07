@@ -166,7 +166,9 @@
 .k-select-opt-ins {
  
 }
-
+.a-start {
+  align-items:flex-start !important;
+}
 .k-select-opt-ins::after {
   position: absolute;
   content: "+";
