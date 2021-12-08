@@ -199,7 +199,7 @@
                 <?php
                   } else {
                 ?>
-                <td><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"></td>
+                <td><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
                 <?php
                   }
                 ?>
@@ -499,6 +499,7 @@
     
     });
     function createDataUptAll(){
+      let test = true;
       let arr_id = [];
       let arr_pt_name = [];
       let _data = dt_pt.rows(".selected").select().data();
@@ -516,8 +517,15 @@
         return false;
       }
       $("tr.selected input[name='pt_name']").each(function(){
-        arr_pt_name.push($(this).val());
+        if($(this).val() != "") {
+          arr_pt_name.push($(this).val());
+          $(this).siblings("span.text-danger").text("");
+        } else {
+          $(this).siblings("span.text-danger").text("Không được để trống");
+          test = false;
+        }
       });
+      if(!test) return;
       let result = {};
       arr_id.forEach((id,i) => result[id] = arr_pt_name[i]);
       console.log(JSON.stringify(result));
@@ -823,37 +831,47 @@
         location.href="category_manage.php?upt_more=1&parent_id=<?=$parent_id;?>&str=" + str_arr_upt;
     }
     function uptThisRow(){
+      let test = true;
       let name = $(event.currentTarget).closest("tr").find("td input[name='pt_name']").val();
-      let id = $(event.currentTarget).attr('data-id');
-      let this2 = $(event.currentTarget);
-      $.ajax({
-        url: window.location.href,
-        type: "POST",
-        data: {
-          status: "upt_more",
-          pt_id: id,
-          pt_name: name,
-          token: '<?php echo_token();?>',
-        },success: function(data){
-          data = JSON.parse(data);
-          if(data.msg == "ok"){
-            $.alert({
-              title: "Thông báo",
-              content: "Bạn đã sửa dữ liệu thành công",
-              buttons: {
-                "Ok": function(){
-                  let num_of_upt = this2.attr('dt-count');
-                  num_of_upt++;
-                  this2.attr('dt-count',num_of_upt);
-                  this2.text(`Sửa (${num_of_upt})`);
+      if(name == "") {
+        $(event.currentTarget).closest("tr").find("td input[name='pt_name']").siblings("span.text-danger").text("Không được để trống");
+        test = false;
+      } else {
+        $(event.currentTarget).closest("tr").find("td input[name='pt_name']").siblings("span.text-danger").text("");
+      }
+
+      if(test) {
+        let id = $(event.currentTarget).attr('data-id');
+        let this2 = $(event.currentTarget);
+        $.ajax({
+          url: window.location.href,
+          type: "POST",
+          data: {
+            status: "upt_more",
+            pt_id: id,
+            pt_name: name,
+            token: '<?php echo_token();?>',
+          },success: function(data){
+            data = JSON.parse(data);
+            if(data.msg == "ok"){
+              $.alert({
+                title: "Thông báo",
+                content: "Bạn đã sửa dữ liệu thành công",
+                buttons: {
+                  "Ok": function(){
+                    let num_of_upt = this2.attr('dt-count');
+                    num_of_upt++;
+                    this2.attr('dt-count',num_of_upt);
+                    this2.text(`Sửa (${num_of_upt})`);
+                  }
                 }
-              }
-            });
+              });
+            }
+          },error:function(data){
+              console.log("Error: " + data);
           }
-        },error:function(data){
-            console.log("Error: " + data);
-        }
-      });
+        });
+      }
     }
     function readMore(){
       let arr_del = [];

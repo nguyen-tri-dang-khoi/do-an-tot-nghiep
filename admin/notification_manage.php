@@ -409,11 +409,11 @@
                               <tr id="<?=$row["id"];?>">
                                  <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
-                                 <td><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'" : $row['title'];?></td>
+                                 <td><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
                                  <?php
                                     if($upt_more == 1) {
                                  ?>
-                                    <td><?= "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea>";?></td>
+                                    <td><?= "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea><span class='text-danger'></span>";?></td>
                                  <?php
                                     }
                                  ?>
@@ -954,51 +954,69 @@
       // php auto select all rows when focus update all function execute
       <?=$upt_more == 1 ? 'dt_n.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
    });
-   function insMore(){
-      //$('#modal-xl2').modal('show');
-      $('#modal-xl3').modal({backdrop: 'static', keyboard: false});
-   }
    function insAll(){
+      let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
       $('td input[name="n_title2"]').each(function(){
-         formData.append("n_title2[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("n_title2[]",$(this).val());
+            $(this).siblings("p.text-danger").text("");
+         } else {
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
+         }
       });
       $('td textarea[name="n_content2"]').each(function(){
-         formData.append("n_content2[]",$(this).val());
+         if($(this).val() != "") { 
+            formData.append("n_content2[]",$(this).val());
+            $(this).siblings("p.text-danger").text("");
+         } else {
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
+         }
       });
       $('td input[name="img3[]"]').each(function(){
-         formData.append("img3[]",$(this)[0].files[0]);
+         if($(this).val() != "") {
+            formData.append("img3[]",$(this)[0].files[0]);
+            $(this).parent().siblings("p.text-danger").text("");
+         } else {
+            $(this).parent().siblings("p.text-danger").text("Phải upload hình");
+            test = false;
+         }
       });
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã thêm dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
+      if(test) {
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã thêm dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           location.reload();
+                        }
                      }
-                  }
-               });
+                  });
+               }
+            },
+            error: function(data){
+               console.log("Error: " + data);
             }
-         },
-         error: function(data){
-            console.log("Error: " + data);
-         }
-      })
+         })
+      }
+      
    }
    function insMore(){
       //$('#modal-xl2').modal('show');
@@ -1045,12 +1063,13 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                <td>${parseInt(g)}</td>
-               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
-               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
+               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''><p class='text-danger'></p></td>
+               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea><p class='text-danger'></p></td>
                <td>
                   <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
                      <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
                   </div>
+                  <p class='text-danger'></p>
                </td>
                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
@@ -1066,12 +1085,13 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                <td>${parseInt(g)}</td>
-               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
-               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
+               <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''><p class='text-danger'></p></td>
+               <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea><p class='text-danger'></p></td>
                <td>
                   <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
                      <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
                   </div>
+                  <p class='text-danger'></p>
                </td>
                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
@@ -1122,12 +1142,13 @@
       html = `
          <tr data-row-id='${parseInt(page) + 1}'>
             <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''></td>
-            <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea></td>
+            <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''><p class='text-danger'></p></td>
+            <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea><p class='text-danger'></p></td>
             <td>
                <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
                   <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this,'1')">
                </div>
+               <p class='text-danger'></p>
             </td>
             <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
          </tr>
@@ -1156,52 +1177,80 @@
       });
    }
    function insMore2(){
+      let test = true;
+      let this2 = $(event.currentTarget).closest('tr');
       let n_title2 = $(event.currentTarget).closest('tr').find('td input[name="n_title2"]').val();
       let n_content2 = $(event.currentTarget).closest('tr').find('td textarea[name="n_content2"]').val();
       let img3 = $(event.currentTarget).closest('tr').find('input[name="img3[]"]')[0].files;
-      let formData = new FormData();
-      formData.append("n_title2",n_title2);
-      formData.append("n_content2",n_content2);
-      formData.append("img3",img3);
-      formData.append("status","ins_more");
-      formData.append("token","<?php echo_token();?>");
-      if(img3.length > 0) {
-         formData.append('img3',img3[0]); 
+      //
+      if(n_title2 == "") {
+         this2.find('td input[name="n_title2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.find('td input[name="n_title2"]').siblings("p.text-danger").text("");
       }
-      let this2 = $(event.currentTarget);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         cache: false,
-         contentType: false,
-         processData: false,
-         data:formData,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã thêm dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        this2.text("Đã thêm");
-                        this2.prop("disabled",true);
-                        this2.css({
-                           "border": "1px solid #cac0c0",
-                           "color": "#cac0c0",
-                           "pointer-events": "none",
-                        });
-                     }
-                  }
-               });
-            }
-         },error: function(data){
-            console.log("Error: " + data);
+      //
+      if(n_content2 == "") {
+         this2.find('td textarea[name="n_content2"]').siblings("p.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.find('td textarea[name="n_content2"]').siblings("p.text-danger").text("");
+      }
+      //
+      if(this2.find('td input[name="img3[]"]').val() == "") {
+         this2.find('td input[name="img3[]"]').parent().siblings("p.text-danger").text("Phải upload hình");
+         test = false;
+      } else {
+         this2.find('td input[name="img3[]"]').parent().siblings("p.text-danger").text("");
+      }
+      //
+      if(test) {
+         let formData = new FormData();
+         formData.append("n_title2",n_title2);
+         formData.append("n_content2",n_content2);
+         formData.append("img3",img3);
+         formData.append("status","ins_more");
+         formData.append("token","<?php echo_token();?>");
+         if(img3.length > 0) {
+            formData.append('img3',img3[0]); 
          }
-      })
+         let this2 = $(event.currentTarget);
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data:formData,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã thêm dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           this2.text("Đã thêm");
+                           this2.prop("disabled",true);
+                           this2.css({
+                              "border": "1px solid #cac0c0",
+                              "color": "#cac0c0",
+                              "pointer-events": "none",
+                           });
+                        }
+                     }
+                  });
+               }
+            },error: function(data){
+               console.log("Error: " + data);
+            }
+         })
+      }
+      
    }
    function uptAll(){
+      let test = true;
       let formData = new FormData();
       let _data = dt_n.rows(".selected").select().data();
       if(_data.length == 0) {
@@ -1215,40 +1264,55 @@
          formData.append("n_id[]",_data[i].DT_RowId);
       }
       $('tr.selected input[name="n_title"]').each(function(){
-         formData.append("n_title[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("n_title[]",$(this).val());
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
+         }
       });
       $('tr.selected textarea[name="n_content"]').each(function(){
-         formData.append("n_content[]",$(this).summernote('code'));
-      });
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","upt_all");
-      formData.append("len",_data.length);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã sửa dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
-                     }
-                  }
-               });
-            }
-         },
-         error: function(data){
-            console.log("Error: " + data);
+         if($(this).summernote('code') != "") {
+            formData.append("n_content[]",$(this).summernote('code'));
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
          }
-      })
+      });
+      if(test) {
+         formData.append("token","<?php echo_token(); ?>");
+         formData.append("status","upt_all");
+         formData.append("len",_data.length);
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã sửa dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           location.reload();
+                        }
+                     }
+                  });
+               }
+            },
+            error: function(data){
+               console.log("Error: " + data);
+            }
+         })
+      }
+      
    }
    function delRow(){
       let page = $('[data-plus]').attr('data-plus');
@@ -1378,11 +1442,26 @@
       location.href="notification_manage.php?upt_more=1&str=" + str_arr_upt;
     }
     function uptThisRow(){
+        let test = true;
         let title = $(event.currentTarget).closest("tr").find("td input[name='n_title']").val();
         let content = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
         let id = $(event.currentTarget).attr('data-id');
         let this2 = $(event.currentTarget);
-        $.ajax({
+        if(title == "") {
+          test = false;
+          this2.find("td input[name='n_title']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+          this2.find("td input[name='n_title']").siblings("span.text-danger").text("");
+        }
+
+        if(content == "") {
+         test = false;
+         this2.find("td input[name='n_title']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+         this2.find("td input[name='n_title']").siblings("span.text-danger").text("");
+        }
+        if(test) {
+         $.ajax({
             url: window.location.href,
             type: "POST",
             data: {
@@ -1410,7 +1489,9 @@
             },error:function(data){
                 console.log("Error: " + data);
             }
-        });
+         });
+        }
+        
     }
 </script>
 <script>

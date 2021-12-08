@@ -369,7 +369,7 @@
                                             <td>
                                                 <?php
                                                     if($upt_more == 1) {
-                                                        echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'>";
+                                                        echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'><span class='text-danger'></span>";
                                                     } else {
                                                         if($row['is_lock'] == 1){
                                                             echo '<i class="fas fa-lock mr-1"></i>';
@@ -378,17 +378,17 @@
                                                     }
                                                 ?>
                                             </td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'>" : $row["email"]?></td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'>" : $row["phone"]?></td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'>" : $row["cmnd"]?></td>
-                                            <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea>" : $row["address"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
+                                            <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
                                             <td>
                                                 <?php 
                                                     if($upt_more == 1) {
                                                         if(strlen($row["birthday"]) > 0) {
-                                                            echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'>";
+                                                            echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'><span class='text-danger'></span>";
                                                         } else {
-                                                            echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''>";
+                                                            echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''><span class='text-danger'></span>";
                                                         }
                                                     } else {
                                                         if(strlen($row["birthday"]) > 0) {
@@ -399,7 +399,7 @@
                                                     }
                                                 ?>
                                             </td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'>" : $row["username"]?></td>
+                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'><span class='text-danger'></span>" : $row["username"]?></td>
                                             <td><?=$row["created_at"] ? Date("d-m-Y H:i:s",strtotime($row["created_at"])) : "";?></td>
                                             <td>
                                                 <?php
@@ -696,7 +696,6 @@
 </script>
 <script>
     var dt_user;
-    
     $(".kh-datepicker2").datepicker({
         changeMonth: true,
         changeYear: true,
@@ -874,6 +873,8 @@
       $('#modal-xl3').modal({backdrop: 'static', keyboard: false});
     }
     function insMore2(){
+        let test = true;
+        let this2 = $(event.currentTarget).closest('tr');
         let u_fullname2 = $(event.currentTarget).closest('tr').find('td input[name="u_fullname2"]').val();
         let u_email2 = $(event.currentTarget).closest('tr').find('td input[name="u_email2"]').val();
         let u_phone2 = $(event.currentTarget).closest('tr').find('td input[name="u_phone2"]').val();
@@ -881,24 +882,176 @@
         let u_address2 = $(event.currentTarget).closest('tr').find('td textarea[name="u_address2"]').val();
         let u_birthday2 = $(event.currentTarget).closest('tr').find('td input[name="u_birthday2"]').attr('data-date');
         let u_username2 = $(event.currentTarget).closest('tr').find('td input[name="u_username2"]').val();
-        let formData = new FormData();
-        formData.append("u_fullname2",u_fullname2);
-        formData.append("u_email2",u_email2);
-        formData.append("u_phone2",u_phone2);
-        formData.append("u_cmnd2",u_cmnd2);
-        formData.append("u_address2",u_address2);
-        formData.append("u_birthday2",u_birthday2);
-        formData.append("u_username2",u_username2);
-        formData.append("status","ins_more");
-        formData.append("token","<?php echo_token();?>");
-        let this2 = $(event.currentTarget);
+        if(u_fullname2 == "") {
+            this2.find('td input[name="u_fullname2"]').siblings("p.text-danger").text("Không được để trống");
+            test = false;
+        } else {
+            this2.find('td input[name="u_fullname2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_email2 == "") {
+            this2.find('td input[name="u_email2"]').siblings("p.text-danger").text("Không được để trống");
+            test = false;
+        } else {
+            this2.find('td input[name="u_email2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_phone2 == "") {
+            test = false;
+            this2.find('td input[name="u_phone2"]').siblings("p.text-danger").text("Không được để trống");
+        } else {
+            this2.find('td input[name="u_phone2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_cmnd2 == "") {
+            test = false;
+            this2.find('td input[name="u_cmnd2"]').siblings("p.text-danger").text("Không được để trống");
+        } else {
+            this2.find('td input[name="u_cmnd2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_address2 == "") {
+            test = false;
+            this2.find('td textarea[name="u_address2"]').siblings("p.text-danger").text("Không được để trống");
+        } else {
+            this2.find('td textarea[name="u_address2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_birthday2 == "") {
+            test = false;
+            this2.find('td input[name="u_birthday2"]').siblings("p.text-danger").text("Không được để trống");
+        } else {
+            this2.find('td input[name="u_birthday2"]').siblings("p.text-danger").text("");
+        }
+
+        if(u_username2 == "") {
+            test = false;
+            this2.find('td input[name="u_username2"]').siblings("p.text-danger").text("Không được để trống");
+        } else {
+            this2.find('td input[name="u_username2"]').siblings("p.text-danger").text("");
+        }
+        if(test) {
+            let formData = new FormData();
+            formData.append("u_fullname2",u_fullname2);
+            formData.append("u_email2",u_email2);
+            formData.append("u_phone2",u_phone2);
+            formData.append("u_cmnd2",u_cmnd2);
+            formData.append("u_address2",u_address2);
+            formData.append("u_birthday2",u_birthday2);
+            formData.append("u_username2",u_username2);
+            formData.append("status","ins_more");
+            formData.append("token","<?php echo_token();?>");
+            let this2 = $(event.currentTarget);
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data:formData,
+                success: function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã thêm dữ liệu thành công",
+                            buttons: {
+                                "Ok": function(){
+                                    this2.text("Đã thêm");
+                                    this2.prop("disabled",true);
+                                    this2.css({
+                                        "border": "1px solid #cac0c0",
+                                        "color": "#cac0c0",
+                                        "pointer-events": "none",
+                                    });
+                                }
+                            }
+                        });
+                    }
+                },error: function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
+    }
+    function insAll(){
+      let test = true;
+      let formData = new FormData();
+      let len = $('[data-plus]').attr('data-plus');
+      $('td input[name="u_fullname2"]').each(function(){
+        if($(this).val() != ""){
+          formData.append("u_fullname2[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="u_email2"]').each(function(){
+        if($(this).val() != ""){
+          formData.append("u_email2[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="u_phone2"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("u_phone2[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="u_cmnd2"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("u_cmnd2[]",$(this).val());
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td textarea[name="u_address2"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("u_address2[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;  
+        }
+      });
+      $('td input[name="u_username2"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("u_username2[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="u_birthday2"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("u_birthday2[]",$(this).attr('data-date'));
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      formData.append("token","<?php echo_token(); ?>");
+      formData.append("status","ins_all");
+      formData.append("len",len);
+      if(test) {
         $.ajax({
             url: window.location.href,
             type: "POST",
+            data: formData,
             cache: false,
             contentType: false,
             processData: false,
-            data:formData,
             success: function(data){
                 console.log(data);
                 data = JSON.parse(data);
@@ -908,75 +1061,18 @@
                         content: "Bạn đã thêm dữ liệu thành công",
                         buttons: {
                             "Ok": function(){
-                                this2.text("Đã thêm");
-                                this2.prop("disabled",true);
-                                this2.css({
-                                    "border": "1px solid #cac0c0",
-                                    "color": "#cac0c0",
-                                    "pointer-events": "none",
-                                });
+                                location.reload();
                             }
                         }
                     });
                 }
-            },error: function(data){
+            },
+            error: function(data){
                 console.log("Error: " + data);
             }
         })
-    }
-    function insAll(){
-      let formData = new FormData();
-      let len = $('[data-plus]').attr('data-plus');
-      $('td input[name="u_fullname2"]').each(function(){
-         formData.append("u_fullname2[]",$(this).val());
-      });
-      $('td input[name="u_email2"]').each(function(){
-         formData.append("u_email2[]",$(this).val());
-      });
-      $('td input[name="u_phone2"]').each(function(){
-         formData.append("u_phone2[]",$(this).val());
-      });
-      $('td input[name="u_cmnd2"]').each(function(){
-         formData.append("u_cmnd2[]",$(this).val());
-      });
-      $('td textarea[name="u_address2"]').each(function(){
-         formData.append("u_address2[]",$(this).val());
-      });
-      $('td input[name="u_username2"]').each(function(){
-         formData.append("u_username2[]",$(this).val());
-      });
-      $('td input[name="u_birthday2"]').each(function(){
-         formData.append("u_birthday2[]",$(this).attr('data-date'));
-      });
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","ins_all");
-      formData.append("len",len);
-      $.ajax({
-        url: window.location.href,
-        type: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-                $.alert({
-                    title: "Thông báo",
-                    content: "Bạn đã thêm dữ liệu thành công",
-                    buttons: {
-                        "Ok": function(){
-                            location.reload();
-                        }
-                    }
-                });
-            }
-        },
-        error: function(data){
-            console.log("Error: " + data);
-        }
-      })
+      }
+      
     }
     function insRow(){
       let page = $('[data-plus]').attr('data-plus');
@@ -985,13 +1081,13 @@
       html = `
         <tr data-row-id='${parseInt(page) + 1}'>
             <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''></td>
-            <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea></td>
-            <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''></td>
-            <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''></td>
+            <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
+            <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+            <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
             <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
          </tr>
         `;
@@ -1090,13 +1186,13 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                   <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''></td>
-                  <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea></td>
-                  <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''></td>
-                  <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''></td>
+                  <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1111,13 +1207,13 @@
             html += `
               <tr data-row-id="${parseInt(g)}">
                 <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''></td>
-                <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''></td>
-                <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''></td>
-                <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''></td>
-                <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea></td>
-                <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''></td>
-                <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''></td>
+                <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1162,6 +1258,7 @@
       })
     } 
     function uptAll(){
+        let test = true;
         let formData = new FormData();
         let _data = dt_user.rows(".selected").select().data();
         if(_data.length == 0) {
@@ -1175,55 +1272,106 @@
             formData.append("user_id[]",_data[i].DT_RowId);
         }
         $('tr.selected input[name="u_fullname"]').each(function(){
-            formData.append("u_fullname2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_fullname2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected input[name="u_email"]').each(function(){
-            formData.append("u_email2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_email2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected input[name="u_phone"]').each(function(){
-            formData.append("u_phone2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_phone2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected input[name="u_cmnd"]').each(function(){
-            formData.append("u_cmnd2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_cmnd2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected textarea[name="u_address"]').each(function(){
-            formData.append("u_address2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_address2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected input[name="u_username"]').each(function(){
-            formData.append("u_username2[]",$(this).val());
+            if($(this).val() != "") {
+                formData.append("u_username2[]",$(this).val());
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
+            }
+            
         });
         $('tr.selected input[name="u_birthday"]').each(function(){
-            formData.append("u_birthday2[]",$(this).attr('data-date2'));
-        });
-        formData.append("token","<?php echo_token(); ?>");
-        formData.append("status","upt_all");
-        formData.append("len",_data.length);
-        $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                console.log(data);
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                $.alert({
-                    title: "Thông báo",
-                    content: "Bạn đã sửa dữ liệu thành công",
-                    buttons: {
-                        "Ok": function(){
-                            location.reload();
-                        }
-                    }
-                });
-                }
-            },
-            error: function(data){
-                console.log("Error: " + data);
+            if($(this).val() != "") {
+                formData.append("u_birthday2[]",$(this).attr('data-date2'));
+                $(this).siblings("span.text-danger").text("");
+            } else {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;
             }
-        })
+        });
+        if(test) {
+            formData.append("token","<?php echo_token(); ?>");
+            formData.append("status","upt_all");
+            formData.append("len",_data.length);
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                    $.alert({
+                        title: "Thông báo",
+                        content: "Bạn đã sửa dữ liệu thành công",
+                        buttons: {
+                            "Ok": function(){
+                                location.reload();
+                            }
+                        }
+                    });
+                    }
+                },
+                error: function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
+        
     }
     function unlockMore(){
         let arr_del = [];
@@ -1617,6 +1765,7 @@
         location.href="user_manage.php?upt_more=1&str=" + str_arr_upt;
     }
     function uptThisRow(){
+        let test = true;
         let name = $(event.currentTarget).closest("tr").find("td input[name='u_fullname']").val();
         let email = $(event.currentTarget).closest("tr").find("td input[name='u_email']").val();
         let phone = $(event.currentTarget).closest("tr").find("td input[name='u_phone']").val();
@@ -1625,42 +1774,88 @@
         let birthday = $(event.currentTarget).closest("tr").find("td input[name='u_birthday']").attr('data-date2');
         let username = $(event.currentTarget).closest("tr").find("td input[name='u_username']").val();
         let id = $(event.currentTarget).attr('data-id');
-        let this2 = $(event.currentTarget);
+        let this2 = $(event.currentTarget).closest("tr");
+        if(name == "") {
+            test = false;
+            this2.find("td input[name='u_fullname']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_fullname']").siblings("span.text-danger").text("");
+        }
+        if(email == "") {
+            test = false;
+            this2.find("td input[name='u_email']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_email']").siblings("span.text-danger").text("");
+        }
+        if(phone == "") {
+            test = false;
+            this2.find("td input[name='u_phone']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_phone']").siblings("span.text-danger").text("");
+        }
+        if(address == "") {
+            test = false;
+            this2.find("td textarea[name='u_address']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td textarea[name='u_address']").siblings("span.text-danger").text("");
+        }
+        if(cmnd == "") {
+            test = false;
+            this2.find("td input[name='u_cmnd']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_cmnd']").siblings("span.text-danger").text("");
+        }
+        if(username == "") {
+            test = false;
+            this2.find("td input[name='u_username']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_username']").siblings("span.text-danger").text("");
+        }
+        if(birthday == "") {
+            test = false;
+            this2.find("td input[name='u_birthday']").siblings("span.text-danger").text("Không được để trống");
+        } else {
+            this2.find("td input[name='u_birthday']").siblings("span.text-danger").text("");
+        }
         console.log(name);
-        $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: {
-                status: "upt_more",
-                u_fullname: name,
-                u_email: email,
-                u_phone: phone,
-                u_address: address,
-                u_cmnd: cmnd,
-                u_id: id,
-                u_username: username,
-                u_birthday: birthday,
-                token: '<?php echo_token();?>'
-            },success: function(data){
-                data = JSON.parse(data);
-                if(data.msg == "ok"){
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã sửa dữ liệu thành công",
-                        buttons: {
-                            "Ok" : function(){
-                                let num_of_upt = this2.attr('dt-count');
-                                num_of_upt++;
-                                this2.attr('dt-count',num_of_upt);
-                                this2.text(`Sửa (${num_of_upt})`);
+        this2 = $(event.currentTarget);
+        if(test) {
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: {
+                    status: "upt_more",
+                    u_fullname: name,
+                    u_email: email,
+                    u_phone: phone,
+                    u_address: address,
+                    u_cmnd: cmnd,
+                    u_id: id,
+                    u_username: username,
+                    u_birthday: birthday,
+                    token: '<?php echo_token();?>'
+                },success: function(data){
+                    data = JSON.parse(data);
+                    if(data.msg == "ok"){
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã sửa dữ liệu thành công",
+                            buttons: {
+                                "Ok" : function(){
+                                    let num_of_upt = this2.attr('dt-count');
+                                    num_of_upt++;
+                                    this2.attr('dt-count',num_of_upt);
+                                    this2.text(`Sửa (${num_of_upt})`);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                },error:function(data){
+                    console.log("Error: " + data);
                 }
-            },error:function(data){
-                console.log("Error: " + data);
-            }
-        });
+            });
+        }
+        
     }
 </script>
 <script>
@@ -2032,7 +2227,6 @@
 <?php
     include_once("include/footer.php");
 ?>
-
 <?php
     } else if (is_post_method()) {
         // code to be executed post method

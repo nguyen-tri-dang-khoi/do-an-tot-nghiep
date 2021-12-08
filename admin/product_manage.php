@@ -599,15 +599,15 @@
                                  <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
                                  <td>
-                                    <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'>" : $row['pi_name'];?>
+                                    <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'>" : number_format($row['count'],0,'','.');?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
                                  </td>
                                  <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'>" : number_format($row['price'],0,'','.') . "đ";?>
+                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
                                  </td>
-                                 <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea></td>" : "";?>
+                                 <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea><span class='text-danger'></span></td>" : "";?>
                                  <td><?=$row['pt_name']?></td>
                                  <td><?=$row['is_public'] == 0 ? "Chưa xuất bản" : "Đã xuất bản";?></td>
                                  <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
@@ -1274,6 +1274,7 @@
       
    }
    function uptAll(){
+      let test = true;
       let formData = new FormData();
       let _data = dt_pi.rows(".selected").select().data();
       if(_data.length == 0) {
@@ -1287,46 +1288,76 @@
          formData.append("pi_id[]",_data[i].DT_RowId);
       }
       $('tr.selected input[name="pi_name"]').each(function(){
-         formData.append("pi_name[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("pi_name[]",$(this).val());
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
+         }
+         
       });
       $('tr.selected input[name="pi_count"]').each(function(){
-         formData.append("pi_count[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("pi_count[]",$(this).val());
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
+         }
+         
       });
       $('tr.selected input[name="pi_price"]').each(function(){
-         formData.append("pi_price[]",$(this).val());
+         if($(this).val() != "") {
+            formData.append("pi_price[]",$(this).val());
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
+         }
+         
       });
       $("tr.selected .t-summernote").each(function(){
-         formData.append("pi_desc[]",$(this).summernote('code'));
+         if($(this).val() != "") {
+            formData.append("pi_desc[]",$(this).summernote('code'));
+            $(this).siblings("span.text-danger").text("");
+         } else {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;
+         }
       });
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","upt_all");
       formData.append("len",_data.length);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã sửa dữ liệu thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
+      if(test) {
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(data){
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã sửa dữ liệu thành công",
+                     buttons: {
+                        "Ok": function(){
+                           location.reload();
+                        }
                      }
-                  }
-               });
+                  });
+               }
+            },
+            error: function(data){
+               console.log("Error: " + data);
             }
-         },
-         error: function(data){
-            console.log("Error: " + data);
-         }
-      })
+         })
+      }
+     
    }
    function delMore(){
       let arr_del = [];
@@ -1387,47 +1418,80 @@
       location.href="product_manage.php?upt_more=1&str=" + str_arr_upt;
    }
    function uptThisRow(){
+      let test = true;
+      let this2 = $(event.currentTarget).closest("tr");
       let name = $(event.currentTarget).closest("tr").find("td input[name='pi_name']").val();
       let count = $(event.currentTarget).closest("tr").find("td input[name='pi_count']").val();
       let price = $(event.currentTarget).closest("tr").find("td input[name='pi_price']").val();
       let description = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
       let id = $(event.currentTarget).attr('data-id');
-      let this2 = $(event.currentTarget);
+
+      // validate 
+      if(name == "") {
+         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("");
+      }
+      //
+      if(price == "") {
+         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("Không được để trống");
+         test = false;
+      } else {
+         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("");
+      }
+      //
+      if(count == "") {
+         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("Không được để trống");
+         test = false;
+      } else  {
+         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("");
+      } 
+      //
+      if(description == "") {
+         this2.find("td .t-summernote").siblings("span.text-danger").text("Không được để trống");
+         test = false;
+      } else  {
+         this2.find("td .t-summernote").siblings("span.text-danger").text("");
+      } 
       console.log(name);
       console.log(count);
       console.log(price);
       console.log(description);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: {
-            status: "upt_more",
-            pi_name: name,
-            pi_count: count,
-            pi_price: price,
-            pi_description: description,
-            pi_id: id,
-            token: '<?php echo_token();?>'
-         },success: function(data){
-            data = JSON.parse(data);
-            if(data.msg == "ok"){
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã sửa dữ liệu thành công",
-                  buttons: {
-                     "Ok" : function(){
-                        let num_of_upt = this2.attr('dt-count');
-                        num_of_upt++;
-                        this2.attr('dt-count',num_of_upt);
-                        this2.text(`Sửa (${num_of_upt})`);
+      this2 = $(event.currentTarget);
+      if(test) {
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            data: {
+               status: "upt_more",
+               pi_name: name,
+               pi_count: count,
+               pi_price: price,
+               pi_description: description,
+               pi_id: id,
+               token: '<?php echo_token();?>'
+            },success: function(data){
+               data = JSON.parse(data);
+               if(data.msg == "ok"){
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã sửa dữ liệu thành công",
+                     buttons: {
+                        "Ok" : function(){
+                           let num_of_upt = this2.attr('dt-count');
+                           num_of_upt++;
+                           this2.attr('dt-count',num_of_upt);
+                           this2.text(`Sửa (${num_of_upt})`);
+                        }
                      }
-                  }
-               });
+                  });
+               }
+            },error:function(data){
+               console.log("Error: " + data);
             }
-         },error:function(data){
-            console.log("Error: " + data);
-         }
-      });
+         });
+      }
    }
    function insMore(){
       //$('#modal-xl2').modal('show');
