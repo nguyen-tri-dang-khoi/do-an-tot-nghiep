@@ -24,7 +24,7 @@
             array_push($_SESSION['cart'],$row);
         }
     } else if($status == "Update") {
-        $row = ['pi_id' => $pi_id,'pi_name' => $pi_name,'pi_image' => $pi_image,'pi_count' => $pi_count,'pi_price' => $pi_price];
+        $row = ['pi_id' => $pi_id,'pi_count' => $pi_count];
         $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
         $_SESSION['cart'][$index]['pi_count'] = $pi_count;
     } else if($status == "Delete") {

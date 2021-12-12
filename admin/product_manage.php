@@ -727,6 +727,7 @@
     </div>
   </div>
 </div>
+
 <!--html & css section end-->
 <?php
    include_once("include/bottom.meta.php");
@@ -1932,7 +1933,7 @@
          cssStyle: 'light-theme',
         });
       });
-    }
+   }
 </script>
 <!--processing crud-->
 <script>

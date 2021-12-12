@@ -72,7 +72,7 @@
                                     <a href="product_detail?id=<?=$cart['pi_id']?>" class="font-weight-semi-bold text-color-dark text-color-hover-primary text-decoration-none"><?=$cart['pi_name']?></a>
                                 </td>
                                 <td class="product-price">
-                                    <span class="amount font-weight-medium text-color-grey"><?=$cart['pi_price']?> VNĐ</span>
+                                    <span class="amount font-weight-medium text-color-grey"><?=number_format($cart['pi_price'],0,"",".");?> VNĐ</span>
                                 </td>
                                 <td class="product-quantity">
                                     <div class="quantity float-none m-0">
@@ -82,7 +82,7 @@
                                     </div>
                                 </td>
                                 <td class="product-subtotal text-end">
-                                    <span class="amount text-color-dark font-weight-bold text-4"><?=$cart['pi_price'] * $cart['pi_count'];?> VNĐ</span>
+                                    <span class="amount text-color-dark font-weight-bold text-4"><?=number_format($cart['pi_price'] * $cart['pi_count'],0,"",".");?> VNĐ</span>
                                 </td>
                                 <td class="product-subtotal text-end">
                                     <button type="button" data-index="<?=$i;?>" class="btn-update btn btn-primary">Sửa</button>
@@ -124,7 +124,7 @@
                                     <strong class="text-color-dark text-3-5">Tổng tiền</strong>
                                 </td>
                                 <td class="text-end">
-                                    <strong class="text-color-dark"><span class="amount text-color-dark text-5"><?=$sum;?> VNĐ</span></strong>
+                                    <strong class="text-color-dark"><span class="amount text-color-dark text-5"><?=number_format($sum,0,"",".");?> VNĐ</span></strong>
                                 </td>
                             </tr>
                         </tbody>

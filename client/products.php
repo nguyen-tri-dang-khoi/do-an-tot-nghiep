@@ -97,7 +97,7 @@
 								</div>
 								<p class="price text-5 mb-3">
 									<!--<span class="sale text-color-dark font-weight-semi-bold"></span>-->
-									<span class="amount"><?=$res['price']?> VNĐ</span>
+									<span class="amount"><?=number_format($res['price'],0,'','.')?> VNĐ</span>
 								</p>
 							</div>
 						</div>

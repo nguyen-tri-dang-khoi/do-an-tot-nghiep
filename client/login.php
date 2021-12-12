@@ -109,6 +109,7 @@
                 $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
+                $_SESSION["cart"] = [];
                 if($remember) {
                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
                     setcookie("u_co_remember","y",time() + 3600 * 24,"/");

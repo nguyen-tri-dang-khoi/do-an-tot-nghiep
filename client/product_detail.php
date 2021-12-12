@@ -77,7 +77,7 @@
 								<hr class="bg-color-grey-scale-4">
 							</div>
 							<p class="price mb-3">
-								<span id="pi_price" data-price="<?=$row['price'];?>" class="sale text-color-dark"><?=$row['price'];?> VNĐ</span>
+								<span id="pi_price" data-price="<?=$row['price'];?>" class="sale text-color-dark"><?=number_format($row['price'],0,'','.')?> VNĐ</span>
 								<!--<span class="amount">$22,00</span>-->
 							</p>
 							<p class="text-3-5 mb-3"><?=$row['description'];?></p>

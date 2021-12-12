@@ -123,10 +123,11 @@
                                         <?php
                                             log_a($_SESSION);
                                             if(!isset($_SESSION['cart'])) {
-                                                //$ccc = $_SESSION['cart'];
+                                                $_SESSION['cart'] = [];
                                         ?>
-                                            <span class="cart-qty"></span>
+                                            
                                         <?php } ?>
+                                        <span class="cart-qty"><?=count($_SESSION['cart'])?></span>
                                     </span>
                                 </a>
                                 <div class="header-nav-features-dropdown" id="headerTopCartDropdown">
@@ -147,7 +148,7 @@
                                                     <a href="product_detail?id=<?=$cart['pi_id']?>"><?=$cart['pi_name'];?></a>
                                                 </p>
                                                 <p class="qty-price">
-                                                    <?=$cart['pi_count'];?> X <span class="price"><?=$cart['pi_price'];?> VNĐ</span>
+                                                    <?=$cart['pi_count'];?> X <span class="price"><?=number_format($cart['pi_price'],0,"",".");?> VNĐ</span>
                                                 </p>
                                                 <a href="#" title="Remove This Item" class="btn-remove"><i class="fas fa-times"></i></a>
                                             </div>
@@ -158,7 +159,7 @@
                                     </ol>
                                     <div class="totals">
                                         <span class="label">Tổng tiền:</span>
-                                        <span class="price-total"><span class="price"><?=$_total;?></span></span>
+                                        <span class="price-total"><span class="price"><?=number_format($_total,0,"",".");?> VNĐ</span></span>
                                     </div>
                                     <div class="actions">
                                         <a class="btn btn-dark" href="cart.php">Xem giỏ hàng</a>

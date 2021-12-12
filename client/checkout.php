@@ -115,24 +115,6 @@
 					<input type="text" class="form-control h-auto py-2" name="address" value="<?=$result['address']?>" />
 				</div>
 			</div>
-			<div class="row">
-				<div class="form-group col">
-					<label class="form-label">Phương thức thanh toán <span class="text-color-danger">*</span></label>
-					<div class="custom-select-1">
-						<select class="form-select form-control h-auto py-2" name="payment_method" >
-							<option value="">Phương thức thanh toán</option>
-                            <?php
-							  $payment_method = "";
-                              $sql = "select * from payment_method";
-                              $payment = fetch_all(sql_query($sql));
-                              foreach($payment as $pay) {
-                            ?>
-                                <option value="<?=$pay['id']?>" <?=$payment_method == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
-                            <?php } ?>
-						</select>
-					</div>
-				</div>
-			</div>
 			<!--<div class="row">
 				<div class="form-group col">
 					<label class="form-label">Street Address <span class="text-color-danger">*</span></label>
@@ -182,12 +164,6 @@
 					<input type="email" class="form-control h-auto py-2" name="email" value="<?=$result['email']?>"  />
 				</div>
 			</div>
-			<div class="row">
-				<div class="form-group col">
-					<label class="form-label">Ghi chú</label>
-					<textarea class="form-control h-auto py-2" name="notes" rows="5" placeholder="Ghi chú..." value=""></textarea>
-				</div>
-			</div>
 			<button type="button" onclick="createOrder()" class="btn btn-secondary">Lưu thông tin</button>
 		</div>
 		<div class="col-lg-6 mb-4 mb-lg-0">
@@ -212,6 +188,7 @@
 			</table>
 		</div>
 	</div>
+							
 	<hr>
 	<div class="row mb-5 mb-lg-0">
 		<h2 class="text-color-dark font-weight-bold text-5-5 mb-3">Thông tin giỏ hàng</h2>
@@ -258,7 +235,7 @@
 							<a href="product_detail?id=<?=$cart['pi_id']?>" class="font-weight-semi-bold text-color-dark text-color-hover-primary text-decoration-none"><?=$cart['pi_name']?></a>
 						</td>
 						<td class="product-price">
-							<span class="amount font-weight-medium text-color-grey"><?=$cart['pi_price']?> VNĐ</span>
+							<span class="amount font-weight-medium text-color-grey"><?=number_format($cart['pi_price'],0,"",".");?> VNĐ</span>
 						</td>
 						<td class="product-quantity">
 							<div class="quantity float-none m-0">
@@ -266,7 +243,7 @@
 							</div>
 						</td>
 						<td class="product-subtotal text-end">
-							<span class="amount text-color-dark font-weight-bold text-4"><?=$cart['pi_price'] * $cart['pi_count'];?> VNĐ</span>
+							<span class="amount text-color-dark font-weight-bold text-4"><?=number_format($cart['pi_price'] * $cart['pi_count'],0,"",".");?> VNĐ</span>
 						</td>
 					</tr>
 					<?php
@@ -292,6 +269,30 @@
 			</table>
 		</div>
 	</div>
+	<div class="row mb-5">
+		<h2 class="text-color-dark font-weight-bold text-5-5 mb-3">Phương thức thanh toán</h2>
+		<div class="form-group col">
+			<div class="custom-select-1">
+				<select class="form-select form-control h-auto py-2" name="payment_method" >
+					<option value="">Phương thức thanh toán</option>
+					<?php
+						$payment_method = "";
+						$sql = "select * from payment_method";
+						$payment = fetch_all(sql_query($sql));
+						foreach($payment as $pay) {
+					?>
+						<option value="<?=$pay['id']?>" <?=$payment_method == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
+					<?php } ?>
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="row mb-5 mb-lg-0">
+		<h2 class="text-color-dark font-weight-bold text-5-5 mb-3">Ghi chú đơn hàng</h2>
+		<div class="form-group col">
+			<textarea class="form-control h-auto py-2" name="notes" rows="5" placeholder="Ghi chú..." value=""></textarea>
+		</div>						
+	</div>	
 </form>
 
 </div>
@@ -299,7 +300,7 @@
 </div>
 <div class="row">
 	<div class="form-group col" style="display: flex;justify-content: center;">
-		<button onclick="createOrders(1)" class="btn btn-primary btn-rounded btn-px-4 btn-py-2 font-weight-bold" type="submit">Thanh toán ngay</button>
+		<button onclick="createOrder(1)" class="btn btn-primary btn-rounded btn-px-4 btn-py-2 font-weight-bold" type="submit">Thanh toán ngay</button>
 	</div>
 </div>
 <!--html & css section end-->
@@ -314,64 +315,103 @@
 <script>
 	function createOrder(index = 0){
 		// save client_info
+		let test = true;
 		let full_name = $("input[name='full_name']").val();
 		let email = $("input[name='email']").val();
 		let address = $("input[name='address']").val();
 		let phone = $("input[name='phone']").val();
 		let note = $("input[name='note']").val();
-		if(index == 0) {
-			$.ajax({
-				url: "checkout_ok.php",
-				type: "POST",
-				data: {
-					status: "save_customer_info",
-					full_name: full_name,
-					email: email,
-					address: address,
-					phone: phone,
-				},
-				success: function(data){
-					data = JSON.parse(data);
-					if(data.msg == "ok") {
-						$.alert({
-							title:"Thông báo",
-							content: "Bạn đã lưu thông tin thành công.",
-						});
-					}
-				},error: function(data){
-					console.log("Error: " + data);
-				}
+		let payment_method_id = $("select[name='payment_method'] > option:selected").val();
+		if(full_name == "") {
+			$.alert({
+				title:"Thông báo",
+				content: "Tên đầy đủ không được để trống",
 			});
-		} else if(index == 1){
-
-			$.ajax({
-				url: "checkout_ok.php",
-				type: "POST",
-				data: {
-					status: "checkout_ok",
-					note: note,
-					total: "<?=$sum;?>",
-					address: address,
-					id: "<?=$_SESSION['customer_id']?>",
-				},success: function(data){
-					data = JSON.parse(data);
-					if(data.msg == "ok") {
-						$.alert({
-							title:"Thông báo",
-							content: "Bạn đã đặt hàng thành công. Bạn sẽ nhận được hàng trong vòng 48h",
-							buttons: {
-								"Ok": function(){
-									location.href=`order_complete.php?order_id=${data.order_id}`;
-								}
-								
-							}
-						});
-					}
-				},error: function(data){
-					console.log("Error: " + data);
-				}
+			test = false;
+		} else if(email == ""){
+			$.alert({
+				title:"Thông báo",
+				content: "Email không được để trống",
 			});
+			test = false;
+		} else if(address == ""){
+			$.alert({
+				title:"Thông báo",
+				content: "Địa chỉ giao hàng không được để trống",
+			});
+			test = false;
+		} else if(phone == ""){
+			$.alert({
+				title:"Thông báo",
+				content: "Số điện thoại không được để trống",
+			});
+			test = false;
+		} else if(payment_method_id == "") {
+			$.alert({
+				title:"Thông báo",
+				content: "Vui lòng chọn phương thức thanh toán",
+			});
+			test = false;
 		}
+		if(test) {
+			if(index == 0) {
+				$.ajax({
+					url: "checkout_ok.php",
+					type: "POST",
+					data: {
+						status: "save_customer_info",
+						full_name: full_name,
+						email: email,
+						address: address,
+						phone: phone,
+						id: "<?=$_SESSION['customer_id']?>"
+					},
+					success: function(data){
+						console.log(data);
+						data = JSON.parse(data);
+						if(data.msg == "ok") {
+							$.alert({
+								title:"Thông báo",
+								content: "Bạn đã lưu thông tin thành công.",
+							});
+						}
+					},error: function(data){
+						console.log("Error: " + data);
+					}
+				});
+			} else if(index == 1){
+				$.ajax({
+					url: "checkout_ok.php",
+					type: "POST",
+					data: {
+						status: "checkout_ok",
+						note: note,
+						total: "<?=$sum;?>",
+						address: address,
+						payment_method_id: payment_method_id,
+						customer_id: "<?=$_SESSION['customer_id']?>",
+					},success: function(data){
+						console.log(data);
+						data = JSON.parse(data);
+						if(data.msg == "ok") {
+							$.alert({
+								title:"Thông báo",
+								content: "Bạn đã đặt hàng thành công. Bạn sẽ nhận được hàng trong vòng 48h",
+								buttons: {
+									"Ok": function(){
+										location.href=`order_complete.php?order_id=${data.order_id}`;
+									}
+									
+								}
+							});
+						}
+					},error: function(data){
+						console.log("Error: " + data);
+					}
+				});
+			}
+		}
+		
 	}
 </script>
 <!--js section end-->

@@ -2,6 +2,10 @@
     include_once("../lib/database.php");
     redirect_if_login_status_false();
     if(is_get_method()) {
+        $allow_read = false;
+        if(check_permission_crud("order_manage.php","read")) {
+          $allow_read = true;
+        }
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         // code to be executed get method
@@ -23,31 +27,31 @@
           if($search_option == "all") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(pi.name) like lower('%$key%') or lower(pi.count) like lower('%$key%') or lower(pi.price) like lower('%$key%') or lower(pt.name) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(o.orders_code) like lower('%$key%') or lower(c.full_name) like lower('%$key%') or lower(o.address) like lower('%$key%') or lower(total) like lower('%$key%'))");
                 }
               }
-          } else if($search_option == "name") {
+          } else if($search_option == "orders_code") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(pi.name) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(o.orders_code) like lower('%$key%'))");
                 }
               }
-          } else if($search_option == "price") {
+          } else if($search_option == "full_name") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(pi.price) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(c.full_name) like lower('%$key%'))");
                 }
               }
-          } else if($search_option == "count") {
+          } else if($search_option == "o_address") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(pi.count) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(o.address) like lower('%$key%'))");
                 }
               }
-          } else if($search_option == "type") {
+          } else if($search_option == "total") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(pt.name) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(total) like lower('%$key%'))");
                 }
               }
           }
@@ -82,13 +86,13 @@
               if($d_min != "" && $d_max != "") {
                 $d_min = Date("Y-m-d",strtotime($d_min));
                 $d_max = Date("Y-m-d",strtotime($d_max));
-                array_push($wh_child,"(pi.created_at >= '$d_min 00:00:00' and pi.created_at <= '$d_max 23:59:59')");
+                array_push($wh_child,"(o.created_at >= '$d_min 00:00:00' and o.created_at <= '$d_max 23:59:59')");
               } else if($d_min != "" && $d_max == "") {
                 $d_min = Date("Y-m-d",strtotime($d_min));
-                array_push($wh_child,"(pi.created_at >= '$d_min 00:00:00')");
+                array_push($wh_child,"(o.created_at >= '$d_min 00:00:00')");
               } else if($d_min == "" && $d_max != "") {
                 $d_max = Date("Y-m-d",strtotime($d_max));
-                array_push($wh_child,"(pi.created_at <= '$d_max 23:59:59')");
+                array_push($wh_child,"(o.created_at <= '$d_max 23:59:59')");
               }
           }
           $wh_child = implode(" or ",$wh_child);
@@ -134,147 +138,154 @@
                 <h3 class="card-title">Quản lý đơn hàng</h3>
               </div>
               <div class="card-body">
-                  <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                    <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" autocomplete="off" action="order_manage.php" method="get" onsubmit="customInpSend()">
-                        <div class="" style="margin-top:5px;">
-                          <select onchange="choose_type_search()" class="form-control" name="search_option2">
-                              <option value="">Bộ lọc tìm kiếm</option>
-                              <option value="keyword">Từ khoá</option>
-                              <option value="payment_status2">Tình trạng thanh toán</option>
-                              <option value="payment_method2">Phương thức thanh toán</option>
-                              <option value="total2">Khoảng tổng tiền</option>
-                              <option value="date2">Ngày tạo đơn hàng</option>
-                              <option value="all2">Tất cả</option>
-                          </select>
+                <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                  <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" autocomplete="off" action="order_manage.php" method="get" onsubmit="customInpSend()">
+                      <div class="" style="margin-top:5px;">
+                        <select onchange="choose_type_search()" class="form-control" name="search_option2">
+                            <option value="">Bộ lọc tìm kiếm</option>
+                            <option value="keyword">Từ khoá</option>
+                            <option value="payment_status2">Tình trạng thanh toán</option>
+                            <option value="payment_method2">Phương thức thanh toán</option>
+                            <option value="total2">Khoảng tổng tiền</option>
+                            <option value="date2">Ngày tạo đơn hàng</option>
+                            <option value="all2">Tất cả</option>
+                        </select>
+                      </div>
+                      <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                        <span class="k-select-opt-remove"></span>
+                        <span class="k-select-opt-ins"></span>
+                        <div class="ele-cols d-flex f-column">
+                            <select name="search_option" class="form-control mb-10">
+                              <option value="">Chọn cột tìm kiếm</option>
+                              <option value="orders_code" <?=$search_option == 'orders_code' ? 'selected="selected"' : '' ?>>Mã hoá đơn</option>
+                              <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên người dùng</option>
+                              <option value="o_address" <?=$search_option == 'o_address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
+                              <option value="total" <?=$search_option == 'total' ? 'selected="selected"' : '' ?>>Tổng tiền</option>
+                              <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                            </select>
+                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                         </div>
-                        <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                          <span class="k-select-opt-remove"></span>
-                          <span class="k-select-opt-ins"></span>
-                          <div class="ele-cols d-flex f-column">
-                              <select name="search_option" class="form-control mb-10">
-                                <option value="">Chọn cột tìm kiếm</option>
-                                <option value="bill_code" <?=$search_option == 'bill_code' ? 'selected="selected"' : '' ?>>Mã hoá đơn</option>
-                                <option value="customer_name" <?=$search_option == 'customer_name' ? 'selected="selected"' : '' ?>>Tên người dùng</option>
-                                <option value="customer_address" <?=$search_option == 'customer_address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
-                                <option value="bill_total" <?=$search_option == 'bll_total' ? 'selected="selected"' : '' ?>>Tổng tiền</option>
-                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                              </select>
-                              <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                          </div>
-                          <?php
-                          if(is_array($keyword)) {
-                              foreach($keyword as $key) {
-                          ?>
-                              <?php
-                                if($key != "") {
-                              ?>
-                                <div class="ele-select ele-cols mt-10">
-                                  <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                  <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-                                </div>
-                              <?php
-                              }
-                              ?>
-                          <?php   
-                              }
-                          }
-                          ?>
-                        </div>
-                        <div id="s-total2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($total_min && $total_min != [""] || $total_max && $total_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                          <span class="k-select-opt-remove"></span>
-                          <span class="k-select-opt-ins"></span>
-                          <div class="ele-price2">
-                              <div class="" style="display:flex;">
-                                <input type="text" name="total_min[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 1" class="form-control" value=""  >
-                              </div>
-                              <div class="ml-10" style="display:flex;">
-                                <input type="text" name="total_max[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 2" class="form-control" value="" >
-                              </div>
-                          </div>
-                          <?php
-                              if(is_array($total_min) && is_array($total_max)) {
-                                foreach(array_combine($total_min,$total_max) as $t_min => $t_max){
-                          ?>
-                              <?php
-                              if($t_min != "" || $t_max != "") {
-                              ?>
-                              <div class="ele-select ele-price2 mt-10">
-                                <div class="" style="display:flex;">
-                                    <input type="text" min="0" name="total_min[]" placeholder="Tổng tiền 1" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_min;?>"  >
-                                </div>
-                                <div class="ml-10" style="display:flex;">
-                                    <input type="text" min="0" name="total_max[]" placeholder="Tổng tiền 2" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_max;?>"  >
-                                </div>
-                                <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-                              </div>
-                              <?php
-                              }?>
-                          <?php 
-                                }
-                              }
-                          ?>
-                        </div>
-                        <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                          <span class="k-select-opt-remove"></span>
-                          <span class="k-select-opt-ins"></span>
-                          <div class="ele-date2">
-                              <div class="" style="display:flex;">
-                                <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                              </div>
-                              <div class="ml-10" style="display:flex;">
-                                <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                              </div>
-                          </div>
-                          <?php
-                              if(is_array($date_min) && is_array($date_max)) {
-                                foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                          ?>
-                          <?php
-                              if($d_min != "" || $d_max != "") {
-                          ?>
-                          <div class="ele-select ele-date2 mt-10">
-                              <div class="" style="display:flex;">
-                                <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                              </div>
-                              <div class="ml-10" style="display:flex;">
-                                <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                              </div>
-                              <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                          </div>
-                          <?php
-                          }
-                          ?>
-                          <?php 
-                                }
-                              }
-                          ?>
-                        </div>
-                        <input type="hidden" name="is_search" value="true">
-                        <div id="s-payment_status2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                          <select onchange="activePayment()" name="select_payment_status" class="form-control">
-                            <option value="">Tình trạng thanh toán</option>
-                            <option value="payment_completed" <?=$search_option == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
-                            <option value="payment_not_completed" <?=$search_option == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
-                          </select>
-                        </div>
-                        <div id="s-payment_method2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                          <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
-                            <option value="">Phương thức thanh toán</option>
+                        <?php
+                        if(is_array($keyword)) {
+                            foreach($keyword as $key) {
+                        ?>
                             <?php
-                              $sql = "select * from payment_method";
-                              $payment = fetch_all(sql_query($sql));
-                              foreach($payment as $pay) {
+                              if($key != "") {
                             ?>
-                                <option value="<?=$pay['id']?>" <?=$search_option == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
-                            <?php } ?>
-                            <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                          </select>
+                              <div class="ele-select ele-cols mt-10">
+                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                              </div>
+                            <?php
+                            }
+                            ?>
+                        <?php   
+                            }
+                        }
+                        ?>
+                      </div>
+                      <div id="s-total2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($total_min && $total_min != [""] || $total_max && $total_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                        <span class="k-select-opt-remove"></span>
+                        <span class="k-select-opt-ins"></span>
+                        <div class="ele-price2">
+                            <div class="" style="display:flex;">
+                              <input type="text" name="total_min[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 1" class="form-control" value=""  >
+                            </div>
+                            <div class="ml-10" style="display:flex;">
+                              <input type="text" name="total_max[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 2" class="form-control" value="" >
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                    </form>
-                  </div>
+                        <?php
+                            if(is_array($total_min) && is_array($total_max)) {
+                              foreach(array_combine($total_min,$total_max) as $t_min => $t_max){
+                        ?>
+                            <?php
+                            if($t_min != "" || $t_max != "") {
+                            ?>
+                            <div class="ele-select ele-price2 mt-10">
+                              <div class="" style="display:flex;">
+                                  <input type="text" min="0" name="total_min[]" placeholder="Tổng tiền 1" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_min;?>"  >
+                              </div>
+                              <div class="ml-10" style="display:flex;">
+                                  <input type="text" min="0" name="total_max[]" placeholder="Tổng tiền 2" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_max;?>"  >
+                              </div>
+                              <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
+                            </div>
+                            <?php
+                            }?>
+                        <?php 
+                              }
+                            }
+                        ?>
+                      </div>
+                      <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                        <span class="k-select-opt-remove"></span>
+                        <span class="k-select-opt-ins"></span>
+                        <div class="ele-date2">
+                            <div class="" style="display:flex;">
+                              <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                            </div>
+                            <div class="ml-10" style="display:flex;">
+                              <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                            </div>
+                        </div>
+                        <?php
+                            if(is_array($date_min) && is_array($date_max)) {
+                              foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                        ?>
+                        <?php
+                            if($d_min != "" || $d_max != "") {
+                        ?>
+                        <div class="ele-select ele-date2 mt-10">
+                            <div class="" style="display:flex;">
+                              <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                            </div>
+                            <div class="ml-10" style="display:flex;">
+                              <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                            </div>
+                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                        </div>
+                        <?php
+                        }
+                        ?>
+                        <?php 
+                              }
+                            }
+                        ?>
+                      </div>
+                      <input type="hidden" name="is_search" value="true">
+                      <div id="s-payment_status2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
+                        <select onchange="activePayment()" name="select_payment_status" class="form-control">
+                          <option value="">Tình trạng thanh toán</option>
+                          <option value="payment_completed" <?=$select_payment_status == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
+                          <option value="payment_not_completed" <?=$select_payment_status == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
+                        </select>
+                      </div>
+                      <div id="s-payment_method2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
+                        <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
+                          <option value="">Phương thức thanh toán</option>
+                          <?php
+                            $sql = "select * from payment_method";
+                            $payment = fetch_all(sql_query($sql));
+                            foreach($payment as $pay) {
+                          ?>
+                              <option value="<?=$pay['id']?>" <?=$search_option == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
+                          <?php } ?>
+                          <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                  </form>
+                </div>
                 <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button>
+                  <div>
+                    <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button>
+                    <?php
+                      if($allow_read) {
+                    ?>
+                    <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                    <?php } ?>         
+                  </div>
                 </div>
                 <table id="m-order" class="table table-bordered table-hover">
                   <thead>
@@ -298,31 +309,27 @@
                     $str_get = http_build_query($get);
                     // query
                     $arr_paras = [];
-                    $where = "where 1 = 1";
-                    $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
-                    if($keyword) {
-                        $where .= "";
-                    }
                     $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
                     $limit = $_SESSION['paging'];
                     $start_page = $limit * ($page - 1);
-                    $sql_get_total = "select count(*) as 'countt' from orders o inner join order_detail od on o.id = od.order_id inner join customer c on o.customer_id = c.id $where";
+                    $sql_get_total = "select count(*) as 'countt' from orders o inner join customer c on o.customer_id = c.id $where";
                     $total = fetch_row($sql_get_total,$arr_paras)['countt'];
                     array_push($arr_paras,$start_page);
                     array_push($arr_paras,$limit);
-                    $sql_get_order = "select orders_code,total,payment_status,o.created_at as 'o_created_at',c.full_name,c.phone from orders o inner join order_detail od on o.id = od.order_id inner join customer c on o.customer_id = c.id limit ?,?";
+                    $sql_get_order = "select o.id as 'o_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status,
+                    o.created_at as 'o_created_at',o.customer_id as 'o_customer_id',c.full_name,c.phone from orders o inner join customer c on o.customer_id = c.id $where limit ?,?";
                     $rows = db_query($sql_get_order,$arr_paras);
                     $i = 0;
 				          	$cnt = 0;
                     foreach($rows as $row) {
                   ?>
-                    <tr id="<?=$row['id']?>">
+                    <tr id="<?=$row['o_id']?>">
                         <td></td>
 						            <td><?=$total - ($start_page + $cnt);?></td>
-                        <td><?=$row['order_id']?></td>
+                        <td><?=$row['orders_code']?></td>
                         <td><?=$row['full_name']?></td>
-                        <td><?=$row['address']?></td>
-                        <td><?=number_format($row['total'],0,"",".");?></td>
+                        <td><?=$row['o_address']?></td>
+                        <td><?=number_format($row['total'],0,"",".")."đ";?></td>
                         <?php
                           if($row['payment_status'] == 1) {
                         ?>
@@ -334,21 +341,16 @@
                         <?php 
                           }
                         ?>
-                        <td><?=Date("d-m-Y H:i:s",strtotime($row['created_at']));?></td>
+                        <td><?=Date("d-m-Y H:i:s",strtotime($row['o_created_at']));?></td>
                         <td>
-                            <button class="btn btn-secondary btn-xem-chi-tiet-hoa-don"
-                            data-bill_id="<?=$row["order_id"];?>"
-                            data-sum="<?=$row["total"];?>"
-                            data-pay-status="<?=$row["payment_status"];?>"
-                            >
-                            Xem chi tiết hoá đơn
-                            </button><br>
-                            <button class="btn btn-info btn-xem-thong-tin-nguoi-dung" data-user_id="<?=$row["customer_id"];?>" data-id="<?=$row["order_id"];?>">
-                            Xem thông tin người dùng
-                            </button><br>
-                            <button class="btn btn-success btn-cap-nhat-thanh-toan" data-pos="<?php echo $i;?>" data-user_id="<?=$row["customer_id"];?>" data-id="<?=$row["order_id"];?>">
-                            Cập nhật đã thanh toán
-                            </button>
+                          <?php
+                              if($allow_read){
+                          ?>
+                          <button class="btn-xem-hoa-don dt-button button-grey"
+                          data-id="<?=$row["o_id"];?>" >
+                          Xem
+                          </button>
+                          <?php } ?>
                         </td>
                     </tr>
                   <?php
@@ -385,18 +387,15 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Xem chi tiết đơn hàng</h4>
+        <h4 class="modal-title">Thông tin hoá đơn</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div id="form-order-detail">
+        <div id="form-order">
 
         </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        
       </div>
     </div>
   </div>
@@ -734,137 +733,60 @@
       //
       dt_order.buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
     });
+    // Xem san pham
+    $(document).on('click','.btn-xem-hoa-don',function(event){
+        let id = $(event.currentTarget).attr('data-id');
+        $('#form-order').load("ajax_order_manage.php?order_id=" + id + "&status=show_order_detail",() => {
+          $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+        });
+    });
+    function readMore(){
+      let arr_del = [];
+      let _data = dt_order.rows(".selected").select().data();
+      let count4 = _data.length;
+      for(i = 0 ; i < count4 ; i++) {
+        arr_del.push(_data[i].DT_RowId);
+      }
+      let str_arr_upt = arr_del.join(",");
+      if(arr_del.length == 0) {
+        $.alert({
+          title: "Thông báo",
+          content: "Bạn vui lòng chọn dòng cần xem",
+        });
+        return;
+      }
+      $('#form-order').load(`ajax_order_manage.php?status=show_order_detail_fast&str_arr_upt=${str_arr_upt}`,() => {
+        let html2 = `
+          <div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination3">
+            </nav>
+          </div>
+        `;
+        $(html2).appendTo('#form-order');
+        $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+        $('.t-row').css({
+          "display":"none",
+        });
+        $('.t-row-1').css({
+          "display":"contents",
+        });
+        $('#pagination3').pagination({
+         items: count4,
+         itemsOnPage: 1,
+         currentPage: 1,
+         prevText: "<",
+         nextText: ">",
+         onPageClick: function(pageNumber,event){
+            $(`.t-row`).css({"display":"none"});
+            $(`.t-row-${pageNumber}`).css({"display":"contents"});
+         },
+         cssStyle: 'light-theme',
+        });
+      });
+    }
+   
 </script>
-<script>
-   $(document).ready(function(){
-      /* -1: xem chi tiết hoá đơn
-        * 0: xem thông tin người dùng
-        * 1: cập nhật trạng thái đã thanh toán.
-        */
-        // hiển thị thông tin chi tiết đơn hàng khi admin click vào button "Xem chi tiết đơn hàng."
-        $(document).on('click','.btn-xem-chi-tiet-hoa-don',function(event){
-            let func = -1;
-            let id = $(this).attr('data-bill_id');
-            let url = window.location.href;
-            let token = $('meta[name="token"]').attr('content');
-            $.ajax({
-                url:url,
-                type:"POST",
-                data: {
-                    token: token,
-                    id: id,
-                    func: func
-                },
-                success:function(data){
-                    data = JSON.parse(data);
-                    let len = data[0].length;
 
-                    $('#modal-xl').modal('show');
-                    $('.modal-title').text("Thông tin hoá đơn");
-                    if($('th').parents('#t_head').length > 0) {
-                        $('#t_head').empty();
-                    }
-                    if($('tr > td').parents('#t_body').length > 0) {
-                        $('#t_body').empty();
-                    }
-                    $('#t_head').append('<th>Tên sản phẩm</th>');
-                    $('#t_head').append('<th>Hình ảnh</th>');
-                    $('#t_head').append('<th>Đơn giá</th>');
-                    $('#t_head').append('<th>Số lượng</th>');
-                    $('#t_head').append('<th>Số tiền</th>');
-                    let tr = "";
-                    for(let i = 0 ; i < len ; i++) {
-                        tr = "<tr id='cthd"+i+"'>";
-                        $('#t_body').append(tr);
-                        $('#t_body > #cthd' + i).append('<td>' + data[0][i].name + '</td>');
-                        $('#t_body > #cthd' + i).append('<td><img width="120" height="120" src="../img/img-admin/product/' + data[0][i].image + '"></td>');
-                        $('#t_body > #cthd' + i).append('<td>' + data[0][i].price + '</td>');
-                        $('#t_body > #cthd' + i).append('<td>' + data[0][i].count + '</td>');
-                        let total = data[0][i].count * data[0][i].price;
-                        $('#t_body > #cthd' + i).append('<td>' + total+ '</td>');
-                        $('#t_body').append("</tr>");
-                    }
-                },
-                error:function(data){
-                    console.log('Error:', data);
-                }
-            })
-        })
-        // hiển thị thông tin người dùng đặt hàng khi admin click vào button "Xem thông tin người dùng."
-        $(document).on('click','.btn-xem-thong-tin-nguoi-dung',function(event){
-            let func = 0;
-            let id = $(this).attr('data-user_id');
-            let url = window.location.href;
-            let token = $('meta[name="token"]').attr('content');
-            $.ajax({
-                url:url,
-                type:"POST",
-                data:{
-                id: id, 
-                func: func,
-                token: token,
-                },
-                success:function(data){
-                    data = JSON.parse(data);
-                    $('#modal-xl').modal('show');
-                    $('.modal-title').text("Thông tin người dùng");
-                    if($('th').parents('#t_head').length > 0) {
-                        $('#t_head').empty();
-                    }
-                    if($('tr > td').parents('#t_body').length > 0) {
-                        $('#t_body').empty();
-                    }
-                    $('#t_head').append('<th>Tên</th>');
-                    $('#t_head').append('<th>Ảnh đại diện</th>');
-                    $('#t_head').append('<th>Email</th>');
-                    $('#t_head').append('<th>Ngày sinh</th>');
-                    $('#t_head').append('<th>Số điện thoại</th>');
-                    $('#t_head').append('<th>Địa chỉ</th>');
-                    $('#t_body').append("<tr>");
-                    $('#t_body > tr').append('<td>' + data[0].username + '</td>');
-                    $('#t_body > tr').append('<td><img width="120" height="120" src="../img/img-user/info/' + data[0].img_name + '"></td>');
-                    $('#t_body > tr').append('<td>' + data[0].email + '</td>');
-                    $('#t_body > tr').append('<td>' + data[0].birthday + '</td>');
-                    $('#t_body > tr').append('<td>' + data[0].phone+ '</td>');
-                    $('#t_body > tr').append('<td>' + data[0].address+ '</td>');
-                    $('#t_body').append("</tr>");
-                },
-                error:function(data){
-                    console.log('Error:', data);
-                }
-            })
-        })
-        // Cập nhật trạng thái đã thanh toán khi admin click vào button "Cập nhật đã thanh toán hoá đơn."
-        $(document).on('click','.btn-cap-nhat-thanh-toan',function(event){
-            let func = 1;
-            let id = $(this).attr('data-id');
-            let pos = $(this).attr('data-pos');
-            let url = window.location.href;
-            let token = $('meta[name="token"]').attr('content');
-            $.ajax({
-                url:url,
-                type:"POST",
-                data: {
-                    token: token,
-                    func: func,
-                    id: id,
-                },
-                success:function(data){
-                    data = JSON.parse(data);
-                    if(data.msg == "ok") {
-                        alert("Cập nhật dữ liệu thành công.");
-                        $("#status-payment"+pos).text("Đã thanh toán");
-                    } else {
-                        alert("Đã có lỗi xảy ra.");
-                    }
-                },
-                error:function(data){
-                    console.log('Error:', data);
-                }
-            })
-        })
-   })
-</script>
 <script>
   $(function() {
     $('#pagination').pagination({
