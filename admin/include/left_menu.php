@@ -1,10 +1,13 @@
 <?php
+
   $url = get_url_current_page();
   get_user_info();
   $currentPage= basename($_SERVER['SCRIPT_NAME']);
   //print_r($currentPage);
   check_permission_redirect($currentPage);
   // checking role permission
+  // auto generate new token when reload page 
+  
 ?>
 <style>
   .kh-active {

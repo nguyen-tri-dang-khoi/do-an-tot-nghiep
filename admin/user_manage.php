@@ -138,6 +138,7 @@
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
+<link rel="stylesheet" href="css/toastr.min.css">
 <!--<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">-->
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
@@ -400,7 +401,7 @@
                                                 ?>
                                             </td>
                                             <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'><span class='text-danger'></span>" : $row["username"]?></td>
-                                            <td><?=$row["created_at"] ? Date("d-m-Y H:i:s",strtotime($row["created_at"])) : "";?></td>
+                                            <td><?=$row["created_at"] ? Date("d-m-Y",strtotime($row["created_at"])) : "";?></td>
                                             <td>
                                                 <?php
                                                     if($upt_more != 1) {
@@ -503,7 +504,7 @@
                             <div class="d-flex j-between a-center">
                                 <div>
                                     <label class="d-block" for="search_option">Họ tên nhân viên: </label>
-                                    <select class="form-control k-role-select2" name="search_option" style="width:300px" onclick="roleMoreChange()">
+                                    <select class="form-control k-role-select2" name="search_option" style="width:300px" onchange="roleMoreChange()">
                                     </select>
                                 </div>
                                 <div class="ml-10">
@@ -580,14 +581,28 @@
                         </div>
                         <div class="d-flex j-between">
                             <div class="k-plus">
-                                <button data-plus="1" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                                <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
                             </div>
                             <div class="k-minus">
                                 <button data-minus="1" onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                             </div>
                         </div>
-                        </div>
                     </div>
+                    <table class='table table-bordered' style="height:auto;">
+                        <thead>
+                            <tr>
+                                <th class='w-150'>Số thứ tự</th>
+                                <th>Tên đầy đủ</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Số cmnd</th>
+                                <th>Địa chỉ</th>
+                                <th>Ngày sinh</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
@@ -613,6 +628,26 @@
 <script src="js/dataTables.searchHighlight.min.js"></script> 
 <script src="js/jquery.highlight.js"></script>
 <script src="js/select2.min.js"></script>
+<script src="js/toastr.min.js"></script>
+<script>
+	toastr.options = {
+	  "closeButton": false,
+	  "debug": false,
+	  "newestOnTop": false,
+	  "progressBar": false,
+	  "positionClass": "toast-bottom-right",
+	  "preventDuplicates": false,
+	  "onclick": null,
+	  "showDuration": "300",
+	  "hideDuration": "1000",
+	  "timeOut": "5000",
+	  "extendedTimeOut": "1000",
+	  "showEasing": "swing",
+	  "hideEasing": "linear",
+	  "showMethod": "fadeIn",
+	  "hideMethod": "fadeOut"
+	}
+</script>
 <!--searching filter-->
 <script>
    function choose_type_search(){
@@ -856,6 +891,11 @@
         // php auto select all rows when focus update all function execute
         <?=$upt_more == 1 ? 'dt_user.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
     });
+    $("#modal-xl3").on("hidden.bs.modal",function(){
+      $("#form-user2 table tbody").remove();
+      $("input[name='count2']").val("");
+      $("input[name='count2']").attr("data-plus",0);
+   })
     function showPicker(){
         $('input[name="u_birthday2"]').datepicker({
             changeMonth: true,
@@ -1100,6 +1140,13 @@
          html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
          $(html).appendTo('#form-user2 table');
       }
+      if(page == 0) {
+        let html2 = `<div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+        </div>`;
+        $(html2).appendTo('#form-user2');
+      }
       $('[data-plus]').attr('data-plus',parseInt(page) + 1);
       $('input[name="count2"]').val(parseInt(page) + 1);
       $('#pagination2').pagination({
@@ -1117,6 +1164,9 @@
     }
     function delRow(){
       let page = $('[data-plus]').attr('data-plus');
+      if(page == 0) {
+          return;
+      }
       let currentPage1 = page / 7;
       if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
       $(`[data-row-id="${page}"]`).remove();
@@ -1163,7 +1213,7 @@
         $('#form-user2 table').remove();
         $('#form-user2 #paging').remove();
         let html = `
-        <table class='table table-bordered' style="min-height:100px;height:auto;">
+        <table class='table table-bordered' style="height:auto;">
           <thead>
             <tr>
                 <th class='w-150'>Số thứ tự</th>
@@ -1252,7 +1302,7 @@
       });
       showPicker();
       $('#modal-xl3').on('hidden.bs.modal', function (e) {
-        $('#form-user2 table').remove();
+        $('#form-user2 table tbody').remove();
         $('#form-user2 #paging').remove();
         $('input[name="count2"]').val("");
       })
@@ -1516,22 +1566,25 @@
         let menu = $("select[name='menu'] > option:selected").val();
         let role = $("input[name='roles']").val();
         if(menu == ""){
-            $.alert({
+            /*$.alert({
                 title:"Thông báo",
                 content: "Vui lòng ko để trống tên chức năng",
-            });
+            });*/
+			toastr["error"]("Vui lòng ko để trống tên chức năng");
             return;
         } else if(user_id == ""){
-            $.alert({
+            /*$.alert({
                 title:"Thông báo",
                 content: "Vui lòng chọn thông tin người dùng",
-            });
+            });*/
+			toastr["error"]("Vui lòng chọn thông tin người dùng");
             return;
         } else if(role == "") {
-            $.alert({
+            /*$.alert({
                 title:"Thông báo",
                 content: "Vui lòng ko để trống tên quyền",
-            });
+            });*/
+			toastr["error"]("Vui lòng ko để trống tên quyền");
             return;
         } 
         $.ajax({
@@ -1550,16 +1603,14 @@
                 if(data.msg == "ok") {
                     $('.k-role-set').empty();
                     $('.k-role-set').load("ajax_user_role.php?id=" + user_id,() => {
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã phân quyền thành công",
-                        });
+						toastr["success"]("Bạn đã phân quyền thành công");
                     });
                 } else {
-                    $.alert({
+                    /*$.alert({
                         title: "Thông báo",
                         content: data.error,
-                    });
+                    });*/
+					toastr["error"](data.error);
                 }
             },
             error: function(data){
@@ -1585,10 +1636,11 @@
                 data = JSON.parse(data);
                 if(data.msg == "ok") {
                     $('.k-role-set').load("ajax_user_role.php?id=" + user_id,() => {
-                        $.alert({
+                        /*$.alert({
                             title: "Thông báo",
                             content: "Bạn đã sửa quyền thành công",
-                        });
+                        });*/
+						toastr["success"]("Bạn đã sửa quyền thành công");
                     });
                 }
             },
@@ -1612,10 +1664,11 @@
                 data = JSON.parse(data);
                 if(data.msg == "ok") {
                     $('.k-role-set').load("ajax_user_role.php?id=" + user_id,() => {
-                        $.alert({
+                        /*$.alert({
                             title: "Thông báo",
                             content: "Bạn đã xoá quyền thành công",
-                        });
+                        });*/
+						toastr["success"]("Bạn đã xoá quyền thành công");
                     });
                 }
             },
@@ -2223,6 +2276,7 @@
     });
   });
 </script>
+
 <!--js section end-->
 <?php
     include_once("include/footer.php");

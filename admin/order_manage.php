@@ -341,7 +341,7 @@
                         <?php 
                           }
                         ?>
-                        <td><?=Date("d-m-Y H:i:s",strtotime($row['o_created_at']));?></td>
+                        <td><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
                         <td>
                           <?php
                               if($allow_read){

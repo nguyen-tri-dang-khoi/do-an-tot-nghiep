@@ -5,7 +5,7 @@
     $link = db_connect();
     function db_connect() {         
         $host = 'localhost';
-        $dbname = 'shop_dien_thoai_2'; //id16910140_do_an_tot_nghiep
+        $dbname = 'shop_cua_hang_may_tinh'; //id16910140_do_an_tot_nghiep
         $username = 'root';  //id16910140_khoi
         $password = ''; //>iSxpL-6>Q{GbTq<
         try {

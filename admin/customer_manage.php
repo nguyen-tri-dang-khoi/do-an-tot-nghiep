@@ -295,7 +295,7 @@
                                     <td><?=$row["address"]?></td>
                                     <td><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
                                     <td><?=$row["username"]?></td>
-                                    <td><?=Date("d-m-Y h:i:s",strtotime($row["created_at"]));?></td>
+                                    <td><?=Date("d-m-Y",strtotime($row["created_at"]));?></td>
                                     <td>
                                         <button class="btn-update-user dt-button button-green"
                                         data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>

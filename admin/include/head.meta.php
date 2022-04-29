@@ -1,3 +1,7 @@
+<?php
+    refresh_token();
+    logout_session_timeout();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

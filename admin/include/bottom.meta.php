@@ -21,6 +21,9 @@
         }
         e.preventDefault();
     }
+    function input_number(){
+        
+    }
     function allow_zero_to_nine(e){
         e = e || window.event;
         let charCode = (typeof e.which == "undefined") ? e.keyCode : e.which;

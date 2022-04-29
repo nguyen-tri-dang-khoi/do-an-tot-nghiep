@@ -419,7 +419,7 @@
                                  ?>
                                  
                                  <td><?=$row['views']?></td>
-                                 <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
+                                 <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
                                  <td>
                                     <?php
                                        if($upt_more != 1) {
@@ -524,13 +524,25 @@
                </div>
                <div class="d-flex j-between">
                   <div class="k-plus">
-                     <button data-plus="1" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                     <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
                   </div>
                   <div class="k-minus">
-                     <button data-minus="1" onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                     <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                   </div>
                </div>
             </div>
+             <!--table-->
+            <table class='table table-bordered' style="height:auto;">
+               <thead>
+                  <tr>
+                     <th>Số thứ tự</th>
+                     <th>Tiêu đề</th>
+                     <th>Nội dung</th>
+                     <th>Ảnh đại diện</th>
+                     <th>Thao tác</th>
+                  </tr>
+               </thead>
+            </table>              
          </div>
       </div>
     </div>
@@ -820,6 +832,18 @@
          $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
       }
    });
+   $("#modal-xl").on("hidden.bs.modal",function(){
+      arr_list_file_del = [];
+      arr_input_file = new Map();
+      $("input[name='list_file_del']").val("");
+      console.log(arr_list_file_del);
+      console.log(arr_input_file);
+   })
+   $("#modal-xl2").on("hidden.bs.modal",function(){
+      $("#form-notify2 table tbody").remove();
+      $("input[name='count2']").val("");
+      $("input[name='count2']").attr("data-plus",0);
+   })
    $(document).ready(function (e) {
       dt_n = $("#m-bang-tin").DataTable({
          "sDom": 'RBlfrtip',
@@ -1130,7 +1154,7 @@
         cssStyle: 'light-theme',
       });
       $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-notify2 table').remove();
+        $('#form-notify2 table tbody').remove();
         $('#form-notify2 #paging').remove();
         $('input[name="count2"]').val("");
       })
@@ -1161,6 +1185,13 @@
          $('.t-bd').css({"display":"none"});
          html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
          $(html).appendTo('#form-notify2 table');
+      }
+      if(page == 0) {
+        let html2 = `<div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+        </div>`;
+        $(html2).appendTo('#form-notify2');
       }
       $('[data-plus]').attr('data-plus',parseInt(page) + 1);
       $('input[name="count2"]').val(parseInt(page) + 1);
@@ -1508,15 +1539,16 @@
       // validate
       const validate = () => {
         let test = true
-        let title = $('input[name=ten_san_pham]').val();
-        let content = $('#summernote').summernote('code');
+        let title = $('input[name="title"]').val();
+        let content2 = $('#summernote').summernote('code');
+        console.log(title);
         if(title.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Tiêu đề không được để trống"
 			});
          test = false;
-        } else if(content.trim() == "") {
+        } else if(content2.trim() == "") {
 			$.alert({
 				title: "Thông báo",
 				content: "Nội dung bảng tin không được để trống"
@@ -1631,6 +1663,7 @@
             gameChange();
          }
          formData.append('list_file_del',$('input[name="list_file_del"]').val());
+         console.log($('input[name="list_file_del"]').val());
          let img = document.getElementsByName('img[]');
          let file = $('input[name=img_bangtin_file]')[0].files;
          //console.log(file);
@@ -1748,6 +1781,7 @@
       $title = isset($_REQUEST["title"]) ? $_REQUEST["title"] : null;
       $content = isset($_REQUEST["content"]) ? $_REQUEST["content"] : null;
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
+      print_r($list_file_del);
       if($list_file_del){
          $list_file_del = explode(",",$list_file_del);
       } else {
@@ -1803,6 +1837,9 @@
                         @chmod($dir, 0777);
                         $j = $list_file_del[$i];
                         array_push($__arr,"('$insert','$path',$j)");
+                     } 
+                     if($error == UPLOAD_ERR_NO_FILE) {
+                        $i--;
                      }
                      $i++;
                   }
@@ -1817,7 +1854,7 @@
          }
       } else if($status == "Update") {
          $image = null;
-         $dir = "upload/product/" . $id;
+         $dir = "upload/notify/" . $id;
          if(!file_exists($dir)) {
             mkdir($dir, 0777); 
             chmod($dir, 0777);
@@ -1851,10 +1888,14 @@
                db_query($sql_delete_file);
                array_splice($list_file_del,$i, 1);
                $i--;
+            } else if(strpos($list_file_del[$i],"_has") !== false) {
+               array_splice($list_file_del,$i, 1);
+               $i--;
             }
          }
          if(isset($_FILES['img'])) {
-            //print_r($list_file_del);
+            $aaa = count($_FILES['img']['name']);
+            print_r($aaa);
             if(count($_FILES['img']['name']) > 0) {
                $file_old_name = "";
                $__arr = [];
@@ -1884,9 +1925,13 @@
                         @chmod($dir, 0777);
                         $sql_update_file = "Update notification_image set img_id = '$path' where notify_id='$id' and img_order='$img_order'";
                         db_query($sql_update_file);
-                     }
-                  } 
+                     } 
+                  }
+                  if($error == UPLOAD_ERR_NO_FILE) {
+                     $i--;
+                  }
                   $i++;
+                  
                }
                if(count($__arr) > 0) {
                   $sql .= implode(",",$__arr);

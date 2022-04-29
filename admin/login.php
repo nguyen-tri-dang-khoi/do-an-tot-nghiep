@@ -123,15 +123,18 @@
             if(password_verify($password,$row["password"])){
                 $_SESSION["isLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];
-                /*$_SESSION["username"] = $row["username"];
+                $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
-                $_SESSION["paging"] = $row["paging"];*/
+                $_SESSION["paging"] = $row["paging"];
+                refresh_token();
+                //setcookie("token",$token,time() + 3600 * 24 * 30,"/","",false,true);
                 if($remember) {
                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
-                    setcookie("co_remember","y",time() + 3600 * 24,"/");
-                    setcookie("co_email",$row["email"],time() + 3600 * 24,"/");
-                    setcookie("co_password",$pass_encrypt,time() + 3600 * 24,"/");
+                    setcookie("co_remember","y",time() + 3600 * 24 * 30,"/");
+                    setcookie("co_email",$row["email"],time() + 3600 * 24 * 30,"/");
+                    setcookie("co_password",$pass_encrypt,time() + 3600 * 24 * 30,"/");
+                    
                 } else {
                     if(isset($_COOKIE['co_email']) ) {
                         setcookie("co_email","",time() - 3600,"/");

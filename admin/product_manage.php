@@ -610,7 +610,7 @@
                                  <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea><span class='text-danger'></span></td>" : "";?>
                                  <td><?=$row['pt_name']?></td>
                                  <td><?=$row['is_public'] == 0 ? "Chưa xuất bản" : "Đã xuất bản";?></td>
-                                 <td><?=$row['created_at'] ? Date("d-m-Y H:i:s",strtotime($row['created_at'])) : "";?></td>
+                                 <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
                                  <td>
                                     <?php
                                        if($upt_more != 1) {
@@ -715,13 +715,28 @@
                </div>
                <div class="d-flex j-between">
                   <div class="k-plus">
-                     <button data-plus="1" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                     <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
                   </div>
                   <div class="k-minus">
-                     <button data-minus="1" onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                     <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                   </div>
                </div>
             </div>
+            <!--table-->
+            <table class='table table-bordered' style="height:auto;">
+               <thead>
+               <tr>
+                  <th>Số thứ tự</th>
+                  <th>Tên sp</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá</th>
+                  <th>Mô tả sp</th>
+                  <th>Ảnh đại diện</th>
+                  <th class="w-300">Danh mục</th>
+                  <th>Thao tác</th>
+               </tr>
+               </thead>
+            </table>
          </div>
       </div>
     </div>
@@ -1182,6 +1197,16 @@
       // php auto select all rows when focus update all function execute
       <?=$upt_more == 1 ? 'dt_pi.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
    });
+   $("#modal-xl2").on("hidden.bs.modal",function(){
+      let html = $("#form-product2 table");
+      console.log(html.html());
+      $("#form-product2 table tbody").remove();
+      $("input[name='count2']").val("");
+      $("input[name='count2']").attr("data-plus",0);
+      if($("#form-product2 table").length > 0) {
+
+      }
+   })
    function insAll(){
       let test = true;
       let formData = new FormData();
@@ -1620,7 +1645,7 @@
         $('#form-product2 table').remove();
         $('#form-product2 #paging').remove();
         let html = `
-        <table class='table table-bordered' style="min-height:100px;height:auto;">
+        <table class='table table-bordered' style="height:auto;">
           <thead>
             <tr>
               <th>Số thứ tự</th>
@@ -1743,7 +1768,7 @@
         cssStyle: 'light-theme',
       });
       $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product2 table').remove();
+        $('#form-product2 table tbody').remove();
         $('#form-product2 #paging').remove();
         $('input[name="count2"]').val("");
       })
@@ -1792,6 +1817,13 @@
          html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
          $(html).appendTo('#form-product2 table');
       }
+      if(page == 0) {
+        let html2 = `<div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+        </div>`;
+        $(html2).appendTo('#form-product2');
+      }
       $('[data-plus]').attr('data-plus',parseInt(page) + 1);
       $('input[name="count2"]').val(parseInt(page) + 1);
       $('#pagination2').pagination({
@@ -1808,6 +1840,9 @@
    }
    function delRow(){
       let page = $('[data-plus]').attr('data-plus');
+      if(page == 0) {
+        return;
+      }
       let currentPage1 = page / 7;
       if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
       $(`[data-row-id="${page}"]`).remove();
@@ -1953,7 +1988,14 @@
             $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
         }
       });
-      
+      // 
+      $("#modal-xl").on("hidden.bs.modal",function(){
+         arr_list_file_del = [];
+         arr_input_file = new Map();
+         $("input[name='list_file_del']").val("");
+         console.log(arr_list_file_del);
+         console.log(arr_input_file);
+      })
       const imagesPreview = (input , parent) => {
          if (input.files) {
                var filesAmount = input.files.length;
@@ -2355,10 +2397,14 @@
                         $j = $list_file_del[$i];
                         array_push($__arr,"('$insert','$path',$j)");
                      }
+                     if($error == UPLOAD_ERR_NO_FILE) {
+                        $i--;
+                     }
                      $i++;
                   }
                   if(count($__arr) > 0) {
                      $sql .= implode(",",$__arr);
+                     //print_r($sql);
                      db_query($sql);
                   }
                }
@@ -2403,6 +2449,10 @@
                array_splice($list_file_del,$i, 1);
                $i--;
             }
+            else if(strpos($list_file_del[$i],"_has") !== false) {
+               array_splice($list_file_del,$i, 1);
+               $i--;
+            }
          }
          //print_r($list_file_del);
          if(isset($_FILES['img'])) {
@@ -2436,7 +2486,10 @@
                         $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and img_order='$img_order'";
                         db_query($sql_update_file);
                      }
-                  } 
+                  }
+                  if($error == UPLOAD_ERR_NO_FILE) {
+                     $i--;
+                  }
                   $i++;
                }
                if(count($__arr) > 0) {

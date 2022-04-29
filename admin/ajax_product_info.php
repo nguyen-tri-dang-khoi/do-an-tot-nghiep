@@ -281,7 +281,7 @@
                     <div class="kh-files">
                         <div class="kh-file-lists">
                             <?php
-                                $sql = "select * from product_image where product_info_id = '$id'";
+                                $sql = "select * from product_image where product_info_id = '$id' order by img_order asc";
                                 $result2 = db_query($sql);
                                 $list_file_del = [];
                                 $i = 0;
@@ -352,7 +352,7 @@
                 $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
                 $result = fetch_row($sql_get_all,[$id]); 
                 //
-                $sql2 = "select * from product_image where product_info_id = '$id'";
+                $sql2 = "select * from product_image where product_info_id = '$id' order by img_order asc";
                 $result2 = db_query($sql2);
                 $list_file_del = [];
                 $i2 = 0;

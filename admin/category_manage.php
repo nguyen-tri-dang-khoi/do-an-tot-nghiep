@@ -203,7 +203,7 @@
                 <?php
                   }
                 ?>
-                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?=Date("d-m-Y H:i:s",strtotime($product_type["created_at"]));?></td>
+                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
                 <td>
                   <?php
                     if($upt_more != 1) {
@@ -306,13 +306,22 @@
               </div>
               <div class="d-flex j-between">
                 <div class="k-plus">
-                  <button data-plus="1" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                  <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
                 </div>
                 <div class="k-minus">
                   <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                 </div>
               </div>
           </div>
+          <table class='table table-bordered' style="height:auto;">
+            <thead>
+              <tr>
+                <th>Số thứ tự</th>
+                <th>Tên danh mục</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+          </table>
       </div>
     </div>
   </div>
@@ -498,6 +507,11 @@
       <?=$upt_more == 1 ? 'dt_pt.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
     
     });
+    $("#modal-xl2").on("hidden.bs.modal",function(){
+      $("#form-product-type2 table tbody").remove();
+      $("input[name='count2']").val("");
+      $("input[name='count2']").attr("data-plus",0);
+    })
     function createDataUptAll(){
       let test = true;
       let arr_id = [];
@@ -591,7 +605,7 @@
         $('#form-product-type2 table').remove();
         $('#form-product-type2 #paging').remove();
         let html = `
-        <table class='table table-bordered' style="min-height:100px;height:auto;">
+        <table class='table table-bordered' style="height:auto;">
           <thead>
             <tr>
               <th>Số thứ tự</th>
@@ -661,7 +675,7 @@
         cssStyle: 'light-theme',
       });
       $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product-type2 table').remove();
+        $('#form-product-type2 table tbody').remove();
         $('#form-product-type2 #paging').remove();
         $('input[name="count2"]').val("");
       })
@@ -686,6 +700,13 @@
         html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
         $(html).appendTo('#form-product-type2 table');
       }
+      if(page == 0) {
+        let html2 = `<div id="paging" style="justify-content:center;" class="row">
+            <nav id="pagination2">
+            </nav>
+        </div>`;
+        $(html2).appendTo('#form-product-type2');
+      }
       $('[data-plus]').attr('data-plus',parseInt(page) + 1);
       $('input[name="count2"]').val(parseInt(page) + 1);
       $('#pagination2').pagination({
@@ -702,6 +723,9 @@
     }
     function delRow(){
       let page = $('[data-plus]').attr('data-plus');
+      if(page == 0) {
+        return;
+      }
       let currentPage1 = page / 7;
       if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
       $(`[data-row-id="${page}"]`).remove();
@@ -711,6 +735,9 @@
       currentPage1 = page / 7;
       if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
       else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
+      if(page == 0) {
+        $('#paging').remove();
+      }
       $('.t-bd').css({"display":"none"});
       $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
       $('#pagination2').pagination({
