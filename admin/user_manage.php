@@ -356,7 +356,6 @@
                                         <th class="w-200">Số chứng minh nhân dân</th>
                                         <th class="w-150">Địa chỉ</th>
                                         <th class="w-100">Ngày sinh</th>
-                                        <th>Tên đăng nhập</th>
                                         <th>Ngày tạo</th>
                                         <th class="w-200">Thao tác</th>
                                     </tr>
@@ -400,7 +399,6 @@
                                                     }
                                                 ?>
                                             </td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_username' value='$row[username]'><span class='text-danger'></span>" : $row["username"]?></td>
                                             <td><?=$row["created_at"] ? Date("d-m-Y",strtotime($row["created_at"])) : "";?></td>
                                             <td>
                                                 <?php
@@ -452,7 +450,6 @@
                                         <th>Số chứng minh nhân dân</th>
                                         <th>Địa chỉ</th>
                                         <th>Ngày sinh</th>
-                                        <th>Tên đăng nhập</th>
                                         <th>Ngày tạo</th>
                                         <th>Thao tác</th>
                                     </tr>
@@ -579,12 +576,22 @@
                             <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
                             <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
                         </div>
-                        <div class="d-flex j-between">
-                            <div class="k-plus">
-                                <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                            </div>
-                            <div class="k-minus">
-                                <button data-minus="1" onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                        <div class="d-flex f-column">
+                            <div class="d-flex" style="justify-content:flex-end">
+                                <div class="k-plus">
+                                    <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                                </div>
+                                <div class="k-minus">
+                                    <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                                </div>
+                            </div>  
+                            <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
+                                <div class="file file-csv mr-10">
+                                    <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                                </div>
+                                <div class="file file-excel">
+                                    <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -598,7 +605,6 @@
                                 <th>Số cmnd</th>
                                 <th>Địa chỉ</th>
                                 <th>Ngày sinh</th>
-                                <th>Tên đăng nhập</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -619,7 +625,7 @@
 <script src="js/dataTables.fixedColumns.min.js"></script>
 <script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
-<script src="js/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
 <script src="js/pdfmake.min.js"></script>
 <script src="js/vfs_fonts.js"></script>
 <script src="js/buttons.html5.min.js"></script>
@@ -647,6 +653,96 @@
 	  "showMethod": "fadeIn",
 	  "hideMethod": "fadeOut"
 	}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script>
+    function xlsx2input(input) {
+      if(input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              var data = e.target.result;
+              var workbook = XLSX.read(data, {
+                  type: 'binary'
+              });
+              var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
+              console.log(XL_row_object);
+              setDataFromXLSX(XL_row_object,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+          };
+          reader.onerror = function(ex) {
+              console.log(ex);
+          };
+          reader.readAsBinaryString(input.files[0]);
+          //console.log("aaa");
+      }
+    }
+    function csv2input(input) {
+      let arr = [];
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload=function(e){
+              arr = reader.result.split(/\r\n|\n/);
+              console.log(arr);
+              // step 1
+              let columns = arr[0].split(/\,/);
+              let arr_csv = [];
+              arr.shift();
+              for(i = 0 ; i < arr.length ; i++) {
+                  let new_arr = arr[i].split(/\,/);
+                  //console.log(new_arr);
+                  let new_obj = {};
+                  for(j = 0 ; j < columns.length ; j++) {
+                      new_obj[columns[j]] = new_arr[j];
+                      //console.log(new_obj);
+                  }
+                  arr_csv.push(new_obj);
+              }
+              console.log(arr_csv);
+              setDataFromCSV(arr_csv,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+          }
+          reader.readAsText(input.files[0]);
+      }
+    }
+    function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
+        if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
+            $("input[name='count2']").val(arr_csv.length);
+            showRow(1);
+            let i = 0;
+            arr_csv_columns.forEach(function(ele,ind){
+                $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
+                    $(this).val(arr_csv[i][ele]);
+                    i++;
+                });
+                i = 0; 
+            });
+        } else {
+            $.alert({
+                title:"Thông báo",
+                content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+            });
+        }
+        $("input[name='read_csv']").val("");
+    }
+    function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
+      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
+          $("input[name='count2']").val(arr_xlsx.length);
+          showRow(1);
+          let i = 0;
+          arr_excel_columns.forEach(function(ele,ind){
+            $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
+                $(this).val(arr_xlsx[i][ele]);
+                i++;
+            });
+            i = 0; 
+          });
+      } else {
+          $.alert({
+              title:"Thông báo",
+              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+          });
+      }
+      $("input[name='read_excel']").val("");
+    }
 </script>
 <!--searching filter-->
 <script>
@@ -740,7 +836,7 @@
             dateText = dateText.split("-");
             $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
         }
-    });
+    })
     $(document).ready(function (e) {
         $('#first_tab').on('focus', function() {
             $('input[tabindex="1"].kh-inp-ctrl').first().focus();
@@ -760,7 +856,7 @@
                     "name":"manipulate",
                     "orderable": false,
                     "className": 'manipulate',
-                    "targets": 10
+                    "targets": 9
                 }, 
             ],
             "select": {
@@ -921,7 +1017,6 @@
         let u_cmnd2 = $(event.currentTarget).closest('tr').find('td input[name="u_cmnd2"]').val();
         let u_address2 = $(event.currentTarget).closest('tr').find('td textarea[name="u_address2"]').val();
         let u_birthday2 = $(event.currentTarget).closest('tr').find('td input[name="u_birthday2"]').attr('data-date');
-        let u_username2 = $(event.currentTarget).closest('tr').find('td input[name="u_username2"]').val();
         if(u_fullname2 == "") {
             this2.find('td input[name="u_fullname2"]').siblings("p.text-danger").text("Không được để trống");
             test = false;
@@ -963,13 +1058,6 @@
         } else {
             this2.find('td input[name="u_birthday2"]').siblings("p.text-danger").text("");
         }
-
-        if(u_username2 == "") {
-            test = false;
-            this2.find('td input[name="u_username2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="u_username2"]').siblings("p.text-danger").text("");
-        }
         if(test) {
             let formData = new FormData();
             formData.append("u_fullname2",u_fullname2);
@@ -978,7 +1066,6 @@
             formData.append("u_cmnd2",u_cmnd2);
             formData.append("u_address2",u_address2);
             formData.append("u_birthday2",u_birthday2);
-            formData.append("u_username2",u_username2);
             formData.append("status","ins_more");
             formData.append("token","<?php echo_token();?>");
             let this2 = $(event.currentTarget);
@@ -1063,18 +1150,11 @@
           test = false;  
         }
       });
-      $('td input[name="u_username2"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("u_username2[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
       $('td input[name="u_birthday2"]').each(function(){
         if($(this).val() != "") {
-          formData.append("u_birthday2[]",$(this).attr('data-date'));
+          let date2 = $(this).val().split(/\/|\-/);
+          date2 = date2[2] + "-" + date2[1] + "-" + date2[0];
+          formData.append("u_birthday2[]",date2);
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
@@ -1127,7 +1207,6 @@
             <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
             <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
             <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
             <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
          </tr>
         `;
@@ -1223,7 +1302,6 @@
                 <th>Số cmnd</th>
                 <th>Địa chỉ</th>
                 <th>Ngày sinh</th>
-                <th>Tên đăng nhập</th>
                 <th>Thao tác</th>
             </tr>
           </thead>
@@ -1242,7 +1320,6 @@
                   <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
                   <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
                   <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1263,7 +1340,6 @@
                 <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
                 <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_username2' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1364,16 +1440,6 @@
         $('tr.selected textarea[name="u_address"]').each(function(){
             if($(this).val() != "") {
                 formData.append("u_address2[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
-            }
-            
-        });
-        $('tr.selected input[name="u_username"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("u_username2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1825,7 +1891,6 @@
         let address = $(event.currentTarget).closest("tr").find("td textarea[name='u_address']").val();
         let cmnd = $(event.currentTarget).closest("tr").find("td input[name='u_cmnd']").val();
         let birthday = $(event.currentTarget).closest("tr").find("td input[name='u_birthday']").attr('data-date2');
-        let username = $(event.currentTarget).closest("tr").find("td input[name='u_username']").val();
         let id = $(event.currentTarget).attr('data-id');
         let this2 = $(event.currentTarget).closest("tr");
         if(name == "") {
@@ -1858,12 +1923,6 @@
         } else {
             this2.find("td input[name='u_cmnd']").siblings("span.text-danger").text("");
         }
-        if(username == "") {
-            test = false;
-            this2.find("td input[name='u_username']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_username']").siblings("span.text-danger").text("");
-        }
         if(birthday == "") {
             test = false;
             this2.find("td input[name='u_birthday']").siblings("span.text-danger").text("Không được để trống");
@@ -1884,7 +1943,6 @@
                     u_address: address,
                     u_cmnd: cmnd,
                     u_id: id,
-                    u_username: username,
                     u_birthday: birthday,
                     token: '<?php echo_token();?>'
                 },success: function(data){
@@ -1922,7 +1980,6 @@
             let phone = $('#phone').val();
             let address = $('#address').val();
             let birthday = $('#birthday').val();
-            let username = $('#username').val();
             let password = $('#password').val();
             if(full_name == "") {
                 $('#full_name').focus();
@@ -1965,13 +2022,6 @@
                 $.alert({
                     title: "Thông báo",
                     content: "Địa chỉ của nhân viên không được để trống."
-                });
-                test = false;
-            } else if(username == "") {
-                $('#username').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Username của nhân viên không được để trống."
                 });
                 test = false;
             } else if(password == "") {
@@ -2050,7 +2100,6 @@
                 formData.append("cmnd",$('#cmnd').val());
                 formData.append("address",$('#address').val());
                 formData.append("birthday",$('#birthday').val());
-                formData.append("username",$('#username').val());
                 formData.append("password",$('#password').val());  
                 if(file.length > 0) {
                     formData.append('img_name',file[0]);
@@ -2074,7 +2123,6 @@
                             html += `<td>${data.cmnd}</td>`;
                             html += `<td>${data.address}</td>`;
                             html += `<td>${data.birthday}</td>`;
-                            html += `<td>${data.username}</td>`;
                             html += `<td>${data.created_at}</td>`;
                             html += `<td>`;
                             html += `<button class="btn-update-user btn btn-primary" data-id="${data.id}" data-number="${data.number}">Sửa</button>`;
@@ -2125,7 +2173,6 @@
                 formData.append("cmnd",$('#cmnd').val());
                 formData.append("address",$('#address').val());
                 formData.append("birthday",$('#birthday').val());
-                formData.append("username",$('#username').val());
                 formData.append("password",$('#password').val());
                 if(file.length > 0) {
                     formData.append('img_name',file[0]); 
@@ -2153,7 +2200,6 @@
                             html += `<td>${data.cmnd}</td>`;
                             html += `<td>${data.address}</td>`;
                             html += `<td>${data.birthday}</td>`;
-                            html += `<td>${data.username}</td>`;
                             html += `<td>${data.created_at}</td>`;
                             html += `<td>`;
                             html += `<button class="btn-update-user btn btn-primary" data-id="${id}" data-number="${data.number}">Sửa</button>`;
@@ -2292,7 +2338,6 @@
         $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
         $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
         $birthday = isset($_REQUEST["birthday"]) ? $_REQUEST["birthday"] : null;
-        $username = isset($_REQUEST["username"]) ? $_REQUEST["username"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null ;
         if($status == "Delete") {
@@ -2350,7 +2395,6 @@
                     "cmnd" => $cmnd,
                     "address" => $address,
                     "birthday" => Date('Y-m-d',strtotime($birthday)),
-                    "username" => $username,
                     "password" => $password,
                 ];
             } else {
@@ -2360,7 +2404,6 @@
                     "phone" => $phone,
                     "cmnd" => $cmnd,
                     "address" => $address,
-                    "username" => $username,
                     "password" => $password,
                 ];
             }
@@ -2397,7 +2440,6 @@
                     "cmnd" => $cmnd,
                     "address" => $address,
                     "birthday" => Date('Y-m-d',strtotime($birthday)),
-                    "username" => $username,
                     "password" => $password,
                     "created_at"=>date('Y-m-d H-i-s',time())
                 ];
@@ -2442,13 +2484,12 @@
         } else if($status == "upt_more") {
             $u_id = isset($_REQUEST["u_id"]) ? $_REQUEST["u_id"] : null;
             $u_fullname = isset($_REQUEST["u_fullname"]) ? $_REQUEST["u_fullname"] : null;
-            $u_username = isset($_REQUEST["u_username"]) ? $_REQUEST["u_username"] : null;
             $u_email = isset($_REQUEST["u_email"]) ? $_REQUEST["u_email"] : null;
             $u_phone = isset($_REQUEST["u_phone"]) ? $_REQUEST["u_phone"] : null;
             $u_cmnd = isset($_REQUEST["u_cmnd"]) ? $_REQUEST["u_cmnd"] : null;
             $u_address = isset($_REQUEST["u_address"]) ? $_REQUEST["u_address"] : null;
             $u_birthday = isset($_REQUEST["u_birthday"]) ? $_REQUEST["u_birthday"] : null;
-            $sql = "Update user set full_name='$u_fullname',email='$u_email',phone='$u_phone',cmnd='$u_cmnd',address='$u_address',birthday='$u_birthday',username='$u_username' where id='$u_id'";
+            $sql = "Update user set full_name='$u_fullname',email='$u_email',phone='$u_phone',cmnd='$u_cmnd',address='$u_address',birthday='$u_birthday' where id='$u_id'";
             sql_query($sql);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_more") {
@@ -2524,9 +2565,8 @@
             $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_username2 = isset($_REQUEST["u_username2"]) ? $_REQUEST["u_username2"] : null;
             $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? Date('Y-m-d',strtotime($_REQUEST["u_birthday2"])) : null;
-            $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday,username) values('$u_fullname2','$u_email2','$u_phone2','$u_cmnd2','$u_address2','$u_birthday2','$u_username2')";
+            $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$u_fullname2','$u_email2','$u_phone2','$u_cmnd2','$u_address2','$u_birthday2')";
             sql_query($sql);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
@@ -2536,12 +2576,11 @@
             $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_username2 = isset($_REQUEST["u_username2"]) ? $_REQUEST["u_username2"] : null;
             $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;
-                    $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday,username) values('$u_fullname2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth','$u_username2[$i]')";
+                    $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$u_fullname2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth')";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
@@ -2554,12 +2593,11 @@
             $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_username2 = isset($_REQUEST["u_username2"]) ? $_REQUEST["u_username2"] : null;
             $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
                     $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;                 
-                    $sql = "Update user set full_name='$u_fullname2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth',username='$u_username2[$i]' where id = '$user_id[$i]'";
+                    $sql = "Update user set full_name='$u_fullname2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);

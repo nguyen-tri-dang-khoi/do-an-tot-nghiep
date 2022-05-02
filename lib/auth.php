@@ -1,10 +1,21 @@
 <?php
+    function check_access_token(){
+        if(isset($_COOKIE['access_token'])) {
+            //return;
+            $user_data_json = encrypt_decrypt($_COOKIE['access_token'],"decrypt");
+            $user_data = (array)json_decode($user_data_json);
+            //log_v($user_data_json);
+            $_SESSION["isLoggedIn"] = true;
+            $_SESSION["id"] = $user_data["id"];
+            $_SESSION["email"] = $user_data["email"];
+            $_SESSION["img_name"] = $user_data["img_name"];
+            $_SESSION["paging"] = $user_data["paging"];
+        }
+    }
     function refresh_token(){
-        if(isset($_SESSION["id"]) && isset($_SESSION["email"]) && isset($_SESSION["username"])){
+        if(isset($_SESSION["id"]) && isset($_SESSION["email"])){
             $_SESSION['key'] = bin2hex(random_bytes(32));
-            $token = hash_hmac("sha256",$_SESSION["id"].$_SESSION["email"].$_SESSION["username"],$_SESSION["key"]);
-            log_v($token);
-            log_v($_SESSION['key']);
+            $token = hash_hmac("sha256",$_SESSION["id"].$_SESSION["email"],$_SESSION["key"]);
             $_SESSION["token"] = $token;
         }
     }
@@ -14,25 +25,11 @@
         } else {
             echo $_SESSION["token"];
         }
-        /*if($url == "") {
-            // tạo data để generate token
-            // lấy id của user
-            // lấy link trang web *.php
-            // lấy permission của user
-            // nối lại thành chuỗi với định dạng *-*-*
-            $url = get_url_current_page();
-        }
-        if(empty($_SESSION['key'])){
-            $_SESSION['key'] = bin2hex(random_bytes(32));
-        }
-        echo hash_hmac('sha256', $url, $_SESSION["key"]);*/
     }
     function logout_session_timeout(){
 		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
 		$result = (time() - $_SESSION['timestamp']) / 60;
-		//print_r($result);
-		log_v($result);
-		if($result > 2) {
+		if($result > 30) {
 			$_SESSION["isLoggedIn"] = false;
 			unset($_SESSION["timestamp"]);
 			redirect_if_login_status_false();

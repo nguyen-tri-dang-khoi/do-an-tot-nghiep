@@ -612,6 +612,7 @@ li.nav-item {
   opacity: 0;
   cursor: pointer;
   left: 0;
+  font-size: 0px;
 }
 .kh-custom-remove-img {
   position:relative;

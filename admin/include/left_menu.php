@@ -69,7 +69,7 @@
         <img src=<?=$_SESSION["img_name"] ? $_SESSION["img_name"] : "upload/image.png";?> class="img-circle elevation-2" alt="User Image">
       </div>
       <div class="info">
-        <a tabindex="0" id="first_tab" href="#" class="d-block"><?=$_SESSION["username"];?></a>
+        <a tabindex="0" id="first_tab" href="#" class="d-block"><?=$_SESSION["email"];?></a>
       </div>
     </div>
 

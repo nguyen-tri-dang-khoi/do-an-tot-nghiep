@@ -53,14 +53,6 @@
                         <div id="email_err" class="text-danger"></div>
                       </div>
                       <div class="form-group row">
-                        <label for="username" class="col-sm-2 col-form-label">Tên đăng nhập</label>
-                        <div class="col-sm-10">
-                          <input name="username" type="text" class="form-control" value="<?=$admin_info["username"];?>">
-                        </div>
-                        <!-- loi ho ten -->
-                        <div id="name_err" class="text-danger"></div>
-                      </div>
-                      <div class="form-group row">
                         <label for="pass" class="col-sm-2 col-form-label">Mật khẩu xác thực</label>
                         <div class="col-sm-10">
                           <input name="old_pass" type="password" class="form-control" required>
@@ -305,7 +297,12 @@
                   if(res_json.msg == 'ok'){
                     $.alert({
                       title: "Thông báo",
-                      content: res_json.success
+                      content: res_json.success,
+                      buttons: {
+                        "Ok":function(){
+                          location.reload();
+                        }
+                      }
                     });
                   } else {
                     $.alert({
@@ -329,7 +326,6 @@
 <?php
     } else if (is_post_method()) {
       $session_id = $_SESSION["id"];
-      $username = isset($_REQUEST["username"]) ? $_REQUEST["username"] : null;
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
       $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
       $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
@@ -466,7 +462,7 @@
               $sql_update_verify_phone = "Update user set phone_verify_otp = NULL,phone_verify_at = NULL where id = '$session_id'";
               sql_query($sql_update_verify_phone);
             }
-            ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'username'=>$username,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
+            ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
             $_SESSION["img_name"] = $path;
           } else {
             // Báo lỗi admin nhập sai mật khẩu xác thực

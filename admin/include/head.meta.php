@@ -1,4 +1,5 @@
 <?php
+    check_access_token();
     refresh_token();
     logout_session_timeout();
 ?>
@@ -26,10 +27,17 @@
 	<!--khoi.css-->
 	<link rel="stylesheet" href="css/khoi.css">
     <style>
+
         /*th, td { white-space: nowrap; }*/
         div.dataTables_wrapper {
             width: 100%;
             margin: 0 auto;
+        }
+        /*.selected {
+            background-color: #fbebfaf7 !important;
+        }*/
+        .bg-color-selected {
+            background-color: #fbebfaf7 !important;
         }
         *:focus {
             outline:none !important;
@@ -62,7 +70,36 @@
         /*ul:focus,div.note-editable.card-block:focus {
             border: solid #3594fb 1px !important;
         }*/
-         
+        .card-header::after{
+            display:none;
+        }
+        tr:hover {
+            border:1px solid red;
+        }
+        .file {
+            width: 64px;
+            position: relative; 
+            height: 64px;
+        }
+        .file input {
+            width: 100%;
+            cursor: pointer;
+            height: 100%;
+            opacity: 0;
+            font-size: 0px;
+            display: block;
+            position: absolute;
+        }
+        .file-excel {
+            background-image: url(img/excel.png);
+            background-position: 50%;
+            background-repeat: no-repeat;
+        } 
+        .file-csv {
+            background-image: url(img/csv.png);
+            background-position: 50%;
+            background-repeat: no-repeat;
+        } 
     </style>
 </head>
 <body class="">

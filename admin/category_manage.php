@@ -24,15 +24,6 @@
 ?>
 <!--html & css section start-->
 <style>
-    .card-header::after{
-      display:none;
-    }
-    tr:hover {
-      border:1px solid red;
-    }
-
-</style>
-<style>
   .breadcrumb-item+.breadcrumb-item::before {
     display: inline-block;
     padding-right: 0.7rem;
@@ -304,12 +295,22 @@
                 <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
                 <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
               </div>
-              <div class="d-flex j-between">
-                <div class="k-plus">
-                  <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                </div>
-                <div class="k-minus">
-                  <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+              <div class="d-flex f-column">
+                <div class="d-flex" style="justify-content:flex-end">
+                  <div class="k-plus">
+                    <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                  </div>
+                  <div class="k-minus">
+                    <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                  </div>
+                </div>  
+                <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
+                  <div class="file file-csv mr-10">
+                    <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                  </div>
+                  <div class="file file-excel">
+                    <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                  </div>
                 </div>
               </div>
           </div>
@@ -350,7 +351,7 @@
 <script src="js/dataTables.select.min.js"></script>
 <script src="js/colOrderWithResize.js"></script>
 <script src="js/dataTables.buttons.min.js"></script>
-<script src="js/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
 <script src="js/pdfmake.min.js"></script>
 <script src="js/vfs_fonts.js"></script>
 <script src="js/buttons.html5.min.js"></script>
@@ -359,6 +360,90 @@
 <script src="js/dataTables.searchHighlight.min.js"></script> 
 <script src="js/jquery.highlight.js"></script>
 <script src="js/select2.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script>
+    function xlsx2input(input) {
+      if(input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              var data = e.target.result;
+              var workbook = XLSX.read(data, {
+                  type: 'binary'
+              });
+              var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
+              setDataFromXLSX(XL_row_object);
+          };
+          reader.onerror = function(ex) {
+              console.log(ex);
+          };
+          reader.readAsBinaryString(input.files[0]);
+          //console.log("aaa");
+      }
+    }
+    function csv2input(input) {
+      let arr = [];
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload=function(e){
+              arr = reader.result.split(/\r\n|\n/);
+              console.log(arr);
+              // step 1
+              let columns = arr[0].split(/\,/);
+              let arr_csv = [];
+              arr.shift();
+              for(i = 0 ; i < arr.length ; i++) {
+                  let new_arr = arr[i].split(/\,/);
+                  //console.log(new_arr);
+                  let new_obj = {};
+                  for(j = 0 ; j < columns.length ; j++) {
+                      new_obj[columns[j]] = new_arr[j];
+                      //console.log(new_obj);
+                  }
+                  arr_csv.push(new_obj);
+              }
+              //console.log(arr_csv);
+              setDataFromCSV(arr_csv);
+          }
+          reader.readAsText(input.files[0]);
+      }
+    }
+    function setDataFromCSV(arr_csv) {
+      //console.log(arr_csv);
+      if("Tên danh mục" in arr_csv[0]) {
+          $("input[name='count2']").val(arr_csv.length);
+          showRow(1);
+          let i = 0;
+          $("td input.kh-inp-ctrl").each(function(){
+              $(this).val(arr_csv[i]['Tên danh mục']);
+              i++;
+          });
+      } else {
+          $.alert({
+              title:"Thông báo",
+              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+          });
+      }
+      $("input[name='read_csv']").val("");
+    }
+    function setDataFromXLSX(arr_xlsx){
+      if('Tên danh mục' in arr_xlsx[0]) {
+          $("input[name='count2']").val(arr_xlsx.length);
+          showRow(1);
+          let i = 0;
+          $("td input.kh-inp-ctrl").each(function(){
+              $(this).val(arr_xlsx[i]['Tên danh mục']);
+              i++;
+          });
+      } else {
+          $.alert({
+              title:"Thông báo",
+              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+          });
+      }
+      $("input[name='read_excel']").val("");
+    }
+</script>
 <script>
     var dt_pt;
     $(document).ready(function (e) {
@@ -512,6 +597,10 @@
       $("input[name='count2']").val("");
       $("input[name='count2']").attr("data-plus",0);
     })
+    $("#modal-xl").on("hidden.bs.modal",function(){
+      $("tr").removeClass("bg-color-selected");
+    })
+    
     function createDataUptAll(){
       let test = true;
       let arr_id = [];
@@ -583,6 +672,7 @@
       //$('#modal-xl2').modal('show');
       $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
     }
+    
     function showRow(page,apply_dom = true){
       let count = $('input[name="count2"]').val();
       if(count == "") {
@@ -1014,6 +1104,7 @@
       // sửa danh mục
       $(document).on('click','.btn-sua-loai-san-pham',function(event){
         let id = $(event.currentTarget).attr('data-id');
+        $(event.currentTarget).closest("tr").addClass("bg-color-selected");
         $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Update",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
         });
@@ -1067,6 +1158,7 @@
       // xem danh muc
       $(document).on('click','.btn-xem-loai-san-pham',function(event){
         let id = $(event.currentTarget).attr('data-id');
+        $(event.currentTarget).closest("tr").addClass("bg-color-selected");
         $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Read",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
         });

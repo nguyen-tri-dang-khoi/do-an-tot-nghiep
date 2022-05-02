@@ -226,7 +226,6 @@
             $sql = "select * from user where id = '$_SESSION[id]' and is_delete = 0 limit 1";
             $res = fetch(sql_query($sql));
             if($res) {
-                $_SESSION["username"] = $res["username"];
                 $_SESSION["email"] = $res["email"];
                 $_SESSION["img_name"] = $res["img_name"];
                 $_SESSION["paging"] = $res["paging"];

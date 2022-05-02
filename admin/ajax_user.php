@@ -4,7 +4,7 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {
-        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
 <?php
@@ -52,14 +52,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="username">Tên đăng nhập</label>
-                <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập" value="<?=$result['username']?>">
-            </div>
-            <div class="col-md-6 form-group">
+            <!--<div class="col-md-6 form-group">
                 <label for="password">Mật khẩu</label>
                 <input type="password" class="form-control" value="" id="password" placeholder="Nhập mật khẩu đăng nhập">
-            </div>
+            </div>-->
         </div>
     </div>
     <input type="hidden" name="token" value="<?php echo_token();?>">
@@ -117,12 +113,8 @@
     </div>
     <div class="row">
         <div class="col-md-6 form-group">
-            <label for="username">Tên đăng nhập</label>
-            <input type="text" class="form-control" id="username" placeholder="Nhập tên đăng nhập">
-        </div>
-        <div class="col-md-6 form-group">
-            <label for="password">Mật khẩu</label>
-            <input type="password" class="form-control" value="" id="password" placeholder="Nhập mật khẩu đăng nhập">
+            <label for="password">Mật khẩu (mặc định là 1234)</label>
+            <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập" readonly>
         </div>
     </div>
 </div>
@@ -134,7 +126,7 @@
 <?php } ?>
 <?php
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,cmnd,username,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
     <div class="card-body">
@@ -168,10 +160,6 @@
             <tr>
                 <th>Địa chỉ</th>
                 <td><?=$result['address']?></td>
-            </tr>
-            <tr>
-                <th>Tên đăng nhập</th>
-                <td><?=$result['username']?></td>
             </tr>
             <tr>
                 <th>Ngày tạo</th>
@@ -219,10 +207,6 @@
                 <tr>
                     <th>Địa chỉ</th>
                     <td>" . $res['address'] . "</td>
-                </tr>
-                <tr>
-                    <th>Tên đăng nhập</th>
-                    <td>" . $res['username'] . "</td>
                 </tr>
                 <tr>
                     <th>Ngày tạo</th>

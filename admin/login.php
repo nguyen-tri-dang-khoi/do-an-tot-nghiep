@@ -1,6 +1,8 @@
 <?php
     include_once("../lib/database.php");
+    check_access_token();
     redirect_if_login_success();
+    
     if(is_get_method()) {
         include_once("include/head.meta.php");
         // code to be executed get method
@@ -110,7 +112,7 @@
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,username,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? limit 1";
+        $sql = "select id,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? limit 1";
         $row = fetch_row($sql,[$email]);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
@@ -123,18 +125,25 @@
             if(password_verify($password,$row["password"])){
                 $_SESSION["isLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];
-                $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
                 $_SESSION["paging"] = $row["paging"];
+                $user_data_json = json_encode([
+                    "id" => $row["id"],
+                    "email" => $row["email"],
+                    "img_name" => $row["img_name"],
+                    "paging" => $row["paging"],
+                    "rand" => rand(1,1000000),
+                    "expire_at" => time()
+                ]);
                 refresh_token();
-                //setcookie("token",$token,time() + 3600 * 24 * 30,"/","",false,true);
+                $access_token = encrypt_decrypt($user_data_json,"encrypt");
+                setcookie("access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
                 if($remember) {
                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
-                    setcookie("co_remember","y",time() + 3600 * 24 * 30,"/");
-                    setcookie("co_email",$row["email"],time() + 3600 * 24 * 30,"/");
-                    setcookie("co_password",$pass_encrypt,time() + 3600 * 24 * 30,"/");
-                    
+                    setcookie("co_remember","y",time() + 3600 * 24 * 30,"/","",false,true);
+                    setcookie("co_email",$row["email"],time() + 3600 * 24 * 30,"/","",false,true);
+                    setcookie("co_password",$pass_encrypt,time() + 3600 * 24 * 30,"/","",false,true);
                 } else {
                     if(isset($_COOKIE['co_email']) ) {
                         setcookie("co_email","",time() - 3600,"/");

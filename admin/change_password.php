@@ -83,7 +83,6 @@
         let new_pass = $('input[name=new_pass]').val();
         let confirm_new_pass = $('input[name=confirm_new_pass]').val();
         let url = window.location.href;
-        //let token = $('meta[name="token"]').attr('content');
         $.ajax({
             url:url,
             type:"POST",
