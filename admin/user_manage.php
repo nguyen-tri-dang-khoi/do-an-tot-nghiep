@@ -1,5 +1,7 @@
 <?php
     include_once("../lib/database.php");
+    logout_session_timeout();
+    check_access_token();
     redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for user
@@ -570,7 +572,7 @@
             </div>
             <div class="modal-body">
                 <div id="form-user2" class="modal-body">
-                    <div class="row j-between">
+                    <!--<div class="row j-between">
                         <div style="margin-left: 7px;" class="form-group">
                             <label for="">Nhập số dòng cần thêm: </label>
                             <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
@@ -592,6 +594,37 @@
                                 <div class="file file-excel">
                                     <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
                                 </div>
+                            </div>
+                        </div>
+                    </div>-->
+                    <div class="row j-between">
+                        <div style="margin-left: 7px;" class="form-group">
+                            <label for="">Nhập số dòng: </label>
+                            <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
+                            <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
+                            <div class="" style="justify-content:flex-end;display:inline-flex">
+                            <div class="k-number-row">
+                                <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
+                            </div>
+                            <div class="k-plus">
+                                <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                            </div>
+                            <div class="k-minus">
+                                <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                            </div>
+                            </div>  
+                        </div>
+                        <div class="d-flex f-column">
+                            <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
+                            <div class="file file-csv mr-10">
+                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                            </div>
+                            <div class="file file-excel mr-10">
+                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                            </div>
+                            <div class="d-empty">
+                                <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
+                            </div>
                             </div>
                         </div>
                     </div>
@@ -619,7 +652,7 @@
     include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
-<script src="js/jquery.dataTables.min.js"></script>
+<!--<script src="js/jquery.dataTables.min.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
 <script src="js/dataTables.select.min.js"></script>
 <script src="js/dataTables.fixedColumns.min.js"></script>
@@ -634,6 +667,11 @@
 <script src="js/dataTables.searchHighlight.min.js"></script> 
 <script src="js/jquery.highlight.js"></script>
 <script src="js/select2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" type="text/javascript"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js" type="text/javascript"></script>-->
+<?php
+    include_once("include/dt_script.php");
+?>
 <script src="js/toastr.min.js"></script>
 <script>
 	toastr.options = {
@@ -705,7 +743,7 @@
     }
     function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
         if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-            $("input[name='count2']").val(arr_csv.length);
+            $("[data-plus]").attr("data-plus",arr_csv.length);
             showRow(1);
             let i = 0;
             arr_csv_columns.forEach(function(ele,ind){
@@ -725,7 +763,7 @@
     }
     function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
       if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-          $("input[name='count2']").val(arr_xlsx.length);
+          $("[data-plus]").attr("data-plus",arr_xlsx.length);
           showRow(1);
           let i = 0;
           arr_excel_columns.forEach(function(ele,ind){
@@ -837,7 +875,9 @@
             $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
         }
     })
+    
     $(document).ready(function (e) {
+        $.fn.dataTable.moment('DD-MM-YYYY');
         $('#first_tab').on('focus', function() {
             $('input[tabindex="1"].kh-inp-ctrl').first().focus();
         });
@@ -991,7 +1031,31 @@
       $("#form-user2 table tbody").remove();
       $("input[name='count2']").val("");
       $("input[name='count2']").attr("data-plus",0);
-   })
+    })
+    $("#modal-xl").on("hidden.bs.modal",function(){
+      $("tr").removeClass('bg-color-selected');
+    })
+    $('#modal-xl3').on('hidden.bs.modal', function (e) {
+      $('#form-user2 table tbody').remove();
+      $('#form-user2 #paging').remove();
+      $('[data-plus]').attr('data-plus',0);
+    })
+    function delEmpty(){
+      $.confirm({
+        title:"Thông báo",
+        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
+        buttons: {
+          "Có": function(){
+            $('#form-user2 table > tbody').remove();
+            $('#form-user2 #paging').remove();
+            $('[data-plus]').attr('data-plus',0);
+          },"Không":function(){
+
+          }
+        }
+      });
+     
+    }
     function showPicker(){
         $('input[name="u_birthday2"]').datepicker({
             changeMonth: true,
@@ -1195,84 +1259,105 @@
       
     }
     function insRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      let html = "";
-      let count2 = parseInt(page / 7) + 1;
-      html = `
-        <tr data-row-id='${parseInt(page) + 1}'>
-            <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-            <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-            <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-         </tr>
-        `;
-      if(page % 7 != 0) {
-         $('.t-bd').css({"display":"none"});
-         $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-         $(html).appendTo(`.t-bd-${count2}`);
-      } else {
-         $('.t-bd').css({"display":"none"});
-         html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-         $(html).appendTo('#form-user2 table');
-      }
-      if(page == 0) {
-        let html2 = `<div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-        </div>`;
-        $(html2).appendTo('#form-user2');
-      }
-      $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-      $('input[name="count2"]').val(parseInt(page) + 1);
-      $('#pagination2').pagination({
-        items: parseInt(page) + 1,
-        itemsOnPage: 7,
-        currentPage: count2,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-        showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      showPicker();
-    }
+        num_of_row_insert = $('input[name="count3"]').val();
+        if(num_of_row_insert == "") {
+            $.alert({
+                title: "Thông báo",
+                content: "Vui lòng không để trống số dòng cần thêm",
+            })
+            return;
+        } 
+        for(i = 0 ; i < num_of_row_insert ; i++) {
+            let page = $('[data-plus]').attr('data-plus');
+            let html = "";
+            let count2 = parseInt(page / 7) + 1;
+            html = `
+                <tr data-row-id='${parseInt(page) + 1}'>
+                    <td>${parseInt(page) + 1}</td>
+                    <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+                </tr>
+                `;
+            if(page % 7 != 0) {
+                $('.t-bd').css({"display":"none"});
+                $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
+                $(html).appendTo(`.t-bd-${count2}`);
+            } else {
+                $('.t-bd').css({"display":"none"});
+                html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
+                $(html).appendTo('#form-user2 table');
+            }
+            if(page == 0) {
+                let html2 = `<div id="paging" style="justify-content:center;" class="row">
+                    <nav id="pagination2">
+                    </nav>
+                </div>`;
+                $(html2).appendTo('#form-user2');
+            }
+            $('[data-plus]').attr('data-plus',parseInt(page) + 1);
+            $('input[name="count2"]').val(parseInt(page) + 1);
+            $('#pagination2').pagination({
+                items: parseInt(page) + 1,
+                itemsOnPage: 7,
+                currentPage: count2,
+                prevText: "<",
+                nextText: ">",
+                onPageClick: function(pageNumber,event){
+                showRow(pageNumber,false);
+                },
+                cssStyle: 'light-theme',
+            });
+            showPicker();
+            }
+        }
+      
     function delRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      if(page == 0) {
-          return;
-      }
-      let currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      $(`[data-row-id="${page}"]`).remove();
-      page--;
-      $('[data-plus]').attr('data-plus',page);
-      $('input[name="count2"]').val(page);
-      currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-      $('.t-bd').css({"display":"none"});
-      $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-      $('#pagination2').pagination({
-        items: parseInt(page),
-        itemsOnPage: 7,
-        currentPage: currentPage1,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      count_row_z_index++;
+        let count_del = $("input[name=count3]").val();
+        if(count_del == "") {
+            $.alert({
+                title: "Thông báo",
+                content: "Vui lòng không để trống số dòng cần xoá",
+            })
+            return;
+        }
+        for(i = 0 ; i < count_del ; i++) {
+            let page = $('[data-plus]').attr('data-plus');
+            if(page == 0) {
+                return;
+            }
+            let currentPage1 = page / 7;
+            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+            $(`[data-row-id="${page}"]`).remove();
+            page--;
+            $('[data-plus]').attr('data-plus',page);
+            $('input[name="count2"]').val(page);
+            currentPage1 = page / 7;
+            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+            else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
+            $('.t-bd').css({"display":"none"});
+            $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
+            $('#pagination2').pagination({
+                items: parseInt(page),
+                itemsOnPage: 7,
+                currentPage: currentPage1,
+                prevText: "<",
+                nextText: ">",
+                onPageClick: function(pageNumber,event){
+                showRow(pageNumber,false);
+                },
+                cssStyle: 'light-theme',
+            });
+        }
+      
     }
     function showRow(page,apply_dom = true){
-      let count = $('input[name="count2"]').val();
-      if(count == "") {
+      let count = $('[data-plus]').attr('data-plus');
+      /*if(count == "") {
         $.alert({
           title: "Thông báo",
           content: "Vui lòng không để trống số dòng thêm",
@@ -1282,10 +1367,10 @@
       if(count < 1) {
         $.alert({
           title: "Thông báo",
-          content: "Vui lòng nhập số dòng lớn hơn 0",
+          content: "Vui lòng nhập số dòng lớn hơn 
         })
         return;
-      }
+      }*/
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
@@ -2068,6 +2153,7 @@
         // mở modal sửa dữ liệu
         $(document).on('click','.btn-update-user',function(e) {  
             let id = $(e.currentTarget).attr('data-id');
+            $(e.currentTarget).closest("tr").addClass("bg-color-selected");
             $('#manage_user').load("ajax_user.php?status=Update&id=" + id,() => {
                 $('#modal-xl').modal({backdrop: 'static', keyboard: false});
                 $("#birthday").datepicker({
@@ -2250,6 +2336,8 @@
             /*click_number = $(this).closest('tr');
             console.log(click_number);*/
             let id = $(e.currentTarget).attr('data-id');
+            let target = $(e.currentTarget);
+            target.closest("tr").addClass("bg-color-selected");
             $.confirm({
                 title: 'Thông báo',
 			    content: 'Bạn có chắc chắn muốn xoá thông tin nhân viên này ?',
@@ -2291,7 +2379,7 @@
                             }
                         });
                     },Không: function(){
-
+                        target.closest("tr").removeClass("bg-color-selected");
                     }
                 }
             });
@@ -2299,6 +2387,8 @@
         // xem
         $(document).on('click','.btn-read-user',function(e){
             let id = $(e.currentTarget).attr('data-id');
+            let target = $(e.currentTarget);
+            target.closest("tr").addClass("bg-color-selected");
             $('#manage_user').load("ajax_user.php?status=Read&id=" + id,() => {
                 $('#modal-xl').modal({backdrop: 'static', keyboard: false});
             })

@@ -1,5 +1,7 @@
 <?php
    include_once("../lib/database.php");
+   logout_session_timeout();
+   check_access_token();
    redirect_if_login_status_false();
    if(is_get_method()) {
       // permission crud for user
@@ -90,7 +92,7 @@
             $where .= " and ($wh_child)";
          }
       }
-      log_v($where);
+      //log_v($where);
       
 ?>
 <!--html & css section start-->
@@ -552,8 +554,10 @@
 <?php
         include_once("include/bottom.meta.php");
 ?>
-<!--js section start-->
 <script src="js/summernote.min.js"></script>
+<script src="js/summernote-vi-VN.js"></script>
+<!--js section start-->
+<!--<script src="js/summernote.min.js"></script>
 <script src="js/summernote-vi-VN.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
 <script src="js/dataTables.select.min.js"></script>
@@ -567,7 +571,10 @@
 <script src="js/buttons.print.min.js"></script>
 <script src="js/buttons.colVis.min.js"></script>
 <script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/jquery.highlight.js"></script>
+<script src="js/jquery.highlight.js"></script>-->
+<?php
+    include_once("include/dt_script.php");
+?>
 <!--searching filter-->
 <script>
    function choose_type_search(){
@@ -836,8 +843,7 @@
       arr_list_file_del = [];
       arr_input_file = new Map();
       $("input[name='list_file_del']").val("");
-      console.log(arr_list_file_del);
-      console.log(arr_input_file);
+      $("tr").removeClass('bg-color-selected');
    })
    $("#modal-xl2").on("hidden.bs.modal",function(){
       $("#form-notify2 table tbody").remove();
@@ -845,6 +851,7 @@
       $("input[name='count2']").attr("data-plus",0);
    })
    $(document).ready(function (e) {
+      $.fn.dataTable.moment('DD-MM-YYYY');
       dt_n = $("#m-bang-tin").DataTable({
          "sDom": 'RBlfrtip',
          "columnDefs": [
@@ -1579,6 +1586,7 @@
       // Update sản phẩm
       $(document).on('click','.btn-sua-bang-tin',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
          click_number = $(this).closest('tr');
          $('#form-bang-tin').load("ajax_notification.php?status=Update&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
@@ -1598,6 +1606,8 @@
       // Delete sản phẩm
       $(document).on('click','.btn-xoa-bang-tin',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         let target = $(event.currentTarget);
+         target.closest("tr").addClass("bg-color-selected");
          $.confirm({
             title: 'Thông báo',
             content: 'Bạn có chắc chắn muốn xoá bảng tin này ?',
@@ -1633,7 +1643,7 @@
                   });
                },
                Không: function () {
-
+                  target.closest("tr").removeClass("bg-color-selected");
                },
             }
          });
@@ -1642,6 +1652,8 @@
       $(document).on('click','.btn-xem-bang-tin',function(event){
          let id = $(event.currentTarget).attr('data-id');
          click_number = $(this).closest('tr');
+         let target = $(event.currentTarget);
+         target.closest("tr").addClass("bg-color-selected");
          $('#form-bang-tin').load("ajax_notification.php?status=Read&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
          });
@@ -1686,7 +1698,7 @@
                processData: false,
                data:formData,
                success:function(res_json){
-                  console.log(res_json);
+                  // console.log(res_json);
                   if(res_json.msg == 'ok'){
                      arr_input_file = new Map();
                      arr_list_file_del = [];
@@ -1781,7 +1793,7 @@
       $title = isset($_REQUEST["title"]) ? $_REQUEST["title"] : null;
       $content = isset($_REQUEST["content"]) ? $_REQUEST["content"] : null;
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
-      print_r($list_file_del);
+      //print_r($list_file_del);
       if($list_file_del){
          $list_file_del = explode(",",$list_file_del);
       } else {
@@ -1894,8 +1906,8 @@
             }
          }
          if(isset($_FILES['img'])) {
-            $aaa = count($_FILES['img']['name']);
-            print_r($aaa);
+            //$aaa = count($_FILES['img']['name']);
+            //print_r($aaa);
             if(count($_FILES['img']['name']) > 0) {
                $file_old_name = "";
                $__arr = [];

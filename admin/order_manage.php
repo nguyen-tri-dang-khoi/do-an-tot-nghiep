@@ -1,5 +1,7 @@
 <?php
     include_once("../lib/database.php");
+    logout_session_timeout();
+    check_access_token();
     redirect_if_login_status_false();
     if(is_get_method()) {
         $allow_read = false;

@@ -4,10 +4,12 @@
     $number2 = $number;
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+    
     if($id && $status == "Update") {
         $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
         $result = fetch_row($sql_get_all,[$id]);
 ?>
+
 <div class="card-body">
     <div class="row">
         <div class="col-md-6 form-group">
@@ -438,4 +440,3 @@
         print_r($html);
     }
 ?>
-

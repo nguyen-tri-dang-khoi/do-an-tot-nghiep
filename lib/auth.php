@@ -12,36 +12,31 @@
             $_SESSION["paging"] = $user_data["paging"];
         }
     }
-    function refresh_token(){
-        if(isset($_SESSION["id"]) && isset($_SESSION["email"])){
+    /*function refresh_token(){
+        if(empty($_SESSION['key'])) {
             $_SESSION['key'] = bin2hex(random_bytes(32));
-            $token = hash_hmac("sha256",$_SESSION["id"].$_SESSION["email"],$_SESSION["key"]);
-            $_SESSION["token"] = $token;
         }
+        $token = hash_hmac("sha256",rand(100,1000000),$_SESSION["key"]);
+        return $token;
     }
     function echo_token($url = ""){
-        if(empty($_SESSION["token"])) {
-            echo "";
-        } else {
-            echo $_SESSION["token"];
+        $_SESSION['token_3'] = isset($_SESSION['token_3']) ? $_SESSION['token_3'] : "";
+        if(empty($_SESSION['token_3'])) {
+            $_SESSION['token_3'] = refresh_token();
         }
+        echo $_SESSION['token_3'];
+    }*/
+    function echo_token($url = ""){
+        if($url == "") {
+            $url = get_url_current_page();
+        }
+        if(empty($_SESSION['key'])){
+            $_SESSION['key'] = bin2hex(random_bytes(32));
+        }
+        echo hash_hmac('sha256', $url, $_SESSION["key"]);
     }
-    function logout_session_timeout(){
-		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
-		$result = (time() - $_SESSION['timestamp']) / 60;
-		if($result > 30) {
-			$_SESSION["isLoggedIn"] = false;
-			unset($_SESSION["timestamp"]);
-			redirect_if_login_status_false();
-			exit();
-		}
-	}
     function is_post_method($token = "",$url = ""){
-        $_SESSION["token"] = isset($_SESSION["token"]) ? $_SESSION["token"] : "";
-        if(!empty($_POST["token"])) {
-            $token = $_POST["token"];
-        }
-        /*if($url == ""){
+        if($url == ""){
             $url = get_url_current_page();
         }
         if(isset($_POST["token"])) {
@@ -49,9 +44,23 @@
         }
         if(empty($_SESSION['key'])){
             $_SESSION['key'] = bin2hex(random_bytes(32));
-        }*/
-        return hash_equals($token,$_SESSION["token"]) && $_SERVER["REQUEST_METHOD"] == "POST";
+        }
+        return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && $_SERVER["REQUEST_METHOD"] == "POST";
     }
+    function logout_session_timeout(){
+		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
+		$result = (time() - $_SESSION['timestamp']) / 60;
+        //log_v($result);
+		if($result > 30) {
+			$_SESSION["isLoggedIn"] = false;
+			unset($_SESSION["timestamp"]);
+            if(isset($_COOKIE['access_token'])){
+                setcookie('access_token','',time() - 3600,"/","",false,false);
+            }
+			redirect_if_login_status_false();
+			exit();
+		}
+	}
     function is_get_method_csrf($token = "",$url = ""){
         if($url == ""){
             $url = get_url_current_page();
@@ -65,7 +74,7 @@
         return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && ($_SERVER["REQUEST_METHOD"] == "GET");
     }
     function is_get_method(){
-        return ($_SERVER["REQUEST_METHOD"] == "GET");
+        return ($_SERVER["REQUEST_METHOD"] == "GET");  
     }
     //================redirect===================//
     //f_t

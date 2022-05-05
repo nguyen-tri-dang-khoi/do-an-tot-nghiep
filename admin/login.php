@@ -1,8 +1,8 @@
 <?php
     include_once("../lib/database.php");
+    logout_session_timeout();
     check_access_token();
     redirect_if_login_success();
-    
     if(is_get_method()) {
         include_once("include/head.meta.php");
         // code to be executed get method
@@ -136,7 +136,6 @@
                     "rand" => rand(1,1000000),
                     "expire_at" => time()
                 ]);
-                refresh_token();
                 $access_token = encrypt_decrypt($user_data_json,"encrypt");
                 setcookie("access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
                 if($remember) {

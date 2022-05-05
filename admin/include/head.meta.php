@@ -1,8 +1,3 @@
-<?php
-    check_access_token();
-    refresh_token();
-    logout_session_timeout();
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,10 +19,14 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <!--fontawesome 5-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-	<!--khoi.css-->
+	
+    <!--khoi.css-->
 	<link rel="stylesheet" href="css/khoi.css">
     <style>
-
+        .user-panel img {
+            height: 30px;
+            width: 30px;
+        }
         /*th, td { white-space: nowrap; }*/
         div.dataTables_wrapper {
             width: 100%;
@@ -101,6 +100,7 @@
             background-repeat: no-repeat;
         } 
     </style>
+    
 </head>
 <body class="">
 <div style="min-width:fit-content;margin-right:0px;" class="wrapper <?php if(strpos(get_url_current_page(),"reset_password.php") || strpos(get_url_current_page(),"forgive_password.php") || strpos(get_url_current_page(),"login") || strpos(get_url_current_page(),"register")) { echo "center";}?>">

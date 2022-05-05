@@ -1,5 +1,7 @@
 <?php
     include_once("../lib/database_v2.php");
+    logout_session_timeout();
+    check_access_token();
     redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for user
@@ -146,14 +148,9 @@
 						<?php
 							$get = $_GET;
 							unset($get['page']);
-              //
               $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-              
-              
-              //
 							$str_get = http_build_query($get);
 							$page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-							
 							$arr_paras = [];
 							$where = "where 1 = 1 and is_delete = 0";
 							if($page){
@@ -291,12 +288,13 @@
       <div id="form-product-type2" class="modal-body">
           <div class="row j-between">
               <div style="margin-left: 7px;" class="form-group">
-                <label for="">Nhập số dòng cần thêm: </label>
-                <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
-                <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
-              </div>
-              <div class="d-flex f-column">
-                <div class="d-flex" style="justify-content:flex-end">
+                <label for="">Nhập số dòng: </label>
+                <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
+                <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
+                <div class="" style="justify-content:flex-end;display:inline-flex">
+                  <div class="k-number-row">
+                    <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
+                  </div>
                   <div class="k-plus">
                     <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
                   </div>
@@ -304,12 +302,17 @@
                     <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                   </div>
                 </div>  
+              </div>
+              <div class="d-flex f-column">
                 <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                   <div class="file file-csv mr-10">
                     <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
                   </div>
-                  <div class="file file-excel">
+                  <div class="file file-excel mr-10">
                     <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                  </div>
+                  <div class="d-empty">
+                    <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
                   </div>
                 </div>
               </div>
@@ -346,7 +349,7 @@
   include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
-<script src="js/jquery.dataTables.min.js"></script>
+<!--<script src="js/jquery.dataTables.min.js"></script>
 <script src="js/dataTables.bootstrap4.min.js"></script>
 <script src="js/dataTables.select.min.js"></script>
 <script src="js/colOrderWithResize.js"></script>
@@ -359,8 +362,10 @@
 <script src="js/buttons.colVis.min.js"></script>
 <script src="js/dataTables.searchHighlight.min.js"></script> 
 <script src="js/jquery.highlight.js"></script>
-<script src="js/select2.min.js"></script>
-
+<script src="js/select2.min.js"></script>-->
+<?php
+    include_once("include/dt_script.php");
+?>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script>
     function xlsx2input(input) {
@@ -411,7 +416,7 @@
     function setDataFromCSV(arr_csv) {
       //console.log(arr_csv);
       if("Tên danh mục" in arr_csv[0]) {
-          $("input[name='count2']").val(arr_csv.length);
+          $("[data-plus]").attr("data-plus",arr_csv.length);
           showRow(1);
           let i = 0;
           $("td input.kh-inp-ctrl").each(function(){
@@ -428,7 +433,7 @@
     }
     function setDataFromXLSX(arr_xlsx){
       if('Tên danh mục' in arr_xlsx[0]) {
-          $("input[name='count2']").val(arr_xlsx.length);
+          $("[data-plus]").attr("data-plus",arr_xlsx.length);
           showRow(1);
           let i = 0;
           $("td input.kh-inp-ctrl").each(function(){
@@ -447,6 +452,7 @@
 <script>
     var dt_pt;
     $(document).ready(function (e) {
+      $.fn.dataTable.moment('DD-MM-YYYY');
       $('#first_tab').on('focus', function() {
         $('input[tabindex="1"]').focus();
       });
@@ -600,7 +606,22 @@
     $("#modal-xl").on("hidden.bs.modal",function(){
       $("tr").removeClass("bg-color-selected");
     })
-    
+    function delEmpty(){
+      $.confirm({
+        title:"Thông báo",
+        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
+        buttons: {
+          "Có": function(){
+            $('#form-product-type2 table > tbody').remove();
+            $('#form-product-type2 #paging').remove();
+            $('[data-plus]').attr('data-plus',0);
+          },"Không":function(){
+
+          }
+        }
+      });
+     
+    }
     function createDataUptAll(){
       let test = true;
       let arr_id = [];
@@ -674,8 +695,8 @@
     }
     
     function showRow(page,apply_dom = true){
-      let count = $('input[name="count2"]').val();
-      if(count == "") {
+      let count = $('[data-plus]').attr('data-plus');
+      /*if(count == "") {
         $.alert({
           title: "Thông báo",
           content: "Vui lòng không để trống số dòng thêm",
@@ -688,7 +709,7 @@
           content: "Vui lòng nhập số dòng lớn hơn 0",
         })
         return;
-      }
+      }*/
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
@@ -747,9 +768,9 @@
         $(html).appendTo('#form-product-type2');
         apply_dom = false;
         $('.t-bd-1').css({"display":"contents"});
-        console.log(html);
+        //console.log(html);
       } else {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
+        //$('[data-plus]').attr('data-plus',$('input[name=count2]').val());
         $('.t-bd').css({"display":"none"});
         $('.t-bd-' + page).css({"display":"contents"});
       }
@@ -764,83 +785,105 @@
         },
         cssStyle: 'light-theme',
       });
-      $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product-type2 table tbody').remove();
-        $('#form-product-type2 #paging').remove();
-        $('input[name="count2"]').val("");
-      })
     }
+    $('#modal-xl2').on('hidden.bs.modal', function (e) {
+      $('#form-product-type2 table tbody').remove();
+      $('#form-product-type2 #paging').remove();
+      $('[data-plus]').attr('data-plus',0);
+    })
     function insRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      let html = "";
-      let count2 = parseInt(page / 7) + 1;
-      html = `
-        <tr data-row-id='${parseInt(page) + 1}'>
-          <td>${parseInt(page) + 1}</td>
-          <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
-          <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-        </tr>
-      `;
-      if(page % 7 != 0) {
-        $('.t-bd').css({"display":"none"});
-        $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-        $(html).appendTo(`.t-bd-${count2}`);
-      } else {
-        $('.t-bd').css({"display":"none"});
-        html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-        $(html).appendTo('#form-product-type2 table');
+      num_of_row_insert = $('input[name="count3"]').val();
+      if(num_of_row_insert == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống số dòng cần thêm",
+        })
+        return;
+      } 
+      for(i = 0 ; i < num_of_row_insert ; i++) {
+        let page = $('[data-plus]').attr('data-plus');
+        let html = "";
+        let count2 = parseInt(page / 7) + 1;
+        html = `
+          <tr data-row-id='${parseInt(page) + 1}'>
+            <td>${parseInt(page) + 1}</td>
+            <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
+            <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+          </tr>
+        `;
+        if(page % 7 != 0) {
+          $('.t-bd').css({"display":"none"});
+          $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
+          $(html).appendTo(`.t-bd-${count2}`);
+        } else {
+          $('.t-bd').css({"display":"none"});
+          html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
+          $(html).appendTo('#form-product-type2 table');
+        }
+        if(page == 0) {
+          let html2 = `<div id="paging" style="justify-content:center;" class="row">
+              <nav id="pagination2">
+              </nav>
+          </div>`;
+          $(html2).appendTo('#form-product-type2');
+        }
+        $('[data-plus]').attr('data-plus',parseInt(page) + 1);
+        $('input[name="count2"]').val(parseInt(page) + 1);
+        $('#pagination2').pagination({
+          items: parseInt(page) + 1,
+          itemsOnPage: 7,
+          currentPage: count2,
+          prevText: "<",
+          nextText: ">",
+          onPageClick: function(pageNumber,event){
+            showRow(pageNumber,false);
+          },
+          cssStyle: 'light-theme',
+        });
       }
-      if(page == 0) {
-        let html2 = `<div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-        </div>`;
-        $(html2).appendTo('#form-product-type2');
-      }
-      $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-      $('input[name="count2"]').val(parseInt(page) + 1);
-      $('#pagination2').pagination({
-        items: parseInt(page) + 1,
-        itemsOnPage: 7,
-        currentPage: count2,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
     }
     function delRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      if(page == 0) {
+      let count_del = $("input[name=count3]").val();
+      if(count_del == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống số dòng cần xoá",
+        })
         return;
+      } 
+      for(i = 0 ; i < count_del ; i++) {
+        let page = $('[data-plus]').attr('data-plus');
+        if(page < 0) {
+          $('[data-plus]').attr('data-plus',0);
+          return;
+        }
+        let currentPage1 = page / 7;
+        if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+        $(`[data-row-id="${page}"]`).remove();
+        page--;
+        $('[data-plus]').attr('data-plus',page);
+        $('input[name="count2"]').val(page);
+        currentPage1 = page / 7;
+        if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+        else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
+        if(page == 0) {
+          $('#paging').remove();
+        }
+        $('.t-bd').css({"display":"none"});
+        $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
+        $('#pagination2').pagination({
+          items: parseInt(page),
+          itemsOnPage: 7,
+          currentPage: currentPage1,
+          prevText: "<",
+          nextText: ">",
+          onPageClick: function(pageNumber,event){
+            showRow(pageNumber,false);
+          },
+          cssStyle: 'light-theme',
+        });
       }
-      let currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      $(`[data-row-id="${page}"]`).remove();
-      page--;
-      $('[data-plus]').attr('data-plus',page);
-      $('input[name="count2"]').val(page);
-      currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-      if(page == 0) {
-        $('#paging').remove();
-      }
-      $('.t-bd').css({"display":"none"});
-      $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-      $('#pagination2').pagination({
-        items: parseInt(page),
-        itemsOnPage: 7,
-        currentPage: currentPage1,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
+      
     }
     function insMore2(){
       let name2 = $(event.currentTarget).closest('tr').find('td input[name="name2"]').val();
@@ -1112,6 +1155,8 @@
       // xoá danh mục
       $(document).on('click','.btn-xoa-loai-san-pham',function(event){
 		    let id = $(event.currentTarget).attr('data-id');
+        let c_target = $(event.currentTarget);
+        c_target.closest("tr").addClass("bg-color-selected");
         $.confirm({
           title: 'Thông báo',
           content: 'Bạn có chắc chắn muốn xoá danh mục này ?',
@@ -1151,6 +1196,7 @@
               });
             },
             Không: function () {
+              c_target.closest("tr").removeClass("bg-color-selected");
             },
           }
         });
@@ -1186,8 +1232,9 @@
               number: $('input[name=number]').val(),
             },
             success:function(res){
+              console.log(res);
               let res_json = JSON.parse(res);
-              console.log(res_json);
+              
               $('#form-loai-san-pham').trigger('reset');
               $('#modal-xl').modal('hide');
               if(res_json.msg == "ok"){

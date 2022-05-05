@@ -3,6 +3,7 @@
     session_start();
     // database connect setting
     $link = db_connect();
+    
     function db_connect() {         
         $host = 'localhost';
         $dbname = 'shop_cua_hang_may_tinh'; //id16910140_do_an_tot_nghiep

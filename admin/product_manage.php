@@ -1,8 +1,10 @@
 <?php
    include_once("../lib/database.php");
+   logout_session_timeout();
+   check_access_token();
    redirect_if_login_status_false();
    if(is_get_method()) {
-      // permission crud for user
+      
       $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
@@ -150,7 +152,7 @@
       if($select_publish != "") {
          $where .= " and pi.is_public='$select_publish'";
       }
-      log_v($where);
+      //log_v($where);
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
@@ -473,7 +475,7 @@
                                     if($pt != "") {
                                     ?>
                                  <div class="ele-select ele-type2 mt-10">
-                                    <select class="select-type2" style="width:300px" class="form-control" name="pt_type[]">
+                                    <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
                                        <option value="">Chọn danh mục cần tìm</option>
                                        <?php
                                           $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
@@ -707,7 +709,7 @@
       </div>
       <div class="modal-body">
          <div id="form-product2" class="modal-body">
-            <div class="row j-between">
+            <!--<div class="row j-between">
                <div style="margin-left: 7px;" class="form-group">
                   <label for="">Nhập số dòng cần thêm: </label>
                   <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
@@ -720,6 +722,37 @@
                   <div class="k-minus">
                      <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
                   </div>
+               </div>
+            </div>-->
+            <div class="row j-between">
+               <div style="margin-left: 7px;" class="form-group">
+                     <label for="">Nhập số dòng: </label>
+                     <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
+                     <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
+                     <div class="" style="justify-content:flex-end;display:inline-flex">
+                     <div class="k-number-row">
+                        <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
+                     </div>
+                     <div class="k-plus">
+                        <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
+                     </div>
+                     <div class="k-minus">
+                        <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
+                     </div>
+                     </div>  
+               </div>
+               <div class="d-flex f-column">
+                     <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
+                     <div class="file file-csv mr-10">
+                        <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                     </div>
+                     <div class="file file-excel mr-10">
+                        <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                     </div>
+                     <div class="d-empty">
+                        <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
+                     </div>
+                     </div>
                </div>
             </div>
             <!--table-->
@@ -747,25 +780,100 @@
 <?php
    include_once("include/bottom.meta.php");
 ?>
-<!--js section start-->
 <script src="js/summernote.min.js"></script>
 <script src="js/summernote-vi-VN.js"></script>
-<script src="js/jquery.dataTables.min.js"></script>
-<script src="js/dataTables.select.min.js"></script>
-<script src="js/colOrderWithResize.js"></script>
-<!--<script src="js/dataTables.fixedColumns.min.js"></script>-->
-<script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.buttons.min.js"></script>
-<script src="js/jszip.min.js"></script>
-<script src="js/pdfmake.min.js"></script>
-<script src="js/vfs_fonts.js"></script>
-<script src="js/buttons.html5.min.js"></script>
-<script src="js/buttons.print.min.js"></script>
-<script src="js/buttons.colVis.min.js"></script>
-<script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/sort.js"></script>
-<script src="js/jquery.highlight.js"></script>
-<script src="js/select2.min.js"></script>
+<?php
+    include_once("include/dt_script.php");
+?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script>
+    function xlsx2input(input) {
+      if(input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(e) {
+              var data = e.target.result;
+              var workbook = XLSX.read(data, {
+                  type: 'binary'
+              });
+              var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
+              console.log(XL_row_object);
+              setDataFromXLSX(XL_row_object,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+          };
+          reader.onerror = function(ex) {
+              console.log(ex);
+          };
+          reader.readAsBinaryString(input.files[0]);
+          //console.log("aaa");
+      }
+    }
+    function csv2input(input) {
+      let arr = [];
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload=function(e){
+              arr = reader.result.split(/\r\n|\n/);
+              console.log(arr);
+              // step 1
+              let columns = arr[0].split(/\,/);
+              let arr_csv = [];
+              arr.shift();
+              for(i = 0 ; i < arr.length ; i++) {
+                  let new_arr = arr[i].split(/\,/);
+                  //console.log(new_arr);
+                  let new_obj = {};
+                  for(j = 0 ; j < columns.length ; j++) {
+                      new_obj[columns[j]] = new_arr[j];
+                      //console.log(new_obj);
+                  }
+                  arr_csv.push(new_obj);
+              }
+              console.log(arr_csv);
+              setDataFromCSV(arr_csv,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+          }
+          reader.readAsText(input.files[0]);
+      }
+    }
+    function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
+        if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
+            $("input[name='count2']").val(arr_csv.length);
+            showRow(1);
+            let i = 0;
+            arr_csv_columns.forEach(function(ele,ind){
+                $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
+                    $(this).val(arr_csv[i][ele]);
+                    i++;
+                });
+                i = 0; 
+            });
+        } else {
+            $.alert({
+                title:"Thông báo",
+                content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+            });
+        }
+        $("input[name='read_csv']").val("");
+    }
+    function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
+      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
+          $("input[name='count2']").val(arr_xlsx.length);
+          showRow(1);
+          let i = 0;
+          arr_excel_columns.forEach(function(ele,ind){
+            $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
+                $(this).val(arr_xlsx[i][ele]);
+                i++;
+            });
+            i = 0; 
+          });
+      } else {
+          $.alert({
+              title:"Thông báo",
+              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
+          });
+      }
+      $("input[name='read_excel']").val("");
+    }
+</script>
 <!--searching filter-->
 <script>
    function choose_type_search(){
@@ -805,7 +913,7 @@
       } else if($(event.currentTarget).closest('#s-type2').length) {
          file_html = `
          <div class="ele-select ele-type2 mt-10">
-            <select class="select-type2" style="width:300px" class="form-control" name="pt_type[]">
+            <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
                <option value="">Chọn danh mục cần tìm</option>
                <?php
                   $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
@@ -1055,6 +1163,7 @@
    var dt_pi;
    $(document).ready(function (e) {
       $('.select-type2').select2();
+      $.fn.dataTable.moment('DD-MM-YYYY');
       dt_pi = $("#m-product-info").DataTable({
          "sDom": 'RBlfrtip',
          columnDefs: [
@@ -1203,10 +1312,27 @@
       $("#form-product2 table tbody").remove();
       $("input[name='count2']").val("");
       $("input[name='count2']").attr("data-plus",0);
-      if($("#form-product2 table").length > 0) {
-
-      }
    })
+   $('#modal-xl2').on('hidden.bs.modal', function (e) {
+      $('#form-product2 table tbody').remove();
+      $('#form-product2 #paging').remove();
+      $('[data-plus]').attr('data-plus',0);
+    })
+   function delEmpty(){
+      $.confirm({
+        title:"Thông báo",
+        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
+        buttons: {
+          "Có": function(){
+            $('#form-product2 table > tbody').remove();
+            $('#form-product2 #paging').remove();
+            $('[data-plus]').attr('data-plus',0);
+          },"Không":function(){
+
+          }
+        }
+      });  
+   }
    function insAll(){
       let test = true;
       let formData = new FormData();
@@ -1774,98 +1900,120 @@
       })
    } 
    function insRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      let html = "";
-      let count2 = parseInt(page / 7) + 1;
-      html = `
-         <tr data-row-id='${parseInt(page) + 1}'>
-            <td>${parseInt(page) + 1}</td>
-            <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-            <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-            <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
-            <td>
-               <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                  <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-               </div>
-               <p class='text-danger'></p>
-            </td>
-            <td>
-               <div style="display:flex;flex-direction:column;outline:none !important;">
-                  <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                     <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                        <a href="#">Chọn danh mục</a>
-                        <ul class="child">
-                           <?php echo show_menu_3();?>
-                        </ul>
-                        <input type="hidden" name="category_id">
-                     </li>
-                  </ul>
-                  <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+      num_of_row_insert = $('input[name="count3"]').val();
+      if(num_of_row_insert == "") {
+         $.alert({
+            title: "Thông báo",
+            content: "Vui lòng không để trống số dòng cần thêm",
+         })
+         return;
+      } 
+      for(i = 0 ; i < num_of_row_insert ; i++) {
+         let page = $('[data-plus]').attr('data-plus');
+         let html = "";
+         let count2 = parseInt(page / 7) + 1;
+         html = `
+            <tr data-row-id='${parseInt(page) + 1}'>
+               <td>${parseInt(page) + 1}</td>
+               <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
+               <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+               <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+               <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
+               <td>
+                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                     <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                  </div>
                   <p class='text-danger'></p>
-               </div>
-            </td>
-            <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-         </tr>
-      `;
-      if(page % 7 != 0) {
-         $('.t-bd').css({"display":"none"});
-         $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-         $(html).appendTo(`.t-bd-${count2}`);
-      } else {
-         $('.t-bd').css({"display":"none"});
-         html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-         $(html).appendTo('#form-product2 table');
+               </td>
+               <td>
+                  <div style="display:flex;flex-direction:column;outline:none !important;">
+                     <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
+                        <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                           <a href="#">Chọn danh mục</a>
+                           <ul class="child">
+                              <?php echo show_menu_3();?>
+                           </ul>
+                           <input type="hidden" name="category_id">
+                        </li>
+                     </ul>
+                     <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
+                     <p class='text-danger'></p>
+                  </div>
+               </td>
+               <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+            </tr>
+         `;
+         if(page % 7 != 0) {
+            $('.t-bd').css({"display":"none"});
+            $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
+            $(html).appendTo(`.t-bd-${count2}`);
+         } else {
+            $('.t-bd').css({"display":"none"});
+            html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
+            $(html).appendTo('#form-product2 table');
+         }
+         if(page == 0) {
+         let html2 = `<div id="paging" style="justify-content:center;" class="row">
+               <nav id="pagination2">
+               </nav>
+         </div>`;
+         $(html2).appendTo('#form-product2');
+         }
+         $('[data-plus]').attr('data-plus',parseInt(page) + 1);
+         $('input[name="count2"]').val(parseInt(page) + 1);
+         $('#pagination2').pagination({
+            items: parseInt(page) + 1,
+            itemsOnPage: 7,
+            currentPage: count2,
+            prevText: "<",
+            nextText: ">",
+            onPageClick: function(pageNumber,event){
+               showRow(pageNumber,false);
+            },
+            cssStyle: 'light-theme',
+         });
       }
-      if(page == 0) {
-        let html2 = `<div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-        </div>`;
-        $(html2).appendTo('#form-product2');
-      }
-      $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-      $('input[name="count2"]').val(parseInt(page) + 1);
-      $('#pagination2').pagination({
-         items: parseInt(page) + 1,
-         itemsOnPage: 7,
-         currentPage: count2,
-         prevText: "<",
-         nextText: ">",
-         onPageClick: function(pageNumber,event){
-            showRow(pageNumber,false);
-         },
-         cssStyle: 'light-theme',
-      });
+      
    }
    function delRow(){
-      let page = $('[data-plus]').attr('data-plus');
-      if(page == 0) {
-        return;
+      let count_del = $("input[name=count3]").val();
+      if(count_del == "") {
+         $.alert({
+            title: "Thông báo",
+            content: "Vui lòng không để trống số dòng cần xoá",
+         })
+         return;
       }
-      let currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      $(`[data-row-id="${page}"]`).remove();
-      page--;
-      $('[data-plus]').attr('data-plus',page);
-      $('input[name="count2"]').val(page);
-      currentPage1 = page / 7;
-      if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-      else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-      $('.t-bd').css({"display":"none"});
-      $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-      $('#pagination2').pagination({
-        items: parseInt(page),
-        itemsOnPage: 7,
-        currentPage: currentPage1,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      count_row_z_index++;
+      for(i = 0 ; i < count_del ; i++) {
+         let page = $('[data-plus]').attr('data-plus');
+         if(page == 0) {
+         return;
+         }
+         let currentPage1 = page / 7;
+         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+         $(`[data-row-id="${page}"]`).remove();
+         page--;
+         $('[data-plus]').attr('data-plus',page);
+         $('input[name="count2"]').val(page);
+         currentPage1 = page / 7;
+         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
+         else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
+         $('.t-bd').css({"display":"none"});
+         $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
+         $('#pagination2').pagination({
+            items: parseInt(page),
+            itemsOnPage: 7,
+            currentPage: currentPage1,
+            prevText: "<",
+            nextText: ">",
+            onPageClick: function(pageNumber,event){
+               showRow(pageNumber,false);
+            },
+            cssStyle: 'light-theme',
+         });
+         count_row_z_index++;
+      }
+      
    }
    function show_menu_root(){
       let child = $(event.currentTarget).find('li').length;
@@ -1995,6 +2143,7 @@
          $("input[name='list_file_del']").val("");
          console.log(arr_list_file_del);
          console.log(arr_input_file);
+         $('tr').removeClass('bg-color-selected');
       })
       const imagesPreview = (input , parent) => {
          if (input.files) {
@@ -2112,6 +2261,7 @@
       // Update sản phẩm
       $(document).on('click','.btn-sua-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
          $('#form-san-pham').load("ajax_product_info.php?status=Update&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
             $('#btn-luu-san-pham').text("Sửa");
@@ -2148,6 +2298,8 @@
       // Delete sản phẩm
       $(document).on('click','.btn-xoa-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         let target = $(event.currentTarget);
+         target.closest("tr").addClass("bg-color-selected");
          $.confirm({
             title: 'Thông báo',
             content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
@@ -2184,7 +2336,7 @@
                   });
                },
                Không: function () {
-
+                  target.closest("tr").removeClass("bg-color-selected");
                },
             }
          });
@@ -2192,6 +2344,7 @@
       // Xem san pham
       $(document).on('click','.btn-xem-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
+         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
          $('#form-san-pham').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
          });
@@ -2201,7 +2354,7 @@
          event.preventDefault();
          let formData = new FormData($('#form-san-pham')[0]);
          let number = 1;
-         console.log($('input[name=number]').val());
+         //console.log($('input[name=number]').val());
          formData.append('token',"<?php echo_token(); ?>");
          formData.append('id',$('input[name=id]').val());
          formData.append('name',$('input[name=ten_san_pham]').val());
@@ -2215,6 +2368,7 @@
          if(status == "Insert"){
             game();
          } else {
+            console.log(formData.get('token') + "  aaa");
             gameChange();
          }
          formData.append('list_file_del',$('input[name="list_file_del"]').val());
@@ -2231,7 +2385,6 @@
             }
          }
          if(validate()) {
-            // xử lý ajax
             $.ajax({
                url:window.location.href,
                type:"POST",
@@ -2241,6 +2394,7 @@
                processData: false,
                data:formData,
                success:function(res_json){
+                  //console.log(res_json);
                   if(res_json.msg == 'ok'){
                      let status = $('#btn-luu-san-pham').attr('data-status').trim();
                      if(status == "Insert"){
@@ -2263,7 +2417,7 @@
                            $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
                         }
                      } else if(status == "Update") {
-                        console.log(res_json);
+                        //console.log(res_json);
                         msg = "Sửa dữ liệu thành công.";
                         $.alert({
                            title: "Thông báo",
@@ -2287,6 +2441,9 @@
                   }
                },
                error: function (data) {
+                  /*alert('<?php
+                     print_r($_SESSION['token_2']);
+                  ?>');*/
                   console.log('Error:', data);
                }
             });
@@ -2434,7 +2591,6 @@
             $sql_update = "Update product_info set img_name='$path' where id = '$id'";
             db_query($sql_update);
          }
-         
          $list_file_del_length = count($list_file_del);
          for($i = 0 ; $i < count($list_file_del) ; $i++) {
             if(strpos($list_file_del[$i],"_del") !== false) {
