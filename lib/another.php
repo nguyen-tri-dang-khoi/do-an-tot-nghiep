@@ -213,7 +213,7 @@
                     content: 'Bạn không có quyền truy cập. Vui lòng liên hệ admin để được cấp quyền truy cập',
                     buttons: {
                         'Ok': function(){
-                            window.history.back();
+                            location.href='information.php'
                         }
                     }
                 });

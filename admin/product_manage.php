@@ -230,7 +230,7 @@
    }
    .child {
       display: none;
-      width:220px;
+      width:250px;
       box-shadow: 2px 3px 13px 1px #ddd;
    }
    .child li {
@@ -297,7 +297,7 @@
                   <!-- /.card-header -->
                   <div class="card-body">
                      <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form style="margin-bottom: 17px;" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">\
+                        <form style="margin-bottom: 17px;" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">
                            <div class="d-flex a-start">
                               <div class="" style="margin-top:5px;">
                                  <select onchange="choose_type_search()" class="form-control" name="search_option">
@@ -685,14 +685,27 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 id="msg-del" class="modal-title">Thông tin sản phẩm</h4>
+        <ul class="nav nav-tabs" style="width:100%;" id="custom-tabs-two-tab" role="tablist">
+            <li class="nav-item">
+               <a class="nav-link active" style="font-weight:bolder;" id="custom-tabs-two-home-tab" data-toggle="pill" href="#custom-tabs-two-home" role="tab" aria-controls="custom-tabs-two-home" aria-selected="true">Thông tin sản phẩm</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-profile-tab" data-toggle="pill" href="#custom-tabs-two-profile" role="tab" aria-controls="custom-tabs-two-profile" aria-selected="false">Thông số kỹ thuật</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-messages-tab" data-toggle="pill" href="#custom-tabs-two-messages" role="tab" aria-controls="custom-tabs-two-messages" aria-selected="false">Điểm nổi bật</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-settings-tab" data-toggle="pill" href="#custom-tabs-two-settings" role="tab" aria-controls="custom-tabs-two-settings" aria-selected="false">Phân loại tìm kiếm</a>
+            </li>
+         </ul>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <form id="form-san-pham" method="post" enctype='multipart/form-data'>   
-        </form>
+         <div class="tab-content" id="custom-tabs-two-tabContent">
+         </div>
       </div>
     </div>
   </div>
@@ -761,11 +774,11 @@
                <tr>
                   <th>Số thứ tự</th>
                   <th>Tên sp</th>
+                  <th class="w-300">Danh mục</th>
                   <th>Số lượng</th>
                   <th>Đơn giá</th>
                   <th>Mô tả sp</th>
                   <th>Ảnh đại diện</th>
-                  <th class="w-300">Danh mục</th>
                   <th>Thao tác</th>
                </tr>
                </thead>
@@ -780,6 +793,7 @@
 <?php
    include_once("include/bottom.meta.php");
 ?>
+
 <script src="js/summernote.min.js"></script>
 <script src="js/summernote-vi-VN.js"></script>
 <?php
@@ -797,7 +811,7 @@
               });
               var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
               console.log(XL_row_object);
-              setDataFromXLSX(XL_row_object,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+              setDataFromXLSX(XL_row_object,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
           };
           reader.onerror = function(ex) {
               console.log(ex);
@@ -828,19 +842,23 @@
                   arr_csv.push(new_obj);
               }
               console.log(arr_csv);
-              setDataFromCSV(arr_csv,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
+              setDataFromCSV(arr_csv,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
           }
           reader.readAsText(input.files[0]);
       }
     }
     function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
         if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-            $("input[name='count2']").val(arr_csv.length);
+            $("[data-plus]").attr("data-plus",arr_csv.length);
             showRow(1);
             let i = 0;
             arr_csv_columns.forEach(function(ele,ind){
                 $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                    $(this).val(arr_csv[i][ele]);
+                  if(!isNaN(arr_csv[i][ele])) {
+                     $(this).val(parseInt(arr_csv[i][ele]).toLocaleString().replace(/\,/g, "."));
+                  } else {
+                     $(this).val(arr_csv[i][ele]);
+                  }
                     i++;
                 });
                 i = 0; 
@@ -855,13 +873,18 @@
     }
     function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
       if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-          $("input[name='count2']").val(arr_xlsx.length);
+         $("[data-plus]").attr("data-plus",arr_xlsx.length);
           showRow(1);
           let i = 0;
           arr_excel_columns.forEach(function(ele,ind){
             $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                $(this).val(arr_xlsx[i][ele]);
-                i++;
+               if(!isNaN(arr_xlsx[i][ele])) {
+                  $(this).val(parseInt(arr_xlsx[i][ele]).toLocaleString().replace(/\,/g, "."));
+               } else {
+                  $(this).val(arr_xlsx[i][ele]);
+               }
+               //console.log(parseInt(arr_xlsx[i][ele]).toLocaleString().replace(/\,/g, "."));
+               i++;
             });
             i = 0; 
           });
@@ -1750,8 +1773,8 @@
    }
    var count_row_z_index = 1000000;
    function showRow(page,apply_dom = true){
-      let count = $('input[name="count2"]').val();
-      if(count == "") {
+      let count = $('[data-plus]').attr('data-plus');
+      /*if(count == "") {
         $.alert({
           title: "Thông báo",
           content: "Vui lòng không để trống số dòng thêm",
@@ -1764,7 +1787,7 @@
           content: "Vui lòng nhập số dòng lớn hơn 0",
         })
         return;
-      }
+      }*/
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
@@ -1776,11 +1799,11 @@
             <tr>
               <th>Số thứ tự</th>
               <th>Tên sp</th>
+              <th class="w-300">Danh mục</th>
               <th>Số lượng</th>
               <th>Đơn giá</th>
               <th>Mô tả sp</th>
               <th>Ảnh đại diện</th>
-              <th class="w-300">Danh mục</th>
               <th>Thao tác</th>
             </tr>
           </thead>
@@ -1794,15 +1817,6 @@
               <tr data-row-id="${parseInt(g)}">
                   <td>${parseInt(g)}</td>
                   <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
                   <td>
                      <div style="display:flex;flex-direction:column;position:relative;">
                         <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
@@ -1818,6 +1832,15 @@
                         <p class='text-danger'></p>
                      </div>
                   </td>
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
+                  <td>
+                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                     </div>
+                     <p class='text-danger'></p>
+                  </td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1831,17 +1854,8 @@
           for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
             html += `
               <tr data-row-id="${parseInt(g)}">
-                <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
+                  <td>${parseInt(g)}</td>
+                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
                   <td>
                      <div style="display:flex;flex-direction:column;outline:none !important;">
                         <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
@@ -1856,6 +1870,15 @@
                         <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
                         <p class='text-danger'></p>
                      </div>
+                  </td>  
+                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
+                  <td>
+                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
+                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                     </div>
+                     <p class='text-danger'></p>
                   </td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
@@ -1916,15 +1939,6 @@
             <tr data-row-id='${parseInt(page) + 1}'>
                <td>${parseInt(page) + 1}</td>
                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-               <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea></td>
-               <td>
-                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                     <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                  </div>
-                  <p class='text-danger'></p>
-               </td>
                <td>
                   <div style="display:flex;flex-direction:column;outline:none !important;">
                      <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
@@ -1940,6 +1954,16 @@
                      <p class='text-danger'></p>
                   </div>
                </td>
+               <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+               <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+               <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
+               <td>
+                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                     <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                  </div>
+                  <p class='text-danger'></p>
+               </td>
+               
                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             </tr>
          `;
@@ -1986,8 +2010,9 @@
       }
       for(i = 0 ; i < count_del ; i++) {
          let page = $('[data-plus]').attr('data-plus');
-         if(page == 0) {
-         return;
+         if(page < 0) {
+            $('[data-plus]').attr('data-plus',0);
+            return;
          }
          let currentPage1 = page / 7;
          if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
@@ -2088,14 +2113,14 @@
         });
         return;
       }
-      $('#form-san-pham').load(`ajax_product_info.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
+      $('#custom-tabs-two-tabContent').load(`ajax_product_info.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
         let html2 = `
           <div id="paging" style="justify-content:center;" class="row">
             <nav id="pagination3">
             </nav>
           </div>
         `;
-        $(html2).appendTo('#form-san-pham');
+        $(html2).appendTo('#custom-tabs-two-tabContent');
         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
         $('.tb-read').css({
           "display":"none",
@@ -2114,6 +2139,9 @@
             $(`.tb-read-${pageNumber}`).css({"display":"contents"});
          },
          cssStyle: 'light-theme',
+        });
+        $('.k-combobox').select2({
+           
         });
       });
    }
@@ -2221,7 +2249,7 @@
       // Insert san pham
       var click_number;
       $(document).on('click','#btn-them-san-pham',function(event){
-         $('#form-san-pham').load("ajax_product_info.php?status=Insert",() => {
+         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Insert",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
             $('#btn-luu-san-pham').text("Thêm");
             $(function(){
@@ -2262,7 +2290,7 @@
       $(document).on('click','.btn-sua-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
          $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#form-san-pham').load("ajax_product_info.php?status=Update&id=" + id,() => {
+         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Update&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
             $('#btn-luu-san-pham').text("Sửa");
             $(function(){
@@ -2292,6 +2320,9 @@
             });
             $('#file_input_anh_mo_ta').on('change', function() {
                imagesPreview(this,'#image_preview');
+            });
+            $('.k-combobox').select2({
+               tags:true,
             });
          });
       });
@@ -2345,7 +2376,7 @@
       $(document).on('click','.btn-xem-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
          $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#form-san-pham').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
+         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
          });
       });

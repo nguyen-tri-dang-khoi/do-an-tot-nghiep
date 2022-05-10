@@ -122,7 +122,6 @@
         }
         log_v($where);
 ?>
-<!--html & css section start-->
 <style>
     table.dataTable tr th.select-checkbox.selected::after {
       content: "\2713";
@@ -651,24 +650,6 @@
 <?php
     include_once("include/bottom.meta.php");
 ?>
-<!--js section start-->
-<!--<script src="js/jquery.dataTables.min.js"></script>
-<script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.select.min.js"></script>
-<script src="js/dataTables.fixedColumns.min.js"></script>
-<script src="js/colOrderWithResize.js"></script>
-<script src="js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
-<script src="js/pdfmake.min.js"></script>
-<script src="js/vfs_fonts.js"></script>
-<script src="js/buttons.html5.min.js"></script>
-<script src="js/buttons.print.min.js"></script>
-<script src="js/buttons.colVis.min.js"></script>
-<script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/jquery.highlight.js"></script>
-<script src="js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" type="text/javascript"></script>
-<script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js" type="text/javascript"></script>-->
 <?php
     include_once("include/dt_script.php");
 ?>
@@ -1327,7 +1308,8 @@
         }
         for(i = 0 ; i < count_del ; i++) {
             let page = $('[data-plus]').attr('data-plus');
-            if(page == 0) {
+            if(page < 0) {
+                $('[data-plus]').attr('data-plus',0);
                 return;
             }
             let currentPage1 = page / 7;
@@ -1717,24 +1699,12 @@
         let menu = $("select[name='menu'] > option:selected").val();
         let role = $("input[name='roles']").val();
         if(menu == ""){
-            /*$.alert({
-                title:"Thông báo",
-                content: "Vui lòng ko để trống tên chức năng",
-            });*/
 			toastr["error"]("Vui lòng ko để trống tên chức năng");
             return;
         } else if(user_id == ""){
-            /*$.alert({
-                title:"Thông báo",
-                content: "Vui lòng chọn thông tin người dùng",
-            });*/
 			toastr["error"]("Vui lòng chọn thông tin người dùng");
             return;
         } else if(role == "") {
-            /*$.alert({
-                title:"Thông báo",
-                content: "Vui lòng ko để trống tên quyền",
-            });*/
 			toastr["error"]("Vui lòng ko để trống tên quyền");
             return;
         } 
@@ -1757,10 +1727,6 @@
 						toastr["success"]("Bạn đã phân quyền thành công");
                     });
                 } else {
-                    /*$.alert({
-                        title: "Thông báo",
-                        content: data.error,
-                    });*/
 					toastr["error"](data.error);
                 }
             },

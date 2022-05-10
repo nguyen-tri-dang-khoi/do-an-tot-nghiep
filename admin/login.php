@@ -136,6 +136,7 @@
                     "rand" => rand(1,1000000),
                     "expire_at" => time()
                 ]);
+                
                 $access_token = encrypt_decrypt($user_data_json,"encrypt");
                 setcookie("access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
                 if($remember) {
@@ -154,7 +155,7 @@
                         setcookie("co_remember","",time() - 3600,"/");
                     }
                 }
-                redirect_if_login_success();
+                redirect_if_login_success("information.php");
             } else {
                 $_SESSION["error"] = "Tài khoản hoặc mật khẩu bạn đăng nhập không chính xác";
             }

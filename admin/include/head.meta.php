@@ -72,9 +72,6 @@
         .card-header::after{
             display:none;
         }
-        tr:hover {
-            border:1px solid red;
-        }
         .file {
             width: 64px;
             position: relative; 

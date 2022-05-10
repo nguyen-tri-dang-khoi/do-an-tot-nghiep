@@ -10,9 +10,17 @@
   
 ?>
 <style>
+  .nav-item p {
+    margin-left:3px !important;
+    margin-top:5px !important;
+    font-size:16px;
+  }
   .kh-active {
     background-color: #494e53;
     
+  }
+  [class*=sidebar-dark-] .sidebar a {
+    color: #ffffffe3;
   }
   .kh-active:hover {
     background-color: #494e53;
@@ -61,7 +69,7 @@
     </li>
   </ul>
 </nav>
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#000000;">
   <div style="min-height:1200px;" class="sidebar">
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -75,21 +83,41 @@
 
     <!-- Sidebar Menu -->
     <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="">
         <!-- Add icons to the links using the .nav-icon class
               with font-awesome or any other icon font library -->
         <li class="nav-item " >
           <a tabindex="-1" href="information.php" class="nav-link <?=strpos($url,"information.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-th"></i>
+            <img src="img/user.png" alt="">
             <p>
               Thông tin tài khoản
             </p>
           </a>
         </li>
+        <?php if(check_permission_link("order_manage.php")){?>
+        <li class="nav-item" >
+          <a tabindex="-1" href="order_manage.php" class="nav-link <?=strpos($url,"order_manage.php") ? "kh-active" : "";?>">
+          <img src="img/cargo.png" alt="">
+            <p>
+              Quản lý đơn hàng
+            </p>
+          </a>
+        </li>
+        <?php } ?>
+        <?php if(check_permission_link("statistic.php")){?>
+        <li class="nav-item" >
+          <a tabindex="-1" href="statistic.php" class="nav-link <?=strpos($url,"statistic.php") ? "kh-active" : "";?>">
+            <img src="img/analysis.png" alt="">
+            <p>
+              Thống kê
+            </p>
+          </a>
+        </li>
+        <?php } ?>
         <?php if(check_permission_link("category_manage.php")){?>
         <li class="nav-item" >
           <a tabindex="-1" href="category_manage.php" class="nav-link <?=strpos($url,"category_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-copy"></i>
+            <img src="img/categories.png" alt="">
             <p>
               Quản lý danh mục
             </p>
@@ -99,19 +127,9 @@
         <?php if(check_permission_link("product_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="product_manage.php" class="nav-link <?=strpos($url,"product_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/product.png" alt="">
             <p>
               Quản lý sản phẩm
-            </p>
-          </a>
-        </li>
-        <?php } ?>
-        <?php if(check_permission_link("order_manage.php")){?>
-        <li class="nav-item " >
-          <a tabindex="-1" href="order_manage.php" class="nav-link <?=strpos($url,"order_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
-            <p>
-              Quản lý đơn hàng
             </p>
           </a>
         </li>
@@ -119,7 +137,7 @@
         <?php if(check_permission_link("user_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="user_manage.php" class="nav-link <?=strpos($url,"user_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/staff.png" alt="">
             <p>
               Quản lý nhân viên
             </p>
@@ -129,7 +147,7 @@
         <?php if(check_permission_link("customer_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="customer_manage.php" class="nav-link <?=strpos($url,"customer_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/customer.png" alt="">
             <p>
               Quản lý khách hàng
             </p>
@@ -139,7 +157,7 @@
         <?php if(check_permission_link("history_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="history_manage.php" class="nav-link <?=strpos($url,"history_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/search.png" alt="">
             <p>
               Quản lý lịch sử tìm kiếm
             </p>
@@ -149,7 +167,7 @@
         <?php if(check_permission_link("notification_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="notification_manage.php" class="nav-link <?=strpos($url,"notification_manage.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/articles.png" alt="">
             <p>
               Quản lý bảng tin
             </p>
@@ -158,7 +176,7 @@
         <?php } ?>
         <li class="nav-item ">
           <a tabindex="-1" href="change_password.php" class="nav-link <?=strpos($url,"change_password.php") ? "kh-active" : "";?>">
-            <i class="nav-icon fas fa-tree"></i>
+            <img src="img/key.png" alt="">
             <p>
             Đổi mật khẩu
             </p>
@@ -166,7 +184,7 @@
         </li>
         <li class="nav-item " >
           <a tabindex="-1" href="logout.php" class="nav-link">
-            <i class="nav-icon fas fa-chart-pie"></i>
+            <img src="img/logout.png" alt="">
             <p>
             Đăng xuất
             </p>

@@ -4,19 +4,16 @@
     check_access_token();
     redirect_if_login_status_false();
     if(is_get_method()) {
-        // permission crud for user
-        $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
+        // permission crud for customer
+        $allow_read = $allow_lock = $allow_unlock = false; 
         if(check_permission_crud("customer_manage.php","read")) {
           $allow_read = true;
         }
-        if(check_permission_crud("customer_manage.php","update")) {
-          $allow_update = true;
+        if(check_permission_crud("customer_manage.php","lock")) {
+            $allow_lock = true;
         }
-        if(check_permission_crud("customer_manage.php","delete")) {
-          $allow_delete = true;
-        }
-        if(check_permission_crud("customer_manage.php","insert")) {
-          $allow_insert = true;
+        if(check_permission_crud("customer_manage.php","unlock")) {
+            $allow_unlock = true;
         }
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
@@ -132,7 +129,7 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" action="user_manage.php" method="get">
+                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" action="customer_manage.php" method="get">
                             <div class="" style="margin-top:5px;">
                               <select onchange="choose_type_search()" class="form-control" name="search_option">
                                  <option value="">Bộ lọc tìm kiếm</option>
@@ -246,6 +243,25 @@
                            </div>
                            <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                         </form>
+                        <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                            <div>
+                                <?php
+                                    if($allow_read) {
+                                ?>
+                                <button tabindex="-1" onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                                <?php } ?>
+                                <?php
+                                    if($allow_lock){
+                                ?>
+                                <button tabindex="1" onclick="lockMore()" class="dt-button button-brown">Khoá nhanh</button>
+                                <?php } ?>
+                                <?php
+                                    if($allow_unlock){
+                                ?>
+                                <button tabindex="1" onclick="unlockMore()" class="dt-button button-brown">Mở khoá nhanh</button>
+                                <?php } ?>
+                            </div>
+                        </div>
                         <?php
 							// set get
 							$get = $_GET;
@@ -253,7 +269,7 @@
 							$str_get = http_build_query($get);
 							// query
                             $arr_paras = [];
-                            $where .= " and is_delete = 0 and is_lock = 0";
+                            $where .= " and is_delete = 0";
                             $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
                             if($keyword) {
                                 $where .= "";
@@ -281,7 +297,6 @@
                                     <th>Số điện thoại</th>
                                     <th>Địa chỉ</th>
                                     <th>Ngày sinh</th>
-                                    <th>Tên đăng nhập</th>
                                     <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -291,20 +306,21 @@
                                 <tr id="<?=$row["id"]?>">
                                     <td></td>
                                     <td><?=$total - ($start_page + $cnt);?></td>
-                                    <td><?=$row["full_name"]?></td>
+                                    <td>
+                                        <?php 
+                                            if($row['is_lock'] == 1){
+                                                echo '<i class="fas fa-lock mr-1"></i>';
+                                            }
+                                            echo $row["full_name"];
+                                        ?>
+                                    </td>
                                     <td><?=$row["email"]?></td>
                                     <td><?=$row["phone"]?></td>
                                     <td><?=$row["address"]?></td>
                                     <td><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
-                                    <td><?=$row["username"]?></td>
                                     <td><?=Date("d-m-Y",strtotime($row["created_at"]));?></td>
                                     <td>
-                                        <button class="btn-update-user dt-button button-green"
-                                        data-id="<?=$row["id"];?>">Xem thông tin khách hàng</button>
-                                        <!--<button class="btn-send-notify btn btn-secondary" data-id="<?=$row["id"];?>">Gửi thông báo
-                                        </button>-->
-                                        <button class="btn-lock-user dt-button button-red" data-id="<?=$row["id"];?>">Khoá tài khoản
-                                        </button>
+                                        <button class="btn-read-customer dt-button button-grey"data-id="<?=$row["id"];?>">Xem</button>
                                     </td>
                                 </tr>
                                 <?php 
@@ -321,7 +337,6 @@
                                     <th>Số điện thoại</th>
                                     <th>Địa chỉ</th>
                                     <th>Ngày sinh</th>
-                                    <th>Tên đăng nhập</th>
                                     <th>Ngày tạo</th>
                                     <th>Thao tác</th>
                                 </tr>
@@ -338,24 +353,31 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="modal-xl">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Thông tin khách hàng</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="manage_customer" method="post">
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <!--html & css section end-->
 <?php
         include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
-<script src="js/jquery.dataTables.min.js"></script>
-<script src="js/dataTables.select.min.js"></script>
-<script src="js/colOrderWithResize.js"></script>
-<script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.buttons.min.js"></script>
-<script src="js/jszip.min.js"></script>
-<script src="js/pdfmake.min.js"></script>
-<script src="js/vfs_fonts.js"></script>
-<script src="js/buttons.html5.min.js"></script>
-<script src="js/buttons.print.min.js"></script>
-<script src="js/buttons.colVis.min.js"></script>
-<script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/jquery.highlight.js"></script>
+<?php
+    include_once("include/dt_script.php");
+?>
 <!--searching filter-->
 <script>
     $(".kh-datepicker2").datepicker({
@@ -448,6 +470,7 @@
 <script>
     var dt_customer;
     $(document).ready(function (e) {
+        $.fn.dataTable.moment('DD-MM-YYYY');
         dt_customer = $("#m-customer-table").DataTable({
             "sDom": 'RBlfrtip',
             columnDefs: [
@@ -460,7 +483,7 @@
                     "name":"manipulate",
                     "orderable": false,
                     "className": 'manipulate',
-                    "targets": 9
+                    "targets": 8
                 }, 
             ],
             select: {
@@ -587,6 +610,163 @@
         //
         
     });
+    // xem
+    $(document).on('click','.btn-read-customer',function(e){
+        let id = $(e.currentTarget).attr('data-id');
+        console.log(id);
+        let target = $(e.currentTarget);
+        target.closest("tr").addClass("bg-color-selected");
+        $('#manage_customer').load("ajax_customer.php?status=Read&id=" + id,() => {
+            console.log("ajax_customer.php?status=Read&id=" + id);
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+        })
+    });
+    // remove mau hong
+    $("#modal-xl").on("hidden.bs.modal",function(){
+      $("tr").removeClass('bg-color-selected');
+    })
+    function readMore(){
+        let arr_del = [];
+        let _data = dt_customer.rows(".selected").select().data();
+        let count4 = _data.length;
+        for(i = 0 ; i < count4 ; i++) {
+            arr_del.push(_data[i].DT_RowId);
+        }
+        let str_arr_upt = arr_del.join(",");
+        if(arr_del.length == 0) {
+            $.alert({
+                title: "Thông báo",
+                content: "Bạn vui lòng chọn dòng cần xem",
+            });
+            return;
+        }
+        $('#manage_customer').load(`ajax_customer.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
+            let html2 = `
+            <div id="paging" style="justify-content:center;" class="row">
+                <nav id="pagination3">
+                </nav>
+            </div>
+            `;
+            $(html2).appendTo('#manage_customer');
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $('.t-bd-read').css({
+                "display":"none",
+            });
+            $('.t-bd-read-1').css({
+                "display":"contents",
+            });
+            $('#pagination3').pagination({
+                items: count4,
+                itemsOnPage: 1,
+                currentPage: 1,
+                prevText: "<",
+                nextText: ">",
+                onPageClick: function(pageNumber,event){
+                    $(`.t-bd-read`).css({"display":"none"});
+                    $(`.t-bd-read-${pageNumber}`).css({"display":"contents"});
+                },
+                cssStyle: 'light-theme',
+            });
+        });
+    }
+    function unlockMore(){
+        let arr_del = [];
+        let _data = dt_customer.rows(".selected").select().data();
+        for(i = 0 ; i < _data.length ; i++) {
+            arr_del.push(_data[i].DT_RowId);
+        }
+        if(_data.length > 0) {
+            $.confirm({
+                title: "Thông báo",
+                content: "Bạn có chắc chắn muốn mở khoá " + _data.length + " tài khoản khách hàng này",
+                buttons: {
+                    "Có": function(){
+                        $.ajax({
+                            url: window.location.href,
+                            type: "POST",
+                            data: {
+                                status: "unlock_more",
+                                token: "<?php echo_token(); ?>",
+                                rows: arr_del.join(","),
+                            },
+                            success: function(data){
+                                data = JSON.parse(data);
+                                if(data.msg == "ok"){
+                                    $.alert({
+                                        title: "Thông báo",
+                                        content: "Bạn đã mở khoá tài khoản khách hàng thành công",
+                                        buttons: {
+                                            "Ok": function(){
+                                                location.href="customer_manage.php";
+                                            }
+                                        }
+                                    });
+                                }
+                            },error: function(data){
+                                console.log("Error:" + data);
+                            }
+                        });
+                    },"Không": function(){
+
+                    }
+                }
+            });
+        } else {
+            $.alert({
+                title: "Thông báo",
+                content: "Bạn chưa chọn tài khoản để mở khoá",
+            });
+        }
+    }
+    function lockMore(){
+        let arr_del = [];
+        let _data = dt_customer.rows(".selected").select().data();
+        for(i = 0 ; i < _data.length ; i++) {
+            arr_del.push(_data[i].DT_RowId);
+        }
+        if(_data.length > 0) {
+            $.confirm({
+                title: "Thông báo",
+                content: "Bạn có chắc chắn muốn khoá " + _data.length + " tài khoản khách hàng này",
+                buttons: {
+                    "Có": function(){
+                        $.ajax({
+                            url: window.location.href,
+                            type: "POST",
+                            data: {
+                                status: "lock_more",
+                                token: "<?php echo_token(); ?>",
+                                rows: arr_del.join(","),
+                            },
+                            success: function(data){
+                                data = JSON.parse(data);
+                                if(data.msg == "ok"){
+                                    $.alert({
+                                        title: "Thông báo",
+                                        content: "Bạn đã khoá tài khoản khách hàng thành công",
+                                        buttons: {
+                                            "Ok": function(){
+                                                location.href="customer_manage.php";
+                                            }
+                                        }
+                                    });
+                                }
+                            },error: function(data){
+                                console.log("Error:" + data);
+                            }
+                        });
+                    },"Không": function(){
+
+                    }
+                }
+            });
+        } else {
+            $.alert({
+                title: "Thông báo",
+                content: "Bạn chưa chọn tài khoản để khoá",
+            });
+        }
+    }
 </script>
 <script>
   $(function() {
@@ -612,6 +792,23 @@
 
 <?php
     } else if (is_post_method()) {
-        echo "post";
+        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+        if($status == "lock_more") {
+            $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
+            $rows = explode(",",$rows);
+            foreach($rows as $row) {
+                $sql = "Update customer set is_lock = 1 where id = '$row'";
+                sql_query($sql);
+            }
+            echo_json(["msg" => "ok"]);
+        } else if($status == "unlock_more") {
+            $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
+            $rows = explode(",",$rows);
+            foreach($rows as $row) {
+                $sql = "Update customer set is_lock = 0 where id = '$row'";
+                sql_query($sql);
+            }
+            echo_json(["msg" => "ok"]);
+        }
     }
 ?>
