@@ -106,7 +106,7 @@
                             <?php
                                 } else {
                             ?>
-                                    <p style="margin-bottom:0px;margin-right:7px;">Xin chào, <?=$_SESSION['username']?>
+                                    <p style="margin-bottom:0px;margin-right:7px;">Xin chào, <?=$_SESSION['email']?>
                                         
                                     </p>
                                     <div class="sample-icon ml-5">

@@ -36,8 +36,8 @@
                 <form action="register.php" id="frmSignUp" method="post" onsubmit="return validate();">
                     <div class="row">
                         <div class="form-group col">
-                            <label class="form-label text-color-dark text-3">Tên đăng nhập <span class="text-color-danger">*</span></label>
-                            <input name="username" type="text" value="" class="form-control form-control-lg text-4">
+                            <label class="form-label text-color-dark text-3">Họ tên đầy đủ: <span class="text-color-danger">*</span></label>
+                            <input name="full_name" type="text" value="" class="form-control form-control-lg text-4">
                         </div>
                     </div>
                     <div class="row">
@@ -87,11 +87,11 @@
 <script>
     const validate = () => {
         let test = true;
-        let username = $('input[name="username"]').val();
+        let full_name = $('input[name="full_name"]').val();
         let email = $('input[name="email"]').val();
         let password = $('input[name="password"]').val();
         let confirm_password = $('input[name="confirm_password"]').val();
-        if(!username){
+        if(!full_name){
             $.alert({
                 title: "Thông báo",
                 content: "Tên đăng nhập không được để trống"
@@ -135,11 +135,11 @@
 ?>
 <?php
     } else if (is_post_method()) {
-        $username = isset($_REQUEST["username"]) ? $_REQUEST["username"] : null;
+        $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
-        $sql = "select id,count(*) as 'countt' from customer where username = ? and email = ? limit 1";
-        $row = fetch_row($sql,[$username,$email]);
+        $sql = "select id,count(*) as 'countt' from customer where full_name = ? and email = ? limit 1";
+        $row = fetch_row($sql,[$full_name,$email]);
         //log_v($sql);
         if($row['countt'] > 0){
             $msg_error = "Tên đăng nhập hoặc email này đã tồn tại.";
@@ -148,18 +148,20 @@
         if(!isset($_SESSION["error"]))
         {
             $password = password_hash($password,PASSWORD_DEFAULT);
-            //$id = db_insert_id('user',['username'=>$username,'password'=>$password]);
+            $sql_ins = "Insert into customer(full_name,email,password) values('$full_name','$email','$password')";
+            sql_query($sql_ins);
+            header("location:login.php");
+            /*$password = password_hash($password,PASSWORD_DEFAULT);
             $time = Date("d-m-Y h:i:s",time());
             $hidden_key = "&!239yhf98@";
             $rand = rand(0,999999);
             $md5_str = md5($email.$time.$rand.$hidden_key);
             setcookie("u_verify",$md5_str,time() + 600,"/");
-            setcookie("u_cookie_username",$username,time() + 600,"/");
             setcookie("u_cookie_password",$password,time() + 600,"/");
             setcookie("u_cookie_email",$email,time() + 600,"/");
             header("location:email_tmp_verify.php?email={$email}");
-            exit();
+            exit();*/
         }
-        header("location:register.php");
+        
     }
 ?>

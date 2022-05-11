@@ -115,43 +115,6 @@
 					<input type="text" class="form-control h-auto py-2" name="address" value="<?=$result['address']?>" />
 				</div>
 			</div>
-			<!--<div class="row">
-				<div class="form-group col">
-					<label class="form-label">Street Address <span class="text-color-danger">*</span></label>
-					<input type="text" class="form-control h-auto py-2" name="address1" value="" placeholder="House number and street name"  />
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col">
-					<input type="text" class="form-control h-auto py-2" name="address2" value="" placeholder="Apartment, suite, unit, etc..."  />
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col">
-					<label class="form-label">Town/City <span class="text-color-danger">*</span></label>
-					<input type="text" class="form-control h-auto py-2" name="city" value=""  />
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col">
-					<label class="form-label">State <span class="text-color-danger">*</span></label>
-					<div class="custom-select-1">
-						<select class="form-select form-control h-auto py-2" name="state" >
-							<option value="" selected></option>
-							<option value="ny">Nova York</option>
-							<option value="ca">California</option>
-							<option value="tx">Texas</option>
-							<option value="">Florida</option>
-						</select>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="form-group col">
-					<label class="form-label">ZIP <span class="text-color-danger">*</span></label>
-					<input type="text" class="form-control h-auto py-2" name="zip" value=""  />
-				</div>
-			</div>-->
 			<div class="row">
 				<div class="form-group col">
 					<label class="form-label">Số điện thoại <span class="text-color-danger">*</span></label>
@@ -320,7 +283,7 @@
 		let email = $("input[name='email']").val();
 		let address = $("input[name='address']").val();
 		let phone = $("input[name='phone']").val();
-		let note = $("input[name='note']").val();
+		let notes = $("textarea[name='notes']").val();
 		let payment_method_id = $("select[name='payment_method'] > option:selected").val();
 		if(full_name == "") {
 			$.alert({
@@ -364,6 +327,7 @@
 						email: email,
 						address: address,
 						phone: phone,
+						notes: notes,
 						id: "<?=$_SESSION['customer_id']?>"
 					},
 					success: function(data){
@@ -385,11 +349,11 @@
 					type: "POST",
 					data: {
 						status: "checkout_ok",
-						note: note,
 						total: "<?=$sum;?>",
 						address: address,
 						payment_method_id: payment_method_id,
 						customer_id: "<?=$_SESSION['customer_id']?>",
+						notes: notes,
 					},success: function(data){
 						console.log(data);
 						data = JSON.parse(data);

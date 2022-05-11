@@ -97,7 +97,7 @@
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,username,email,password,img_name,count(*) as 'countt' from customer where email = ? limit 1";
+        $sql = "select id,email,password,img_name,count(*) as 'countt' from customer where email = ? limit 1";
         $row = fetch_row($sql,[$email]);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
@@ -106,7 +106,6 @@
             if(password_verify($password,$row["password"])){
                 $_SESSION["isUserLoggedIn"] = true;
                 $_SESSION["customer_id"] = $row["id"];
-                $_SESSION["username"] = $row["username"];
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
                 $_SESSION["cart"] = [];

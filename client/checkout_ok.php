@@ -5,10 +5,11 @@
     $customer_id = isset($_SESSION['customer_id']) ? $_SESSION['customer_id'] : null;
     $payment_method_id = isset($_REQUEST['payment_method_id']) ? $_REQUEST['payment_method_id'] : null;
     $total = isset($_REQUEST['total']) ? $_REQUEST['total'] : null;
+    $notes = isset($_REQUEST['notes']) ? $_REQUEST['notes'] : null;
     if($status == 'checkout_ok') {
         $note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
         $order_code = "DH" . str_replace("-","",Date("d-m-YH-i-s",time()));
-        $sql_orders = "Insert into orders(customer_id,total,payment_method_id,address) values('$customer_id','$total','$payment_method_id','$address')";
+        $sql_orders = "Insert into orders(customer_id,total,payment_method_id,address,note) values('$customer_id','$total','$payment_method_id','$address','$notes')";
         sql_query($sql_orders);
         $order_id = ins_id();
         if($order_id > 0) {
