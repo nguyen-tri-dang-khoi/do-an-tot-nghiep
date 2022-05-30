@@ -51,7 +51,7 @@
 		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
 		$result = (time() - $_SESSION['timestamp']) / 60;
         //log_v($result);
-		if($result > 30) {
+		if($result > 100) {
 			$_SESSION["isLoggedIn"] = false;
 			unset($_SESSION["timestamp"]);
             if(isset($_COOKIE['access_token'])){

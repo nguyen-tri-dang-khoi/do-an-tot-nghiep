@@ -192,25 +192,20 @@
   cursor: pointer;
   margin:0 auto;
 }
-.ele-count2 ,.ele-date2, .ele-price2 ,.ele-type2 ,.ele-cols {
-  display:flex;
-  justify-content:space-between;
-  width:100%;
+.w-20-imp {
+  width:20px !important;
 }
-#s-count2 .ele-count2:first-child {
-  margin-top:0px;
+.w-200-imp {
+  width:200px !important;
 }
-#s-date2 .ele-date2:first-child {
-  margin-top:0px;
+[class^=ele-] {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
-#s-price2 .ele-price2:first-child {
-  margin-top:0px;
-}
-#s-type2 .ele-type2:first-child {
-  margin-top:0px;
-}
-#s-cols .ele-cols:first-child {
-  margin-top:0px;
+
+[class^=ele-]:first-child {
+  margin-top:0px; 
 }
 .f-column {
   flex-direction: column !important;

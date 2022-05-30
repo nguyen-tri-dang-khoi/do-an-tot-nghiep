@@ -13,12 +13,13 @@
     <div class="container-fluid">
         <section class="content mt-10">
             <div class="row ml-5">
-                <div class="col-4 area-filter" style="flex-direction:column">
+                <div class="col-6 area-filter" style="flex-direction:column">
                     <p style="font-weight:bold;margin:0">Chức năng thống kê: </p>
                     <div class="row mb-20">
                         <select onchange="activeSelect()" class="list-statistic form-control col-6" name="type_statistic">
                             <option value="">Chọn chức năng thống kê</option>
                             <option value="1">Thống kê doanh thu</option>
+                            <option value="2">Thống kê số lượng đơn hàng</option>
                         </select>
                     </div>
                     <p style="font-weight:bold;margin:0">Mốc thời gian: </p>
@@ -43,8 +44,11 @@
                             <option value="">Chọn ngày</option>
                         </select>
                     </div>
+                    <div class="row">
+                        <button onclick="showDataStatistic('statistic_excel_download')" class="dt-button button-blue">Xuất file excel báo cáo</button>
+                    </div>
                 </div>
-                <div class="col-8">
+                <div class="col-6">
                     <canvas id="myChart"></canvas>
                 </div>
             </div>
@@ -64,7 +68,7 @@
     var data2 = {
         labels: labels,
         datasets: [{
-            label: 'Thống kê doanh thu',
+            label: 'Thống kê',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
         }]
@@ -93,47 +97,59 @@
             $('.area-filter select:not(.list-statistic)').prop("disabled",true);
             $('.area-filter select:not(.list-statistic)').css({"cursor":"not-allowed"});
         }
+        showDataStatistic();
     }
-    function showDataStatistic(){
+    function showDataStatistic(status=""){
         let day = $("select[name='day'] > option:selected").val();
         let month = $("select[name='month'] > option:selected").val();
         let year = $("select[name='year'] > option:selected").val();
         let case2 = $("select[name='type_statistic'] > option:selected").val();
-        $.ajax({
-            url:"ajax_statistic.php",
-            type:"POST",
-            data: {
-                year: year,
-                month: month,
-                day: day,
-                case: case2
-            },success:function(data2){
-                //console.log(data);
-                data2 = JSON.parse(data2);
-                console.log(data2);
-                if(data2.msg == "ok") {
-                    //console.log(data);
-                    let _label = [];
-                    let _data = [];
-                    delete data2['msg'];
-                    for(let i2 = 0 ; i2 < data2.label ; i2++) 
-                    {
-                        _label.push(parseInt(i2) + 1);
-                        _data.push(data2[i2]);
-                    }
-                    delete data2['label'];
-
-                    console.log(_data);
-                    myChart.data.labels = _label;
-                    myChart.data.datasets[0].data = _data;
-                    myChart.update();
-                    
-                    
-                }
-            },error:function(data){
-                console.log("Error: " + data);
+        if(status == "statistic_excel_download") {
+            if(year == "" ) {
+                return;
             }
-        })
+            location.href=`ajax_statistic.php?year=${year}&month=${month}&day=${day}&case=${case2}&status=${status}`;
+        } else {
+            $.ajax({
+                url:"ajax_statistic.php",
+                type:"POST",
+                data: {
+                    year: year,
+                    month: month,
+                    day: day,
+                    case: case2,
+                },success:function(data2){
+                    console.log(data2);
+                    data2 = JSON.parse(data2);
+                    console.log(data2);
+                    if(data2.msg == "ok") {
+                        //console.log(data);
+                        let _label = [];
+                        let _data = [];
+                        delete data2['msg'];
+                        for(let i2 = 0 ; i2 < data2.label ; i2++) 
+                        {
+                            _label.push(parseInt(i2) + 1);
+                            _data.push(data2[i2]);
+                        }
+                        delete data2['label'];
+
+                        console.log(_data);
+                        if(case2 == 1) {
+                            myChart.data.datasets[0].label = "Thống kê doanh thu";
+                        } else if(case2 == 2) {
+                            myChart.data.datasets[0].label = "Thống kê số lượng đơn hàng";
+                        }
+                        myChart.data.labels = _label;
+                        myChart.data.datasets[0].data = _data;
+                        myChart.update();
+                    }
+                },error:function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
+        
     }
     function showDay() {
         let months_31 = [1,3,5,7,8,10,12]; // tháng 31 ngày

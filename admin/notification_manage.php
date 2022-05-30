@@ -28,8 +28,11 @@
       $view_min = isset($_REQUEST['view_min']) ? $_REQUEST['view_min'] : null;
       $view_max = isset($_REQUEST['view_max']) ? $_REQUEST['view_max'] : null;
       $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
+      $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
+      $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
       $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
       $where = "where 1=1 ";
+      $order_by = "";
       $wh_child = [];
       $arr_search = [];
       if($keyword && is_array($keyword)) {
@@ -91,7 +94,15 @@
          if($wh_child != "") {
             $where .= " and ($wh_child)";
          }
+         if($str) {
+            $where .= " and n.id in ($str)";
+         }
+         if($orderByColumn && $orderStatus) {
+            $order_by .= "ORDER BY $orderByColumn $orderStatus";
+            $where .= " $order_by";
+         }
       }
+
       //log_v($where);
       
 ?>
@@ -222,119 +233,137 @@
                   <!-- /.card-header -->
                   <div class="card-body">
                      <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" action="notification_manage.php" method="get">
-                           <div class="" style="margin-top:5px;">
-                              <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                 <option value="">Bộ lọc tìm kiếm</option>
-                                 <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                 <option value="view2" <?=$search_option == 'view2' ? 'selected="selected"' : '' ?>>Lượt xem</option>
-                                 <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
-                                 <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                              </select>
-                           </div>
-                           <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-cols d-flex f-column">
-                                 <select name="search_option" class="form-control mb-10">
-                                    <option value="">Chọn cột tìm kiếm</option>
-                                    <option value="title" <?=$search_option == 'title' ? 'selected="selected"' : '' ?>>Tiêu đề bài viết</option>
+                        <form action="notification_manage.php" method="get">
+                           <div class="d-flex a-start">
+                              <div class="" style="margin-top:5px;">
+                                 <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                    <option value="">Bộ lọc tìm kiếm</option>
+                                    <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                    <option value="view2" <?=$search_option == 'view2' ? 'selected="selected"' : '' ?>>Lượt xem</option>
+                                    <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                    <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
                                  </select>
-                                 <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                               </div>
-                              <?php
-                              if(is_array($keyword)) {
-                                 foreach($keyword as $key) {
-                              ?>
-                                 <?php
-                                 if($key != "") {
-                                 ?>
-                                 <div class="ele-select ele-cols mt-10">
-                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                              <div id="s-cols" class="k-select-opt ml-10 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-cols d-flex f-column">
+                                    <select name="search_option" class="form-control mb-10">
+                                       <option value="">Chọn cột tìm kiếm</option>
+                                       <option value="title" <?=$search_option == 'title' ? 'selected="selected"' : '' ?>>Tiêu đề bài viết</option>
+                                    </select>
+                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                                  </div>
                                  <?php
-                                 }
+                                 if(is_array($keyword)) {
+                                    foreach($keyword as $key) {
                                  ?>
-                              <?php   
-                                 }
-                              }
-                              ?>
-                           </div>
-                           <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-date2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                              </div>
-                              <?php
-                                 if(is_array($date_min) && is_array($date_max)) {
-                                    foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                              ?>
-                              <?php
-                                 if($d_min != "" || $d_max != "") {
-                              ?>
-                              <div class="ele-select ele-date2 mt-10">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datencker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datencker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                                 </div>
-                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                              </div>
-                              <?php
-                              }
-                              ?>
-                              <?php 
+                                    <?php
+                                    if($key != "") {
+                                    ?>
+                                    <div class="ele-select ele-cols mt-10">
+                                       <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                       <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                    </div>
+                                    <?php
+                                    }
+                                    ?>
+                                 <?php   
                                     }
                                  }
-                              ?>
-                           </div>
-                           <div id="s-view2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($view_min && $view_min != [""] || $view_max && $view_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-count2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="view_min[]" placeholder="Lượt xem 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="view_max[]" placeholder="Lượt xem 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                 </div>
-                                 <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
-                              </div>
-                              <?php
-                                 if(is_array($view_min) && is_array($view_max)) {
-                                    foreach(array_combine($view_min,$view_max) as $v_min => $v_max){
-                              ?>
-                                 <?php
-                                 if($c_min != "" || $c_max != "") {
                                  ?>
-                                 <div class="ele-select ele-count2 mt-10">
+                              </div>
+                              <div id="s-date2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-date2">
                                     <div class="" style="display:flex;">
-                                       <input type="text" min="0" name="view_min[]" placeholder="Lượt xem 1" class="form-control" value="<?=$v_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
                                     </div>
                                     <div class="ml-10" style="display:flex;">
-                                       <input type="text" min="0" name="view_max[]" placeholder="Lượt xem 2" class="form-control" value="<?=$v_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
                                     </div>
-                                    <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
+                                    if(is_array($date_min) && is_array($date_max)) {
+                                       foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                                 ?>
+                                 <?php
+                                    if($d_min != "" || $d_max != "") {
+                                 ?>
+                                 <div class="ele-select ele-date2 mt-10">
+                                    <div class="" style="display:flex;">
+                                       <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datencker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                                    </div>
+                                    <div class="ml-10" style="display:flex;">
+                                       <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datencker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                                    </div>
+                                    <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                 </div>
+                                 <?php
+                                 }
+                                 ?>
+                                 <?php 
+                                       }
+                                    }
+                                 ?>
+                              </div>
+                              <div id="s-view2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($view_min && $view_min != [""] || $view_max && $view_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                 <span class="k-select-opt-remove"></span>
+                                 <span class="k-select-opt-ins"></span>
+                                 <div class="ele-count2">
+                                    <div class="" style="display:flex;">
+                                       <input type="text" name="view_min[]" placeholder="Lượt xem 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                    </div>
+                                    <div class="ml-10" style="display:flex;">
+                                       <input type="text" name="view_max[]" placeholder="Lượt xem 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                    </div>
                                     <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
                                  </div>
                                  <?php
-                                 }
+                                    if(is_array($view_min) && is_array($view_max)) {
+                                       foreach(array_combine($view_min,$view_max) as $v_min => $v_max){
                                  ?>
-                              <?php 
+                                    <?php
+                                    if($c_min != "" || $c_max != "") {
+                                    ?>
+                                    <div class="ele-select ele-count2 mt-10">
+                                       <div class="" style="display:flex;">
+                                          <input type="text" min="0" name="view_min[]" placeholder="Lượt xem 1" class="form-control" value="<?=$v_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       </div>
+                                       <div class="ml-10" style="display:flex;">
+                                          <input type="text" min="0" name="view_max[]" placeholder="Lượt xem 2" class="form-control" value="<?=$v_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                       </div>
+                                       <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
+                                       <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
+                                    </div>
+                                    <?php
                                     }
-                                 }
-                              ?>
+                                    ?>
+                                 <?php 
+                                       }
+                                    }
+                                 ?>
+                              </div>
+                              <input type="hidden" name="is_search" value="true">
+                              <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                            </div>
-                           <input type="hidden" name="is_search" value="true">
-                           <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                           <div class="col-12 d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                              <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
+                                 <!--<label for="">Sắp xếp:</label>-->
+                                 <select name="orderByColumn" class="ml-10 form-control col-5">
+                                    <option value="">Sắp xếp theo cột</option>
+                                    <option value="title" <?=$orderByColumn == "title" ? "selected" : "";?>>Tiêu đề</option>
+                                    <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
+                                 </select>
+                                 <select name="orderStatus" class="ml-10 form-control col-5">
+                                    <option value="">Thao tác sắp xếp</option>
+                                    <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                    <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                 </select>
+                                 <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                              </div>     
+                           </div>
                         </form>
                      </div>
                      <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
@@ -386,86 +415,75 @@
                         unset($get['page']);
                         $str_get = http_build_query($get);
                         // query
-                           $arr_paras = [];
-                           $where .= " and is_delete = 0";
-                           $keyword = isset($_REQUEST["keyword"]) ? $_REQUEST["keyword"] : null;
-                           if($keyword) {
-                              $where .= "";
-                           }
-                           if($str) {
-                              $where .= " and n.id in ($str)";
-                           }
-                           $cnt = 0;
-                           $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                           $limit = $_SESSION['paging'];
-                           $start_page = $limit * ($page - 1);
-                           $sql_get_total = "select count(*) as 'countt' from notification n $where";
-                           $total = fetch_row($sql_get_total,$arr_paras)['countt'];
-                           array_push($arr_paras,$start_page);
-                           array_push($arr_paras,$limit);
-                           $sql_get_product = "select * from notification n $where order by n.id desc limit ?,?";
-                           //print_r($sql_get_product);
-                           $rows = db_query($sql_get_product,$arr_paras);
-                           foreach($rows as $row) {
-                           ?>
-                              <tr id="<?=$row["id"];?>">
-                                 <td></td>
-                                 <td><?=$total - ($start_page + $cnt);?></td>
-                                 <td><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
+                        $cnt = 0;
+                        $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                        $limit = $_SESSION['paging'];
+                        $start_page = $limit * ($page - 1);
+                        $sql_get_total = "select count(*) as 'countt' from notification n $where";
+                        $total = fetch_row($sql_get_total)['countt'];
+                        $sql_get_product = "select * from notification n $where limit $start_page,$limit";
+                        //print_r($sql_get_product);
+                        $rows = db_query($sql_get_product);
+                        foreach($rows as $row) {
+                        ?>
+                           <tr id="<?=$row["id"];?>">
+                              <td></td>
+                              <td><?=$total - ($start_page + $cnt);?></td>
+                              <td><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
+                              <?php
+                                 if($upt_more == 1) {
+                              ?>
+                                 <td><?= "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea><span class='text-danger'></span>";?></td>
+                              <?php
+                                 }
+                              ?>
+                              
+                              <td><?=$row['views']?></td>
+                              <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                              <td>
                                  <?php
-                                    if($upt_more == 1) {
+                                    if($upt_more != 1) {
                                  ?>
-                                    <td><?= "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea><span class='text-danger'></span>";?></td>
+                                 <?php
+                                    if($allow_read) {
+                                 ?>
+                                    <button class="btn-xem-bang-tin dt-button button-grey"
+                                    data-id="<?=$row["id"];?>">
+                                    Xem
+                                    </button>
+                                 <?php } ?>
+                                 <?php 
+                                    if($allow_update) {
+                                 ?>
+                                    <button class="btn-sua-bang-tin dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
+                                    data-id="<?=$row["id"];?>" >
+                                    Sửa
+                                    </button>
+                                 <?php } ?>
+                                 <?php
+                                    if($allow_delete) {
+                                 ?>
+                                    <button class="btn-xoa-bang-tin dt-button button-red" data-id="<?=$row["id"];?>">
+                                    Xoá
+                                    </button>
+                                 <?php } ?>
+                                 <?php
+                                    } else {
+                                 ?>
+                                 <?php
+                                    if($allow_update) {
+                                 ?>
+                                    <button dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
+                                 <?php } ?>
                                  <?php
                                     }
                                  ?>
-                                 
-                                 <td><?=$row['views']?></td>
-                                 <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                 <td>
-                                    <?php
-                                       if($upt_more != 1) {
-                                    ?>
-                                    <?php
-                                       if($allow_read) {
-                                    ?>
-                                       <button class="btn-xem-bang-tin dt-button button-grey"
-                                       data-id="<?=$row["id"];?>">
-                                       Xem
-                                       </button>
-                                    <?php } ?>
-                                    <?php 
-                                       if($allow_update) {
-                                    ?>
-                                       <button class="btn-sua-bang-tin dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
-                                       data-id="<?=$row["id"];?>" >
-                                       Sửa
-                                       </button>
-                                    <?php } ?>
-                                    <?php
-                                       if($allow_delete) {
-                                    ?>
-                                       <button class="btn-xoa-bang-tin dt-button button-red" data-id="<?=$row["id"];?>">
-                                       Xoá
-                                       </button>
-                                    <?php } ?>
-                                    <?php
-                                       } else {
-                                    ?>
-                                    <?php
-                                       if($allow_update) {
-                                    ?>
-                                       <button dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
-                                    <?php } ?>
-                                    <?php
-                                       }
-                                    ?>
-                                 </td>
-                              </tr>
-                           <?php
-                              $cnt++;
-                           }
-                           ?>
+                              </td>
+                           </tr>
+                        <?php
+                           $cnt++;
+                        }
+                        ?>
                         </tbody>
                         <tfoot>
                             <tr>
@@ -511,7 +529,6 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 id="msg-del" class="modal-title">Thêm dữ liệu bảng tin nhanh</h4>
-        <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -533,7 +550,7 @@
                   </div>
                </div>
             </div>-->
-            <div class="row j-between">
+            <div class="row j-between a-center">
                <div style="margin-left: 7px;" class="form-group">
                      <label for="">Nhập số dòng: </label>
                      <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
@@ -550,7 +567,10 @@
                      </div>
                      </div>  
                </div>
-               <div class="d-flex f-column">
+               <div class="form-group">
+                  <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
+               </div>
+               <div class="d-flex f-column form-group">
                      <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                      <div class="file file-csv mr-10">
                         <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
@@ -1024,15 +1044,6 @@
          },
          "buttons": [
           {
-            "extend": "copy",
-            "text": "Sao chép bảng (1)",
-            "key" : {
-               "key" : "1",
-            },
-            "exportOptions":{
-               columns: ':visible:not(.select-checkbox):not(.manipulate)'
-            },
-          },{
             "extend": "excel",
             "text": "Excel (2)",
             "key" : {
@@ -1064,17 +1075,6 @@
             "key" : {
                "key" : "4",
             },
-            "exportOptions":{
-               columns: ':visible:not(.select-checkbox):not(.manipulate)'
-            },
-          },{
-            "extend": "print",
-            "text": "In bảng (5)",
-            "key" : {
-               "key" : "5",
-            },
-            "filename": "danh_sach_bang_tin_ngay_<?=Date("d-m-Y",time());?>",
-            "title": "Dữ liệu bảng tin trích xuất ngày <?=Date("d-m-Y",time());?>",
             "exportOptions":{
                columns: ':visible:not(.select-checkbox):not(.manipulate)'
             },
@@ -1133,6 +1133,7 @@
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
+      let count = $('td input[name="n_title2"]').length;
       $('td input[name="n_title2"]').each(function(){
          if($(this).val() != "") {
             formData.append("n_title2[]",$(this).val());
@@ -1160,9 +1161,17 @@
             test = false;
          }
       });
+      
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
+      if(count == 0) {
+        $.alert({
+            title:"Thông báo",
+            content:"Vui lòng tạo input"
+        })
+        test = false;
+      }
       if(test) {
          $.ajax({
             url: window.location.href,

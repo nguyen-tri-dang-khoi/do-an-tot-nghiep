@@ -343,7 +343,7 @@
           $sql_get_phone = "Select phone from user where id='$session_id'";
           $pdo = sql_query($sql_get_phone);
           $result = fetch($pdo);
-          /*
+          
           $APIKey="43009D2FC640A4444734FEE529AC01";
           $SecretKey="E97CE9133C9DB6F9D0E4C4E0DB60AB";
           $YourPhone=$result["phone"];
@@ -376,7 +376,7 @@
           } else {
             echo_json(["msg" => "not_ok","error" => $obj['ErrorMessage']]);
           }
-          */
+          
           $phone = $result["phone"];
           if($phone){
             echo_json(["msg" => "ok","otp" => $otp]);

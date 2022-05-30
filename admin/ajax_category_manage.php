@@ -3,6 +3,7 @@
 	$number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
+    
     $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
     if($status == "Update") {
         if($id) {
@@ -98,5 +99,14 @@
         ";
         print_r($html);
         exit();
+    }
+?>
+<?php
+    if($status=="get_count_pi") {
+        echo_json(["msg" => "ok","result" => show_confirm_when_del_pt(NULL,$id)]);
+    }
+    if($status=="get_count_pi_is_active") {
+        
+        echo_json(["msg" => "ok","result" => show_confirm_when_deactive(NULL,$id)]);
     }
 ?>

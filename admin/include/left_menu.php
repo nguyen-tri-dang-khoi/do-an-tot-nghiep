@@ -31,17 +31,6 @@
   div.dt-button-collection>:last-child {
     display: flex !important;
   }
-  /*.dt-button {
-    border: 1px solid #2771e1bd;
-    background: #F3F4F6;
-    cursor: pointer;
-    align-items: center;
-    padding: 4px 10px;
-    outline: none;
-    margin: 0px 2px;
-    color: #2d159d;
-    border-radius: 7px;
-  }*/
   .dt-button-collection div[role='menu'] button {
     border-radius: 7px;
   }
@@ -82,10 +71,18 @@
     </div>
 
     <!-- Sidebar Menu -->
-    <nav class="mt-2">
+    <nav class="mt-2" style="width:270px;">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="">
         <!-- Add icons to the links using the .nav-icon class
               with font-awesome or any other icon font library -->
+        <li class="nav-item " >
+          <a tabindex="-1" href="company_info.php" class="nav-link <?=strpos($url,"company_info.php") ? "kh-active" : "";?>">
+            <img src="img/company.png" alt="">
+            <p>
+              Thông tin công ty
+            </p>
+          </a>
+        </li>
         <li class="nav-item " >
           <a tabindex="-1" href="information.php" class="nav-link <?=strpos($url,"information.php") ? "kh-active" : "";?>">
             <img src="img/user.png" alt="">
@@ -134,6 +131,22 @@
           </a>
         </li>
         <?php } ?>
+        <li class="nav-item " >
+          <a tabindex="-1" href="product_comment_manage.php" class="nav-link <?=strpos($url,"product_comment_manage.php") ? "kh-active" : "";?>">
+            <img style="" src="img/message.png" alt="">
+            <p>
+              Quản lý bình luận sản phẩm
+            </p>
+          </a>
+        </li>
+        <li class="nav-item " >
+          <a tabindex="-1" href="coupon_manage.php" class="nav-link <?=strpos($url,"coupon_manage.php") ? "kh-active" : "";?>">
+            <img src="img/voucher.png" alt="">
+            <p>
+              Quản lý mã khuyến mãi
+            </p>
+          </a>
+        </li>
         <?php if(check_permission_link("user_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="user_manage.php" class="nav-link <?=strpos($url,"user_manage.php") ? "kh-active" : "";?>">

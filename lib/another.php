@@ -24,8 +24,32 @@
         $menu = generate_multilevel_menus_3($connection,NULL);
         return $menu;
     }
-
-
+    function show_comment($connection = NULL){
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        //$connection = db_connect();
+        $menu = generate_comment($connection,NULL);
+        return $menu;
+    }
+    function generate_comment($connection,$reply_id = NULL) {
+        $sql = "";
+        $menu = "";
+        if(is_null($reply_id)) {
+            $sql = "select * from product_comment where reply_id is NULL and is_delete = 0";
+        } else {
+            $sql = "select * from product_comment where reply_id = $reply_id and is_delete = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='#'>" . $result["name"] . "<span class='expand'>»</span></a>";
+            $menu .= "<ul class='child'>" . generate_comment($connection,$result["id"]) . "</ul>";
+            $menu .= "</li>";
+        }
+        return $menu;
+    }
+    //
     function generate_multilevel_menus($connection,$parent_id = NULL){
         $sql = "";
         $menu = "";
@@ -60,7 +84,6 @@
         }
         return $menu;
     }
-    
     function generate_breadcrumb_menus($id = NULL){
         $sql = "";
         $__arr = [];
@@ -85,6 +108,27 @@
         while($id["countt"] > 0) {
             $parent_id = $id['id'];
             array_unshift($__arr,"<li class='breadcrumb-item breadcrumb-item-aaa'><a style='cursor:pointer;color: #9c27b0;' href='category_manage.php?parent_id=$parent_id'>".$id["name"]."</a></li>");
+            $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+            $count++;
+        }
+        $menu = implode("",$__arr);
+        return $menu ;
+    }
+    function generate_breadcrumb_menus_4($id = NULL){
+        $sql = "";
+        $__arr = [];
+        $parent_id="";
+        $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+        $id = fetch_row($sql_get_product_type,[$id]);
+        $count=0;
+        while($id["countt"] > 0) {
+            $parent_id = $id['id'];
+            if($count == 0) {
+                array_unshift($__arr,$id["name"]);
+            } else {
+                array_unshift($__arr,$id["name"] . " / ");
+            }
             $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
             $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
             $count++;
@@ -133,6 +177,186 @@
         }
         return $root_id;
     }
+    function confirm_when_del_pt($connection,$parent_id = NULL) {
+        $sql = "";
+        $sum = 0;
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_delete = 0";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pi = "Select count(*) as 'countt' from product_info where is_delete = 0 and product_type_id = " . $parent_id;
+        $res = fetch(sql_query($sql_upt_pi));
+        $sum += $res['countt'];
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+            //print_r($sql_upt_pi . " ");   
+            $sum += confirm_when_del_pt($connection,$result['id']);
+            //print_r($sum . " ");
+            //confirm_when_del_pt($connection,$result['id']);
+        }
+        return $sum;
+    }
+    function menu22($connection = NULL,$parent_id = NULL){
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = iterateMenu($connection,$parent_id);
+        return $res;
+    }
+    function iterateMenu($connection,$parent_id) {
+        $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0 limit 1";
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($result) return $parent_id . " - " . iterateMenu($connection,$result['id']);
+        return $parent_id . " - NULL";
+    }
+    //
+    function show_confirm_when_del_pt($connection = NULL,$parent_id = NULL) {
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = confirm_when_del_pt($connection,$parent_id);
+        return $res;
+    }
+    function exec_del_pi_when_del_pt($connection = NULL,$parent_id = NULL) {
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = del_pi_when_del_pt($connection,$parent_id);
+        return $res;   
+    }
+    function exec_deactive_all($connection = NULL,$parent_id = NULL) {
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = deactive_all($connection,$parent_id);   
+        return $res;  
+    }
+    function show_confirm_when_deactive($connection = NULL,$parent_id = NULL){
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = confirm_when_deactive($connection,$parent_id);
+        return $res;
+    }
+    function confirm_when_deactive($connection = NULL,$parent_id = NULL) {
+        $sql = "";
+        $sum = 0;
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_active = 1";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_active = 1";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pi = "Select count(*) as 'countt' from product_info where is_active = 1 and product_type_id = " . $parent_id;
+        $res = fetch(sql_query($sql_upt_pi));
+        $sum += $res['countt'];
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
+            //print_r($sql_upt_pi . " ");   
+            $sum += confirm_when_deactive($connection,$result['id']);
+            //print_r($sum . " ");
+            //confirm_when_del_pt($connection,$result['id']);
+        }
+        return $sum;
+    }
+    function exec_active_all($connection = NULL,$parent_id = NULL) {
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        if(check_is_active($parent_id)) { // kiểm tra danh mục cha có kích hoạt chưa, nếu chưa thì danh mục con ko được phép kích hoạt
+            $res = active_all($connection,$parent_id);    
+        } else {
+            $res = false;
+            echo_json(["msg" => "not_ok","error"=>"Danh mục cha chưa được kích hoạt"]);
+        }
+        return $res;  
+    }
+    function deactive_all($connection = NULL,$parent_id = NULL){
+        $sql = "";
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_active = 1";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_active = 1";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pt = "Update product_type set is_active = 0 where id = " . $parent_id;
+        sql_query($sql_upt_pt);
+        $sql_upt_pi = "Update product_info set is_active = 0 where product_type_id = " . $parent_id;
+        sql_query($sql_upt_pi);
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            deactive_all($connection,$result["id"]);
+        }       
+        return true;
+    }
+    // kiểm tra xem cha của danh mục tình trạng đang active hay deactive
+    /**
+     * check_is_active()
+     */
+    function check_is_active($id = NULL){
+        //print_r($id);
+        $test = false;
+        if($id) {
+            $sql = "select parent_id from product_type where id = $id limit 1"; 
+            $res = fetch(sql_query($sql));
+            $parent_id_2 = $res['parent_id'];
+            //print_r($sql);
+            if($parent_id_2){
+                //print_r($is_active);
+                $sql = "select is_active from product_type where id = '$parent_id_2' limit 1"; 
+                $res = fetch(sql_query($sql));
+                $is_active = $res['is_active'];
+                if($is_active == 1) {  // active
+                    $test = true;
+                }
+            } else {
+                $test = true;
+            }
+        }
+        return $test;
+    }
+    function active_all($connection = NULL,$parent_id = NULL){
+        $sql = "";
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_active = 0";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_active = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pt = "Update product_type set is_active = 1 where id = " . $parent_id;
+        sql_query($sql_upt_pt);
+        $sql_upt_pi = "Update product_info set is_active = 1 where product_type_id = " . $parent_id;
+        sql_query($sql_upt_pi);
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            active_all($connection,$result["id"]);
+        }       
+        return true;
+    }
+    
+    function del_pi_when_del_pt($connection,$parent_id = NULL) {
+        $sql = "";
+        if(is_null($parent_id)) {
+            $sql = "select * from product_type where parent_id is NULL and is_delete = 0";
+        } else {
+            $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pt = "Update product_type set is_delete = 1 where id = " . $parent_id;
+        sql_query($sql_upt_pt);
+        $sql_upt_pi = "Update product_info set is_delete = 1 where product_type_id = " . $parent_id;
+        sql_query($sql_upt_pi);
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            del_pi_when_del_pt($connection,$result["id"]);
+        }       
+        return true;
+    }
+    
     function check_permission_link($link){
         $test = false;
         $sql_get_role = "select m.name as 'm_name',m.link as 'm_link',u.permission as 'u_role' from user_role u inner join menus m on u.menu_id = m.id where user_id = '$_SESSION[id]'";

@@ -60,33 +60,6 @@
                 </div>
                 <div id="image_err" class="text-danger"></div>
             </div>
-            <!--<div class="form-group">
-                <label for="exampleInputFile">Upload ảnh mô tả (tối đa 5 hình)</label>
-                <div class="input-group mb-3">
-                    <div class="custom-file">
-                        <input id="file_input_anh_mo_ta" name="anh_mo_ta[]" type="file" accept="image/*" class="custom-file-input" multiple="multiple">
-                        <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
-                    </div>
-                </div>
-                <?php
-                    $sql_result_img = "select a.id as 'a_id',b.id as 'b_id',b.img_id as 'image' from product_info a inner join product_image b on a.id = b.product_info_id where a.id = ?";
-                    $result_img = db_query($sql_result_img,[$id]);
-                ?>
-                <div id="image_preview" class="filter-container p-0 row" style="margin-left:0px;margin-right:0px;border:1px dashed;">
-                <?php
-                    foreach($result_img as $img) {
-                ?>
-                        <div class="img-child filtr-item col-sm-1">
-                            <img src="<?php echo "upload/product/{$img['a_id']}/{$img['image']}";?>" class="img-fluid mb-2" alt="white sample"/>
-                            <button data-img_id="<?php echo $img["b_id"];?>" type="button" class="icon-x btn-xoa-anh-mo-ta-san-pham btn btn-tool">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                <?php
-                    }
-                ?>
-                </div>
-            </div>-->
             <div class="form-group" style="width:100%;">
                 <label for="">Ảnh mô tả sản phẩm</label>
                 <div class="kh-files">

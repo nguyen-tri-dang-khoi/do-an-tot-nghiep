@@ -285,18 +285,9 @@
             <div class="col-12">
                <div class="card">
                   <div class="card-header" style="display: flex;justify-content: space-between;">
-                     <h3 class="card-title">Quản lý sản phẩm</h3>
+                     <h3 class="card-title">Quản lý bình luận sản phẩm</h3>
                      <div class="card-tools">
                         <div class="input-group">
-                        <div class="input-group-append">
-                           <?php
-                              if($allow_insert) {
-                           ?>
-                           <button id="btn-them-san-pham" class="dt-button button-blue">
-                              Thêm sản phẩm
-                           </button>
-                           <?php } ?>
-                        </div>
                         </div>
                      </div>
                   </div>
@@ -536,141 +527,42 @@
                               </div>   
                         </form>
                      </div>
-                     <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                        <div>
-                           <?php
-                              if($allow_delete) {
-                           ?>
-                           <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_update) {
-                           ?>
-                           <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_read) {
-                           ?>
-                           <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_insert) {
-                           ?>
-                           <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_check_product) {
-                           ?>
-                           <!--<button onclick="checkProduct()" class="dt-button button-blue">Đăng bán nhanh</button>
-                           <?php } ?>
-                           <button onclick="cancelProduct()" class="dt-button button-blue">Ngừng bán nhanh</button>-->
-                        </div>
-                        <div class="section-save">
-                           <?php
-                              if($upt_more == 1 && $allow_update){
-                           ?>
-                           <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-                           <?php } ?>
-                        </div>
-                     </div>
                      <table id="m-product-info" class="table table-bordered table-striped">
                         <thead>
                            <tr>
-                              <th></th>
+                              <th class="w-20-imp" ></th>
                               <th class="w-100">Số thứ tự</th>
                               <th>Tên sản phẩm</th>
-                              <th>Số lượng</th>
-                              <th>Đơn giá</th>
-                              <?=$upt_more == 1 ? "<th >Mô tả sản phẩm</th>" : "";?>
-                              <th>Danh mục</th>
-                              <th class="w-100">Tình trạng</th>
-                              <th>Ngày đăng</th>
-                              <th>Thao tác</th>
+                              <th class="w-200-imp">Thao tác</th>
                            </tr>
                         </thead>
                         <tbody id="list-san-pham">
                         <?php
-                           // set get
-                           $get = $_GET;
-                           unset($get['page']);
-                           $str_get = http_build_query($get);
-                           // query
-                           if($str) {
-                              $where .= " and pi.id in ($str)";
-                           }
-                           $cnt = 0;
-                           $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                           $limit = $_SESSION['paging'];
-                           $start_page = $limit * ($page - 1);
-                           $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                           $total = fetch_row($sql_get_total)['countt'];
-                           if($upt_more == 1) {
-                              $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id',pi.description as 'pi_description' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                           } else {
-                              $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                           }
+                            // set get
+                            $get = $_GET;
+                            unset($get['page']);
+                            $str_get = http_build_query($get);
+                            // query
+                            if($str) {
+                                $where .= " and pi.id in ($str)";
+                            }
+                            $cnt = 0;
+                            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                            $limit = $_SESSION['paging'];
+                            $start_page = $limit * ($page - 1);
+                            $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
+                            $total = fetch_row($sql_get_total)['countt'];
+                            $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
                            //print_r($sql_get_product);
                            $rows = db_query($sql_get_product);
-                           log_v($sql_get_product);
                            foreach($rows as $row) {
                            ?>
                               <tr id="<?=$row["id"];?>">
                                  <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
+                                 <td><?=$row['pi_name'];?></td>
                                  <td>
-                                    <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
-                                 </td>
-                                 <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
-                                 </td>
-                                 <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
-                                 </td>
-                                 <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea><span class='text-danger'></span></td>" : "";?>
-                                 <td><?=$row['pt_name']?></td>
-                                 <td>
-                                    <div class="custom-control custom-switch">
-                                       <input type="checkbox" onchange="toggleActiveProduct('<?=$row['pt_id']?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                       <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                    </div>  
-                                 </td>
-                                 <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                 <td>
-                                    <?php
-                                       if($upt_more != 1) {
-                                    ?>
-                                    <?php
-                                       if($allow_read){
-                                    ?>
-                                    <button class="btn-xem-san-pham dt-button button-grey"
-                                    data-id="<?=$row["id"];?>" >
-                                    Xem
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       if($allow_update) {
-                                    ?>
-                                    <button class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
-                                    data-id="<?=$row["id"];?>" >
-                                    Sửa
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       if($allow_delete) {
-                                    ?>
-                                    <button class="btn-xoa-san-pham dt-button button-red" data-id="<?=$row["id"];?>">
-                                    Xoá
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       } else {
-                                    ?>
-                                       <button dt-count="0" onclick="uptThisRow()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["id"];?>">
-                                    Sửa
-                                    </button>
-                                    <?php 
-                                       } 
-                                    ?>
+                                     <button onclick='showListComment("<?=$row["id"];?>")' class="dt-button button-grey">Xem bình luận</button>
                                  </td>
                               </tr>
                            <?php
@@ -683,12 +575,6 @@
                               <th></th>
                               <th>Số thứ tự</th>
                               <th>Tên sản phẩm</th>
-                              <th>Số lượng</th>
-                              <th>Đơn giá</th>
-                              <?=$upt_more == 1 ? "<th>Mô tả sản phẩm</th>" : "";?>
-                              <th>Danh mục</th>
-                              <th>Tình trạng</th>
-                              <th>Ngày đăng</th>
                               <th>Thao tác</th>
                            </tr>
                         </tfoot>
@@ -707,108 +593,14 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <ul class="nav nav-tabs" style="width:100%;" id="custom-tabs-two-tab" role="tablist">
-            <li class="nav-item">
-               <a class="nav-link active" style="font-weight:bolder;" id="custom-tabs-two-home-tab" data-toggle="pill" href="#custom-tabs-two-home" role="tab" aria-controls="custom-tabs-two-home" aria-selected="true">Thông tin sản phẩm</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-profile-tab" data-toggle="pill" href="#custom-tabs-two-profile" role="tab" aria-controls="custom-tabs-two-profile" aria-selected="false">Thông số kỹ thuật</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-messages-tab" data-toggle="pill" href="#custom-tabs-two-messages" role="tab" aria-controls="custom-tabs-two-messages" aria-selected="false">Điểm nổi bật</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-settings-tab" data-toggle="pill" href="#custom-tabs-two-settings" role="tab" aria-controls="custom-tabs-two-settings" aria-selected="false">Phân loại tìm kiếm</a>
-            </li>
-         </ul>
+         <h4 id="msg-del" class="modal-title">Thông tin bình luận sản phẩm</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-         <div class="tab-content" id="custom-tabs-two-tabContent">
-         </div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="modal-xl2">
-  <div class="modal-dialog modal-xl" style="min-width:1650px;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 id="msg-del" class="modal-title">Thêm dữ liệu sản phẩm nhanh</h4>
-        
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-         <div id="form-product2" class="modal-body">
-         
-            <!--<div class="row j-between">
-               <div style="margin-left: 7px;" class="form-group">
-                  <label for="">Nhập số dòng cần thêm: </label>
-                  <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
-                  <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
-               </div>
-               <div class="d-flex j-between">
-                  <div class="k-plus">
-                     <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                  </div>
-                  <div class="k-minus">
-                     <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
-                  </div>
-               </div>
-            </div>-->
-            <div class="row j-between a-center">
-               <div style="margin-left: 7px;" class="form-group">
-                     <label for="">Nhập số dòng: </label>
-                     <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
-                     <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
-                     <div class="" style="justify-content:flex-end;display:inline-flex">
-                     <div class="k-number-row">
-                        <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
-                     </div>
-                     <div class="k-plus">
-                        <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                     </div>
-                     <div class="k-minus">
-                        <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
-                     </div>
-                  </div>  
-               </div>
-               <div class="form-group">
-                  <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
-               </div>
-               <div class="d-flex f-column form-group">
-                     <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
-                     <div class="file file-csv mr-10">
-                        <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
-                     </div>
-                     <div class="file file-excel mr-10">
-                        <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
-                     </div>
-                     <div class="d-empty">
-                        <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
-                     </div>
-                     </div>
-               </div>
-            </div>
-            <!--table-->
-            <table class='table table-bordered' style="height:auto;">
-               <thead>
-               <tr>
-                  <th>Số thứ tự</th>
-                  <th>Tên sp</th>
-                  <th class="w-300">Danh mục</th>
-                  <th>Số lượng</th>
-                  <th>Đơn giá</th>
-                  <th>Mô tả sp</th>
-                  <th>Ảnh đại diện</th>
-                  <th>Thao tác</th>
-               </tr>
-               </thead>
-            </table>
+         <div id="list-product-comment">
+
          </div>
       </div>
     </div>
@@ -828,151 +620,24 @@
 <script src="js/toastr.min.js"></script>
 <script>
 	toastr.options = {
-	  "closeButton": false,
-	  "debug": false,
-	  "newestOnTop": false,
-	  "progressBar": false,
-	  "positionClass": "toast-bottom-right",
-	  "preventDuplicates": false,
-	  "onclick": null,
-	  "showDuration": "300",
-	  "hideDuration": "1000",
-	  "timeOut": "5000",
-	  "extendedTimeOut": "1000",
-	  "showEasing": "swing",
-	  "hideEasing": "linear",
-	  "showMethod": "fadeIn",
-	  "hideMethod": "fadeOut"
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        "positionClass": "toast-bottom-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": "5000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
 	}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script>
-   function toggleActiveProduct(category_product_type_id){
-      event.preventDefault();
-      let id = $(event.currentTarget).closest("tr").attr("id");
-      let status = !$(event.currentTarget).is(":checked") ? "deactive" : "active";
-      let target = $(event.currentTarget);
-      console.log(status);
-      console.log("id: " + id);
-      $.ajax({
-        url:window.location.href,
-        type:"POST",
-        data: {
-         token: "<?php echo_token();?>",
-         id:id,
-         status:status,
-         category_id:category_product_type_id,
-        },success:function(data){
-          console.log(data);
-          data = JSON.parse(data);
-          if(data.msg == "active") {
-            toastr["success"](data.success);
-            target.prop("checked",true);
-          } else if(data.msg == "not_ok"){
-            toastr["error"](data.error);
-            target.prop("checked",false);
-          } else if(data.msg == "deactive") {
-            toastr["success"](data.success);
-            target.prop("checked",false);
-          } 
-        }
-      })
-   }
-   function xlsx2input(input) {
-      if(input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-               var data = e.target.result;
-               var workbook = XLSX.read(data, {
-                  type: 'binary'
-               });
-               var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
-               console.log(XL_row_object);
-               setDataFromXLSX(XL_row_object,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
-            };
-            reader.onerror = function(ex) {
-               console.log(ex);
-            };
-            reader.readAsBinaryString(input.files[0]);
-            //console.log("aaa");
-      }
-   }
-   function csv2input(input) {
-      let arr = [];
-      if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload=function(e){
-               arr = reader.result.split(/\r\n|\n/);
-               console.log(arr);
-               // step 1
-               let columns = arr[0].split(/\,/);
-               let arr_csv = [];
-               arr.shift();
-               for(i = 0 ; i < arr.length ; i++) {
-                  let new_arr = arr[i].split(/\,/);
-                  //console.log(new_arr);
-                  let new_obj = {};
-                  for(j = 0 ; j < columns.length ; j++) {
-                        new_obj[columns[j]] = new_arr[j];
-                        //console.log(new_obj);
-                  }
-                  arr_csv.push(new_obj);
-               }
-               console.log(arr_csv);
-               setDataFromCSV(arr_csv,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
-            }
-            reader.readAsText(input.files[0]);
-      }
-   }
-   function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
-      if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-         $("[data-plus]").attr("data-plus",arr_csv.length);
-         showRow(1);
-         let i = 0;
-         arr_csv_columns.forEach(function(ele,ind){
-               $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-               if(!isNaN(arr_csv[i][ele])) {
-                  $(this).val(parseInt(arr_csv[i][ele]).toLocaleString().replace(/\,/g, "."));
-               } else {
-                  $(this).val(arr_csv[i][ele]);
-               }
-                  i++;
-               });
-               i = 0; 
-         });
-      } else {
-         $.alert({
-               title:"Thông báo",
-               content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-         });
-      }
-      $("input[name='read_csv']").val("");
-   }
-   function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
-      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-         $("[data-plus]").attr("data-plus",arr_xlsx.length);
-            showRow(1);
-            let i = 0;
-            arr_excel_columns.forEach(function(ele,ind){
-               $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                  if(!isNaN(arr_xlsx[i][ele])) {
-                     $(this).val(parseInt(arr_xlsx[i][ele]).toLocaleString().replace(/\,/g, "."));
-                  } else {
-                     $(this).val(arr_xlsx[i][ele]);
-                  }
-                  i++;
-               });
-               i = 0; 
-            });
-      } else {
-            $.alert({
-               title:"Thông báo",
-               content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-            });
-      }
-      $("input[name='read_excel']").val("");
-   }
-</script>
 <!--searching filter-->
 <script>
    function choose_type_search(){
@@ -1083,179 +748,91 @@
    }
    
 </script>
-<!-- multi file upload-->
 <script>
-   var arr_list_file_del = [];
-	var arr_input_file = new Map();
-   function init_map_file(){
-      if($('input[name="list_file_del"]').val() != "") {
-         arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
-      }
-	
-      console.log(arr_list_file_del);
-      if(arr_list_file_del != ['']) {
-         arr_list_file_del.forEach((element) => {
-            arr_input_file.set(element,element + "_has");
+   function showListComment(id,page=1) {
+      $('#list-product-comment').load(`ajax_product_comment.php?status=show_list_comment&id=${id}&page=${page}`,() => {
+         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+         let total_all = $('#pagination-comment').attr('data-total');
+         let page = $('#pagination-comment').attr('data-page');
+         let limit = $('#pagination-comment').attr('data-item');
+         $('#pagination-comment').pagination({
+            items: total_all,
+            itemsOnPage: limit,
+            currentPage: page,
+            hrefTextPrefix: "<?php echo '?page='; ?>",
+            hrefTextSuffix: "<?php echo '&' . $str_get;?>",
+            prevText: "<",
+            nextText: ">",
+            onPageClick: function(pageNumber,event){
+               event.preventDefault();
+               showListComment(id,pageNumber);
+            },
+            cssStyle: 'light-theme'
          });
-      }
+      });
    }
-	console.log(arr_input_file);
-   //var arr_input_file = new Map();
-	// update
-	function readURLChange(input,key) {
-		// key = "file_" + key;
-		// 8_del, 8_upt
-		 let target = event.currentTarget;
-		 console.log(input.files);
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			if(arr_input_file.has(key)) {
-				//arr_input_file.set(key,key + "_upt");
-				if(arr_input_file.get(key).indexOf("_has") == -1) {
-					if(arr_input_file.get(key).indexOf("_del") > 0) {
-						//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
-						arr_input_file.set(key,key + "_upt");
-					} else {
-						console.log("aaaa");
-					}
-				} else {
-					console.log("true_upt" + arr_input_file.get(key));
-					//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
-					arr_input_file.set(key,key + "_upt");
-				}
-			} else {
-				arr_input_file.set(key,key + "_ins");
-				console.log(arr_input_file);
-			}
-			reader.onload = function (e) {
-			   $(target).parent().css({
-				'background-image' : 'url("' + e.target.result + '")',
-				'background-size': 'cover',
-				'background-position': '50%'
-			   });
-			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
-            //$(target).first().siblings('.kh-custom-remove-img').css({'display': 'none'});
-			}
-			reader.readAsDataURL(input.files[0]);
-		 }
-	}
-	function removeImageChange(input,key){
-		//key = "file_" + key;
-		$(input).parent().css({'display':'none'});
-		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
-		arr_input_file.set(key,key + "_upt");
-	}
-	function removeImageDel(input,key) {
-		//key = "file_" + key;
-		$(input).parent().css({'display':'none'});
-		$(input).closest('.kh-custom-file').remove();
-		//console.log(file_img_del);
-		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
-		console.log(arr_input_file.get(key));
-		if(arr_input_file.has(key)) {
-			if(arr_input_file.get(key).indexOf("_has") == -1) {
-				//console.log("false_has : " + arr_input_file[key]);
-				if(arr_input_file.get(key).indexOf("_upt") > 0){
-					arr_input_file.set(key,key + "_del");
-				} else {
-					arr_input_file.delete(key);
-				}
-			} else {
-				//console.log("true_del" + arr_input_file[key]);
-				arr_input_file.set(key,key + "_del");
-			}
-		}
-		/*} else {
-			console.log("del_key_ins_upt : " + arr_input_file.get(key));
-			arr_input_file.delete(key);
-		}*/
-	}
-	function gameChange(){
-		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
-		console.log(Array.from(arr_input_file.values()).join(","));
-		//return true;
-	}
-	//
+   function showReplyOk(reply_id,product_info_id,type=""){
+      $(`.info${reply_id}`).load(`ajax_product_comment.php?status=show_reply_ok&reply_id=${reply_id}&id=${product_info_id}`,() => {
+         if(type == "input") {
+            $(`.input${reply_id}`).removeClass('d-none').addClass('d-flex');
+            $(`.kh-border-vertical${reply_id}`).css({"border-left":"1px solid #ddd","min-height":"100%"});
+         }
+      });
+   }
+   function sendComment(reply_id,product_info_id) {
+      let comment = $(`textarea[name="reply${reply_id}"]`).val();
+      console.log(comment);
+      $.ajax({
+         url:window.location.href,
+         type:"POST",
+         data: {
+            token : "<?php echo_token();?>",
+            comment: comment,
+            status: "Send",
+            reply_id: reply_id,
+            product_info_id: product_info_id,
+         },success:function(data) {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               showReplyOk(reply_id,product_info_id,"input");
+            }
+         },error:function(data){
+            console.log("Error: " + data);
+         }
+      })
+   }
+   function delComment(comment_id,product_info_id) {
+      let evt = $(event.currentTarget);
+      $.confirm({
+         title: "Thông báo",
+         content: "Nếu bạn xoá bình luận này, các phản hồi về bình luận này sẽ bị xoá theo. Bạn có chắc chắn ?",
+         buttons: {
+            "Có": function(){
+               $.ajax({
+                  url:window.location.href,
+                  type:"POST",
+                  data: {
+                     token : "<?php echo_token();?>",
+                     status: "Delete",
+                     id: comment_id,
+                  },success:function(data) {
+                     console.log(data);
+                     data = JSON.parse(data);
+                     if(data.msg == "ok") {
+                        evt.closest(`.d-flex`).remove();
+                     }
+                  },error:function(data){
+                     console.log("Error: " + data);
+                  }
+               })
+            },"Không":function(){
 
-	function readURL(input,key) {
-		// key = "file_" + key;
-		// 8_del, 8_upt
-		 let target = event.currentTarget;
-		 console.log(input.files);
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			arr_input_file.set(key,key);
-			console.log(arr_input_file);
-			reader.onload = function (e) {
-			   $(target).parent().css({
-				'background-image' : 'url("' + e.target.result + '")',
-				'background-size': 'cover',
-				'background-position': '50%'
-			   });
-			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
-			}
-			reader.readAsDataURL(input.files[0]);
-		 }
-	 };
-	 function removeImage(input,key){
-		//key = "file_" + key;
-		$(input).parent().css({'display':'none'});
-		$(input).closest('.kh-custom-file').remove();
-		arr_input_file.delete(key);
-	 }
-	 function game() {
-		$('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
-		console.log(Array.from(arr_input_file.keys()).join(","));
-		//return true;
-	 }
-	 function addFileInput(parent){
-		let game_start = $(".kh-custom-file").last().attr('data-id');
-		let count = $(".kh-file-list:last-child .kh-custom-file").length;
-		game_start = parseInt(game_start) + 1;
-		if(isNaN(game_start)) {
-			game_start = 1;
-		}
-	
-		let file_html = `
-		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-			<input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
-			<input type="hidden" name="image" value="">
-			<div class="kh-custom-remove-img" style="display:block;">
-				<span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
-			</div>
-		</div>`;
-		if(count % 6 == 0){
-			file_html = `<div class="kh-file-list">${file_html}</div>`;
-			$(file_html).appendTo('.kh-file-lists');
-		} else {
-			$(file_html).appendTo(parent);
-		}
-		
-	 }
-	 function addFileInputChange(parent){
-		let game_start = $(".kh-custom-file").last().attr('data-id');
-		let count = $(".kh-file-list:last-child > .kh-custom-file").length;
-		console.log(count);
-		game_start = parseInt(game_start) + 1;
-		if(isNaN(game_start)) {
-			game_start = 1;
-		}
-		
-		let file_html = `
-		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-			<input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
-			<input type="hidden" name="image" value="">
-			<div class="kh-custom-remove-img" style="display:block;">
-				<span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
-			</div>
-		</div>`;
-		if(count % 6 == 0){
-			file_html = `<div class="kh-file-list">${file_html}</div>`;
-			$(file_html).appendTo('.kh-file-lists');
-		} else {
-			$(file_html).appendTo(parent);
-		}
-	 }
+            }
+         }
+      })
+      
+   }
 </script>
 <!-- datatable and function crud js-->
 <script>
@@ -1275,11 +852,8 @@
                "name":"manipulate",
                "orderable": false,
                "className": 'manipulate',
-               "targets": <?=$upt_more == 1 ? 9 : 8;?>
-            },{
-               "type": 'formatted-num',
-               "targets": [4,3],
-            },
+               "targets": 3
+            }
          ],
          select: {
             style: 'multi+shift',
@@ -2134,49 +1708,6 @@
          });
       }
    }
-   function checkProduct(){
-      let _data = dt_pi.rows(".selected").select().data();
-      let formData = new FormData();
-      if(_data.length == 0) {
-         $.alert({
-            title:"Thông báo",
-            content:"Vui lòng dòng sản phẩm cần kiểm tra",
-         });
-         return;
-      }
-      for(i = 0 ; i < _data.length ; i++) {
-         formData.append("pi_id[]",_data[i].DT_RowId);
-      }
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","check_all");
-      formData.append("len",_data.length);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã xuất bản sản phẩm thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
-                     }
-                  }
-               });
-            }
-         },
-         error: function(data){
-            console.log("Error: " + data);
-         }
-      });
-   }
    function readMore(){
       let arr_del = [];
       let _data = dt_pi.rows(".selected").select().data();
@@ -2276,181 +1807,6 @@
             reader.readAsDataURL(input.files[0]);
          }
       };
-      // validate
-      const validate = () => {
-         let test = true
-         let name = $('input[name=ten_san_pham]').val();
-         let category = $('input[name="category_id"]').val();
-         let count = $('input[name=so_luong]').val();
-         let price = $('input[name=don_gia]').val();
-         let description = $('#summernote').summernote('code');
-         if(name.trim() == "") {
-            $('input[name=ten_san_pham]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Tên sản phẩm không được để trống"
-            });
-            test = false;
-         } else if(count.trim() == "") {
-            $('input[name=so_luong]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Số lượng không được để trống"
-            });
-            test = false;
-         } else if(category.trim() == "") {
-            $('#menu').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Danh mục sản phẩm không được để trống"
-            });
-            test = false;
-         } else if(price.trim() == "") {
-            $('input[name=don_gia]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Đơn giá không được để trống"
-            });
-            test = false;
-         } else if(description.trim() == "<p><br></p>") {
-            $('.note-editable.card-block').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Mô tả sản phẩm không được để trống"
-            });
-            test = false;
-         }
-         return test;
-      }
-      $('#file_input_anh_mo_ta').on('change', function() {
-         imagesPreview(this,'#image_preview');
-      });
-      // Insert san pham
-      var click_number;
-      $(document).on('click','#btn-them-san-pham',function(event){
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Insert",() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('#btn-luu-san-pham').text("Thêm");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
-               },100);
-               $(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     //console.log("nufew");
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     //console.log(id);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                        /*$("#breadcrumb-menu").parent().css({"margin-top":"-25px"});*/
-                     });
-                  }
-               })
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
-            $('#file_input_anh_mo_ta').on('change', function() {
-               imagesPreview(this,'#image_preview');
-            });
-         });
-         
-      });
-      // Update sản phẩm
-      $(document).on('click','.btn-sua-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Update&id=" + id,() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('#btn-luu-san-pham').text("Sửa");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
-               },100);
-               $(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                     });
-                  }
-               })
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
-            $('#file_input_anh_mo_ta').on('change', function() {
-               imagesPreview(this,'#image_preview');
-            });
-            $('.k-combobox').select2({
-               tags:true,
-            });
-         });
-      });
-      // Delete sản phẩm
-      $(document).on('click','.btn-xoa-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         let target = $(event.currentTarget);
-         target.closest("tr").addClass("bg-color-selected");
-         $.confirm({
-            title: 'Thông báo',
-            content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
-            buttons: {
-               Có: function () {
-                  $.ajax({
-                     url:window.location.href,
-                     type:"POST",
-                     cache:false,
-                     data:{
-                        token: "<?php echo_token(); ?>",
-                        id: id,
-                        status: "Delete",
-                     },
-                     success:function(res){
-                        console.log(id);
-                        res_json = JSON.parse(res);
-                        if(res_json.msg == "ok") {
-                           arr_input_file = new Map();
-                           arr_list_file_del = [];
-                           $.alert({
-                              title: "Thông báo",
-                              content: res_json.success
-                           });
-                           //$('#san-pham' + res_json.id).remove();
-                           dt_pi.row(click_number).remove().draw();
-                        } else {
-                           $.alert({
-                              title: "Thông báo",
-                              content: res.error
-                           });
-                        }
-                     }
-                  });
-               },
-               Không: function () {
-                  target.closest("tr").removeClass("bg-color-selected");
-               },
-            }
-         });
-      });
       // Xem san pham
       $(document).on('click','.btn-xem-san-pham',function(event){
          let id = $(event.currentTarget).attr('data-id');
@@ -2458,106 +1814,6 @@
          $('#custom-tabs-two-tabContent').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
          });
-      });
-      // xử lý thao tác Insert Update
-      $(document).on('click','#btn-luu-san-pham',function(event){
-         event.preventDefault();
-         let formData = new FormData($('#form-san-pham')[0]);
-         let number = 1;
-         //console.log($('input[name=number]').val());
-         formData.append('token',"<?php echo_token(); ?>");
-         formData.append('id',$('input[name=id]').val());
-         formData.append('name',$('input[name=ten_san_pham]').val());
-         formData.append('description',$('#summernote').summernote('code'));
-         formData.append('count',$('input[name=so_luong]').val());
-         formData.append('number',$('input[name=number]').val());
-         formData.append('price',$('input[name=don_gia]').val());
-         formData.append('category_id',$("input[name='category_id']").val());
-         formData.append('category_name',$("input[name='category_name']").val());
-         formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
-         if(status == "Insert"){
-            game();
-         } else {
-            console.log(formData.get('token') + "  aaa");
-            gameChange();
-         }
-         formData.append('list_file_del',$('input[name="list_file_del"]').val());
-         let img = document.getElementsByName('img[]');
-         let file = $('input[name=img_sanpham_file]')[0].files;
-         //console.log(file);
-         if(file.length > 0) {
-            formData.append('img_sanpham_file',file[0]); 
-         }
-         if(img.length > 0) {
-            let len = img.length;
-            for(let i = 0 ; i < len ;i++) {
-               formData.append('img',$('input[name="img[]"]')[i].files);
-            }
-         }
-         if(validate()) {
-            $.ajax({
-               url:window.location.href,
-               type:"POST",
-               cache:false,
-               dataType:"json",
-               contentType: false,
-               processData: false,
-               data:formData,
-               success:function(res_json){
-                  //console.log(res_json);
-                  if(res_json.msg == 'ok'){
-                     let status = $('#btn-luu-san-pham').attr('data-status').trim();
-                     if(status == "Insert"){
-                        setTimeout(() => {
-                           $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
-                        },1000);
-                        msg = "Thêm dữ liệu thành công.";
-                        $.alert({
-                           title: "Thông báo",
-                           content: msg,
-                           buttons: {
-                              Ok : function(){
-                                 location.href="product_manage.php";
-                              }
-                           }
-                        });
-                        dt_pi.row.add(record[0]).draw();
-                        //alert(msg);
-                        if($('#display-image').length){
-                           $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
-                        }
-                     } else if(status == "Update") {
-                        //console.log(res_json);
-                        msg = "Sửa dữ liệu thành công.";
-                        $.alert({
-                           title: "Thông báo",
-                           content: msg,
-                           buttons: {
-                              Ok : function(){
-                                 location.href="product_manage.php";
-                              }
-                           }
-                        });
-                     }
-                     $('#form-san-pham').trigger('reset');
-                     $("#msg_style").removeAttr('style');
-                     $("#msg").text(msg);
-                     $('#modal-xl').modal('hide');
-                  } else if(res_json.msg == 'not_ok') {
-                     $.alert({
-                        title: "Thông báo",
-                        content: res_json.error
-                     });
-                  }
-               },
-               error: function (data) {
-                  /*alert('<?php
-                     print_r($_SESSION['token_2']);
-                  ?>');*/
-                  console.log('Error:', data);
-               }
-            });
-         }
       });
    });
 </script>
@@ -2591,325 +1847,27 @@
 ?>
 <?php
    } else if (is_post_method()) {
-      function getFileUpload($img_order,$id){
-         $sql = "select img_id from product_image where product_info_id = '$id' and img_order = '$img_order' limit 1";
-         $file_old_name = fetch_row($sql)['img_id'];
-         return $file_old_name;
-      }
-      $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-      $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-      $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
-      $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-      $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
-      $count = isset($_REQUEST["count"]) ? str_replace(".","",$_REQUEST["count"]) : null;
-      $description = isset($_REQUEST["description"]) ? $_REQUEST["description"] : null;
-      $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
-      $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
-      $price = isset($_REQUEST["price"]) ? str_replace(".","",$_REQUEST["price"]) : null;
-      //
-      $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
-      if($list_file_del){
-         $list_file_del = explode(",",$list_file_del);
-      } else {
-         $list_file_del = [];
-      }
-      if($status == 'Delete') {
-         $success = "Bạn đã xoá dữ liệu thành công";
-         $error = "Network has problem. Please try again.";
-         ajax_db_update_by_id('product_info',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
-      } else if($status == "Insert") {
-         $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
-         $row = fetch_row($sql_check_exist,[$id]);
-         $sql_is_active = "select is_active from product_type where id = '$category_id'";
-         $res33 = fetch(sql_query($sql_is_active));
-         $is_active = $res33['is_active'];
-         if($row['countt'] > 0) {
-            $error = "Tên sản phẩm này đã tồn tại.";
-            echo_json(['msg' => 'not_ok', 'error' => $error]);
-         } else {
-            $insert = db_insert_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>null,'is_active' => $is_active]);
-            if($insert > 0) {
-               $image = null;
-               //
-               $dir = "upload/product/";
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               $dir = "upload/product/" . $insert;
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               //
-               //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$insert,$image);
-               if($_FILES['img_sanpham_file']['name'] != "") {
-                  $ext = strtolower(pathinfo($_FILES['img_sanpham_file']['name'],PATHINFO_EXTENSION));
-                  $file_name = md5(rand(1,999999999)). $id . "." . $ext;
-                  $file_name = str_replace("_","",$file_name);
-                  $path = $dir . "/" . $file_name ;
-                  move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
-                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-                  db_query($sql_update);
-               }
-               $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
-               if(count($_FILES['img']['name']) > 0) {
-                  $__arr = [];
-                  $i = 0;
-                  foreach($_FILES['img']['error'] as $key => $error) {
-                     if($error == UPLOAD_ERR_OK) {
-                        $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
-                        $file_name = md5(rand(1,999999999)) . $insert . "." . $ext;
-                        $file_name = str_replace("_","",$file_name);
-                        $path = $dir . "/" . $file_name ;
-                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                        @chmod($dir, 0777);
-                        $j = $list_file_del[$i];
-                        array_push($__arr,"('$insert','$path',$j)");
-                     }
-                     if($error == UPLOAD_ERR_NO_FILE) {
-                        $i--;
-                     }
-                     $i++;
-                  }
-                  if(count($__arr) > 0) {
-                     $sql .= implode(",",$__arr);
-                     //print_r($sql);
-                     db_query($sql);
-                  }
-               }
-               $success = "Insert dữ liệu thành công.";
-               echo_json(["msg" => "ok","number"=>$number,"success" => $success,"id"=>$insert,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id" => $category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('d-m-Y H-i-s',time())]);
-            }
-         }
-      } else if($status == "Update") {
-         $image = null;
-         $dir = "upload/product/" . $id;
-         if(!file_exists($dir)) {
-            mkdir($dir, 0777); 
-            chmod($dir, 0777);
-         }
-         //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$id,$image);
-         if($_FILES['img_sanpham_file']['name'] != "") {
-            $sql_get_old_file = "select img_name from product_info where id = '$id'";
-            $old_file = fetch_row($sql_get_old_file)['img_name'];
-            if(file_exists($old_file)){
-               unlink($old_file);
-            }
-            $ext = strtolower(pathinfo($_FILES['img_sanpham_file']['name'],PATHINFO_EXTENSION));
-            $file_name = md5(rand(1,999999999)). $id . "." . $ext;
-            $file_name = str_replace("_","",$file_name);
-            $path = $dir . "/" . $file_name ;
-            move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
-            $sql_update = "Update product_info set img_name='$path' where id = '$id'";
-            db_query($sql_update);
-         }
-         $list_file_del_length = count($list_file_del);
-         for($i = 0 ; $i < count($list_file_del) ; $i++) {
-            if(strpos($list_file_del[$i],"_del") !== false) {
-               $img_order = explode("_",$list_file_del[$i])[0];
-               $file_old_name = getFileUpload($img_order,$id);
-               if(file_exists($file_old_name)) {
-                  unlink($file_old_name);
-                  chmod($dir, 0777);
-               }
-               $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $img_order";
-               db_query($sql_delete_file);
-               array_splice($list_file_del,$i, 1);
-               $i--;
-            }
-            else if(strpos($list_file_del[$i],"_has") !== false) {
-               array_splice($list_file_del,$i, 1);
-               $i--;
-            }
-         }
-         //print_r($list_file_del);
-         if(isset($_FILES['img'])) {
-            if(count($_FILES['img']['name']) > 0) {
-               $file_old_name = "";
-               $__arr = [];
-               $i = 0;
-               $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
-               foreach($_FILES['img']['error'] as $key => $error) {
-                  if($error == UPLOAD_ERR_OK) {
-                     $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
-                     $file_name = md5(rand(1,999999999)). "." . $ext;
-                     $file_name = str_replace("_","",$file_name);
-                     $path = $dir . "/" . $file_name ;
-                     if(strpos($list_file_del[$i],"_ins") !== false) {
-                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                        @chmod($dir, 0777);
-                        $j = explode("_",$list_file_del[$i])[0];
-                        //print_r($j)
-                        array_push($__arr,"('$id','$path',$j)");
-                        //print_r($__arr);
-                     } else if(strpos($list_file_del[$i],"_upt") !== false) {
-                        $img_order = explode("_",$list_file_del[$i])[0];
-                        $file_old_name = getFileUpload($img_order,$id);
-                        if(file_exists($file_old_name)) {
-                           unlink($file_old_name);
-                           chmod($dir, 0777);
-                        }
-                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                        @chmod($dir, 0777);
-                        $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and img_order='$img_order'";
-                        db_query($sql_update_file);
-                     }
-                  }
-                  if($error == UPLOAD_ERR_NO_FILE) {
-                     $i--;
-                  }
-                  $i++;
-               }
-               if(count($__arr) > 0) {
-                  $sql .= implode(",",$__arr);
-                  //print_r($sql);
-                  db_query($sql);
-               }
-            }
-         }
-         if($image) {
-            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>$image],[$id]);
-         } else {
-            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price],[$id]);
-         }
-         $success = "Sửa dữ liệu thành công.";
-         $sql_get_file_name = "select img_name from product_info where id = ?";
-         $image = fetch_row($sql_get_file_name,[$id]);
-         if($image) {
-            $image = $image['img_name'];
-         }
-         echo_json(["msg" => "ok","number" => $number,'success' => $success,"id" => $id,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id"=>$category_id,"image"=>$image,"price"=>$price,"count"=>$count]);
-      } else if($status == "active") {
-         $sql = "select is_active from product_type where id = '$category_id' limit 1";
-         $res22 = fetch(sql_query($sql));
-         if($res22['is_active'] == 0) { // danh muc cha cua san pham chua active
-            echo_json(["msg" => "not_ok","error" => "Danh mục của sản phẩm này chưa được kích hoạt"]);
-         } else {
-            $sql_upt_is_active = "Update product_info set is_active = 1 where id = '$id'";
-            sql_query($sql_upt_is_active);
-            echo_json(["msg" => "active","success" => "Bạn đã kích hoạt sản phẩm này thành công"]);
-         }
-      } else if($status == "deactive") {
-         $sql_upt_is_active = "Update product_info set is_active = 0 where id = '$id'";
-         sql_query($sql_upt_is_active);
-         echo_json(["msg" => "deactive","success" => "Bạn đã huỷ kích hoạt sản phẩm này thành công"]);
-      } 
-      else if($status == "del_more") {
-         $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
-         $rows_arr = explode(",",$rows);
-         foreach($rows_arr as $row) {
-            $sql = "Update product_info set is_delete = 1 where id = '$row'";
-            sql_query($sql);
-         }
+      $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+      $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
+      $comment = isset($_REQUEST['comment']) ? $_REQUEST['comment'] : null;
+      $rate = isset($_REQUEST['rate']) ? $_REQUEST['rate'] : null;
+      $reply_id = isset($_REQUEST['reply_id']) ? $_REQUEST['reply_id'] : null;
+      $product_info_id = isset($_REQUEST['product_info_id']) ? $_REQUEST['product_info_id'] : null;
+      $user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+      //$customer_id = isset($_REQUEST['customer_id']) ? $_REQUEST['customer_id'] : null;
+      $is_active = isset($_REQUEST['is_active']) ? $_REQUEST['is_active'] : null;
+      if($status == "Send") {
+         $sql_ins_comment = "Insert into product_comment(reply_id,user_id,product_info_id,comment,rate,is_active) values('$reply_id',$user_id,$product_info_id,'$comment','$rate','$is_active')";
+         sql_query($sql_ins_comment);
          echo_json(["msg" => "ok"]);
-      } else if($status == "upt_more") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? str_replace(".","",$_REQUEST["pi_count"]) : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? str_replace(".","",$_REQUEST["pi_price"]) : null;
-         $pi_description = isset($_REQUEST["pi_description"]) ? $_REQUEST["pi_description"] : null;
-         $sql = "Update product_info set name='$pi_name',count='$pi_count',price='$pi_price',description='$pi_description' where id='$pi_id'";
-         sql_query($sql);
+      } else if($status == "Delete") {
+         $sql_del = "Delete from product_comment where id = '$id'";
+         sql_query($sql_del);
          echo_json(["msg" => "ok"]);
-      } else if($status == "ins_more") {
-         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-         if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? str_replace(".","",$_REQUEST["count_p2"]) : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? str_replace(".","",$_REQUEST["price_p2"]) : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
-            $dir = "upload/product/";
-            $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2','$user_id','$name_p2','1','$desc_p2','$count_p2','$price_p2')";
-            sql_query($sql);
-            $insert = ins_id();
-            if(!file_exists($dir)) {
-               mkdir($dir, 0777); 
-               chmod($dir, 0777);
-            }
-            $dir = "upload/product/" . $insert;
-            if(!file_exists($dir)) {
-               mkdir($dir, 0777); 
-               chmod($dir, 0777);
-            }
-            if($_FILES['file_p2']['name'] != "") {
-               $ext = strtolower(pathinfo($_FILES['file_p2']['name'],PATHINFO_EXTENSION));
-               $file_name = md5(rand(1,999999999)). $id . "." . $ext;
-               $file_name = str_replace("_","",$file_name);
-               $path = $dir . "/" . $file_name ;
-               move_uploaded_file($_FILES['file_p2']['tmp_name'],$path);
-               $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-               db_query($sql_update);
-            }
-            echo_json(["msg" => "ok"]);
-         }
-      } else if($status == "ins_all") {
-         $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
-         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-         
-         if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
-            $file_p2 = isset($_FILES["file_p2"]) ? $_FILES["file_p2"] : null;
-            for($i = 0 ; $i < $len ; $i++) {
-               $sql_is_active = "select is_active from product_type where id = '$type_p2[$i]'";
-               $res44 = fetch(sql_query($sql_is_active));
-               $is_active = $res44['is_active'];
-               $count_p22 = str_replace(".","",$count_p2[$i]);
-               $price_p22 = str_replace(".","",$price_p2[$i]);
-               $dir = "upload/product/";
-               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price,is_active) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p22','$price_p22','$is_active')";
-               //print_r($sql);
-               sql_query($sql);
-               $insert = ins_id();
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               $dir = "upload/product/" . $insert;
-               if(!file_exists($dir)) {
-                  mkdir($dir, 0777); 
-                  chmod($dir, 0777);
-               }
-               if($_FILES['img2']['name'][$i] != "") {
-                  $ext = strtolower(pathinfo($_FILES['img2']['name'][$i],PATHINFO_EXTENSION));
-                  $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
-                  $file_name = str_replace("_","",$file_name);
-                  $path = $dir . "/" . $file_name ;
-                  move_uploaded_file($_FILES['img2']['tmp_name'][$i],$path);
-                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-                  sql_query($sql_update);
-               }
-            }
-            echo_json(["msg" => "ok"]);
-         }
-      } else if($status == "upt_all") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? $_REQUEST["pi_count"] : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? $_REQUEST["pi_price"] : null;
-         $pi_desc = isset($_REQUEST["pi_desc"]) ? $_REQUEST["pi_desc"] : null;
-         $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-         if($len && is_numeric($len)) {
-            for($i = 0 ; $i < $len ; $i++){
-               $pi_count2 = str_replace(".","",$pi_count[$i]);
-               $pi_price2 = str_replace(".","",$pi_price[$i]);
-               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count2',price='$pi_price2',description='$pi_desc[$i]' where id='$pi_id[$i]'";
-               sql_query($sql);
-            }
-            echo_json(["msg" => "ok"]);
-         }
-      } else if($status == "check_all") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         foreach($pi_id as $id) {
-            $sql = "update product_info set is_active='1' where id = '$id'";
-            sql_query($sql);
-         }
-         echo_json(["msg" => "ok"]);
+      } else if($status == "Active") {
+
+      } else if($status == "Deactive") {
+
       }
    }
 ?>

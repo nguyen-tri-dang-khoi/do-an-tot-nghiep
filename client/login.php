@@ -43,13 +43,13 @@
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Email <span class="text-color-danger">*</span></label>
-                            <input name="email" type="text" value="<?=isset($_COOKIE['u_co_email']) ? $_COOKIE['u_co_email'] : "";?>" class="form-control form-control-lg text-4" required>
+                            <input name="email" type="text" value="<?=isset($_COOKIE['u_co_email']) ? $_COOKIE['u_co_email'] : "khoiabcdef@gmail.com";?>" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group col">
                             <label class="form-label text-color-dark text-3">Mật khẩu <span class="text-color-danger">*</span></label>
-                            <input name="password" type="password" value="<?=isset($_COOKIE['u_co_password']) ? encrypt_decrypt($_COOKIE['u_co_password'],'decrypt') : "";?>" class="form-control form-control-lg text-4" required>
+                            <input name="password" type="password" value="<?=isset($_COOKIE['u_co_password']) ? encrypt_decrypt($_COOKIE['u_co_password'],'decrypt') : "1234";?>" class="form-control form-control-lg text-4" required>
                         </div>
                     </div>
                     <div class="row justify-content-between">

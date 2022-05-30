@@ -5,6 +5,7 @@
     redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for user
+        log_v(menu22(NULL,1));
         $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
         if(check_permission_crud("category_manage.php","read")) {
           $allow_read = true;
@@ -22,6 +23,28 @@
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+        $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
+        $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
+        $parent_id = isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : null;
+        $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
+        $order_by =  "";
+        $where = "where 1 = 1 and is_delete = 0";
+        if($parent_id) {
+          $where .= " and parent_id = '$parent_id'";
+        } 
+        else if(!$parent_id){
+          $where .= " and parent_id is null";
+        }
+
+        if($str) {
+          $where .= " and product_type.id in ($str)";
+        }
+        if($orderByColumn && $orderStatus) {
+          if(in_array($orderByColumn,['name','created_at'])) {
+            $order_by .= "ORDER BY $orderByColumn $orderStatus";
+            $where .= " $order_by";
+          }
+        }
         // code to be executed get method
 ?>
 <!--html & css section start-->
@@ -44,7 +67,7 @@
 <link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
-
+<link rel="stylesheet" href="css/toastr.min.css">
 <!-- /.row -->
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid">
@@ -75,182 +98,188 @@
                 <div class="col-sm-12">
                 <ol style="background: #fff;border: 1px solid #9c27b0;" class="breadcrumb float-sm-left">
                   <li class="breadcrumb-item"><a style="cursor:pointer;color: #9c27b0;" href="category_manage.php">Quản lý menu</a></li>
-                  <?php
-                    $parent_id = isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : null;
-                  ?>
                   <?=generate_breadcrumb_menus_3($parent_id);?>
                   </ol>
                 </div>
               </div>
-			  <div id="btn-file" class="row">
-				<div class="col-12">
-					<div class="col-12" style="padding-right:0px;padding-left:0px;">
-					</div>
-          <div class="col-12" style="padding-right:0px;padding-left:0px;">
-              <form id="form-main" style="margin-bottom: 17px;display:flex;" action="category_manage.php" method="get">
-                  <div class="" >
-                    <select onchange="searchSubmit()" id="select-type2" style="width:300px" class="form-control" name="parent_id">
-                      <option value="">Chọn danh mục cần tìm</option>
-                      <?php
-                        $sql = "select * from product_type where is_delete = 0";
-                        $rows2 = db_query($sql);
-                        foreach($rows2 as $row2) {
-                      ?>
-                        <option value="<?=$row2['id']?>" <?=$parent_id == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
-                      <?php
-                        }
-                      ?>
-                    </select>
+              <div id="btn-file" class="row">
+                <div class="col-12">
+                  <div class="col-12" style="padding-right:0px;padding-left:0px;">
                   </div>
-              </form>
-            </div>
-          <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-            <div>
-              <?php
-                if($allow_delete) {
-              ?>
-              <button tabindex="-1" onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-              <?php } ?>
-              <?php
-                if($allow_update) {
-              ?>
-              <button tabindex="-1" onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-              <?php }?>
-              <?php
-                if($allow_read) {
-              ?>
-              <button tabindex="1" onclick="readMore()" id="btn-read-fast" class="dt-button button-grey">Xem nhanh</button>
-              <?php } ?>
-              <?php
-                if($allow_insert) {
-              ?>
-              <button tabindex="1" onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-              <?php } ?>
-            </div>
-            <div class="section-save">
-                <?php
-                  if($upt_more == 1 && $allow_update){
-                ?>
-              <button onclick="sendDataUptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-              <?php } ?>
-            </div>
-          </div>
-					 <table id="m-product-type" class="table table-bordered table-striped">
-						<thead>
-						  <tr>
-                <th></th>
-                <th>Số thứ tự</th>
-                <th>Tên danh mục</th>
-                <th>Ngày thêm</th>
-                <th>Thao tác</th>
-						  </tr>
-						</thead>
-						<?php
-							$get = $_GET;
-							unset($get['page']);
-              $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-							$str_get = http_build_query($get);
-							$page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-							$arr_paras = [];
-							$where = "where 1 = 1 and is_delete = 0";
-							if($page){
-							  $where = "where 1 = 1 and parent_id is null and is_delete = 0";
-							} 
-							if($parent_id) {
-							  $where = "where 1 = 1 and parent_id = ? and is_delete = 0";
-							  array_push($arr_paras,$_REQUEST['parent_id']);
-							}
-              if($str) {
-                $where .= " and product_type.id in ($str)";
-              }
-							$limit = $_SESSION['paging'];
-							$start_page = $limit * ($page - 1);
-							$sql_get_total = "select count(*) as 'countt' from product_type $where";
-							$total = fetch_row($sql_get_total,$arr_paras)['countt'];
-							$cnt = 0;
-							array_push($arr_paras,$start_page);
-							array_push($arr_paras,$limit);
-							$sql_get_product_type = "select * from product_type $where limit ?,?";
-							$product_types = db_query($sql_get_product_type,$arr_paras);
-							// print_r($arr_paras);
-							//print_r($sql_get_product_type);
-						  ?>
-						<tbody id="list-loai-san-pham">
-						<?php foreach($product_types as $product_type) {?>
-						  <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
-                <td></td>
-                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
-                <?php
-                  if($upt_more != 1){
-                ?>
-                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $product_type["name"];?></td>
-                <?php
-                  } else {
-                ?>
-                <td><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
-                <?php
-                  }
-                ?>
-                <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
-                <td>
-                  <?php
-                    if($upt_more != 1) {
-                  ?>
-                  <?php
-                    if($allow_read) {
-                  ?>
-                  <button class="btn-xem-loai-san-pham dt-button button-grey"
-                  data-id="<?php echo $product_type["id"];?>">
-                  Xem
-                  </button>
-                  <?php } ?>
-                  <?php if($allow_update) {?>
-                  <button class="btn-sua-loai-san-pham dt-button button-green"
-                  data-id="<?php echo $product_type["id"];?>" data-number="<?php echo $total - ($start_page + $cnt);?>">
-                  Sửa
-                  </button>
-                  <?php 
-                    } 
-                    if($allow_delete) {
-                  ?>
-                  <button class="btn-xoa-loai-san-pham dt-button button-red" data-id="<?php echo $product_type["id"];?>">
-                  Xoá
-                  </button>
-                  <?php } ?>
-                  <?php
-                    } else {
-                  ?>
-                  <button tabindex="-1" dt-count="0" data-id="<?=$product_type["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
-                  <?php
-                    }
-                  ?>
-                </td>
-						  </tr>
-						  <?php 
-								$cnt++;
-							  } 
-						  ?>
-						</tbody>
-						<tfoot>
-						  <tr>
-                <th></th>
-                <th>Số thứ tự</th>
-                <th>Tên danh mục</th>
-                <th>Ngày thêm</th>
-                <th>Thao tác</th>
-						  </tr>
-						</tfoot>
-					 </table>
-					 <div style="justify-content:center;" class="row">
-					  <nav id="pagination" aria-label="Page navigation example">
+                  <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                      <form id="form-main" action="category_manage.php" method="get">
+                          <div class="" >
+                            <select onchange="searchSubmit()" id="select-type2" style="width:50%;" class="form-control" name="parent_id">
+                              <option value="">Chọn danh mục cần tìm</option>
+                              <?php
+                                $sql = "select * from product_type where is_delete = 0";
+                                $rows2 = db_query($sql);
+                                foreach($rows2 as $row2) {
+                              ?>
+                                <option value="<?=$row2['id']?>" <?=$parent_id == $row2['id'] ? "selected" : ""; ?>><?=generate_breadcrumb_menus_4($row2['id']);?></option>
+                              <?php
+                                }
+                              ?>
+                            </select>
+                          </div>
+                          <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                            <div style="" class="row">
+                                <select name="orderByColumn" class="ml-10 form-control col-5">
+                                    <option value="">Sắp xếp theo cột</option>
+                                    <option value="name" <?=$orderByColumn == "name" ? "selected" : "";?>>Tên danh mục</option>
+                                    <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
+                                </select>
+                                <select name="orderStatus" class="ml-10 form-control col-5">
+                                    <option value="">Thao tác sắp xếp</option>
+                                    <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                    <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                </select>
+                                <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                            </div>       
+                          </div>
+                      </form>
+                    </div>
+                  <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                    <div>
+                      <?php
+                        if($allow_delete) {
+                      ?>
+                      <button tabindex="-1" onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                      <?php } ?>
+                      <?php
+                        if($allow_update) {
+                      ?>
+                      <button tabindex="-1" onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                      <?php }?>
+                      <?php
+                        if($allow_read) {
+                      ?>
+                      <button tabindex="1" onclick="readMore()" id="btn-read-fast" class="dt-button button-grey">Xem nhanh</button>
+                      <?php } ?>
+                      <?php
+                        if($allow_insert) {
+                      ?>
+                      <button tabindex="1" onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                      <?php } ?>
+                    </div>
+                    <div class="section-save">
+                        <?php
+                          if($upt_more == 1 && $allow_update){
+                        ?>
+                      <button onclick="sendDataUptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                      <?php } ?>
+                    </div>
+                  </div>
+                  <table id="m-product-type" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th style="width:30px;"></th>
+                        <th class="w-100">Số thứ tự</th>
+                        <th>Tên danh mục</th>
+                        <th class="w-200">Ngày thêm</th>
+                        <th class="w-100">Tình trạng</th>
+                        <th class="w-200">Thao tác</th>
+                      </tr>
+                    </thead>
+                    <?php
+                      //
+                      $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
+                      $get = $_GET;
+                      unset($get['page']);
+                      //
+                      $str_get = http_build_query($get);
+                      $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                      $limit = $_SESSION['paging'];
+                      $start_page = $limit * ($page - 1);
+                      $sql_get_total = "select count(*) as 'countt' from product_type $where";
+                      $total = fetch_row($sql_get_total)['countt'];
+                      $cnt = 0;
+                      log_v($where);
+                      $sql_get_product_type = "select * from product_type $where limit $start_page,$limit";
+                      $product_types = db_query($sql_get_product_type);
+                    ?>
+                    <tbody id="list-loai-san-pham">
+                    <?php foreach($product_types as $product_type) {?>
+                      <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
+                        <td></td>
+                        <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
+                        <?php
+                          if($upt_more != 1){
+                        ?>
+                        <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $product_type["name"];?></td>
+                        <?php
+                          } else {
+                        ?>
+                        <td><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
+                        <?php
+                          }
+                        ?>
+                        
+                        <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
+                        <td>
+                          <div class="custom-control custom-switch">
+                            <input type="checkbox" onchange="toggleActiveCategory()" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
+                            <label class="custom-control-label" for="customSwitches<?=$product_type['id'];?>"></label>
+                          </div>
+                        </td>
+                        <td>
+                          <?php
+                            if($upt_more != 1) {
+                          ?>
+                          <?php
+                            if($allow_read) {
+                          ?>
+                          <button class="btn-xem-loai-san-pham dt-button button-grey"
+                          data-id="<?php echo $product_type["id"];?>">
+                          Xem
+                          </button>
+                          <?php } ?>
+                          <?php if($allow_update) {?>
+                          <button class="btn-sua-loai-san-pham dt-button button-green"
+                          data-id="<?php echo $product_type["id"];?>" data-number="<?php echo $total - ($start_page + $cnt);?>">
+                          Sửa
+                          </button>
+                          <?php 
+                            } 
+                            if($allow_delete) {
+                          ?>
+                          <button class="btn-xoa-loai-san-pham dt-button button-red" data-id="<?php echo $product_type["id"];?>">
+                          Xoá
+                          </button>
+                          <?php } ?>
+                          <?php
+                            } else {
+                          ?>
+                          <button tabindex="-1" dt-count="0" data-id="<?=$product_type["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
+                          <?php
+                            }
+                          ?>
+                        </td>
+                      </tr>
+                      <?php 
+                        $cnt++;
+                        } 
+                      ?>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th></th>
+                        <th>Số thứ tự</th>
+                        <th>Tên danh mục</th>
+                        <th>Ngày thêm</th>
+                        <th>Tình trạng</th>
+                        <th>Thao tác</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                  <div style="justify-content:center;" class="row">
+                    <nav id="pagination" aria-label="Page navigation example">
 
-					  </nav>
-					</div>
-				</div>
-			  </div>
-             
+                    </nav>
+                  </div>
+                </div>
+              </div>
             </div>
-            
           </div>
         </div>
       </div>
@@ -280,13 +309,12 @@
     <div class="modal-content" style="height:auto;min-height:600px;">
       <div class="modal-header">
         <h4 class="modal-title">Thêm dữ liệu nhanh</h4>
-        <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div id="form-product-type2" class="modal-body">
-          <div class="row j-between">
+          <div class="row j-between a-center">
               <div style="margin-left: 7px;" class="form-group">
                 <label for="">Nhập số dòng: </label>
                 <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
@@ -303,7 +331,10 @@
                   </div>
                 </div>  
               </div>
-              <div class="d-flex f-column">
+              <div class="form-group">
+                <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
+              </div>
+              <div class="d-flex f-column form-group">
                 <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                   <div class="file file-csv mr-10">
                     <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
@@ -366,8 +397,56 @@
 <?php
     include_once("include/dt_script.php");
 ?>
+<script src="js/toastr.min.js"></script>
+<script>
+	toastr.options = {
+	  "closeButton": false,
+	  "debug": false,
+	  "newestOnTop": false,
+	  "progressBar": false,
+	  "positionClass": "toast-bottom-right",
+	  "preventDuplicates": false,
+	  "onclick": null,
+	  "showDuration": "300",
+	  "hideDuration": "1000",
+	  "timeOut": "5000",
+	  "extendedTimeOut": "1000",
+	  "showEasing": "swing",
+	  "hideEasing": "linear",
+	  "showMethod": "fadeIn",
+	  "hideMethod": "fadeOut"
+	}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script>
+    function toggleActiveCategory(){
+      //event.preventDefault();
+      let id = $(event.currentTarget).closest("tr").attr("id");
+      let status = !$(event.currentTarget).is(":checked") ? "deactive" : "active";
+      let target = $(event.currentTarget);
+      $.ajax({
+        url:window.location.href,
+        type:"POST",
+        data: {
+          token: "<?php echo_token();?>",
+          id:id,
+          status:status,
+        },success:function(data){
+          console.log(data);
+          data = JSON.parse(data);
+          if(data.msg == "active") {
+            toastr["success"](data.success);
+            target.prop("checked",true);
+          } else if(data.msg == "not_ok"){
+            toastr["error"](data.error);
+            target.prop("checked",false);
+          } else if(data.msg == "deactive") {
+            toastr["success"](data.success);
+            target.prop("checked",false);
+          } 
+        }
+      })
+    }
     function xlsx2input(input) {
       if(input.files && input.files[0]) {
           var reader = new FileReader();
@@ -471,7 +550,7 @@
               "name":"manipulate",
               "orderable": false,
               "className": 'manipulate',
-              "targets": 4,
+              "targets": 5,
               'searchable': false,
           }, 
         ],
@@ -511,15 +590,6 @@
         },
         "buttons": [
           {
-            "extend": "copy",
-            "text": "Sao chép bảng (1)",
-            "key": {
-               "key": '1',
-            },
-            "exportOptions":{
-              columns: ':visible:not(.select-checkbox):not(.manipulate)'
-            },
-          },{
             "extend": "excel",
             "text": "Excel (2)",
             "key": {
@@ -555,17 +625,6 @@
               columns: ':visible:not(.select-checkbox):not(.manipulate)'
             },
           },{
-            "extend": "print",
-            "text": "In bảng (5)",
-            "key": {
-              "key": '5',
-            },
-            "filename": "danh_sach_danh_muc_ngay_<?=Date("d-m-Y",time());?>",
-            "title": "Dữ liệu danh mục sản phẩm trích xuất ngày <?=Date("d-m-Y",time());?>",
-            "exportOptions":{
-              columns: ':visible:not(.select-checkbox):not(.manipulate)'
-            },
-          },{
             "extend": "colvis",
             "text": "Ẩn / Hiện cột (7)",
             "columns": ':not(.select-checkbox)',
@@ -596,7 +655,6 @@
       });
       // php auto select all rows when focus update all function execute
       <?=$upt_more == 1 ? 'dt_pt.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
-    
     });
     $("#modal-xl2").on("hidden.bs.modal",function(){
       $("#form-product-type2 table tbody").remove();
@@ -1081,18 +1139,24 @@
     function insAll(){
       let test = true;
       let arr_ins_all = [];
-      let count = 0;
+      let count = $("td input[name='name2']").length;
       $("td input[name='name2']").each(function(){
         let temp = $(this).val();
         if(temp != "" && temp != null) {
           arr_ins_all.push(temp);
           $(this).siblings("p.text-danger").text("");
-          count++;
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
+      if(count == 0) {
+        $.alert({
+          title:"Thông báo",
+          content:"Vui lòng tạo input"
+        })
+        test = false;
+      }
       if(test) {
         $.confirm({
           title: "Thông báo",
@@ -1157,49 +1221,64 @@
 		    let id = $(event.currentTarget).attr('data-id');
         let c_target = $(event.currentTarget);
         c_target.closest("tr").addClass("bg-color-selected");
-        $.confirm({
-          title: 'Thông báo',
-          content: 'Bạn có chắc chắn muốn xoá danh mục này ?',
-          buttons: {
-            Có: function () {
-              $.ajax({
-                url:window.location.href,
-                type:"POST",
-                cache:false,
-                data:{
-                  token: "<?php echo_token();?>",
-                  id: id,
-                  status: "Delete",
-                },
-                success:function(res){
-                  res_json = JSON.parse(res);
-                  if(res_json.msg == "ok") {
-                  $.alert({
-                    title: "Thông báo",
-                    content: res_json.success,
-                    buttons: {
-                      "Ok": function(){
-                        location.reload();
+        // lấy số lượng sản phẩm để show confirm
+        $.ajax({
+          url:"ajax_category_manage.php",
+          type:"POSt",
+          data: {
+            id:id,
+            status:"get_count_pi",
+          },
+          success:function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            $.confirm({
+              title: 'Thông báo',
+              content: `Nếu bạn xoá danh mục này, ${data['result']} sản phẩm và các danh mục con thuộc danh mục này sẽ bị xoá theo. Bạn có muốn tiếp tục ?`,
+              buttons: {
+                Có: function () {
+                  $.ajax({
+                    url:window.location.href,
+                    type:"POST",
+                    cache:false,
+                    data:{
+                      token: "<?php echo_token();?>",
+                      id: id,
+                      status: "Delete",
+                    },
+                    success:function(res){
+                      console.log(res);
+                      res_json = JSON.parse(res);
+                      if(res_json.msg == "ok") {
+                        $.alert({
+                          title: "Thông báo",
+                          content: res_json.success,
+                          buttons: {
+                            "Ok": function(){
+                              location.reload();
+                            }
+                          }
+                        });
+                      } else {
+                        $.alert({
+                          title: "Thông báo",
+                          content: res.error
+                        });
                       }
                     }
                   });
-                  //$('#loai-san-pham' + res_json.id).remove();
-                  //dt_pt.row(click_number).remove().draw();
-                  } else {
-                    $.alert({
-                    title: "Thông báo",
-                    content: res.error
-                  });
-                  
-                  }
-                }
-              });
-            },
-            Không: function () {
-              c_target.closest("tr").removeClass("bg-color-selected");
-            },
+                },
+                Không: function () {
+                  c_target.closest("tr").removeClass("bg-color-selected");
+                },
+              }
+            });
+          },
+          error:function(data){
+            console.log("Error: " + data);
           }
-        });
+        })
+        
       });
       // xem danh muc
       $(document).on('click','.btn-xem-loai-san-pham',function(event){
@@ -1296,37 +1375,38 @@
 ?>
 <?php
     } else if (is_post_method()) {
+
 		    $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
         $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
         $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
         if($status == "Delete") {
-           $success = "Xoá dữ liệu thành công.";
-           $error = "Network has problem. Please reload this page.";
-           ajax_db_update_by_id('product_type',['is_delete'=>1], [$id],['id' => $id,"number"=>$number,'success' => $success],['error' => $error]);
+          $success = "Xoá dữ liệu thành công.";
+          $error = "Network has problem. Please reload this page.";
+          exec_del_pi_when_del_pt(NULL,$id);
+          echo_json(['msg' => 'ok','success' => $success]);
         } else if($status == "Update") {
-            $sql_check_exist = "Select count(*) as 'countt' from product_type where name = ? and id <> ?";
-            $row = fetch_row($sql_check_exist,[$name,$id]);
-            if(1 == 2) { //$row['countt'] > 0
-                $error = "Tên danh mục này đã tồn tại.";
-                echo_json(['msg' => 'not_ok','error' => $error]);
-            } else if(1 == 1) { //$row['countt'] == 0
-                ajax_db_update_by_id('product_type', ['name' => $name],[$id],["id" => $id,"name"=>$name,"number"=>$number]);
-            }
+            /*$sql_check_exist = "Select count(*) as 'countt' from product_type where name = ? and id <> ?";
+            $row = fetch_row($sql_check_exist,[$name,$id]);*/
+            ajax_db_update_by_id('product_type', ['name' => $name],[$id],["id" => $id,"name"=>$name]);
         } else if($status == "Insert") {
-            $sql_check_exist = "Select count(*) as 'countt' from product_type where name = ?";
-            $row = fetch_row($sql_check_exist,[$name]);
-            if(1 == 2) {
-                $error = "Tên danh mục này đã tồn tại.";
-                echo_json(['msg' => 'not_ok','error' => $error]);
-            } else if(1 == 1){
-                if($parent_id) {
-                    ajax_db_insert_id('product_type',['name'=>$name,'parent_id' => $parent_id],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
-                } else {
-                    ajax_db_insert_id('product_type',['name'=>$name],['id' => $id,"number"=>$number,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
-                }
+            /*$sql_check_exist = "Select count(*) as 'countt' from product_type where name = ?";
+            $row = fetch_row($sql_check_exist,[$name]);*/
+            if($parent_id) {
+              $sql_get_active = "select is_active from product_type where id='$parent_id'";
+              $row = fetch(sql_query($sql_get_active));
+              $is_active = $row['is_active'];
+              ajax_db_insert_id('product_type',['name'=>$name,'parent_id' => $parent_id,'is_active'=>$is_active],['id' => $id,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
+            } else {
+                ajax_db_insert_id('product_type',['name'=>$name,'is_active'=>1],['id' => $id,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
             }
+        } else if($status == "active") {
+          exec_active_all(NULL,$id);
+          echo_json(['msg' => 'active','success' => 'Bạn đã kích hoạt danh mục thành công']);
+        } else if($status == "deactive") {
+          exec_deactive_all(NULL,$id);
+          echo_json(['msg' => 'deactive','success' => 'Bạn đã huỷ kích hoạt danh mục thành công']);
         } else if($status == "upt_more") {
           $pt_id = isset($_REQUEST["pt_id"]) ? $_REQUEST["pt_id"] : null;
           $pt_name = isset($_REQUEST["pt_name"]) ? $_REQUEST["pt_name"] : null;
@@ -1344,21 +1424,27 @@
         } else if($status == "ins_more") {
           $name2 = isset($_REQUEST["name2"]) ? $_REQUEST["name2"] : null;
           $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
+          $sql_get_active = "select is_active from product_type where id='$parent_id'";
+          $row = fetch(sql_query($sql_get_active));
+          $is_active = $row['is_active'];
           if(!$parent_id || $parent_id == ""){
             $parent_id = null;
           }
-          db_insert_id('product_type',['name'=>$name2,'parent_id' => $parent_id]);
+          db_insert_id('product_type',['name'=>$name2,'parent_id' => $parent_id,"is_active" => $is_active]);
           //sql_query($sql);
           echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
           $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
           $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
+          $sql_get_active = "select is_active from product_type where id='$parent_id'";
+          $row = fetch(sql_query($sql_get_active));
+          $is_active = $row['is_active'];
           if($rows) {
             if(!$parent_id || $parent_id == ""){
               $parent_id = null;
             }
             foreach(explode(",",$rows) as $row) {
-              db_insert_id('product_type',['name'=>$row,'parent_id' => $parent_id]);
+              db_insert_id('product_type',['name'=>$row,'parent_id' => $parent_id,"is_active" => $is_active]);
             }
           }
           echo_json(["msg" => "ok"]);

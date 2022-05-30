@@ -37,7 +37,11 @@
         $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $where = "where 1=1 ";
+        $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
+        $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
+        $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
+        $where = "where 1=1 and is_delete = 0";
+        $order_by = "";
         $wh_child = [];
         $arr_search = [];
         if($keyword && is_array($keyword)) {
@@ -120,6 +124,13 @@
                 $where .= " and ($wh_child)";
             }
         }
+        if($str) {
+            $where .= " and user.id in ($str)";
+        }
+        if($orderByColumn && $orderStatus) {
+            $order_by .= "ORDER BY $orderByColumn $orderStatus";
+            $where .= " $order_by";
+        }
         log_v($where);
 ?>
 <style>
@@ -140,7 +151,6 @@
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <link rel="stylesheet" href="css/toastr.min.css">
-<!--<link rel="stylesheet" href="css/fixedColumns.dataTables.min.css">-->
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
         <div class="content">
@@ -159,121 +169,145 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" action="user_manage.php" method="get">
-                            <div class="" style="margin-top:5px;">
-                              <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                 <option value="">Bộ lọc tìm kiếm</option>
-                                 <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                 <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
-                                 <option value="birthday2" <?=$search_option == 'birthday2' ? 'selected="selected"' : '' ?>>Ngày sinh</option>
-                                 <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                              </select>
-                           </div>
-                           <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-cols d-flex f-column">
-                                 <select name="search_option" class="form-control mb-10">
-                                    <option value="">Chọn cột tìm kiếm</option>
-                                    <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
-                                    <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
-                                    <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
-                                    <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
-                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                 </select>
-                                 <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                              </div>
-                              <?php
-                              if(is_array($keyword)) {
-                                 foreach($keyword as $key) {
-                              ?>
-                                 <?php
-                                 if($key != "") {
-                                 ?>
-                                 <div class="ele-select ele-cols mt-10">
-                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-                                 </div>
-                                 <?php
-                                 }
-                                 ?>
-                              <?php   
-                                 }
-                              }
-                              ?>
-                           </div>
-                           <div id="s-birthday2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($birthday_min && $birthday_min != [""] || $birthday_max && $birthday_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-date2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                              </div>
-                              <?php
-                                 if(is_array($birthday_min) && is_array($birthday_max)) {
-                                    foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max){
-                              ?>
-                              <?php
-                                 if($b_min != "" || $b_max != "") {
-                              ?>
-                              <div class="ele-select ele-date2 mt-10">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker-ym form-control" value="<?=$b_min ? Date("d-m-Y",strtotime($b_min)) : "";?>">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker-ym form-control" value="<?=$b_max ? Date("d-m-Y",strtotime($b_max)) : "";?>">
-                                 </div>
-                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                              </div>
-                              <?php
-                              }
-                              ?>
-                              <?php 
-                                    }
-                                 }
-                              ?>
-                           </div>
-                           <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                              <span class="k-select-opt-remove"></span>
-                              <span class="k-select-opt-ins"></span>
-                              <div class="ele-date2">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
-                                 </div>
-                              </div>
-                              <?php
-                                 if(is_array($date_min) && is_array($date_max)) {
-                                    foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                              ?>
-                              <?php
-                                 if($d_min != "" || $d_max != "") {
-                              ?>
-                              <div class="ele-select ele-date2 mt-10">
-                                 <div class="" style="display:flex;">
-                                    <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                                 </div>
-                                 <div class="ml-10" style="display:flex;">
-                                    <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                                 </div>
-                                 <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                              </div>
-                              <?php
-                              }
-                              ?>
-                              <?php 
-                                    }
-                                 }
-                              ?>
-                           </div>
-                           <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                        </form>
+                        <div class="col-12" style="padding:0;">
+                            <form action="user_manage.php" method="get">
+                                <div class="d-flex a-start">
+                                    <div class="" style="margin-top:5px;">
+                                        <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                            <option value="">Bộ lọc tìm kiếm</option>
+                                            <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                            <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                            <option value="birthday2" <?=$search_option == 'birthday2' ? 'selected="selected"' : '' ?>>Ngày sinh</option>
+                                            <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                        </select>
+                                    </div>
+                                    <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-cols d-flex f-column">
+                                            <select name="search_option" class="form-control mb-10">
+                                                <option value="">Chọn cột tìm kiếm</option>
+                                                <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
+                                                <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
+                                                <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
+                                                <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
+                                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                            </select>
+                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                                        </div>
+                                        <?php
+                                        if(is_array($keyword)) {
+                                            foreach($keyword as $key) {
+                                        ?>
+                                            <?php
+                                            if($key != "") {
+                                            ?>
+                                            <div class="ele-select ele-cols mt-10">
+                                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                            </div>
+                                            <?php
+                                            }
+                                            ?>
+                                        <?php   
+                                            }
+                                        }
+                                        ?>
+                                    </div>
+                                    <div id="s-birthday2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($birthday_min && $birthday_min != [""] || $birthday_max && $birthday_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-date2">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                        </div>
+                                        <?php
+                                            if(is_array($birthday_min) && is_array($birthday_max)) {
+                                                foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max){
+                                        ?>
+                                        <?php
+                                            if($b_min != "" || $b_max != "") {
+                                        ?>
+                                        <div class="ele-select ele-date2 mt-10">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker-ym form-control" value="<?=$b_min ? Date("d-m-Y",strtotime($b_min)) : "";?>">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker-ym form-control" value="<?=$b_max ? Date("d-m-Y",strtotime($b_max)) : "";?>">
+                                            </div>
+                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                        </div>
+                                        <?php
+                                        }
+                                        ?>
+                                        <?php 
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+                                    <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-date2">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                        </div>
+                                        <?php
+                                            if(is_array($date_min) && is_array($date_max)) {
+                                                foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                                        ?>
+                                        <?php
+                                            if($d_min != "" || $d_max != "") {
+                                        ?>
+                                        <div class="ele-select ele-date2 mt-10">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                                            </div>
+                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                        </div>
+                                        <?php
+                                        }
+                                        ?>
+                                        <?php 
+                                                }
+                                            }
+                                        ?>
+                                    </div>
+                                    <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                                </div>
+                                <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                                    <div style="" class="form-group row">
+                                        <select name="orderByColumn" class="ml-10 form-control col-5">
+                                            <option value="">Sắp xếp theo cột</option>
+                                            <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên đầy đủ</option>
+                                            <option value="email" <?=$orderByColumn == "email" ? "selected" : "";?>>Email</option>
+                                            <option value="phone" <?=$orderByColumn == "phone" ? "selected" : "";?>>Số điện thoại</option>
+                                            <option value="cmnd" <?=$orderByColumn == "cmnd" ? "selected" : "";?>>Số chứng minh nhân dân</option>
+                                            <option value="address" <?=$orderByColumn == "address" ? "selected" : "";?>>Địa chỉ</option>
+                                            <option value="birthday" <?=$orderByColumn == "birthday" ? "selected" : "";?>>Ngày sinh</option>
+                                            <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
+                                        </select>
+                                        <select name="orderStatus" class="ml-10 form-control col-5">
+                                            <option value="">Thao tác sắp xếp</option>
+                                            <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                            <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                                    </div>       
+                                </div>    
+                            </form>
+                        </div>
                         <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
                             <div>
                                 <?php
@@ -326,23 +360,16 @@
 							unset($get['page']);
 							$str_get = http_build_query($get);
 							// query
-                            $arr_paras = [];
-                            $where .= " and is_delete = 0";
-                            if($str) {
-                                $where .= " and user.id in ($str)";
-                            }
                             $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
                             $limit = $_SESSION['paging'];
                             $start_page = $limit * ($page - 1);
                             $sql_get_total = "select count(*) as 'countt' from user $where";
-                            $total = fetch_row($sql_get_total,$arr_paras)['countt'];
-                            array_push($arr_paras,$start_page);
-                            array_push($arr_paras,$limit);
-                            $sql_get_user = "select * from user $where order by id desc limit ?,? ";
+                            $total = fetch_row($sql_get_total)['countt'];
+                            $sql_get_user = "select * from user $where limit $start_page,$limit";
                             //print_r($sql_get_user);
                             /*print_r($arr_paras);*/
 							$cnt=0;
-                            $rows = db_query($sql_get_user,$arr_paras);
+                            $rows = db_query($sql_get_user);
                         ?>
                         <!--Table user-->
                         <div class="table-responsive">
@@ -564,7 +591,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Thông tin nhân viên</h4>
-                <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -596,7 +622,8 @@
                             </div>
                         </div>
                     </div>-->
-                    <div class="row j-between">
+                    
+                    <div class="row j-between a-center">
                         <div style="margin-left: 7px;" class="form-group">
                             <label for="">Nhập số dòng: </label>
                             <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
@@ -613,7 +640,10 @@
                             </div>
                             </div>  
                         </div>
-                        <div class="d-flex f-column">
+                        <div class="form-group">
+                            <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
+                        </div>
+                        <div class="d-flex f-column form-group">
                             <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                             <div class="file file-csv mr-10">
                                 <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
@@ -917,17 +947,6 @@
             "searchHighlight": true,
             "buttons": [
                 {
-                    "extend": "copy",
-                    "text": "Sao chép bảng (1)",
-                    "key": {
-                        "key": '1',
-                    },
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
                     "extend": "excel",
                     "text": "Excel (2)",
                     "key": {
@@ -959,17 +978,6 @@
                     "key": {
                         "key": '4',
                     },
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "print",
-                    "text": "In bảng (5)",
-                    "key": {
-                        "key": '5',
-                    },
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
                     "exportOptions":{
                         columns: ':visible:not(.select-checkbox):not(.manipulate)'
                     },
@@ -1151,6 +1159,7 @@
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
+      let count = $('td input[name="u_fullname2"]').length;
       $('td input[name="u_fullname2"]').each(function(){
         if($(this).val() != ""){
           formData.append("u_fullname2[]",$(this).val());
@@ -1209,6 +1218,13 @@
       formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
+      if(count == 0) {
+        $.alert({
+            title:"Thông báo",
+            content:"Vui lòng tạo input"
+        })
+        test = false;
+      }
       if(test) {
         $.ajax({
             url: window.location.href,
@@ -1294,8 +1310,8 @@
                 cssStyle: 'light-theme',
             });
             showPicker();
-            }
         }
+    }
       
     function delRow(){
         let count_del = $("input[name=count3]").val();

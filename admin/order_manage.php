@@ -12,6 +12,8 @@
         include_once("include/left_menu.php");
         // code to be executed get method
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
+        $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
+        $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $total_min = isset($_REQUEST['total_min']) ? $_REQUEST['total_min'] : null;
         $total_max = isset($_REQUEST['total_max']) ? $_REQUEST['total_max'] : null;
         $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
@@ -19,9 +21,12 @@
         $date_min = isset($_REQUEST['date_min']) ? $_REQUEST['date_min'] : null;
         $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
         $select_payment_status = isset($_REQUEST['select_payment_status']) ? $_REQUEST['select_payment_status'] : null;
+        $select_payment_method = isset($_REQUEST['select_payment_method']) ? $_REQUEST['select_payment_method'] : null;
+        $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $is_search = isset($_REQUEST['is_search']) ? true : false;
         $where = "where 1=1 ";
+        $order_by = "";
         $wh_child = [];
         $arr_search = [];
         if($keyword && is_array($keyword)) {
@@ -66,14 +71,14 @@
           $wh_child = [];
           foreach(array_combine($total_min,$total_max) as $t_min => $t_max) {
               if($t_min != "" && $t_max != "") {
-                $t_min = str_replace(",","",$t_min);
-                $t_max = str_replace(",","",$t_max);
+                $t_min = str_replace(".","",$t_min);
+                $t_max = str_replace(".","",$t_max);
                 array_push($wh_child,"(total >= '$t_min' and total <= '$t_max')");
               } else if($t_min == "" && $t_max != ""){
-                $t_max = str_replace(",","",$t_max);
+                $t_max = str_replace(".","",$t_max);
                 array_push($wh_child,"(total <= '$t_max')");
               } else if($t_min != "" && $t_max == ""){
-                $t_min = str_replace(",","",$t_min);
+                $t_min = str_replace(".","",$t_min);
                 array_push($wh_child,"(total >= '$t_min')");
               }
           }
@@ -109,6 +114,13 @@
             $where .= " and o.payment_status='0'";
           }
         }
+        if($select_payment_method) {
+          $where .= " and o.payment_method_id='$select_payment_method'";
+        }
+        if($orderByColumn && $orderStatus) {
+          $order_by .= "ORDER BY $orderByColumn $orderStatus";
+          $where .= " $order_by";
+        }
         log_v($where);
 ?>
 <!--html & css section start-->
@@ -140,147 +152,169 @@
                 <h3 class="card-title">Quản lý đơn hàng</h3>
               </div>
               <div class="card-body">
-                <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                  <form style="margin-bottom: 17px;display:flex;align-items:flex-start;" autocomplete="off" action="order_manage.php" method="get" onsubmit="customInpSend()">
-                      <div class="" style="margin-top:5px;">
-                        <select onchange="choose_type_search()" class="form-control" name="search_option2">
-                            <option value="">Bộ lọc tìm kiếm</option>
-                            <option value="keyword">Từ khoá</option>
-                            <option value="payment_status2">Tình trạng thanh toán</option>
-                            <option value="payment_method2">Phương thức thanh toán</option>
-                            <option value="total2">Khoảng tổng tiền</option>
-                            <option value="date2">Ngày tạo đơn hàng</option>
-                            <option value="all2">Tất cả</option>
-                        </select>
-                      </div>
-                      <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                        <span class="k-select-opt-remove"></span>
-                        <span class="k-select-opt-ins"></span>
-                        <div class="ele-cols d-flex f-column">
-                            <select name="search_option" class="form-control mb-10">
-                              <option value="">Chọn cột tìm kiếm</option>
-                              <option value="orders_code" <?=$search_option == 'orders_code' ? 'selected="selected"' : '' ?>>Mã hoá đơn</option>
-                              <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên người dùng</option>
-                              <option value="o_address" <?=$search_option == 'o_address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
-                              <option value="total" <?=$search_option == 'total' ? 'selected="selected"' : '' ?>>Tổng tiền</option>
-                              <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                            </select>
-                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                <div style="padding-left:0;padding-right:0;" class="col-12" >
+                  <form autocomplete="off" action="order_manage.php" method="get" onsubmit="customInpSend()">
+                      <div class="d-flex a-start">
+                        <div class="" style="margin-top:5px;">
+                          <select onchange="choose_type_search()" class="form-control" name="search_option2">
+                              <option value="">Bộ lọc tìm kiếm</option>
+                              <option value="keyword">Từ khoá</option>
+                              <option value="payment_status2">Tình trạng thanh toán</option>
+                              <option value="payment_method2">Phương thức thanh toán</option>
+                              <option value="total2">Khoảng tổng tiền</option>
+                              <option value="date2">Ngày tạo đơn hàng</option>
+                              <option value="all2">Tất cả</option>
+                          </select>
                         </div>
-                        <?php
-                        if(is_array($keyword)) {
-                            foreach($keyword as $key) {
-                        ?>
-                            <?php
-                              if($key != "") {
-                            ?>
-                              <div class="ele-select ele-cols mt-10">
-                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-                              </div>
-                            <?php
-                            }
-                            ?>
-                        <?php   
-                            }
-                        }
-                        ?>
-                      </div>
-                      <div id="s-total2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($total_min && $total_min != [""] || $total_max && $total_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                        <span class="k-select-opt-remove"></span>
-                        <span class="k-select-opt-ins"></span>
-                        <div class="ele-price2">
-                            <div class="" style="display:flex;">
-                              <input type="text" name="total_min[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 1" class="form-control" value=""  >
-                            </div>
-                            <div class="ml-10" style="display:flex;">
-                              <input type="text" name="total_max[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 2" class="form-control" value="" >
-                            </div>
+                        <div id="s-cols" class="k-select-opt ml-10 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column;margin-top: -52px;": "display:none;";?>">
+                          <span class="k-select-opt-remove"></span>
+                          <span class="k-select-opt-ins"></span>
+                          <div class="ele-cols d-flex f-column">
+                              <select name="search_option" class="form-control mb-10">
+                                <option value="">Chọn cột tìm kiếm</option>
+                                <option value="orders_code" <?=$search_option == 'orders_code' ? 'selected="selected"' : '' ?>>Mã hoá đơn</option>
+                                <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên người dùng</option>
+                                <option value="o_address" <?=$search_option == 'o_address' ? 'selected="selected"' : '' ?>>Địa chỉ</option>
+                                <option value="total" <?=$search_option == 'total' ? 'selected="selected"' : '' ?>>Tổng tiền</option>
+                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                              </select>
+                              <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                          </div>
+                          <?php
+                          if(is_array($keyword)) {
+                              foreach($keyword as $key) {
+                          ?>
+                              <?php
+                                if($key != "") {
+                              ?>
+                                <div class="ele-select ele-cols mt-10">
+                                  <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                  <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                </div>
+                              <?php
+                              }
+                              ?>
+                          <?php   
+                              }
+                          }
+                          ?>
                         </div>
-                        <?php
-                            if(is_array($total_min) && is_array($total_max)) {
-                              foreach(array_combine($total_min,$total_max) as $t_min => $t_max){
-                        ?>
-                            <?php
-                            if($t_min != "" || $t_max != "") {
-                            ?>
-                            <div class="ele-select ele-price2 mt-10">
+                        <div id="s-total2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($total_min && $total_min != [""] || $total_max && $total_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                          <span class="k-select-opt-remove"></span>
+                          <span class="k-select-opt-ins"></span>
+                          <div class="ele-price2">
                               <div class="" style="display:flex;">
-                                  <input type="text" min="0" name="total_min[]" placeholder="Tổng tiền 1" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_min;?>"  >
+                                <input type="text" name="total_min[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 1" class="form-control" value=""  >
                               </div>
                               <div class="ml-10" style="display:flex;">
-                                  <input type="text" min="0" name="total_max[]" placeholder="Tổng tiền 2" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_max;?>"  >
+                                <input type="text" name="total_max[]" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Tổng tiền 2" class="form-control" value="" >
                               </div>
-                              <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-                            </div>
-                            <?php
-                            }?>
-                        <?php 
-                              }
-                            }
-                        ?>
-                      </div>
-                      <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                        <span class="k-select-opt-remove"></span>
-                        <span class="k-select-opt-ins"></span>
-                        <div class="ele-date2">
-                            <div class="" style="display:flex;">
-                              <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                            </div>
-                            <div class="ml-10" style="display:flex;">
-                              <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                            </div>
-                        </div>
-                        <?php
-                            if(is_array($date_min) && is_array($date_max)) {
-                              foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                        ?>
-                        <?php
-                            if($d_min != "" || $d_max != "") {
-                        ?>
-                        <div class="ele-select ele-date2 mt-10">
-                            <div class="" style="display:flex;">
-                              <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                            </div>
-                            <div class="ml-10" style="display:flex;">
-                              <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                            </div>
-                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                        </div>
-                        <?php
-                        }
-                        ?>
-                        <?php 
-                              }
-                            }
-                        ?>
-                      </div>
-                      <input type="hidden" name="is_search" value="true">
-                      <div id="s-payment_status2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                        <select onchange="activePayment()" name="select_payment_status" class="form-control">
-                          <option value="">Tình trạng thanh toán</option>
-                          <option value="payment_completed" <?=$select_payment_status == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
-                          <option value="payment_not_completed" <?=$select_payment_status == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
-                        </select>
-                      </div>
-                      <div id="s-payment_method2" class="k-select-opt ml-15 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                        <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
-                          <option value="">Phương thức thanh toán</option>
+                          </div>
                           <?php
-                            $sql = "select * from payment_method";
-                            $payment = fetch_all(sql_query($sql));
-                            foreach($payment as $pay) {
+                              if(is_array($total_min) && is_array($total_max)) {
+                                foreach(array_combine($total_min,$total_max) as $t_min => $t_max){
                           ?>
-                              <option value="<?=$pay['id']?>" <?=$search_option == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
-                          <?php } ?>
-                          <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                        </select>
+                              <?php
+                              if($t_min != "" || $t_max != "") {
+                              ?>
+                              <div class="ele-select ele-price2 mt-10">
+                                <div class="" style="display:flex;">
+                                    <input type="text" min="0" name="total_min[]" placeholder="Tổng tiền 1" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_min;?>"  >
+                                </div>
+                                <div class="ml-10" style="display:flex;">
+                                    <input type="text" min="0" name="total_max[]" placeholder="Tổng tiền 2" class="form-control" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$t_max;?>"  >
+                                </div>
+                                <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
+                              </div>
+                              <?php
+                              }?>
+                          <?php 
+                                }
+                              }
+                          ?>
+                        </div>
+                        <div id="s-date2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                          <span class="k-select-opt-remove"></span>
+                          <span class="k-select-opt-ins"></span>
+                          <div class="ele-date2">
+                              <div class="" style="display:flex;">
+                                <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                              </div>
+                              <div class="ml-10" style="display:flex;">
+                                <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                              </div>
+                          </div>
+                          <?php
+                              if(is_array($date_min) && is_array($date_max)) {
+                                foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
+                          ?>
+                          <?php
+                              if($d_min != "" || $d_max != "") {
+                          ?>
+                          <div class="ele-select ele-date2 mt-10">
+                              <div class="" style="display:flex;">
+                                <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
+                              </div>
+                              <div class="ml-10" style="display:flex;">
+                                <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
+                              </div>
+                              <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                          </div>
+                          <?php
+                          }
+                          ?>
+                          <?php 
+                                }
+                              }
+                          ?>
+                        </div>
+                        <input type="hidden" name="is_search" value="true">
+                        <div id="s-payment_status2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
+                          <select onchange="activePayment()" name="select_payment_status" class="form-control">
+                            <option value="">Tình trạng thanh toán</option>
+                            <option value="payment_completed" <?=$select_payment_status == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
+                            <option value="payment_not_completed" <?=$select_payment_status == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
+                          </select>
+                        </div>
+                        <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
+                          <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
+                            <option value="">Phương thức thanh toán</option>
+                            <?php
+                              $sql = "select * from payment_method";
+                              $payment = fetch_all(sql_query($sql));
+                              foreach($payment as $pay) {
+                            ?>
+                                <option value="<?=$pay['id']?>" <?=$select_payment_method == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
+                            <?php } ?>
+                            <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                          </select>
+                        </div>
+                        <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                       </div>
-                      <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                      <div class="col-12" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                        <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
+                          <!--<label for="">Sắp xếp:</label>-->
+                          <select name="orderByColumn" class="ml-10 form-control col-5">
+                            <option value="">Sắp xếp theo cột</option>
+                            <option value="orders_code" <?=$orderByColumn == "orders_code" ? "selected" : "";?>>Mã hoá đơn</option>
+                            <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên khách hàng</option>
+                            <option value="o.address" <?=$orderByColumn == "o.address" ? "selected" : "";?>>Địa chỉ nhận hàng</option>
+                            <option value="o.total" <?=$orderByColumn == "o.total" ? "selected" : "";?>>Tổng tiền</option>
+                            <option value="o.payment_status" <?=$orderByColumn == "o.payment_status" ? "selected" : "";?>>Tình trạng thanh toán</option>
+                            <option value="o.created_at" <?=$orderByColumn == "o.created_at" ? "selected" : "";?>>Ngày tạo kiện hàng</option>
+                          </select>
+                          <select name="orderStatus" class="ml-10 form-control col-5">
+                            <option value="">Thao tác sắp xếp</option>
+                            <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                            <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                          </select>
+                          <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                        </div>       
+                      </div>
                   </form>
                 </div>
-                <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                  <div>
+                <div class="mb-3 col-12 d-flex j-between" style="padding-left:0;padding-right:0;">
+                  <div class="">
                     <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button>
                     <?php
                       if($allow_read) {
@@ -288,8 +322,9 @@
                     <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
                     <?php } ?>         
                   </div>
+                  
                 </div>
-                <table id="m-order" class="table table-bordered table-hover">
+                <table id="m-order" class="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th></th>
@@ -425,22 +460,12 @@
 </div>
 <!--html & css section end-->
 <?php
-        include_once("include/bottom.meta.php");
+  include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
-<script src="js/jquery.dataTables.min.js"></script>
-<script src="js/dataTables.select.min.js"></script>
-<script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/colOrderWithResize.js"></script>
-<script src="js/dataTables.buttons.min.js"></script>
-<script src="js/jszip.min.js"></script>
-<script src="js/pdfmake.min.js"></script>
-<script src="js/vfs_fonts.js"></script>
-<script src="js/buttons.html5.min.js"></script>
-<script src="js/buttons.print.min.js"></script>
-<script src="js/buttons.colVis.min.js"></script>
-<script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/jquery.highlight.js"></script>
+<?php
+    include_once("include/dt_script.php");
+?>
 <!--searching filter-->
 <script>
   $(".kh-datepicker2").datepicker({
@@ -595,6 +620,7 @@
 <script>
     var dt_order;
     $(document).ready(function (e) {
+      $.fn.dataTable.moment('DD-MM-YYYY');
       dt_order = $("#m-order").DataTable({
          "sDom": 'RBlfrtip',
          columnDefs: [
@@ -607,7 +633,10 @@
                "name":"manipulate",
                "orderable": false,
                "className": 'manipulate',
-               "targets": 7
+               "targets": 8
+            },{
+               "type": 'formatted-num',
+               "targets": [5],
             }, 
          ],
           select: {
@@ -646,16 +675,6 @@
           },
           "buttons": [
             {
-                "extend": "copy",
-                "text": "Sao chép bảng (1)",
-                "key": {
-                    "key": '1',
-                },
-                "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-
-            },{
                 "extend": "excel",
                 "text": "Excel (2)",
                 "key": {
@@ -687,17 +706,6 @@
                 "charset": 'UTF-8',
                 "bom":true,
                 "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
-                "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-                "extend": "print",
-                "text": "In bảng (5)",
-                "key": {
-                    "key": '5',
-                },
-                "filename": "danh_sach_hoa_don_trich_xuat_ngay_<?=Date("d-m-Y",time());?>",
-                "title": "Dữ liệu hoá đơn trích xuất ngày <?=Date("d-m-Y",time());?>",
                 "exportOptions":{
                   columns: ':visible:not(.select-checkbox):not(.manipulate)'
                },
