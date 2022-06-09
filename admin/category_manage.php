@@ -5,7 +5,7 @@
     redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for user
-        log_v(menu22(NULL,1));
+        // log_v(menu22(NULL,1));
         $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
         if(check_permission_crud("category_manage.php","read")) {
           $allow_read = true;
@@ -139,7 +139,7 @@
                           </div>
                       </form>
                     </div>
-                  <div class="mb-3 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                  <div class="mb-3 mt-15 col-12 d-flex j-between" style="padding-right:0px;padding-left:0px;">
                     <div>
                       <?php
                         if($allow_delete) {
@@ -173,10 +173,10 @@
                   <table id="m-product-type" class="table table-bordered table-striped">
                     <thead>
                       <tr>
-                        <th style="width:30px;"></th>
-                        <th class="w-100">Số thứ tự</th>
+                        <th style="width:20px;"></th>
+                        <th style="width:70px;">Số thứ tự</th>
                         <th>Tên danh mục</th>
-                        <th class="w-200">Ngày thêm</th>
+                        <th class="w-100">Ngày thêm</th>
                         <th class="w-100">Tình trạng</th>
                         <th class="w-200">Thao tác</th>
                       </tr>
@@ -201,8 +201,8 @@
                     <tbody id="list-loai-san-pham">
                     <?php foreach($product_types as $product_type) {?>
                       <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
-                        <td></td>
-                        <td onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
+                        <td class=""></td>
+                        <td class="" onclick="location.href='category_manage.php?parent_id=<?php echo $product_type['id'];?>'"><?php echo $total - ($start_page + $cnt);?></td>
                         <?php
                           if($upt_more != 1){
                         ?>
@@ -379,21 +379,7 @@
 <?php
   include_once("include/bottom.meta.php");
 ?>
-<!--js section start-->
-<!--<script src="js/jquery.dataTables.min.js"></script>
-<script src="js/dataTables.bootstrap4.min.js"></script>
-<script src="js/dataTables.select.min.js"></script>
-<script src="js/colOrderWithResize.js"></script>
-<script src="js/dataTables.buttons.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
-<script src="js/pdfmake.min.js"></script>
-<script src="js/vfs_fonts.js"></script>
-<script src="js/buttons.html5.min.js"></script>
-<script src="js/buttons.print.min.js"></script>
-<script src="js/buttons.colVis.min.js"></script>
-<script src="js/dataTables.searchHighlight.min.js"></script> 
-<script src="js/jquery.highlight.js"></script>
-<script src="js/select2.min.js"></script>-->
+
 <?php
     include_once("include/dt_script.php");
 ?>

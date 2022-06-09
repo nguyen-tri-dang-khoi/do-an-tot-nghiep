@@ -41,6 +41,10 @@
       $where = "where 1=1 and pi.is_delete = 0 ";
       $wh_child = [];
       $arr_search = [];
+      //log_a($count_min);
+      //log_a($count_max);
+      $arr_2 = [$count_min,$count_max];
+      log_a($arr_2);
       if($keyword && is_array($keyword)) {
          $wh_child = [];
          if($search_option == "all") {
@@ -114,6 +118,7 @@
       }
       if($count_min && is_array($count_min) && $count_max && is_array($count_max)) {
          $wh_child = [];
+         
          foreach(array_combine($count_min,$count_max) as $c_min => $c_max) {
             if($c_min != "" && $c_max != "") {
                $c_min = str_replace(".","",$c_min);
@@ -126,6 +131,7 @@
                $c_min = str_replace(".","",$c_min);
                array_push($wh_child,"(pi.count >= '$c_min')");
             }
+            //log_v("con me no");
          }
          $wh_child = implode(" or ",$wh_child);
          if($wh_child != "") {
@@ -159,7 +165,7 @@
          $order_by .= "ORDER BY $orderByColumn $orderStatus";
          $where .= " $order_by";
       }
-      //log_v($where);
+      log_v($where);
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
@@ -279,11 +285,11 @@
 <link rel="stylesheet" href="css/select.dataTables.min.css">
 <link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <div class="container-wrapper" style="margin-left:250px;">
-  <div class="container-fluid" style="padding:0px;">
+  <div class="container-fluid" style="padding:0px;max-width: 1755px;">
     <section class="content">
         <div class="row" style="">
             <div class="col-12">
-               <div class="card">
+               <div class="card" style="max-width:100%;">
                   <div class="card-header" style="display: flex;justify-content: space-between;">
                      <h3 class="card-title">Quản lý sản phẩm</h3>
                      <div class="card-tools">
@@ -302,8 +308,122 @@
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body">
+                     <style>
+                        .ul-tab {
+                           border:none;
+                           border-bottom:1px solid #ddd; 
+                        }
+                        .tab {
+                           padding:10px 7px;
+                           border:none;
+                           border-bottom: 1px solid #ddd;
+                           height:calc(100% + 1px);
+                           display: flex;
+                           align-items: center;
+                           width:100%;
+                        }
+                        .tab-active > .tab{
+                           background-color:#fff;
+                           border:1px solid #ddd;
+                           border-top:5px solid red;
+                           border-bottom:1px solid #fff;
+                           border-left:none;
+                           width:100%;
+                           font-weight:bold;
+                        }
+                        .li-tab:not(.tab-active) {
+                           border-right:1px solid #ddd;
+                        }
+                        .li-tab{
+                           transition: margin-left 3s ease-in-out 0s;
+                           position:relative;
+                           width:220px;
+                           max-width:220px;
+                        }
+                        .tab-active > .tab-1 {
+                           border-left:1px solid #ddd;
+                        }
+                        .btn-add-tab {
+                           border-radius:50%;
+                           background-color:#fff;
+                           color:black;
+                           border:2px solid black;
+                           width:40px;
+                           height:40px;
+                           display:flex;
+                           justify-content:center;
+                           align-items:center;
+                        }
+                        .add-tab-plus {
+                           font-size: 30px;
+                           font-weight: 500;
+                        }
+                        .k-tab-delete::after {
+                           position: absolute;
+                           content: "\00d7";
+                           font-size: 21px;
+                           display: flex;
+                           justify-content: center;
+                           border-radius:50%;
+                           align-items: center;
+                           right: 7px;
+                           top: 14px;
+                           border: 2px solid black;
+                           width: 24px;
+                           height: 24px;
+                           background: #fff !important;
+                           cursor: pointer;
+                           margin: 0 auto;
+                           font-weight:bold;
+                        }
+                        .tab-active .k-tab-delete::after {
+                           border-color:red;
+                           color:red;
+                           right:7px;
+                        }
+                        li.li-tab:last-child > button.tab {
+                           border-right:1px solid #ddd;
+                        }
+                     </style>             
+                     <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center">
+                        <ul style="width:100%;" class="d-flex ul-tab">
+                           <?php
+                              $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                              
+                              $_SESSION['tab'] = isset($_SESSION['tab']) ? $_SESSION['tab'] : [];
+                              $_SESSION['tab_id'] = isset($_SESSION['tab_id']) ? $_SESSION['tab_id'] : 0;
+                           ?>
+                           <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="location.href='product_manage.php?tab_unique=all'" class="tab tab-1">Tất cả</button></li>
+                           <?php
+                              $ik = 0;
+                              $is_active = false;
+                              if(count($_SESSION['tab']) > 0) {
+                                 foreach($_SESSION['tab'] as $tab) {
+                                    //$is_active = ($tab['tab_unique'] == $tab_unique);
+                                    if($tab['tab_unique'] == $tab_unique) {
+                                       $_SESSION['tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                    }
+                           ?>
+                              <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                                 <button onclick="location.href='<?=$tab['tab_urlencode'];?>'" class="tab"><?=$tab['tab_name'];?></button>
+                                 <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                              </li>
+                           <?php
+                                 $ik++;
+                              }
+                           }
+                           ?>
+                           <li class="ml-10 d-flex j-center a-center" style="position:relative;">
+                              <div onclick="saveTabFilter('tab_<?=$_SESSION['tab_id'];?>')" style="" class="add-tab">
+                                 <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
+                              </div>
+                           </li>
+                           
+                        </ul>
+                     </div>
+                     
                      <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form style="" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">
+                        <form id="form-filter" style="" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">
                               <div class="d-flex a-start">
                                  <div class="" style="margin-top:5px;">
                                     <select onchange="choose_type_search()" class="form-control" name="search_option">
@@ -533,7 +653,8 @@
                                     </select>
                                     <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
                                  </div>     
-                              </div>   
+                              </div>
+                              <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
                         </form>
                      </div>
                      <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
@@ -573,6 +694,7 @@
                            <?php } ?>
                         </div>
                      </div>
+                     
                      <table id="m-product-info" class="table table-bordered table-striped">
                         <thead>
                            <tr>
@@ -744,27 +866,9 @@
       </div>
       <div class="modal-body">
          <div id="form-product2" class="modal-body">
-         
-            <!--<div class="row j-between">
-               <div style="margin-left: 7px;" class="form-group">
-                  <label for="">Nhập số dòng cần thêm: </label>
-                  <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
-                  <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
-               </div>
-               <div class="d-flex j-between">
-                  <div class="k-plus">
-                     <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                  </div>
-                  <div class="k-minus">
-                     <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
-                  </div>
-               </div>
-            </div>-->
             <div class="row j-between a-center">
                <div style="margin-left: 7px;" class="form-group">
                      <label for="">Nhập số dòng: </label>
-                     <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
-                     <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
                      <div class="" style="justify-content:flex-end;display:inline-flex">
                      <div class="k-number-row">
                         <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
@@ -814,6 +918,31 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="modal-xl3">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+         <h4 id="msg-del" class="modal-title">Thêm tab lọc dữ liệu</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div id="tab-filter">
+            <div class="col-12" style="padding-right:0px;padding-left:0px;">
+               <div class="form-group">
+                  <label for="">Nhập tiêu đề cho tab: </label>
+                  <input name="tab_name" type="text" placeholder="Nhập tiêu đề cho tab..." class="form-control">
+               </div>
+            </div>
+            <div class="col-12 d-flex a-center j-center">
+               <button type="button" onclick="saveTabFilter()" style="width:50px;" class="dt-button button-purple">Ok</button>
+            </div>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!--html & css section end-->
 <?php
@@ -847,6 +976,98 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script>
+   function focusInputTabName(evt) {
+      event.preventDefault();
+      let text = $(evt).find('button').text();
+      if(!$(evt).hasClass('tab-active')) {
+         $(evt).find('button').replaceWith(`<input onblur="changeTabName(this)" type='text' value='${text}' class='form-control' style='border-radius:0px;height:100%;width:100%;border:none;border-top:5px solid #007bff;'>`)
+      } else {
+         $(evt).find('button').replaceWith(`<input onblur="changeTabName(this)" type='text' value='${text}' class='form-control' style='border-radius:0px;height:100%;width:100%;border:none;border-top:5px solid #007bff;border-right:1px solid #ddd !important;'>`)
+      }
+      $(evt).find('input').focus();
+      $(evt).find('input').select();
+      $(evt).find('span').hide();
+   }
+   function changeTabName(evt) {
+      let new_tab_name = $(evt).val();
+      //console.log(new_tab_name);
+      let index = $(event.currentTarget).closest('.li-tab').attr('data-index');
+      if(new_tab_name == "") {
+         toastr["error"]("Vui lòng không để trống tên tab");
+         return;
+      } else {
+         $.ajax({
+            url:window.location.href,
+            type:"POST",
+            data: {
+               status:"changeTabNameFilter",
+               new_tab_name : new_tab_name,
+               index : index,
+            },success:function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  $(evt).siblings('span').show();
+                  $(evt).replaceWith(`<button onclick="location.href='${data.tab_urlencode}'" class="tab">${new_tab_name}</button>`);
+               }
+            }
+         })
+      }
+   }
+   function saveTabFilter(tab_name){
+      let tab_urlencode = "http://localhost/project/admin/product_manage.php?tab_unique=all";
+      $.ajax({
+         url:window.location.href,
+         type:"POST",
+         data: {
+            status:"saveTabFilter",
+            tab_name : tab_name,
+            tab_urlencode : tab_urlencode,
+         },success:function(data) {
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               location.href=data.tab_urlencode;
+            }
+         }
+      })
+   }
+   function delTabFilter(is_active){
+      let evt = $(event.currentTarget);
+      let index = evt.closest('.li-tab').attr('data-index');
+      $.ajax({
+         url: window.location.href,
+         type: "POST",
+         data: {
+            status: "deleteTabFilter",
+            index: index,
+            is_active_2: is_active,
+         },success:function(data){
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               if(is_active.trim() == '') {
+                  let next = evt.closest('li').nextAll();
+                  evt.closest('li').css({"visibility":"hidden"});
+                  next.animate({'right':'220px'},"fast",() => {
+                     evt.closest('.li-tab').remove();
+                     ik = 0;
+                     $('.k-tab-delete').each(function(){
+                        if($(this).closest('.li-tab').hasClass('tab-active')) {
+                           $(this).attr('onclick',`delTabFilter('1')`);
+                        } else {
+                           $(this).attr('onclick',`delTabFilter('')`);
+                        }
+                        $(this).closest('.li-tab').attr('data-index',ik);
+                        ik++;
+                     })
+                     next.css({'right':'0px'});
+                  });
+               } else if(is_active == 1) {
+                  location.href=data.tab_urlencode;
+               }
+            }
+         }
+      })
+   }
    function toggleActiveProduct(category_product_type_id){
       event.preventDefault();
       let id = $(event.currentTarget).closest("tr").attr("id");
@@ -1847,20 +2068,6 @@
    var count_row_z_index = 1000000;
    function showRow(page,apply_dom = true){
       let count = $('[data-plus]').attr('data-plus');
-      /*if(count == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống số dòng thêm",
-        })
-        return;
-      }
-      if(count < 1) {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng nhập số dòng lớn hơn 0",
-        })
-        return;
-      }*/
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
@@ -2910,6 +3117,38 @@
             sql_query($sql);
          }
          echo_json(["msg" => "ok"]);
+      } else if($status == "saveTabFilter") {
+         $tab_name = isset($_REQUEST['tab_name']) ? $_REQUEST['tab_name'] : null;
+         $_SESSION['tab_id'] = isset($_SESSION['tab_id']) ? $_SESSION['tab_id'] + 1 : 1;
+         $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
+         $tab_unique = uniqid("tab_");
+         $_SESSION['tab'] = isset($_SESSION['tab']) ? $_SESSION['tab'] : [];
+         array_push($_SESSION['tab'],[
+            "tab_unique" => $tab_unique,
+            "tab_name" => $tab_name,
+            "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
+         ]);
+         echo_json(["msg" => "ok","tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+      } else if($status == "deleteTabFilter") {
+         $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+         $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
+         array_splice($_SESSION['tab'],$index,1);
+         if(trim($is_active_2) == "") {
+            echo_json(["msg" => "ok"]);
+         }  else if($is_active_2 == 1) {
+            if(array_key_exists($index,$_SESSION['tab'])) {
+               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index]['tab_urlencode']]);
+            } else if(array_key_exists($index - 1,$_SESSION['tab'])){
+               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index - 1]['tab_urlencode']]);
+            } else {
+               echo_json(["msg" => "ok","tab_urlencode" => "product_manage.php?tab_unique=all"]);
+            }
+         }
+      } else if($status == "changeTabNameFilter") {
+         $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+         $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
+         $_SESSION['tab'][$index]['tab_name'] = $new_tab_name;
+         echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index]['tab_urlencode']]);
       }
    }
 ?>

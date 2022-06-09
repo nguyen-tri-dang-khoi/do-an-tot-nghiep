@@ -1,32 +1,30 @@
 <?php
     function check_access_token(){
         if(isset($_COOKIE['access_token'])) {
-            //return;
             $user_data_json = encrypt_decrypt($_COOKIE['access_token'],"decrypt");
             $user_data = (array)json_decode($user_data_json);
-            //log_v($user_data_json);
-            $_SESSION["isLoggedIn"] = true;
-            $_SESSION["id"] = $user_data["id"];
-            $_SESSION["email"] = $user_data["email"];
-            $_SESSION["img_name"] = $user_data["img_name"];
-            $_SESSION["paging"] = $user_data["paging"];
+            if($user_data['type'] == 'admin' || $user_data['type'] == 'officer') {
+                $_SESSION["isLoggedIn"] = true;
+                $_SESSION["id"] = $user_data["id"];
+                $_SESSION["email"] = $user_data["email"];
+                $_SESSION["img_name"] = $user_data["img_name"];
+                $_SESSION["paging"] = $user_data["paging"];
+            } 
         }
     }
-    /*function refresh_token(){
-        if(empty($_SESSION['key'])) {
-            $_SESSION['key'] = bin2hex(random_bytes(32));
+    function check_shipper_access_token(){
+        if(isset($_COOKIE['shipper_access_token'])) {
+            $user_data_json = encrypt_decrypt($_COOKIE['shipper_access_token'],"decrypt");
+            if($user_data['type'] == 'shipper'){
+                $_SESSION["isShipperLoggedIn"] = true;
+                $_SESSION["shipper_id"] = $user_data["id"];
+                $_SESSION["shipper_email"] = $user_data["email"];
+                $_SESSION["shipper_img_name"] = $user_data["img_name"];
+                $_SESSION["shipper_paging"] = $user_data["paging"];
+            } 
         }
-        $token = hash_hmac("sha256",rand(100,1000000),$_SESSION["key"]);
-        return $token;
     }
-    function echo_token($url = ""){
-        $_SESSION['token_3'] = isset($_SESSION['token_3']) ? $_SESSION['token_3'] : "";
-        if(empty($_SESSION['token_3'])) {
-            $_SESSION['token_3'] = refresh_token();
-        }
-        echo $_SESSION['token_3'];
-    }*/
-    function echo_token($url = ""){
+    /*function echo_token($url = ""){
         if($url == "") {
             $url = get_url_current_page();
         }
@@ -34,8 +32,8 @@
             $_SESSION['key'] = bin2hex(random_bytes(32));
         }
         echo hash_hmac('sha256', $url, $_SESSION["key"]);
-    }
-    function is_post_method($token = "",$url = ""){
+    }*/
+    /*function is_post_method($token = "",$url = ""){
         if($url == ""){
             $url = get_url_current_page();
         }
@@ -46,13 +44,23 @@
             $_SESSION['key'] = bin2hex(random_bytes(32));
         }
         return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && $_SERVER["REQUEST_METHOD"] == "POST";
+    }*/
+    function echo_token(){
+        echo "123";
     }
-    function logout_session_timeout(){
+    function is_post_method(){
+        return $_SERVER["REQUEST_METHOD"] == "POST";
+    }
+    function logout_session_timeout($type = 'admin|officer'){
 		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
 		$result = (time() - $_SESSION['timestamp']) / 60;
         //log_v($result);
 		if($result > 100) {
-			$_SESSION["isLoggedIn"] = false;
+            if($type == 'admin|officer') {
+                $_SESSION["isLoggedIn"] = false;
+            } else if($type == 'shipper') {
+                $_SESSION["isShipperLoggedIn"] = false;
+            }
 			unset($_SESSION["timestamp"]);
             if(isset($_COOKIE['access_token'])){
                 setcookie('access_token','',time() - 3600,"/","",false,false);
@@ -61,7 +69,7 @@
 			exit();
 		}
 	}
-    function is_get_method_csrf($token = "",$url = ""){
+    /*function is_get_method_csrf($token = "",$url = ""){
         if($url == ""){
             $url = get_url_current_page();
         }
@@ -72,7 +80,7 @@
             $_SESSION['key'] = bin2hex(random_bytes(32));
         }
         return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && ($_SERVER["REQUEST_METHOD"] == "GET");
-    }
+    }*/
     function is_get_method(){
         return ($_SERVER["REQUEST_METHOD"] == "GET");  
     }
@@ -90,16 +98,29 @@
         }
     }
     //f_w
-    function redirect_if_login_success($uri_login_success_redirect = "index.php") {
-        if(isset($_SESSION["isLoggedIn"]) && $_SESSION['isLoggedIn']) {
-            if(isset($_SESSION["redirect"])) {
-                header("location: " . $_SESSION['redirect']);
-                unset($_SESSION["redirect"]);
+    function redirect_if_login_success($uri_login_success_redirect = "index.php",$type = 'admin|officer') {
+        if($type == 'admin|officer') {
+            if(isset($_SESSION["isLoggedIn"]) && $_SESSION['isLoggedIn']) {
+                if(isset($_SESSION["redirect"])) {
+                    header("location: " . $_SESSION['redirect']);
+                    unset($_SESSION["redirect"]);
+                    exit();
+                }
+                header("location:$uri_login_success_redirect");
                 exit();
             }
-            header("location:$uri_login_success_redirect");
-            exit();
+        } else if($type == 'shipper') {
+            if(isset($_SESSION["isShipperLoggedIn"]) && $_SESSION['isShipperLoggedIn']) {
+                if(isset($_SESSION["redirect"])) {
+                    header("location: " . $_SESSION['redirect']);
+                    unset($_SESSION["redirect"]);
+                    exit();
+                }
+                header("location:$uri_login_success_redirect");
+                exit();
+            }
         }
+        
     }
     function redirect_if_customer_login_success($uri_login_success_redirect = "index.php") {
         if(isset($_SESSION["isUserLoggedIn"]) && $_SESSION['isUserLoggedIn']) {

@@ -105,14 +105,13 @@
 <?php
     include_once("include/footer.php");
 ?>
-
 <?php
     } else if (is_post_method()) {
         $test_lock = true;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? limit 1";
+        $sql = "select id,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and type = 'officer'  or type = 'admin' limit 1";
         $row = fetch_row($sql,[$email]);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
@@ -130,6 +129,7 @@
                 $_SESSION["paging"] = $row["paging"];
                 $user_data_json = json_encode([
                     "id" => $row["id"],
+                    "type" => $row['type'],
                     "email" => $row["email"],
                     "img_name" => $row["img_name"],
                     "paging" => $row["paging"],

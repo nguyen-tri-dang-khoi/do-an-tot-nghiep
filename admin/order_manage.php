@@ -20,7 +20,7 @@
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $date_min = isset($_REQUEST['date_min']) ? $_REQUEST['date_min'] : null;
         $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
-        $select_payment_status = isset($_REQUEST['select_payment_status']) ? $_REQUEST['select_payment_status'] : null;
+        $select_payment_status_id = isset($_REQUEST['select_payment_status_id']) ? $_REQUEST['select_payment_status_id'] : null;
         $select_payment_method = isset($_REQUEST['select_payment_method']) ? $_REQUEST['select_payment_method'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
@@ -107,11 +107,11 @@
               $where .= " and ($wh_child)";
           }
         }
-        if($select_payment_status) {
-          if($select_payment_status == "payment_completed"){
-            $where .= " and o.payment_status='1'";
-          } else if($select_payment_status == "payment_not_completed"){
-            $where .= " and o.payment_status='0'";
+        if($select_payment_status_id) {
+          if($select_payment_status_id == "payment_completed"){
+            $where .= " and o.payment_status_id='1'";
+          } else if($select_payment_status_id == "payment_not_completed"){
+            $where .= " and o.payment_status_id='0'";
           }
         }
         if($select_payment_method) {
@@ -159,7 +159,7 @@
                           <select onchange="choose_type_search()" class="form-control" name="search_option2">
                               <option value="">Bộ lọc tìm kiếm</option>
                               <option value="keyword">Từ khoá</option>
-                              <option value="payment_status2">Tình trạng thanh toán</option>
+                              <option value="payment_status_id2">Tình trạng thanh toán</option>
                               <option value="payment_method2">Phương thức thanh toán</option>
                               <option value="total2">Khoảng tổng tiền</option>
                               <option value="date2">Ngày tạo đơn hàng</option>
@@ -269,15 +269,15 @@
                           ?>
                         </div>
                         <input type="hidden" name="is_search" value="true">
-                        <div id="s-payment_status2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                          <select onchange="activePayment()" name="select_payment_status" class="form-control">
+                        <div id="s-payment_status_id2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
+                          <select onchange="activePayment()" name="select_payment_status_id" class="form-control">
                             <option value="">Tình trạng thanh toán</option>
-                            <option value="payment_completed" <?=$select_payment_status == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
-                            <option value="payment_not_completed" <?=$select_payment_status == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
+                            <option value="payment_completed" <?=$select_payment_status_id == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
+                            <option value="payment_not_completed" <?=$select_payment_status_id == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
                           </select>
                         </div>
-                        <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status ? "display:block;" : "display:none;";?>">
-                          <select style="<?=$select_payment_status=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status=='payment_completed' ? "" : "disabled"?>>
+                        <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
+                          <select style="<?=$select_payment_status_id=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status_id=='payment_completed' ? "" : "disabled"?>>
                             <option value="">Phương thức thanh toán</option>
                             <?php
                               $sql = "select * from payment_method";
@@ -300,7 +300,7 @@
                             <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên khách hàng</option>
                             <option value="o.address" <?=$orderByColumn == "o.address" ? "selected" : "";?>>Địa chỉ nhận hàng</option>
                             <option value="o.total" <?=$orderByColumn == "o.total" ? "selected" : "";?>>Tổng tiền</option>
-                            <option value="o.payment_status" <?=$orderByColumn == "o.payment_status" ? "selected" : "";?>>Tình trạng thanh toán</option>
+                            <option value="o.payment_status_id" <?=$orderByColumn == "o.payment_status_id" ? "selected" : "";?>>Tình trạng thanh toán</option>
                             <option value="o.created_at" <?=$orderByColumn == "o.created_at" ? "selected" : "";?>>Ngày tạo kiện hàng</option>
                           </select>
                           <select name="orderStatus" class="ml-10 form-control col-5">
@@ -353,7 +353,7 @@
                     $total = fetch_row($sql_get_total,$arr_paras)['countt'];
                     array_push($arr_paras,$start_page);
                     array_push($arr_paras,$limit);
-                    $sql_get_order = "select o.id as 'o_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status,
+                    $sql_get_order = "select o.id as 'o_id',o.is_cancel as 'o_is_cancel',o.delivery_status_id as 'o_delivery_status_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status_id,
                     o.created_at as 'o_created_at',o.customer_id as 'o_customer_id',c.full_name,c.phone from orders o inner join customer c on o.customer_id = c.id $where limit ?,?";
                     $rows = db_query($sql_get_order,$arr_paras);
                     $i = 0;
@@ -367,17 +367,14 @@
                         <td><?=$row['full_name']?></td>
                         <td><?=$row['o_address']?></td>
                         <td><?=number_format($row['total'],0,"",".")."đ";?></td>
-                        <?php
-                          if($row['payment_status'] == 1) {
-                        ?>
-                            <td id="status-payment<?php echo $i;?>">Đã thanh toán</td>
-                        <?php 
-                            } else {
-                        ?>
-                            <td id="status-payment<?php echo $i;?>">Chưa thanh toán</td>
-                        <?php 
-                          }
-                        ?>
+                        <td>
+                          <?php
+                            $sql_get_payment_status = "select * from payment_status where id = " . $row['payment_status_id'];
+                            $res = fetch(sql_query($sql_get_payment_status));
+                            //log_v($sql_get_payment_status);
+                            echo $res['payment_status_name'];
+                          ?>
+                        </td>
                         <td><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
                         <td>
                           <?php
@@ -387,6 +384,32 @@
                           data-id="<?=$row["o_id"];?>" >
                           Xem
                           </button>
+                          <?php } ?>
+                          <?php
+                            if($row['o_delivery_status_id'] == 1) {
+                          ?>
+                            <button onclick="showModalShipOrder('<?=$row['o_id'];?>')" class="dt-button button-grey"
+                            data-id="<?=$row["o_id"];?>" >
+                            Xác nhận vận chuyển
+                            </button>
+                          <?php } else {?>
+                            <button class="dt-button button-grey">
+                            Đã xác nhận vận chuyển
+                            </button>
+                          <?php }?>
+                          <?php if($row['o_delivery_status_id'] > 1) {?>
+
+                          <?php } else if($row['o_is_cancel'] == 0) {?>
+                            <button onclick="cancelOrder('<?=$row['o_id'];?>')" class="dt-button button-red"
+                            data-id="<?=$row["o_id"];?>" >
+                            Huỷ đơn hàng
+                            </button>
+                          <?php
+                            } else if($row['o_is_cancel'] != 0){
+                          ?>
+                            <button class="dt-button button-red">
+                            Đơn hàng đã huý
+                            </button>
                           <?php } ?>
                         </td>
                     </tr>
@@ -449,6 +472,27 @@
       </div>
       <div class="modal-body">
          <div id="form-payment">
+
+         </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.Load danh sách nhân viên giao hàng -->
+<div class="modal fade" id="modal-xl3">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Giao đơn hàng cho shipper vận chuyển</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+         <div id="form-order-shipper">
 
          </div>
       </div>
@@ -558,7 +602,7 @@
     $(event.currentTarget).closest(_class).remove();
   }
   function activePayment(){
-    let status = $("select[name='select_payment_status'] > option:selected").val();
+    let status = $("select[name='select_payment_status_id'] > option:selected").val();
     if(status == "payment_completed") {
       $("select[name='select_payment_method']").prop("disabled",false);
       $("select[name='select_payment_method']").css({"cursor":"pointer"});
@@ -743,13 +787,161 @@
       //
       dt_order.buttons().container().appendTo('#m-order_wrapper .col-md-6:eq(0)');
     });
-    // Xem san pham
+    // xem hoa don
     $(document).on('click','.btn-xem-hoa-don',function(event){
         let id = $(event.currentTarget).attr('data-id');
         $('#form-order').load("ajax_order_manage.php?order_id=" + id + "&status=show_order_detail",() => {
           $('#modal-xl').modal({backdrop: 'static', keyboard: false});
         });
     });
+    // mở modal shipping
+    function showModalShipOrder(order_id){
+      $('#form-order-shipper').load("ajax_order_manage.php?status=load_shipper&order_id="+order_id,() => {
+        $('#modal-xl3').modal({backdrop: 'static', keyboard: false});
+        $(".kh-datepicker").datepicker({
+          changeMonth: true,
+          changeYear: true,
+          dateFormat: 'dd-mm-yy',
+        });
+      });
+    }
+    // giao đơn cho shipper vận chuyển
+    function giveOrderToShipper(order_id){
+      let shipper_id = $("select[name='choose_shipper'] > option:selected").val();
+      let delivery_date = $("input[name='delivery_date']").val();
+      console.log(delivery_date);
+      if(shipper_id == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Bạn vui lòng chọn shipper giao hàng",
+        });
+        return;
+      } else if(delivery_date == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Bạn vui lòng chọn ngày giao hàng",
+        });
+        return;
+      }
+      delivery_date = delivery_date.split("-");
+      delivery_date = delivery_date[2] + "-" + delivery_date[1] + "-" + delivery_date[0];
+      $.confirm({
+        content: 'Bạn có chắc chắn muốn giao đơn hàng cho shipper này ?',
+        buttons: {
+          "Có":function(){
+            $.ajax({
+                url:window.location.href,
+                type:"POST",
+                data: {
+                  status:"give_order_to_shipper",
+                  id : order_id,
+                  shipper_id : shipper_id,
+                  delivery_date : delivery_date,
+                },success:function(data) {
+                  data = JSON.parse(data);
+                  if(data.msg == "ok") {
+                    $.alert({
+                      title: "Thông báo",
+                      content: data.success,
+                      buttons: {
+                        "Ok":function(){
+                          location.reload();
+                        }
+                      }
+                    });
+                  }
+                },error:function(data) {
+
+                }
+              })
+          },
+          "Không":function(){
+
+          }
+        }
+      })
+    }
+    // huỷ đơn hàng
+    function cancelOrder(order_id){
+      $.confirm({
+        content: 'Bạn có chắc chắn muốn huỷ nhiều đơn hàng cùng lúc ?',
+        buttons: {
+          "Có": function(){
+            $.ajax({
+              url:window.location.href,
+              type:"POST",
+              data: {
+                "status":"cancel_order",
+                "id" : order_id,
+              },success:function(data) {
+                data = JSON.parse(data);
+                if(data.msg == "ok") {
+                  $.alert({
+                    title: "Thông báo",
+                    content: data.success,
+                    buttons: {
+                      "Ok":function(){
+                        location.reload();
+                      }
+                    }
+                  });
+                }
+              },error:function(data) {
+
+              }
+            })
+          },"Không":function(){
+
+          }
+        }
+      })
+      
+    }
+    // huỷ nhiều đơn hàng
+    function cancelMoreOrder(){
+      $.confirm({
+        content: 'Bạn có chắc chắn muốn huỷ nhiều đơn hàng cùng lúc ?',
+        buttons: {
+          "Có":function(){
+              let arr_del = [];
+              let _data = dt_order.rows(".selected").select().data();
+              let count4 = _data.length;
+              for(i = 0 ; i < count4 ; i++) {
+                arr_del.push(_data[i].DT_RowId);
+              }
+              let str_arr_upt = arr_del.join(",");
+              $.ajax({
+                url:window.location.href,
+                type:"POST",
+                data: {
+                  "status":"cancel_more_order",
+                  "list_id" : str_arr_upt,
+                },success:function(data) {
+                  data = JSON.parse(data);
+                  if(data.msg == "ok") {
+                    $.alert({
+                      title: "Thông báo",
+                      content: data.success,
+                      buttons: {
+                        "Ok":function(){
+                          location.reload();
+                        }
+                      }
+                    });
+                  }
+                },error:function(data) {
+
+                }
+              })
+          },
+          "Không":function(){
+
+          }
+        }
+        
+      })
+      
+    }
     function readMore(){
       let arr_del = [];
       let _data = dt_order.rows(".selected").select().data();
@@ -816,22 +1008,12 @@
 </script>
 <!--js section end-->
 <?php
-        include_once("include/footer.php");
+    include_once("include/footer.php");
 ?>
-
 <?php
     } else if (is_post_method()) {
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-        /*if($status == 1) {
-           ajax_db_update_by_id('orders',['payment_status'=>1],[$id]);
-        } else if($status == -1) {
-            $sql_load_order_detail = "select pi.name,pi.img_name as 'image',od.count,od.price from product_info pi inner join order_detail od on pi.id = od.product_info_id where od.order_id = ?";
-            ajax_db_query($sql_load_order_detail,[$id]);
-        } else if($status == 0) {
-          $sql_get_client_info = "select username,email,birthday,phone,address,img_name from customer where id = ? limit 1";
-          ajax_fetch_row($sql_get_client_info,[$id]);
-        } else*/
         if($status == "active_payment") {
           $payment_id = isset($_REQUEST["payment_id"]) ? $_REQUEST["payment_id"] : null;
           $yn = isset($_REQUEST["yn"]) ? $_REQUEST["yn"] : null;
@@ -842,6 +1024,21 @@
           }
           sql_query($sql_update);
           echo_json(["msg" => "ok","yn" => $yn]);
+        } else if($status == "cancel_order") {
+          $sql_cancel_order = "Update orders set is_cancel = '1' where id = '$id'";
+          sql_query($sql_cancel_order);
+          echo_json(["msg" => "ok","success" => "Bạn đã huỷ đơn hàng thành công"]);
+        } else if($status == "cancel_more_order") {
+          $list_id = isset($_REQUEST["list_id"]) ? $_REQUEST["list_id"] : null;
+          $sql_cancel_more_order = "Update orders set is_cancel = '1' where id in ($list_id)";
+          sql_query($sql_cancel_more_order);
+          echo_json(["msg" => "ok","success" => "Bạn đã huỷ nhiều đơn hàng thành công"]);
+        } else if($status == "give_order_to_shipper") {
+          $shipper_id = isset($_REQUEST["shipper_id"]) ? $_REQUEST["shipper_id"] : null;
+          $delivery_date = isset($_REQUEST["delivery_date"]) ? Date("Y-m-d",strtotime($_REQUEST["delivery_date"])) : null;
+          $sql_give_order_to_shipper = "Update orders set shipper_id = '$shipper_id',delivery_date = '$delivery_date',delivery_status_id = '2' where id = '$id'";
+          sql_query($sql_give_order_to_shipper);
+          echo_json(["msg" => "ok","success" => "Đơn hàng đã được chuyển cho shipper xử lý thành công ở trạng thái đã xác nhận"]);
         }
     }
 ?>

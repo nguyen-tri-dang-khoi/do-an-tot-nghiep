@@ -746,7 +746,6 @@
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
-   
 </script>
 <script>
    function showListComment(id,page=1) {
@@ -780,27 +779,39 @@
       });
    }
    function sendComment(reply_id,product_info_id) {
+      let test = true;
       let comment = $(`textarea[name="reply${reply_id}"]`).val();
       console.log(comment);
-      $.ajax({
-         url:window.location.href,
-         type:"POST",
-         data: {
-            token : "<?php echo_token();?>",
-            comment: comment,
-            status: "Send",
-            reply_id: reply_id,
-            product_info_id: product_info_id,
-         },success:function(data) {
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               showReplyOk(reply_id,product_info_id,"input");
+      if(comment.trim() == "") {
+         $.alert({
+            title : "Thông báo",
+            content: "Vui lòng không đê trống nội dung bình luận."
+         });
+         test = false;
+      }
+      if(test) {
+         $.ajax({
+            url:window.location.href,
+            type:"POST",
+            data: {
+               token : "<?php echo_token();?>",
+               comment: comment,
+               status: "Send",
+               reply_id: reply_id,
+               product_info_id: product_info_id,
+            },success:function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if(data.msg == "ok") {
+                  showReplyOk(reply_id,product_info_id,"input");
+                  $(`textarea[name="reply${reply_id}"]`).val("");
+               }
+            },error:function(data){
+               console.log("Error: " + data);
             }
-         },error:function(data){
-            console.log("Error: " + data);
-         }
-      })
+         })
+      }
+      
    }
    function delComment(comment_id,product_info_id) {
       let evt = $(event.currentTarget);
@@ -831,7 +842,32 @@
             }
          }
       })
-      
+   }
+   function toggleComment(comment_id,product_type_id,status) {
+      let evt = $(event.currentTarget);
+      $.ajax({
+         url:window.location.href,
+         type:"POST",
+         data: {
+            token : "<?php echo_token();?>",
+            status: status,
+            id: comment_id,
+         },success:function(data) {
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+               toastr["success"](data.success);
+               if(status == "Active") {
+                  evt.attr('onchange',`toggleComment('${comment_id}','${product_type_id}','Deactive')`);
+               } else if(status == "Deactive") {
+                  evt.attr('onchange',`toggleComment('${comment_id}','${product_type_id}','Active')`);
+               }
+               showReplyOk(comment_id,product_type_id,'input');
+            }
+         },error:function(data){
+            console.log("Error: " + data);
+         }
+      })
    }
 </script>
 <!-- datatable and function crud js-->
@@ -970,852 +1006,6 @@
       $('#form-product2 #paging').remove();
       $('[data-plus]').attr('data-plus',0);
     })
-   function delEmpty(){
-      $.confirm({
-        title:"Thông báo",
-        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
-        buttons: {
-          "Có": function(){
-            $('#form-product2 table > tbody').remove();
-            $('#form-product2 #paging').remove();
-            $('[data-plus]').attr('data-plus',0);
-          },"Không":function(){
-
-          }
-        }
-      });  
-   }
-   function insAll(){
-      let test = true;
-      let formData = new FormData();
-      let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="name_p2"]').length;
-      $('td input[name="name_p2"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("name_p2[]",$(this).val());
-            $(this).siblings("p").text("");
-
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td input[name="price_p2"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("price_p2[]",$(this).val());
-            $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td textarea[name="desc_p2"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("desc_p2[]",$(this).val());
-            $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td input[name="count_p2"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("count_p2[]",$(this).val());
-            $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td input[name="category_id"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("type_p2[]",$(this).val());
-            $(this).closest('td').find("p").text("");
-         } else {
-            $(this).closest('td').find("p").text("Phải chọn danh mục");
-            test = false;
-         }
-      });
-      $('td input[name="img2[]"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("img2[]",$(this)[0].files[0]);
-            $(this).closest('td').find("p").text("");
-         } else {
-            $(this).closest('td').find("p").text("Ko để trống ảnh");
-            test = false;
-         }
-      });
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","ins_all");
-      formData.append("len",len);
-      if(count == 0) {
-        $.alert({
-            title:"Thông báo",
-            content:"Vui lòng tạo input"
-        })
-        test = false;
-      }
-      if(test) {
-         $.confirm({
-            title: "Thông báo",
-            content: `Bạn có chắc chắn muốn thêm ${count} dòng này ?`,
-            buttons: {
-               "Có": function(){
-                  $.ajax({
-                     url: window.location.href,
-                     type: "POST",
-                     data: formData,
-                     cache: false,
-                     contentType: false,
-                     processData: false,
-                     success: function(data){
-                        console.log(data);
-                        data = JSON.parse(data);
-                        if(data.msg == "ok") {
-                           $.alert({
-                              title: "Thông báo",
-                              content: "Bạn đã thêm dữ liệu thành công",
-                              buttons: {
-                                 "Ok": function(){
-                                    location.reload();
-                                 }
-                              }
-                           });
-                        }
-                     },
-                     error: function(data){
-                        console.log("Error: " + data);
-                     }
-                  })
-               },"Không":function(){
-
-               }
-            }
-         })
-      }
-      
-   }
-   function uptAll(){
-      let test = true;
-      let formData = new FormData();
-      let _data = dt_pi.rows(".selected").select().data();
-      if(_data.length == 0) {
-         $.alert({
-            title:"Thông báo",
-            content:"Vui lòng chọn dòng cần lưu",
-         });
-         return;
-      }
-      for(i = 0 ; i < _data.length ; i++) {
-         formData.append("pi_id[]",_data[i].DT_RowId);
-      }
-      $('tr.selected input[name="pi_name"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("pi_name[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
-         }
-         
-      });
-      $('tr.selected input[name="pi_count"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("pi_count[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
-         }
-         
-      });
-      $('tr.selected input[name="pi_price"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("pi_price[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
-         }
-         
-      });
-      $("tr.selected .t-summernote").each(function(){
-         if($(this).val() != "") {
-            formData.append("pi_desc[]",$(this).summernote('code'));
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
-         }
-      });
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","upt_all");
-      formData.append("len",_data.length);
-      if(test) {
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(data){
-               console.log(data);
-               data = JSON.parse(data);
-               if(data.msg == "ok") {
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã sửa dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           location.reload();
-                        }
-                     }
-                  });
-               }
-            },
-            error: function(data){
-               console.log("Error: " + data);
-            }
-         })
-      }
-     
-   }
-   function delMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      for(i = 0 ; i < _data.length ; i++) {
-         arr_del.push(_data[i].DT_RowId);
-      }
-      if(_data.length > 0) {
-         $.confirm({
-            title: "Thông báo",
-            content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
-            buttons: {
-               "Có": function(){
-                  $.ajax({
-                     url: window.location.href,
-                     type: "POST",
-                     data: {
-                        status: "del_more",
-                        token: "<?php echo_token(); ?>",
-                        rows: arr_del.join(","),
-                     },
-                     success: function(data){
-                        data = JSON.parse(data);
-                        if(data.msg == "ok"){
-                           $.alert({
-                              title: "Thông báo",
-                              content: "Bạn đã xoá dữ liệu thành công",
-                              buttons: {
-                                 "Ok": function(){
-                                    location.href="product_manage.php";
-                                 }
-                              }
-                           })
-                        }
-                     },error: function(data){
-                        console.log("Error:" + data);
-                     }
-                  });
-               },"Không": function(){
-
-               }
-            }
-         });
-      } else {
-         $.alert({
-            title: "Thông báo",
-            content: "Bạn chưa chọn dòng cần xoá",
-         });
-      }
-   }
-   function uptMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      for(i = 0 ; i < _data.length ; i++) {
-         arr_del.push(_data[i].DT_RowId);
-      }
-      let str_arr_upt = arr_del.join(",");
-      location.href="product_manage.php?upt_more=1&str=" + str_arr_upt;
-   }
-   function uptThisRow(){
-      let test = true;
-      let this2 = $(event.currentTarget).closest("tr");
-      let name = $(event.currentTarget).closest("tr").find("td input[name='pi_name']").val();
-      let count = $(event.currentTarget).closest("tr").find("td input[name='pi_count']").val();
-      let price = $(event.currentTarget).closest("tr").find("td input[name='pi_price']").val();
-      let description = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
-      let id = $(event.currentTarget).attr('data-id');
-
-      // validate 
-      if(name == "") {
-         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("");
-      }
-      //
-      if(price == "") {
-         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("");
-      }
-      //
-      if(count == "") {
-         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("");
-      } 
-      //
-      if(description == "") {
-         this2.find("td .t-summernote").siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.find("td .t-summernote").siblings("span.text-danger").text("");
-      } 
-      console.log(name);
-      console.log(count);
-      console.log(price);
-      console.log(description);
-      this2 = $(event.currentTarget);
-      if(test) {
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: {
-               status: "upt_more",
-               pi_name: name,
-               pi_count: count,
-               pi_price: price,
-               pi_description: description,
-               pi_id: id,
-               token: '<?php echo_token();?>'
-            },success: function(data){
-               data = JSON.parse(data);
-               if(data.msg == "ok"){
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã sửa dữ liệu thành công",
-                     buttons: {
-                        "Ok" : function(){
-                           let num_of_upt = this2.attr('dt-count');
-                           num_of_upt++;
-                           this2.attr('dt-count',num_of_upt);
-                           this2.text(`Sửa (${num_of_upt})`);
-                        }
-                     }
-                  });
-               }
-            },error:function(data){
-               console.log("Error: " + data);
-            }
-         });
-      }
-   }
-   function insMore(){
-      //$('#modal-xl2').modal('show');
-      $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
-   }
-   function insMore2(){
-      let test = true;
-      let this2 = $(event.currentTarget);
-      let name_p2 = $(event.currentTarget).closest('tr').find('td input[name="name_p2"]').val();
-      let price_p2 = $(event.currentTarget).closest('tr').find('td input[name="price_p2"]').val();
-      let count_p2 = $(event.currentTarget).closest('tr').find('td input[name="count_p2"]').val();
-      let desc_p2 = $(event.currentTarget).closest('tr').find('td textarea[name="desc_p2"]').val();
-      let type_p2 = $(event.currentTarget).closest('tr').find('td input[name="category_id"]').val();
-      let file = $(event.currentTarget).closest('tr').find('input[name="img2[]"]')[0].files;
-      console.log(file);
-      // validate 
-      if(name_p2 == "") {
-         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(price_p2 == "") {
-         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(count_p2 == "") {
-         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("");
-      } 
-      //
-      if(desc_p2 == "") {
-         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("");
-      } 
-      //
-      if(type_p2 == "") {
-         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("Phải chọn danh mục");
-         test = false;
-      } else {
-         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("");
-      }
-      //
-      if(file.length == 0) {
-         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("Ko để trống ảnh");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("");
-      }
-      //
-      console.log(test);
-      if(test) {
-         let formData = new FormData();
-         formData.append("name_p2",name_p2);
-         formData.append("price_p2",price_p2);
-         formData.append("count_p2",count_p2);
-         formData.append("type_p2",type_p2);
-         formData.append("desc_p2",desc_p2);
-         formData.append("status","ins_more");
-         formData.append("token","<?php echo_token();?>");
-         if(file.length > 0) {
-            formData.append('file_p2',file[0]); 
-         }
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            cache: false,
-            contentType: false,
-            processData: false,
-            data:formData,
-            success: function(data){
-               console.log(data);
-               data = JSON.parse(data);
-               if(data.msg == "ok") {
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã thêm dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           this2.text("Đã thêm");
-                           this2.prop("disabled",true);
-                           this2.css({
-                              "border": "1px solid #cac0c0",
-                              "color": "#cac0c0",
-                              "pointer-events": "none",
-                           });
-                        }
-                     }
-                  });
-               }
-            },error: function(data){
-               console.log("Error: " + data);
-            }
-         })
-      }
-   }
-   var count_row_z_index = 1000000;
-   function showRow(page,apply_dom = true){
-      let count = $('[data-plus]').attr('data-plus');
-      /*if(count == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống số dòng thêm",
-        })
-        return;
-      }
-      if(count < 1) {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng nhập số dòng lớn hơn 0",
-        })
-        return;
-      }*/
-      limit = 7;
-      if(apply_dom) {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-product2 table').remove();
-        $('#form-product2 #paging').remove();
-        let html = `
-        <table class='table table-bordered' style="height:auto;">
-          <thead>
-            <tr>
-              <th>Số thứ tự</th>
-              <th>Tên sp</th>
-              <th class="w-300">Danh mục</th>
-              <th>Số lượng</th>
-              <th>Đơn giá</th>
-              <th>Mô tả sp</th>
-              <th>Ảnh đại diện</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-        `;
-        count2 = parseInt(count / 7);
-        g = 1;
-        for(i = 0 ; i < count2 ; i++) {
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(j = 0 ; j < 7 ; j++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;position:relative;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child" >
-                                 <?php echo show_menu();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                     </div>
-                  </td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        if(count % 7 != 0) {
-          count3 = count % 7;
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;outline:none !important;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child">
-                                 <?php echo show_menu_3();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                     </div>
-                  </td>  
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        html += `
-          </table>
-        `;
-        html += `
-          <div id="paging" style="justify-content:center;" class="col-12 d-flex">
-            <nav id="pagination2" class="d-flex j-center" style="width:100%;">
-            </nav>
-          </div>
-        `;
-        $(html).appendTo('#form-product2');
-        apply_dom = false;
-        $('.t-bd-1').css({"display":"contents"});
-        
-        console.log(html);
-      } else {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('.t-bd').css({"display":"none"});
-        $('.t-bd-' + page).css({"display":"contents"});
-      }
-      $('#pagination2').pagination({
-        items: count,
-        itemsOnPage: limit,
-        currentPage: page,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      $('#pagination2 > ul').addClass('d-flex j-center');
-      $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product2 table tbody').remove();
-        $('#form-product2 #paging').remove();
-        $('input[name="count2"]').val("");
-      })
-   } 
-   function insRow(){
-      num_of_row_insert = $('input[name="count3"]').val();
-      if(num_of_row_insert == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Vui lòng không để trống số dòng cần thêm",
-         })
-         return;
-      } 
-      for(i = 0 ; i < num_of_row_insert ; i++) {
-         let page = $('[data-plus]').attr('data-plus');
-         let html = "";
-         let count2 = parseInt(page / 7) + 1;
-         html = `
-            <tr data-row-id='${parseInt(page) + 1}'>
-               <td>${parseInt(page) + 1}</td>
-               <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-               <td>
-                  <div style="display:flex;flex-direction:column;outline:none !important;">
-                     <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                        <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                           <a href="#">Chọn danh mục</a>
-                           <ul class="child">
-                              <?php echo show_menu_3();?>
-                           </ul>
-                           <input type="hidden" name="category_id">
-                        </li>
-                     </ul>
-                     <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                     <p class='text-danger'></p>
-                  </div>
-               </td>
-               <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-               <td>
-                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                     <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                  </div>
-                  <p class='text-danger'></p>
-               </td>
-               
-               <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-            </tr>
-         `;
-         if(page % 7 != 0) {
-            $('.t-bd').css({"display":"none"});
-            $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-            $(html).appendTo(`.t-bd-${count2}`);
-         } else {
-            $('.t-bd').css({"display":"none"});
-            html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-            $(html).appendTo('#form-product2 table');
-         }
-         if(page == 0) {
-         let html2 = `<div id="paging" class="col-12 d-flex">
-            <nav id="pagination2" class="d-flex j-center" style="width:100%;">
-            </nav>
-          </div>`;
-          
-         $(html2).appendTo('#form-product2');
-         
-         }
-         $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-         $('input[name="count2"]').val(parseInt(page) + 1);
-         $('#pagination2').pagination({
-            items: parseInt(page) + 1,
-            itemsOnPage: 7,
-            currentPage: count2,
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-               showRow(pageNumber,false);
-            },
-            cssStyle: 'light-theme',
-         });
-         $('#pagination2 > ul').addClass('d-flex j-center');
-      }
-      
-   }
-   function delRow(){
-      let count_del = $("input[name=count3]").val();
-      if(count_del == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Vui lòng không để trống số dòng cần xoá",
-         })
-         return;
-      }
-      for(i = 0 ; i < count_del ; i++) {
-         let page = $('[data-plus]').attr('data-plus');
-         if(page < 0) {
-            $('[data-plus]').attr('data-plus',0);
-            return;
-         }
-         let currentPage1 = page / 7;
-         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-         $(`[data-row-id="${page}"]`).remove();
-         page--;
-         $('[data-plus]').attr('data-plus',page);
-         $('input[name="count2"]').val(page);
-         currentPage1 = page / 7;
-         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-         else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-         $('.t-bd').css({"display":"none"});
-         $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-         $('#pagination2').pagination({
-            items: parseInt(page),
-            itemsOnPage: 7,
-            currentPage: currentPage1,
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-               showRow(pageNumber,false);
-            },
-
-            cssStyle: 'light-theme',
-         });
-         count_row_z_index++;
-      }
-      
-   }
-   function show_menu_root(){
-      let child = $(event.currentTarget).find('li').length;
-      if(!child){
-         let id = $(event.currentTarget).attr('data-id');
-         let name = $(event.currentTarget).text();
-         name = name.substr(0,name.length - 1);
-         let target = $(event.currentTarget)
-         console.log(name);
-         $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-            target.closest('.ul_menu').find("input[name='category_id']").val(id);
-            target.closest('.ul_menu').next().empty();
-            target.closest('.ul_menu').next().append(data);
-         });
-      }
-   }
-   function readMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      let count4 = _data.length;
-      for(i = 0 ; i < count4 ; i++) {
-        arr_del.push(_data[i].DT_RowId);
-      }
-      let str_arr_upt = arr_del.join(",");
-      if(arr_del.length == 0) {
-        $.alert({
-          title: "Thông báo",
-          content: "Bạn vui lòng chọn dòng cần xem",
-        });
-        return;
-      }
-      $('#custom-tabs-two-tabContent').load(`ajax_product_info.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
-        let html2 = `
-          <div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination3">
-            </nav>
-          </div>
-        `;
-        $(html2).appendTo('#custom-tabs-two-tabContent');
-        $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-        $('.tb-read').css({
-          "display":"none",
-        });
-        $('.tb-read-1').css({
-          "display":"contents",
-        });
-        $('#pagination3').pagination({
-         items: count4,
-         itemsOnPage: 1,
-         currentPage: 1,
-         prevText: "<",
-         nextText: ">",
-         onPageClick: function(pageNumber,event){
-            $(`.tb-read`).css({"display":"none"});
-            $(`.tb-read-${pageNumber}`).css({"display":"contents"});
-         },
-         cssStyle: 'light-theme',
-        });
-        $('.k-combobox').select2({
-           
-        });
-      });
-   }
-</script>
-<!--processing crud-->
-<script>
-   $(document).ready(function(){
-      $('.t-summernote').summernote({
-         height: 1,
-         width: 400,
-         lang: 'vi-VN' // default: 'en-US'
-      });
-      $(".kh-datepicker2").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: 'dd-mm-yy',
-        onSelect: function(dateText, inst) {
-            console.log(dateText.split("-"));
-            dateText = dateText.split("-");
-            $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-        }
-      });
-      // 
-      $("#modal-xl").on("hidden.bs.modal",function(){
-         arr_list_file_del = [];
-         arr_input_file = new Map();
-         $("input[name='list_file_del']").val("");
-         console.log(arr_list_file_del);
-         console.log(arr_input_file);
-         $('tr').removeClass('bg-color-selected');
-      })
-      const imagesPreview = (input , parent) => {
-         if (input.files) {
-               var filesAmount = input.files.length;
-               for (i = 0; i < filesAmount; i++) {
-                  var reader = new FileReader();
-                  reader.onload = (event) => {
-                     $(parent).append('<div class="img-child filtr-item col-sm-1">'
-                     + '<img src="' + event.target.result + '" class="img-fluid mb-2">'
-                     + '<button type="button" class="icon-x btn-xoa-anh-mo-ta-san-pham btn btn-tool"><i class="fas fa-times"></i></button>'
-                     +'</div>');
-                  }
-                  reader.readAsDataURL(input.files[i]);
-               }
-         }
-      };
-      const readURL = (input) => {
-         if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-               $('#display-image').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-         }
-      };
-      // Xem san pham
-      $(document).on('click','.btn-xem-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-         });
-      });
-   });
 </script>
 <script>
   $(function() {
@@ -1854,7 +1044,6 @@
       $reply_id = isset($_REQUEST['reply_id']) ? $_REQUEST['reply_id'] : null;
       $product_info_id = isset($_REQUEST['product_info_id']) ? $_REQUEST['product_info_id'] : null;
       $user_id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
-      //$customer_id = isset($_REQUEST['customer_id']) ? $_REQUEST['customer_id'] : null;
       $is_active = isset($_REQUEST['is_active']) ? $_REQUEST['is_active'] : null;
       if($status == "Send") {
          $sql_ins_comment = "Insert into product_comment(reply_id,user_id,product_info_id,comment,rate,is_active) values('$reply_id',$user_id,$product_info_id,'$comment','$rate','$is_active')";
@@ -1865,9 +1054,11 @@
          sql_query($sql_del);
          echo_json(["msg" => "ok"]);
       } else if($status == "Active") {
-
+         exec_toggle_comment(NULL,$id,"Active");
+         echo_json(["msg" => "ok","success" => "Bạn đã duyệt bình luận thành công."]);
       } else if($status == "Deactive") {
-
+         exec_toggle_comment(NULL,$id,"Deactive");
+         echo_json(["msg" => "ok","success" => "Bạn đã bỏ duyệt bình luận thành công."]);
       }
    }
 ?>

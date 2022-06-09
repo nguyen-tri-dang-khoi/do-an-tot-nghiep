@@ -24,31 +24,6 @@
         $menu = generate_multilevel_menus_3($connection,NULL);
         return $menu;
     }
-    function show_comment($connection = NULL){
-        if(!$connection) {
-            $connection = $GLOBALS['link'];
-        }
-        //$connection = db_connect();
-        $menu = generate_comment($connection,NULL);
-        return $menu;
-    }
-    function generate_comment($connection,$reply_id = NULL) {
-        $sql = "";
-        $menu = "";
-        if(is_null($reply_id)) {
-            $sql = "select * from product_comment where reply_id is NULL and is_delete = 0";
-        } else {
-            $sql = "select * from product_comment where reply_id = $reply_id and is_delete = 0";
-        }
-        $stmt = $connection->prepare($sql);
-        $stmt->execute();
-        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='#'>" . $result["name"] . "<span class='expand'>»</span></a>";
-            $menu .= "<ul class='child'>" . generate_comment($connection,$result["id"]) . "</ul>";
-            $menu .= "</li>";
-        }
-        return $menu;
-    }
     //
     function generate_multilevel_menus($connection,$parent_id = NULL){
         $sql = "";
@@ -293,6 +268,38 @@
         }       
         return true;
     }
+    //
+    
+    function exec_toggle_comment($connection = NULL,$id = NULL,$status) {
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = toggle_comment($connection,$id,$status);   
+        return $res;  
+    }
+    function toggle_comment($connection = NULL,$id = NULL,$status){
+        $sql = "";
+        if(is_null($id)) {
+            $sql = "select * from product_comment where reply_id is NULL";
+        } else {
+            $sql = "select * from product_comment where reply_id = $id";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        if($status == "Active") {
+            $sql_upt_pt = "Update product_comment set is_active = 1 where id = " . $id;
+            sql_query($sql_upt_pt);
+        } else if($status == "Deactive") {
+            $sql_upt_pt = "Update product_comment set is_active = 0 where id = " . $id;
+            sql_query($sql_upt_pt);
+        }
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            toggle_comment($connection,$result["id"],$status);
+        }       
+        return true;
+    }
+    
+    //
     // kiểm tra xem cha của danh mục tình trạng đang active hay deactive
     /**
      * check_is_active()
@@ -364,7 +371,7 @@
         // if this is admin, we set admin full access role
         $sql_check_admin = "select type from user where id = '$_SESSION[id]'";
         $check_ad = fetch(sql_query($sql_check_admin));
-        if($check_ad['type'] == "1") {
+        if($check_ad['type'] == "admin") {
             return true;
         }
         //
@@ -381,7 +388,7 @@
         // if this is admin, we set admin full access role
         $sql_check_admin = "select type from user where id = '$_SESSION[id]'";
         $check_ad = fetch(sql_query($sql_check_admin));
-        if($check_ad['type'] == "1") {
+        if($check_ad['type'] == "admin") {
             return [true,true];
         }
         //
@@ -411,7 +418,7 @@
         $test = false;
         $sql_check_admin = "select type from user where id = '$_SESSION[id]'";
         $check_ad = fetch(sql_query($sql_check_admin));
-        if($check_ad['type'] == "1") {
+        if($check_ad['type'] == "admin") {
             $test = true;
         }
         if(in_array($link,['information.php','change_password.php','logout.php'])){

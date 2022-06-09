@@ -88,23 +88,6 @@
             <div id="coupon_if_subtotal_max_err" class="coupon-validate text-danger"></div>
         </div>
     </div>
-    
-    <div class="row" style="margin-left:0px;flex-direction:column;">
-        <label for="danh_muc">Danh mục sản phẩm</label>
-        <div style="display:flex;flex-direction:row;">
-            <ul tabindex="1" class="col-md-6" style="padding-left:0px;height: 65px;" id="menu">
-                <li class="parent" style="border: 1px solid #dce1e5;position:relative">
-                    <a href="#">Chọn danh mục</a>
-                    <ul class="child" style="">
-                        <?php echo show_menu();?>
-                    </ul>
-                </li>
-            </ul>
-            <nav id="breadcrumb-menu" class="col-md-6" aria-label="breadcrumb"></nav>
-        </div>
-        <input type="hidden" name="category_id" value="">
-        <input type="hidden" name="category_name" value="">
-    </div>
     <div class="row">
         <div class="col-md-3 form-group">
             <label for="coupon_date_start">Thời gian bắt đầu :</label>
@@ -130,39 +113,39 @@
     <div class="card-body">
         <table class="table table-bordered">
             <tr>
-                <th>Mã khuyến mãi</th>
+                <th class='w-200'>Mã khuyến mãi</th>
                 <td><?=$result['coupon_code'];?></td>
             </tr>
             <tr>
-                <th>Nội dung mô tả</th>
+                <th class='w-200'>Nội dung mô tả</th>
                 <td><?=$result['coupon_content'];?></td>
             </tr>
             <tr>
-                <th>Khuyến mãi (đơn vị %)</th>
+                <th class='w-200'>Khuyến mãi (đơn vị %)</th>
                 <td><?=$result['coupon_discount_percent']."%";?></td>
             </tr>
             <tr>
-                <th>Số tiền tối thiểu</th>
+                <th class='w-200'>Số tiền tối thiểu</th>
                 <td><?=$result['coupon_if_subtotal_min'];?></td>
             </tr>
             <tr>
-                <th>Số tiền tối đa</th>
+                <th class='w-200'>Số tiền tối đa</th>
                 <td><?=$result['coupon_if_subtotal_max'];?></td>
             </tr>
             <tr>
-                <th>Thời gian bắt đầu</th>
+                <th class='w-200'>Thời gian bắt đầu</th>
                 <td><?=Date("d-m-Y",strtotime($result['coupon_date_start']));?></td>
             </tr>
             <tr>
-                <th>Thời gian kết thúc</th>
+                <th class='w-200'>Thời gian kết thúc</th>
                 <td><?=Date("d-m-Y",strtotime($result['coupon_date_end']));?></td>
             </tr>
             <tr>
-                <th>Tình trạng</th>
+                <th class='w-200'>Tình trạng</th>
                 <td><?=$result['is_active'] == 1 ? "Đang kích hoạt" : "Chưa kích hoạt";?></td>
             </tr>
             <tr>
-                <th>Ngày tạo</th>
+                <th class='w-200'>Ngày tạo</th>
                 <td><?=Date("d-m-Y",strtotime($result['coupon_date_end']));?></td>
             </tr>
         </table>

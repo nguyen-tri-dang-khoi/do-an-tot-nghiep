@@ -104,9 +104,12 @@
                     </div>
                     <?php
                         $img_default = "";
+                        $txt_type = "";
                         if($comment['pcm_user_id']) {
-                            $img_default = "img/client.png";
+                            $img_default = "img/user.png";
+                            $txt_type = "Admin";
                         } else if($comment['pcm_customer_id']) {
+                            $txt_type = "Khách hàng";
                             $img_default = "img/client.png";
                         }
                     ?>
@@ -116,16 +119,21 @@
                     
                 </div>
             </div>
-            <div class="ml-10">
+            <div class="ml-10 all-reply">
                 <div class="info">
-                    <span class="kh-name"><?=$row['email'];?>
-                    </span>
+                    <span class="kh-name"><?=$row['email'];?> (<?=$txt_type;?>)</span>
                     <span class="kh-time-cmt ml-15"><?=Date("d-m-Y h:i:s",strtotime($comment['pcm_created_at']));?></span>
                     <div class="kh-content">
                         <span><?=$comment['pcm_comment'];?></span>
                     </div>
-                    <div class="kh-reply">
+                    <div class="kh-reply d-flex">
                         <span onclick="showReplyOk('<?=$comment['pcm_id']?>','<?=$id;?>','input')" style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
+                        <div style="font-size:14px;color:green;text-decoration:underline;cursor:pointer" class="ml-20 form-check d-flex">
+                            <input <?=$comment['pcm_is_active'] == 1 ? "checked" : "";?> onchange="toggleComment('<?=$comment['pcm_id']?>','<?=$id;?>','<?=$comment['pcm_is_active'] == 1 ? 'Deactive' : 'Active';?>')" style="accent-color: green;font-size:17px;" class="form-check-input" name="check_cmt<?=$comment['pcm_id'];?>" type="checkbox" value="" id="check_cmt<?=$comment['pcm_id'];?>">
+                            <label style="cursor:pointer;" class="form-check-label" for="check_cmt<?=$comment['pcm_id'];?>">
+                                Duyệt
+                            </label>
+                        </div>
                         <span onclick="delComment('<?=$comment['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>   
                     </div>
                     <?php
@@ -134,7 +142,7 @@
                         if($cnt_comment > 0) {
                     ?>
                     <div style="cursor:pointer;" onclick="showReplyOk('<?=$comment['pcm_id']?>','<?=$id;?>','input')" class="reply">
-                        <img src="img/reply.svg" alt=""> 
+                        <img style="transform:rotateY(180deg);" src="img/reply.png" alt=""> 
                         <span><?=$cnt_comment . " phản hồi";?></span>
                     </div>
                     <?php 
@@ -223,7 +231,8 @@
         <?php $cnt++;} ?>
     </div>
 </div>
-<div data-item="<?=$limit?>" data-total="<?=$total?>" data-page="<?=$page;?>" id="pagination-comment" style="width:100%;" class="mt-20 d-flex a-center j-center"></div>
+<div></div>
+<!--<div data-item="<?=$limit?>" data-total="<?=$total?>" data-page="<?=$page;?>" id="pagination-comment" style="width:100%;" class="mt-20 d-flex a-center j-center"></div>-->
 <?php } else if ($status=="show_reply_ok") {
     $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id = " . $reply_id;
     $replies = fetch_all(sql_query($sql));
@@ -245,10 +254,13 @@
                 </div>
                 <?php
                     $img_default = "";
+                    $txt_type = "";
                     if($reply['pcm_user_id']) {
-                        $img_default = "img/client.png";
+                        $img_default = "img/user.png";
+                        $txt_type = "Admin";
                     } else if($reply['pcm_customer_id']) {
                         $img_default = "img/client.png";
+                        $txt_type = "Khách hàng";
                     }
                 ?>
                 <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
@@ -257,15 +269,22 @@
 
             </div>
         </div>
-        <div class="ml-10">
+        <div class="ml-10 all-reply">
             <div class="info">
-                <span class="kh-name"><?=$row['email'];?></span>
+                <span class="kh-name"><?=$row['email'];?> (<?=$txt_type;?>)</span>
                 <span class="kh-time-cmt ml-15"><?=Date("d-m-Y h:i:s",strtotime($reply['pcm_created_at']));?></span>
                 <div class="kh-content">
                     <span><?=$reply['pcm_comment'];?></span>
                 </div>
-                <div class="kh-reply">
+                <div class="kh-reply d-flex">
                     <span onclick="showReplyOk('<?=$reply['pcm_id']?>','<?=$id;?>','input')" style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
+                    
+                    <div style="font-size:14px;color:green;text-decoration:underline;cursor:pointer" class="ml-20 form-check d-flex">
+                        <input <?=$reply['pcm_is_active'] == 1 ? "checked" : "";?> onchange="toggleComment('<?=$reply['pcm_id']?>','<?=$id;?>','<?=$reply['pcm_is_active'] == 1 ? 'Deactive' : 'Active';?>')" style="accent-color: green;font-size:17px;" class="form-check-input" name="check_cmt<?=$reply['pcm_id'];?>" type="checkbox" value="" id="check_cmt<?=$reply['pcm_id'];?>">
+                        <label style="cursor:pointer;" class="form-check-label" for="check_cmt<?=$reply['pcm_id'];?>">
+                            Duyệt
+                        </label>
+                    </div>
                     <span onclick="delComment('<?=$reply['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
                 </div>
                 <?php
@@ -274,7 +293,7 @@
                     if($cnt_reply > 0) {
                 ?>
                     <div style="cursor:pointer;" onclick="showReplyOk('<?=$reply['pcm_id']?>','<?=$id;?>','input')" class="reply">
-                        <img src="img/reply.svg" alt=""> 
+                        <img style="transform:rotateY(180deg);" src="img/reply.png" alt=""> 
                         <span><?=$cnt_reply . " phản hồi";?></span>
                     </div>
                 <?php 

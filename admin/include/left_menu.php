@@ -1,13 +1,8 @@
 <?php
-
   $url = get_url_current_page();
   get_user_info();
   $currentPage= basename($_SERVER['SCRIPT_NAME']);
-  //print_r($currentPage);
   check_permission_redirect($currentPage);
-  // checking role permission
-  // auto generate new token when reload page 
-  
 ?>
 <style>
   .nav-item p {
@@ -41,12 +36,6 @@
     <li class="nav-item">
       <a tabindex="-1" class="nav-link" onclick="hidden_menu()" href="#" role="button"><i class="fas fa-bars"></i></a>
     </li>
-    <!--<li class="nav-item d-none d-sm-inline-block">
-      <a href="index3.html" class="nav-link">Home</a>
-    </li>
-    <li class="nav-item d-none d-sm-inline-block">
-      <a href="#" class="nav-link">Contact</a>
-    </li>-->
   </ul>
   <ul class="navbar-nav ml-auto">
     <li>
@@ -59,7 +48,7 @@
   </ul>
 </nav>
 <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#000000;">
-  <div style="min-height:1200px;" class="sidebar">
+  <div style="min-height:2000px;" class="sidebar">
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div class="image">
@@ -101,6 +90,14 @@
           </a>
         </li>
         <?php } ?>
+        <li class="nav-item" >
+          <a tabindex="-1" href="delivery_fee_manage.php" class="nav-link <?=strpos($url,"delivery_fee_manage.php") ? "kh-active" : "";?>">
+          <img src="img/cargo.png" alt="">
+            <p>
+              Quản lý phí vận chuyển
+            </p>
+          </a>
+        </li>
         <?php if(check_permission_link("statistic.php")){?>
         <li class="nav-item" >
           <a tabindex="-1" href="statistic.php" class="nav-link <?=strpos($url,"statistic.php") ? "kh-active" : "";?>">
@@ -143,7 +140,15 @@
           <a tabindex="-1" href="coupon_manage.php" class="nav-link <?=strpos($url,"coupon_manage.php") ? "kh-active" : "";?>">
             <img src="img/voucher.png" alt="">
             <p>
-              Quản lý mã khuyến mãi
+              Mã khuyến mãi
+            </p>
+          </a>
+        </li>
+        <li class="nav-item " >
+          <a tabindex="-1" href="category_discount_manage.php" class="nav-link <?=strpos($url,"category_discount_manage.php") ? "kh-active" : "";?>">
+            <img src="img/voucher.png" alt="">
+            <p>
+              Danh mục khuyến mãi
             </p>
           </a>
         </li>

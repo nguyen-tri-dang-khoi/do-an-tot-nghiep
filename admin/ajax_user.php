@@ -4,7 +4,7 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {
-        $sql_get_user_info = "select id,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,type,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
 <?php
@@ -51,11 +51,16 @@
                 <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ thường trú" value="<?=$result['address']?>">
             </div>
         </div>
+        
         <div class="row">
-            <!--<div class="col-md-6 form-group">
-                <label for="password">Mật khẩu</label>
-                <input type="password" class="form-control" value="" id="password" placeholder="Nhập mật khẩu đăng nhập">
-            </div>-->
+            <div class="col-md-6 form-group">
+                <label for="type">Chức vụ</label>
+                <select name="type" class="form-control">
+                    <option value="">Chọn chức vụ</option>
+                    <option value="officer" <?=$result['type'] == 'officer' ? "selected" : "";?>>Nhân viên văn phòng</option>
+                    <option value="shipper" <?=$result['type'] == 'shipper' ? "selected" : "";?>>Nhân viên giao hàng</option>
+                </select>
+            </div>
         </div>
     </div>
     <input type="hidden" name="token" value="<?php echo_token();?>">
@@ -113,6 +118,14 @@
     </div>
     <div class="row">
         <div class="col-md-6 form-group">
+            <label for="type">Chức vụ</label>
+            <select name="type" class="form-control">
+                <option value="">Chọn chức vụ</option>
+                <option value="officer">Nhân viên văn phòng</option>
+                <option value="shipper">Nhân viên giao hàng</option>
+            </select>
+        </div>
+        <div class="col-md-6 form-group">
             <label for="password">Mật khẩu (mặc định là 1234)</label>
             <input type="password" class="form-control" value="1234" id="password" placeholder="Nhập mật khẩu đăng nhập" readonly>
         </div>
@@ -126,43 +139,47 @@
 <?php } ?>
 <?php
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
         $result = fetch_row($sql_get_user_info,[$id]);
 ?>
     <div class="card-body">
         <table class="table table-bordered">
             <tr>
-                <th>Tên đầy đủ</th>
+                <th class='w-200'>Tên đầy đủ</th>
                 <td><?=$result['full_name']?></td>
             </tr>
             <tr>
-                <th>Email</th>
+                <th class='w-200'>Email</th>
                 <td><?=$result['email']?></td>
             </tr>
             <tr>
-                <th>Số điện thoại</th>
+                <th class='w-200'>Số điện thoại</th>
                 <td><?=$result['phone']?></td>
             </tr>
             <tr>
-                <th>Số chứng minh nhân dân</th>
+                <th class='w-200'>Số chứng minh nhân dân</th>
                 <td><?=$result['cmnd']?></td>
             </tr>
             <tr>
-                <th>Ảnh đại diện</th>
+                <th class='w-200'>Ảnh đại diện</th>
                 <td>
                     <img style="width:100px;height:100px;" src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg"?>" alt="">
                 </td>
             </tr>
             <tr>
-                <th>Ngày sinh</th>
+                <th class='w-200'>Ngày sinh</th>
                 <td><?=Date("d-m-Y",strtotime($result['birthday']))?></td>
             </tr>
             <tr>
-                <th>Địa chỉ</th>
+                <th class='w-200'>Địa chỉ</th>
                 <td><?=$result['address']?></td>
             </tr>
             <tr>
-                <th>Ngày tạo</th>
+                <th class='w-200'>Chức vụ</th>
+                <td><?=($result['type'] == 'officer') ? 'Nhân viên văn phòng' : 'Nhân viên giao hàng'?></td>
+            </tr>
+            <tr>
+                <th class='w-200'>Ngày tạo</th>
                 <td><?=Date("d-m-Y H:i:s",strtotime($result['created_at']))?></td>
             </tr>
         </table>
@@ -179,37 +196,41 @@
                 $file_src = $res['img_name'] ? $res['img_name'] : "upload/noimage.jpg";
                 $html .= "<tbody style='display:none;' class='t-bd-read t-bd-read-$i'>
                 <tr>
-                    <th>Tên đầy đủ</th>
+                    <th class='w-200'>Tên đầy đủ</th>
                     <td>" . $res['full_name'] . "</td>
                 </tr>
                 <tr>
-                    <th>Email</th>
+                    <th class='w-200'>Email</th>
                     <td>" . $res['email'] . "</td>
                 </tr>
                 <tr>
-                    <th>Số điện thoại</th>
+                    <th class='w-200'>Số điện thoại</th>
                     <td>" . $res['phone'] . "</td>
                 </tr>
                 <tr>
-                    <th>Số chứng minh nhân dân</th>
+                    <th class='w-200'>Số chứng minh nhân dân</th>
                     <td>" . $res['cmnd'] . "</td>
                 </tr>
                 <tr>
-                    <th>Ảnh đại diện</th>
+                    <th class='w-200'>Ảnh đại diện</th>
                     <td>
                         <img style='width:100px;height:100px;' src='" . $file_src . "'>
                     </td>
                 </tr>
                 <tr>
-                    <th>Ngày sinh</th>
+                    <th class='w-200'>Ngày sinh</th>
                     <td>" . Date('d-m-Y',strtotime($res['birthday'])) . "</td>
                 </tr>
                 <tr>
-                    <th>Địa chỉ</th>
+                    <th class='w-200'>Địa chỉ</th>
                     <td>" . $res['address'] . "</td>
                 </tr>
                 <tr>
-                    <th>Ngày tạo</th>
+                    <th class='w-200'>Chức vụ</th>
+                    <td>" . (($res['type'] == 'officer') ? 'Nhân viên văn phòng' : 'Nhân viên giao hàng') . "</td>
+                </tr>
+                <tr>
+                    <th class='w-200'>Ngày tạo</th>
                     <td>" . Date("d-m-Y H:i:s",strtotime($res['created_at'])) . "</td>
                 </tr>
                 </tbody>";

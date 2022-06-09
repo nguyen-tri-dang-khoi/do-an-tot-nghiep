@@ -103,7 +103,7 @@
         let day = $("select[name='day'] > option:selected").val();
         let month = $("select[name='month'] > option:selected").val();
         let year = $("select[name='year'] > option:selected").val();
-        let case2 = $("select[name='type_statistic'] > option:selected").val();
+        let case2 = "3";
         if(status == "statistic_excel_download") {
             if(year == "" ) {
                 return;

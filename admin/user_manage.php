@@ -597,37 +597,9 @@
             </div>
             <div class="modal-body">
                 <div id="form-user2" class="modal-body">
-                    <!--<div class="row j-between">
-                        <div style="margin-left: 7px;" class="form-group">
-                            <label for="">Nhập số dòng cần thêm: </label>
-                            <input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>
-                            <button onclick="showRow(1)" class="dt-button button-blue">Ok</button>
-                        </div>
-                        <div class="d-flex f-column">
-                            <div class="d-flex" style="justify-content:flex-end">
-                                <div class="k-plus">
-                                    <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                                </div>
-                                <div class="k-minus">
-                                    <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
-                                </div>
-                            </div>  
-                            <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
-                                <div class="file file-csv mr-10">
-                                    <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
-                                </div>
-                                <div class="file file-excel">
-                                    <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
-                                </div>
-                            </div>
-                        </div>
-                    </div>-->
-                    
                     <div class="row j-between a-center">
                         <div style="margin-left: 7px;" class="form-group">
                             <label for="">Nhập số dòng: </label>
-                            <!--<input style="margin-left:5px;width: auto;" class="kh-inp-ctrl" type="number" name='count2'>-->
-                            <!--<button onclick="showRow()" class="dt-button button-blue">Ok</button>-->
                             <div class="" style="justify-content:flex-end;display:inline-flex">
                             <div class="k-number-row">
                                 <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
@@ -667,6 +639,7 @@
                                 <th>Số cmnd</th>
                                 <th>Địa chỉ</th>
                                 <th>Ngày sinh</th>
+                                <th>Chức vụ</th>
                                 <th>Thao tác</th>
                             </tr>
                         </thead>
@@ -1277,6 +1250,14 @@
                     <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
                     <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
                     <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                    <td>
+                        <select class='form-control'>
+                            <option value=''>Chọn chức vụ</option>
+                            <option value='officer'>Nhân viên văn phòng</option>
+                            <option value='shipper'>Nhân viên giao hàng</option>
+                        </select>
+                        <p class='text-danger'></p>
+                    </td>
                     <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
                 </tr>
                 `;
@@ -1355,20 +1336,6 @@
     }
     function showRow(page,apply_dom = true){
       let count = $('[data-plus]').attr('data-plus');
-      /*if(count == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống số dòng thêm",
-        })
-        return;
-      }
-      if(count < 1) {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng nhập số dòng lớn hơn 
-        })
-        return;
-      }*/
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
@@ -1385,6 +1352,7 @@
                 <th>Số cmnd</th>
                 <th>Địa chỉ</th>
                 <th>Ngày sinh</th>
+                <th>Chức vụ</th>
                 <th>Thao tác</th>
             </tr>
           </thead>
@@ -1396,13 +1364,21 @@
           for(j = 0 ; j < 7 ; j++) {
             html += `
               <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                    <td>${parseInt(g)}</td>
+                    <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
+                    <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
+                    <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                    <td>
+                        <select class='form-control'>
+                            <option value=''>Chọn chức vụ</option>
+                            <option value='0'>Nhân viên văn phòng</option>
+                            <option value='-1'>Nhân viên giao hàng</option>
+                        </select>
+                        <p class='text-danger'></p>
+                    </td>
                   <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -1423,6 +1399,14 @@
                 <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
                 <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                <td>
+                    <select class='form-control'>
+                        <option value=''>Chọn chức vụ</option>
+                        <option value='officer'>Nhân viên văn phòng</option>
+                        <option value='shipper'>Nhân viên giao hàng</option>
+                    </select>
+                    <p class='text-danger'></p>
+                </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
               </tr>
             `;
@@ -2048,6 +2032,7 @@
             let address = $('#address').val();
             let birthday = $('#birthday').val();
             let password = $('#password').val();
+            let type = $('#type > option:selected').val();
             if(full_name == "") {
                 $('#full_name').focus();
                 $.alert({
@@ -2096,6 +2081,12 @@
                 $.alert({
                     title: "Thông báo",
                     content: "Mật khẩu của nhân viên không được để trống.",
+                });
+                test = false;
+            } else if(type == "") {
+                $.alert({
+                    title: "Thông báo",
+                    content: "Chức vụ của nhân viên không được để trống.",
                 });
                 test = false;
             }
@@ -2167,7 +2158,11 @@
                 formData.append("phone",$('#phone').val());
                 formData.append("cmnd",$('#cmnd').val());
                 formData.append("address",$('#address').val());
-                formData.append("birthday",$('#birthday').val());
+                
+                let birthday = $('#birthday').val().split('-');
+                birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+                formData.append("birthday",birthday);
+                formData.append("type",$('select[name="type"] > option:selected').val());
                 formData.append("password",$('#password').val());  
                 if(file.length > 0) {
                     formData.append('img_name',file[0]);
@@ -2182,21 +2177,6 @@
                     data: formData,
                     success:function(data){
                         if(data.msg == "ok") {
-                            let html = "";
-                            html += `<tr style='background-color:#ef7a1752;' id='user-${data.id}'>`;
-                            html += `<td>${data.number}</td>`;
-                            html += `<td>${data.full_name}</td>`;
-                            html += `<td>${data.email}</td>`;
-                            html += `<td>${data.phone}</td>`;
-                            html += `<td>${data.cmnd}</td>`;
-                            html += `<td>${data.address}</td>`;
-                            html += `<td>${data.birthday}</td>`;
-                            html += `<td>${data.created_at}</td>`;
-                            html += `<td>`;
-                            html += `<button class="btn-update-user btn btn-primary" data-id="${data.id}" data-number="${data.number}">Sửa</button>`;
-                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${data.id}" data-number="${data.number}">Xoá</button>`;
-                            html += `</td>`;
-                            html += `</tr>`;
                             $.alert({
                                 title: "Thông báo",
                                 content: data.success,
@@ -2206,9 +2186,6 @@
                                     },
                                 }
                             });
-                            /*html = $(html);
-                            //$('#m-user-body').append(html);
-                            dt_user.row.add(html[0]).draw();*/
                         } else {
                             $.alert({
                                 title: "Thông báo",
@@ -2227,12 +2204,10 @@
         // sửa 
         $(document).on('click','#btn-update',function(e){
             event.preventDefault();
-            console.log($('input[name=number]').val());
             if(validate()) {
                 let file = $('input[name="img_name"]')[0].files;
                 let formData = new FormData($('#manage_user')[0]);
                 formData.append("token","<?php echo_token();?>");
-                formData.append("number",$('input[name=number]').val());
                 formData.append("status","Update");
                 formData.append("id",$('input[name=id]').val());
                 formData.append("full_name",$('#full_name').val());
@@ -2240,7 +2215,10 @@
                 formData.append("phone",$('#phone').val());
                 formData.append("cmnd",$('#cmnd').val());
                 formData.append("address",$('#address').val());
-                formData.append("birthday",$('#birthday').val());
+                let birthday = $('#birthday').val().split('-');
+                birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+                formData.append("birthday",birthday);
+                formData.append("type",$('select[name="type"] > option:selected').val());
                 formData.append("password",$('#password').val());
                 if(file.length > 0) {
                     formData.append('img_name',file[0]); 
@@ -2258,22 +2236,6 @@
                         //data = JSON.parse(data);
                         console.log(data);
                         if(data.msg == "ok") {
-                            let id = $('input[name=id]').val();
-                            let html = "";
-                            html += `<tr style="background-color:#91c08552;" id='user-${id}'>`;
-                            html += `<td>${data.number}</td>`;
-                            html += `<td>${data.full_name}</td>`;
-                            html += `<td>${data.email}</td>`;
-                            html += `<td>${data.phone}</td>`;
-                            html += `<td>${data.cmnd}</td>`;
-                            html += `<td>${data.address}</td>`;
-                            html += `<td>${data.birthday}</td>`;
-                            html += `<td>${data.created_at}</td>`;
-                            html += `<td>`;
-                            html += `<button class="btn-update-user btn btn-primary" data-id="${id}" data-number="${data.number}">Sửa</button>`;
-                            html += `<button style="margin-left:3px;" class="btn-delete-row btn btn-danger" data-id="${id}" data-number="${data.number}">Xoá</button>`;
-                            html += `</td>`;
-                            html += "</tr>";
                             $.alert({
                                 title: "Thông báo",
                                 content: data.success,
@@ -2283,20 +2245,6 @@
                                     },
                                 }
                             });
-                            //$("#user-" + id).replaceWith(html);
-                            /*let one_row = dt_user.row(click_number).data();
-                            console.log(one_row);
-                            one_row[0] = `${data.number}`;
-                            one_row[1] = `${data.full_name}`;
-                            one_row[2] = `${data.email}`;
-                            one_row[3] = `${data.phone}`;
-                            one_row[4] = `${data.cmnd}`;
-                            one_row[5] = `${data.address}`;
-                            if(data.birthday != undefined) {
-                                one_row[6] = `${data.birthday}`;
-                            }
-                            one_row[7] = `${data.username}`;
-                            dt_user.row(click_number).data(one_row).draw();*/
                         } else {
                             $.alert({
                                 title: "Thông báo",
@@ -2403,36 +2351,23 @@
     } else if (is_post_method()) {
         // code to be executed post method
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-        $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
         $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
         $cmnd = isset($_REQUEST["cmnd"]) ? $_REQUEST["cmnd"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
         $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
         $birthday = isset($_REQUEST["birthday"]) ? $_REQUEST["birthday"] : null;
+        $type = isset($_REQUEST["type"]) ? $_REQUEST["type"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null ;
         if($status == "Delete") {
             $success = "Bạn đã xoá dữ liệu thành công";
             $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
-            ajax_db_update_by_id('user',["is_delete" => 1],[$id],["success" => $success],["error" => $error]);
+            $sql = "Update user set is_delete = 1 where id = '$id'";
+            sql_query($sql);
+            echo_json(['msg' => 'ok',"success" => $success]);
         } else if($status == "Update") {
-            $sql_check_exist = "Select cmnd,email,phone,count(*) as 'countt' from user where (email = ? or cmnd = ? or phone = ?) and id <> ? limit 1";
             $success = "Bạn đã sửa dữ liệu thành công";
-            $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
-            $row = fetch_row($sql_check_exist,[$email,$cmnd,$phone,$id]);
-            if(2 == 1) {
-                if($row['cmnd'] != "") {
-                    $error = "Số chứng minh nhân dân bị trùng ";
-                } else if($row['email'] != "") {
-                    $error = "Email bị trùng";
-                } else if($row['phone'] != "") {
-                    $error = "Phone bị trùng";
-                }
-                echo_json(["msg" => "not_ok","error" => $error]);
-            }
-            $image = null;
-            //file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$id,$image,'cmnd_');
             $dir = "upload/user/";
             if(!file_exists($dir)) {
                mkdir($dir, 0777); 
@@ -2458,101 +2393,41 @@
                $sql_update = "update user set img_name='$path' where id = '$id'";
                db_query($sql_update);
             }
-            $password = password_hash($password,PASSWORD_DEFAULT);
-            if($birthday) {
-                $__arr = [
-                    "full_name" => $full_name,
-                    "email" => $email,
-                    "phone" => $phone,
-                    "cmnd" => $cmnd,
-                    "address" => $address,
-                    "birthday" => Date('Y-m-d',strtotime($birthday)),
-                    "password" => $password,
-                ];
-            } else {
-                $__arr = [
-                    "full_name" => $full_name,
-                    "email" => $email,
-                    "phone" => $phone,
-                    "cmnd" => $cmnd,
-                    "address" => $address,
-                    "password" => $password,
-                ];
-            }
-            db_update_by_id('user',$__arr,[$id]);
-            if($birthday) {
-                $__arr['birthday'] = Date('d-m-Y',strtotime($birthday));
-            }
-            //print_r($__arr);
-            echo_json(array_merge(['msg' => 'ok',"number" => $number,'success' => $success],$__arr));
+            $sql = "Update user set full_name = '$full_name',type = '$type',email = '$email',phone = '$phone',cmnd = '$cmnd',address = '$address',birthday = '$birthday' where id = '$id'";
+            sql_query($sql);
+            echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "Insert") {
-            //validate zone
-            //print_r('Insert');
-            $sql_check_exist = "Select cmnd,email,phone,count(*) as 'countt' from user where (email = ? or cmnd = ? or phone = ?) limit 1";
             $success = "Bạn đã thêm dữ liệu thành công";
-            $error = "Đã có lỗi xảy ra. Vui lòng tải lại trang";
-            $row = fetch_row($sql_check_exist,[$email,$cmnd,$phone]);
-            if(2 == 1) {
-                if($row['cmnd'] != "") {
-                    $error = "Số chứng minh nhân dân bị trùng";
-                } else if($row['email'] != "") {
-                    $error = "Email bị trùng";
-                } else if($row['phone'] != "") {
-                    $error = "Phone bị trùng";
+            $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
+            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday,password) values('$full_name','$type','$email','$phone','$cmnd','$address','$birthday','$password')";
+            sql_query($sql);
+            $insert = ins_id();
+            if($insert > 0) {
+                $success = "Cập nhật dữ liệu thành công";
+                $error = "Đã có lỗi xảy ra. Vui lòng tải lại trang";
+                $image = null;
+                $dir = "upload/user/";
+                if(!file_exists($dir)) {
+                    mkdir($dir, 0777); 
+                    chmod($dir, 0777);
                 }
-                echo_json(["msg" => "not_ok","error" => $error]);
-            }
-            else if(1 == 1) {
-                //print_r('Insert');
-                $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
-                $__arr = [
-                    "full_name" => $full_name,
-                    "email" => $email,
-                    "phone" => $phone,
-                    "cmnd" => $cmnd,
-                    "address" => $address,
-                    "birthday" => Date('Y-m-d',strtotime($birthday)),
-                    "password" => $password,
-                    "created_at"=>date('Y-m-d H-i-s',time())
-                ];
-                $insert = db_insert_id('user',$__arr);
-                
-                if($insert > 0) {
-                    // insert
-                    $success = "Cập nhật dữ liệu thành công";
-                    $error = "Đã có lỗi xảy ra. Vui lòng tải lại trang";
-                    $image = null;
-                    //file_upload(['file' => 'img_cmnd_file'],'user','img_name',"upload/user/identify/",$insert,$image,'cmnd_');
-                    $dir = "upload/user/";
-                    if(!file_exists($dir)) {
-                        mkdir($dir, 0777); 
-                        chmod($dir, 0777);
-                    }
-                    $dir = "upload/user/" . $insert;
-                    if(!file_exists($dir)) {
-                        mkdir($dir, 0777); 
-                        chmod($dir, 0777);
-                    }
-                    if($_FILES['img_name']['name'] != "") {
-                        $ext = strtolower(pathinfo($_FILES['img_name']['name'],PATHINFO_EXTENSION));
-                        $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
-                        $file_name = str_replace("_","",$file_name);
-                        $path = $dir . "/" . $file_name ;
-                        move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
-                        $sql_update = "update user set img_name='$path' where id = '$insert'";
-                        db_query($sql_update);
-                    }
-                    $__arr['id'] = $insert;
-                    echo_json(array_merge(['msg' => 'ok',"number" => $number,'success' => $success],$__arr));
-                    /*if(db_update_by_id('user',['img_cmnd' => $image],[$insert])) {
-                        $__arr['img_cmnd'] = $image;
-                        $__arr['id'] = $insert;
-                        echo_json(array_merge(['msg' => 'ok','success' => $success],$__arr));
-                    } else {
-                        echo_json(['msg' => 'not_ok','error' => $error]);
-                    }*/
+                $dir = "upload/user/" . $insert;
+                if(!file_exists($dir)) {
+                    mkdir($dir, 0777); 
+                    chmod($dir, 0777);
                 }
+                if($_FILES['img_name']['name'] != "") {
+                    $ext = strtolower(pathinfo($_FILES['img_name']['name'],PATHINFO_EXTENSION));
+                    $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
+                    $file_name = str_replace("_","",$file_name);
+                    $path = $dir . "/" . $file_name ;
+                    move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
+                    $sql_update = "update user set img_name='$path' where id = '$insert'";
+                    db_query($sql_update);
+                }
+                $__arr['id'] = $insert;
             }
+            echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "upt_more") {
             $u_id = isset($_REQUEST["u_id"]) ? $_REQUEST["u_id"] : null;
             $u_fullname = isset($_REQUEST["u_fullname"]) ? $_REQUEST["u_fullname"] : null;
@@ -2561,7 +2436,8 @@
             $u_cmnd = isset($_REQUEST["u_cmnd"]) ? $_REQUEST["u_cmnd"] : null;
             $u_address = isset($_REQUEST["u_address"]) ? $_REQUEST["u_address"] : null;
             $u_birthday = isset($_REQUEST["u_birthday"]) ? $_REQUEST["u_birthday"] : null;
-            $sql = "Update user set full_name='$u_fullname',email='$u_email',phone='$u_phone',cmnd='$u_cmnd',address='$u_address',birthday='$u_birthday' where id='$u_id'";
+            $u_type = isset($_REQUEST["u_type"]) ? $_REQUEST["u_type"] : null;
+            $sql = "Update user set full_name='$u_fullname',email='$u_email',phone='$u_phone',cmnd='$u_cmnd',address='$u_address',birthday='$u_birthday',type='$u_type' where id='$u_id'";
             sql_query($sql);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_more") {
@@ -2649,10 +2525,11 @@
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
             $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
+            $u_type2 = isset($_REQUEST["u_type2"]) ? $_REQUEST["u_type2"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;
-                    $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$u_fullname2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth')";
+                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values('$u_fullname2[$i]','$u_type2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth')";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
@@ -2666,10 +2543,11 @@
             $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
             $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
             $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
+            $u_type2 = isset($_REQUEST["u_type2"]) ? $_REQUEST["u_type2"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
                     $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;                 
-                    $sql = "Update user set full_name='$u_fullname2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
+                    $sql = "Update user set full_name='$u_fullname2[$i]',type = '$u_type2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
