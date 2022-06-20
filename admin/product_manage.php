@@ -4,7 +4,6 @@
    check_access_token();
    redirect_if_login_status_false();
    if(is_get_method()) {
-      
       $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
@@ -24,7 +23,6 @@
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
-      $select_publish = isset($_REQUEST['select_publish']) ? $_REQUEST['select_publish'] : null;
       $price_min = isset($_REQUEST['price_min']) ? $_REQUEST['price_min'] : null;
       $price_max = isset($_REQUEST['price_max']) ? $_REQUEST['price_max'] : null;
       $count_min = isset($_REQUEST['count_min']) ? $_REQUEST['count_min'] : null;
@@ -96,70 +94,44 @@
             $where .= " and ($wh_child)";
          }
       }
-      if($price_min && is_array($price_min) && $price_max && is_array($price_max)) {
-         $wh_child = [];
-         foreach(array_combine($price_min,$price_max) as $p_min => $p_max) {
-            if($p_min != "" && $p_max != "") {
-               $p_min = str_replace(".","",$p_min);
-               $p_max = str_replace(".","",$p_max);
-               array_push($wh_child,"(pi.price >= '$p_min' and pi.price <= '$p_max')");
-            } else if($p_min == "" && $p_max != ""){
-               $p_max = str_replace(".","",$p_max);
-               array_push($wh_child,"(pi.price <= '$p_max')");
-            } else if($p_min != "" && $p_max == ""){
-               $p_min = str_replace(".","",$p_min);
-               array_push($wh_child,"(pi.price >= '$p_min')");
-            }
-         }
-         $wh_child = implode(" or ",$wh_child);
-         if($wh_child != "") {
-            $where .= " and ($wh_child)";
+      if($price_min && $price_max) {
+         if($price_min != "" && $price_max != "") {
+            $price_min = str_replace(".","",$price_min);
+            $price_max = str_replace(".","",$price_max);
+            $where .= " and (pi.price >= '$price_min' and pi.price <= '$price_max')";
+         } else if($price_min == "" && $price_max != ""){
+            $price_max = str_replace(".","",$price_max);
+            $where .= " and (pi.price <= '$price_max')";
+         } else if($price_min != "" && $price_max == ""){
+            $price_min = str_replace(".","",$price_min);
+            $where .= " and (pi.price >= '$price_min')";
          }
       }
-      if($count_min && is_array($count_min) && $count_max && is_array($count_max)) {
-         $wh_child = [];
-         
-         foreach(array_combine($count_min,$count_max) as $c_min => $c_max) {
-            if($c_min != "" && $c_max != "") {
-               $c_min = str_replace(".","",$c_min);
-               $c_max = str_replace(".","",$c_max);
-               array_push($wh_child,"(pi.count >= '$c_min' and pi.count <= '$c_max')");
-            } else if($c_min == "" && $c_max != ""){
-               $c_max = str_replace(".","",$c_max);
-               array_push($wh_child,"(pi.count <= '$c_max')");
-            } else if($c_min != "" && $c_max == ""){
-               $c_min = str_replace(".","",$c_min);
-               array_push($wh_child,"(pi.count >= '$c_min')");
-            }
-            //log_v("con me no");
-         }
-         $wh_child = implode(" or ",$wh_child);
-         if($wh_child != "") {
-            $where .= " and ($wh_child)";
+      if($count_min && $count_max) {
+         if($count_min != "" && $count_max != "") {
+            $count_min = str_replace(".","",$count_min);
+            $count_max = str_replace(".","",$count_max);
+            $where .= " and (pi.count >= '$count_min' and pi.count <= '$count_max')";
+         } else if($count_min == "" && $count_max != ""){
+            $count_max = str_replace(".","",$count_max);
+            $where .= " and (pi.count <= '$count_max')";
+         } else if($count_min != "" && $count_max == ""){
+            $count_min = str_replace(".","",$count_min);
+            $where .= " and (pi.count >= '$count_min')";
          }
       }
-      if($date_min && is_array($date_min) && $date_max && is_array($date_max)) {
-         $wh_child = [];
-         foreach(array_combine($date_min,$date_max) as $d_min => $d_max) {
-            if($d_min != "" && $d_max != "") {
-               $d_min = Date("Y-m-d",strtotime($d_min));
-               $d_max = Date("Y-m-d",strtotime($d_max));
-               array_push($wh_child,"(pi.created_at >= '$d_min 00:00:00' and pi.created_at <= '$d_max 23:59:59')");
-            } else if($d_min != "" && $d_max == "") {
-               $d_min = Date("Y-m-d",strtotime($d_min));
-               array_push($wh_child,"(pi.created_at >= '$d_min 00:00:00')");
-            } else if($d_min == "" && $d_max != "") {
-               $d_max = Date("Y-m-d",strtotime($d_max));
-               array_push($wh_child,"(pi.created_at <= '$d_max 23:59:59')");
-            }
+      if($date_min && $date_max) {
+         if($date_min != "" && $date_max != "") {
+            $date_min = Date("Y-m-d",strtotime($date_min));
+            $date_max = Date("Y-m-d",strtotime($date_max));
+            $where .= " and (pi.created_at >= '$date_min 00:00:00' and pi.created_at <= '$date_max 23:59:59')";
+         } else if($date_min != "" && $date_max == "") {
+            $date_min = Date("Y-m-d",strtotime($date_min));
+            $where .= " and (pi.created_at >= '$date_min 00:00:00')";
+         } else if($date_min == "" && $date_max != "") {
+            $date_max = Date("Y-m-d",strtotime($date_max));
+            $where .= " and (pi.created_at <= '$date_max 23:59:59')";
          }
-         $wh_child = implode(" or ",$wh_child);
-         if($wh_child != "") {
-            $where .= " and ($wh_child)";
-         }
-      }
-      if($select_publish != "") {
-         $where .= " and pi.is_active='$select_publish'";
       }
       if($orderStatus && $orderByColumn) {
          $order_by .= "ORDER BY $orderByColumn $orderStatus";
@@ -169,9 +141,6 @@
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
-<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/toastr.min.css">
 <style>
    .dt-buttons {
@@ -209,13 +178,9 @@
       cursor:pointer;
    }
    table.dataTable span.highlight {
-    /*border-radius: 5px;
-    text-align: center;*/
     color: red;
     font-weight:600;
     border:none;
-    /*border-bottom: 1px solid #17a2b8;*/
-    /*padding: 0px 1px;*/
    }
    .card-header::after{
       display:none;
@@ -274,18 +239,14 @@
       float:right;
       margin-right:5px;
    }
-   table.dataTable tr th.select-checkbox.selected::after {
-      content: "\2713";
-      margin-top: -11px;
-      margin-left: -4px;
-      text-align: center;
-      color: #9900ff;
-   }
 </style>
-<link rel="stylesheet" href="css/select.dataTables.min.css">
-<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
+<style>
+   .sort-asc,.sort-desc {
+    display: none;
+  }
+</style>
 <div class="container-wrapper" style="margin-left:250px;">
-  <div class="container-fluid" style="padding:0px;max-width: 1755px;">
+  <div class="container-fluid" style="padding:0px;">
     <section class="content">
         <div class="row" style="">
             <div class="col-12">
@@ -298,7 +259,7 @@
                            <?php
                               if($allow_insert) {
                            ?>
-                           <button id="btn-them-san-pham" class="dt-button button-blue">
+                           <button onclick="openModalInsert()" class="dt-button button-blue">
                               Thêm sản phẩm
                            </button>
                            <?php } ?>
@@ -306,519 +267,353 @@
                         </div>
                      </div>
                   </div>
-                  <!-- /.card-header -->
                   <div class="card-body">
-                     <style>
-                        .ul-tab {
-                           border:none;
-                           border-bottom:1px solid #ddd; 
-                        }
-                        .tab {
-                           padding:10px 7px;
-                           border:none;
-                           border-bottom: 1px solid #ddd;
-                           height:calc(100% + 1px);
-                           display: flex;
-                           align-items: center;
-                           width:100%;
-                        }
-                        .tab-active > .tab{
-                           background-color:#fff;
-                           border:1px solid #ddd;
-                           border-top:5px solid red;
-                           border-bottom:1px solid #fff;
-                           border-left:none;
-                           width:100%;
-                           font-weight:bold;
-                        }
-                        .li-tab:not(.tab-active) {
-                           border-right:1px solid #ddd;
-                        }
-                        .li-tab{
-                           transition: margin-left 3s ease-in-out 0s;
-                           position:relative;
-                           width:220px;
-                           max-width:220px;
-                        }
-                        .tab-active > .tab-1 {
-                           border-left:1px solid #ddd;
-                        }
-                        .btn-add-tab {
-                           border-radius:50%;
-                           background-color:#fff;
-                           color:black;
-                           border:2px solid black;
-                           width:40px;
-                           height:40px;
-                           display:flex;
-                           justify-content:center;
-                           align-items:center;
-                        }
-                        .add-tab-plus {
-                           font-size: 30px;
-                           font-weight: 500;
-                        }
-                        .k-tab-delete::after {
-                           position: absolute;
-                           content: "\00d7";
-                           font-size: 21px;
-                           display: flex;
-                           justify-content: center;
-                           border-radius:50%;
-                           align-items: center;
-                           right: 7px;
-                           top: 14px;
-                           border: 2px solid black;
-                           width: 24px;
-                           height: 24px;
-                           background: #fff !important;
-                           cursor: pointer;
-                           margin: 0 auto;
-                           font-weight:bold;
-                        }
-                        .tab-active .k-tab-delete::after {
-                           border-color:red;
-                           color:red;
-                           right:7px;
-                        }
-                        li.li-tab:last-child > button.tab {
-                           border-right:1px solid #ddd;
-                        }
-                     </style>             
-                     <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center">
-                        <ul style="width:100%;" class="d-flex ul-tab">
-                           <?php
-                              $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                     <div id="load-all">
+                        <link rel="stylesheet" href="css/tab.css">             
+                        <div style="padding-right:0px;padding-left:0px; flex: 1;display: flex;overflow: auto;overflow-y:hidden;" class="col-12 mb-20 j-between d-flex a-center">
+                           <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;" class="ul-tab" id="ul-tab-id">
                               
-                              $_SESSION['tab'] = isset($_SESSION['tab']) ? $_SESSION['tab'] : [];
-                              $_SESSION['tab_id'] = isset($_SESSION['tab_id']) ? $_SESSION['tab_id'] : 0;
-                           ?>
-                           <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="location.href='product_manage.php?tab_unique=all'" class="tab tab-1">Tất cả</button></li>
-                           <?php
-                              $ik = 0;
-                              $is_active = false;
-                              if(count($_SESSION['tab']) > 0) {
-                                 foreach($_SESSION['tab'] as $tab) {
-                                    //$is_active = ($tab['tab_unique'] == $tab_unique);
-                                    if($tab['tab_unique'] == $tab_unique) {
-                                       $_SESSION['tab'][$ik]['tab_urlencode'] = get_url_current_page();
-                                    }
-                           ?>
-                              <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
-                                 <button onclick="location.href='<?=$tab['tab_urlencode'];?>'" class="tab"><?=$tab['tab_name'];?></button>
-                                 <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                              </li>
-                           <?php
-                                 $ik++;
+                              <?php
+                                 $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                                 $_SESSION['product_manage_tab'] = isset($_SESSION['product_manage_tab']) ? $_SESSION['product_manage_tab'] : [];
+                                 $_SESSION['product_tab_id'] = isset($_SESSION['product_tab_id']) ? $_SESSION['product_tab_id'] : 0;
+                              ?>
+                              <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('product_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                              <?php
+                                 $ik = 0;
+                                 $is_active = false;
+                                 if(count($_SESSION['product_manage_tab']) > 0) {
+                                    foreach($_SESSION['product_manage_tab'] as $tab) {
+                                       if($tab['tab_unique'] == $tab_unique) {
+                                          $_SESSION['product_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                       }
+                              ?>
+                                 <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                                    <button onclick="loadDataInTab('<?=$_SESSION['product_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                    <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                 </li>
+                              <?php
+                                    $ik++;
+                                 }
                               }
-                           }
-                           ?>
-                           <li class="ml-10 d-flex j-center a-center" style="position:relative;">
-                              <div onclick="saveTabFilter('tab_<?=$_SESSION['tab_id'];?>')" style="" class="add-tab">
+                              ?>
+                              
+                           </ul>
+                           <div class="ml-10 d-flex j-center a-center" style="position:relative;">
+                              <div onclick="saveTabFilter()" style="" class="add-tab">
                                  <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
                               </div>
-                           </li>
-                           
-                        </ul>
-                     </div>
-                     
-                     <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form id="form-filter" style="" autocomplete="off" action="product_manage.php" method="get" onsubmit="customInpSend()">
-                              <div class="d-flex a-start">
-                                 <div class="" style="margin-top:5px;">
-                                    <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                       <option value="">Bộ lọc tìm kiếm</option>
-                                       <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                       <option value="price2" <?=$search_option == 'price2' ? 'selected="selected"' : '' ?>>Khoảng giá</option>
-                                       <option value="count2" <?=$search_option == 'count2' ? 'selected="selected"' : '' ?>>Khoảng số lượng</option>
-                                       <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
-                                       <option value="type2" <?=$search_option == 'type2' ? 'selected="selected"' : '' ?>>Danh mục</option>
-                                       <option value="publish2" <?=$search_option == 'publish2' ? 'selected="selected"' : '' ?>>Tình trạng xuất bản</option>
-                                       <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                    </select>
-                                 </div>
-                                 <div id="s-cols" class="k-select-opt ml-10 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                                    <span class="k-select-opt-remove"></span>
-                                    <span class="k-select-opt-ins"></span>
-                                    <div class="ele-cols d-flex f-column">
-                                       <select name="search_option" class="form-control mb-10">
-                                          <option value="">Chọn cột tìm kiếm</option>
-                                          <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
-                                          <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
-                                          <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
-                                          <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
-                                          <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                       </select>
-                                       <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                                    </div>
-                                    <?php
-                                    if(is_array($keyword)) {
-                                       foreach($keyword as $key) {
-                                    ?>
-                                       <?php
-                                       if($key != "") {
-                                       ?>
-                                       <div class="ele-select ele-cols mt-10">
-                                          <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                          <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                           </div>
+                        </div>
+                        <div class="img-load" style="display:none;text-align:center;" class="d-flex" style="width:100%;">
+                           <img src="img/load.gif" alt="">
+                        </div>
+                        <div id="is-load">
+                           <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                              <form id="form-filter" style="" autocomplete="off" action="product_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
+                                    <div class="d-flex a-start">
+                                       <div class="" style="margin-top:5px;">
+                                          <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                             <option value="">Bộ lọc tìm kiếm</option>
+                                             <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                             <option value="price2" <?=$search_option == 'price2' ? 'selected="selected"' : '' ?>>Khoảng giá</option>
+                                             <option value="count2" <?=$search_option == 'count2' ? 'selected="selected"' : '' ?>>Khoảng số lượng</option>
+                                             <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                             <option value="type2" <?=$search_option == 'type2' ? 'selected="selected"' : '' ?>>Danh mục</option>
+                                             <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                          </select>
                                        </div>
-                                       <?php
-                                       }
-                                       ?>
-                                    <?php   
-                                       }
-                                    }
-                                    ?>
-                                 </div>
-                                 <div id="s-price2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($price_min && $price_min != [""] || $price_max && $price_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                    <span class="k-select-opt-remove"></span>
-                                    <span class="k-select-opt-ins"></span>
-                                    <div class="ele-price2">
-                                       <div class="" style="display:flex;">
-                                          <input type="text" name="price_min[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value=""  >
-                                       </div>
-                                       <div class="ml-10" style="display:flex;">
-                                          <input type="text" name="price_max[]" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="" >
-                                       </div>
-                                    </div>
-                                    <?php
-                                       if(is_array($price_min) && is_array($price_max)) {
-                                          foreach(array_combine($price_min,$price_max) as $p_min => $p_max){
-                                    ?>
-                                       <?php
-                                       if($p_min != "" || $p_max != "") {
-                                       ?>
-                                       <div class="ele-select ele-price2 mt-10">
-                                          <div class="" style="display:flex;">
-                                             <input type="text" min="0" name="price_min[]" placeholder="Giá 1" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_min;?>"  >
+                                       <div id="s-cols" class="k-select-opt ml-10 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                                          <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                          <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
+                                          <div class="ele-cols d-flex f-column">
+                                             <select name="search_option" class="form-control mb-10">
+                                                <option value="">Chọn cột tìm kiếm</option>
+                                                <option value="name" <?=$search_option == 'name' ? 'selected="selected"' : '' ?>>Tên sản phẩm</option>
+                                                <option value="count" <?=$search_option == 'count' ? 'selected="selected"' : '' ?>>Số lượng</option>
+                                                <option value="price" <?=$search_option == 'price' ? 'selected="selected"' : '' ?>>Đơn giá</option>
+                                                <option value="type" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
+                                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                             </select>
+                                             <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                                           </div>
-                                          <div class="ml-10" style="display:flex;">
-                                             <input type="text" min="0" name="price_max[]" placeholder="Giá 2" class="form-control" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)" value="<?=$p_max;?>"  >
-                                          </div>
-                                          <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-                                       </div>
-                                       <?php
-                                       }?>
-                                    <?php 
-                                          }
-                                       }
-                                    ?>
-                                 </div>
-                                 <div id="s-count2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($count_min && $count_min != [""] || $count_max && $count_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                    <span class="k-select-opt-remove"></span>
-                                    <span class="k-select-opt-ins"></span>
-                                    <div class="ele-count2">
-                                       <div class="" style="display:flex;">
-                                          <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                       </div>
-                                       <div class="ml-10" style="display:flex;">
-                                          <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                       </div>
-                                       <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
-                                    </div>
-                                    <?php
-                                       if(is_array($count_min) && is_array($count_max)) {
-                                          foreach(array_combine($count_min,$count_max) as $c_min => $c_max){
-                                    ?>
-                                       <?php
-                                       if($c_min != "" || $c_max != "") {
-                                       ?>
-                                       <div class="ele-select ele-count2 mt-10">
-                                          <div class="" style="display:flex;">
-                                             <input type="text" min="0" name="count_min[]" placeholder="Sl 1" class="form-control" value="<?=$c_min;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                          </div>
-                                          <div class="ml-10" style="display:flex;">
-                                             <input type="text" min="0" name="count_max[]" placeholder="Sl 2" class="form-control" value="<?=$c_max;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
-                                          </div>
-                                          <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
-                                          <!--<span onclick="select_remove_child()" class="kh-select-child-remove"></span>-->
-                                       </div>
-                                       <?php
-                                       }
-                                       ?>
-                                    <?php 
-                                          }
-                                       }
-                                    ?>
-                                 </div>
-                                 <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                    <span class="k-select-opt-remove"></span>
-                                    <span class="k-select-opt-ins"></span>
-                                    <div class="ele-date2">
-                                       <div class="" style="display:flex;">
-                                          <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                       </div>
-                                       <div class="ml-10" style="display:flex;">
-                                          <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                       </div>
-                                    </div>
-                                    <?php
-                                       if(is_array($date_min) && is_array($date_max)) {
-                                          foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                                    ?>
-                                    <?php
-                                       if($d_min != "" || $d_max != "") {
-                                    ?>
-                                    <div class="ele-select ele-date2 mt-10">
-                                       <div class="" style="display:flex;">
-                                          <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                                       </div>
-                                       <div class="ml-10" style="display:flex;">
-                                          <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                                       </div>
-                                       <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                                    </div>
-                                    <?php
-                                    }
-                                    ?>
-                                    <?php 
-                                          }
-                                       }
-                                    ?>
-                                 </div>
-                                 <div id="s-type2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($pt_type && $pt_type != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                    <span class="k-select-opt-remove"></span>
-                                    <span class="k-select-opt-ins"></span>
-                                    <div class="ele-type2">
-                                       <select class="select-type2" style="width:100%;" class="form-control" name="pt_type[]">
-                                          <option value="">Chọn danh mục cần tìm</option>
                                           <?php
-                                             $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                             $rows2 = db_query($sql);
-                                             foreach($rows2 as $row2) {
+                                          if(is_array($keyword)) {
+                                             foreach($keyword as $key) {
                                           ?>
-                                             <option value="<?=$row2['id']?>"><?=$row2['name'];?></option>
+                                             <?php
+                                             if($key != "") {
+                                             ?>
+                                             <div class="ele-select ele-cols mt-10">
+                                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                             </div>
+                                             <?php
+                                             }
+                                             ?>
+                                          <?php   
+                                             }
+                                          }
+                                          ?>
+                                       </div>
+                                       <div id="s-price2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($price_min || $price_max ) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                          <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                          <div class="ele-price2">
+                                             <div class="" style="display:flex;">
+                                                <input type="text" name="price_min" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value="<?=$price_min ? number_format($price_min,0,".",".") : null;?>">
+                                             </div>
+                                             <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="price_max" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="<?=$price_min ? number_format($price_min,0,".",".") : null;?>" >
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div id="s-count2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($count_min || $count_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                          <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                          <div class="ele-count2">
+                                             <div class="" style="display:flex;">
+                                                <input type="text" name="count_min" placeholder="Sl 1" class="form-control" value="<?=$count_min ? number_format($count_min,0,".",".") : null;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                             </div>
+                                             <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="count_max" placeholder="Sl 2" class="form-control" value="<?=$count_max ? number_format($count_max,0,".",".") : null;?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min || $date_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                          <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                          <div class="ele-date2">
+                                             <div class="" style="display:flex;">
+                                                <input type="text" name="date_min" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_min ? Date("d-m-Y",strtotime($date_min)) : null;?>">
+                                             </div>
+                                             <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_max" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_max ? Date("d-m-Y",strtotime($date_max)) : null;?>">
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div id="s-type2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($pt_type && $pt_type != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                          <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                          <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
+                                          <div class="ele-type2">
+                                             <select class="select-type2" style="width:100%;" class="form-control" name="pt_type[]">
+                                                <option value="">Chọn danh mục cần tìm</option>
+                                                <?php
+                                                   $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
+                                                   $rows2 = fetch_all(sql_query($sql));
+                                                   foreach($rows2 as $row2) {
+                                                ?>
+                                                   <option value="<?=$row2['id']?>"><?=$row2['name'];?></option>
+                                                <?php
+                                                   }
+                                                ?>
+                                             </select>
+                                          </div>
+                                          <?php
+                                          if(is_array($pt_type)) {
+                                             foreach($pt_type as $pt){
+                                          ?>
+                                          <?php
+                                             if($pt != "") {
+                                             ?>
+                                          <div class="ele-select ele-type2 mt-10">
+                                             <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
+                                                <option value="">Chọn danh mục cần tìm</option>
+                                                <?php
+                                                   $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
+                                                   $rows2 = fetch_all(sql_query($sql));
+                                                   foreach($rows2 as $row2) {
+                                                ?>
+                                                   <option value="<?=$row2['id']?>" <?=$pt == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
+                                                <?php
+                                                   }
+                                                ?>
+                                             </select>
+                                             <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
+                                          </div>
+                                          <?php
+                                          }?>
                                           <?php
                                              }
+                                          }
                                           ?>
-                                       </select>
+                                       </div>
+                                       <input type="hidden" name="is_search" value="true">
+                                       <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                                     </div>
-                                    <?php
-                                    if(is_array($pt_type)) {
-                                       foreach($pt_type as $pt){
-                                    ?>
-                                    <?php
-                                       if($pt != "") {
-                                       ?>
-                                    <div class="ele-select ele-type2 mt-10">
-                                       <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
-                                          <option value="">Chọn danh mục cần tìm</option>
-                                          <?php
-                                             $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                             $rows2 = db_query($sql);
-                                             foreach($rows2 as $row2) {
-                                          ?>
-                                             <option value="<?=$row2['id']?>" <?=$pt == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
-                                          <?php
-                                             }
-                                          ?>
-                                       </select>
-                                       <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
+                                    <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                                       <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
+                                          <!--<label for="">Sắp xếp:</label>-->
+                                          <select name="orderByColumn" class="ml-10 form-control col-5">
+                                             <option value="">Sắp xếp theo cột</option>
+                                             <option value="pi.name" <?=$orderByColumn == "pi.name" ? "selected" : "";?>>Tên sản phẩm</option>
+                                             <option value="pi.count" <?=$orderByColumn == "pi.count" ? "selected" : "";?>>Số lượng</option>
+                                             <option value="pi.price" <?=$orderByColumn == "pi.price" ? "selected" : "";?>>Đơn giá</option>
+                                             <option value="pt.name" <?=$orderByColumn == "pt.name" ? "selected" : "";?>>Danh mục</option>
+                                             <option value="pi.created_at" <?=$orderByColumn == "pi.created_at" ? "selected" : "";?>>Ngày đăng</option>
+                                          </select>
+                                          <select name="orderStatus" class="ml-10 form-control col-5">
+                                             <option value="">Thao tác sắp xếp</option>
+                                             <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                             <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                          </select>
+                                          <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                                       </div>     
                                     </div>
-                                    <?php
-                                    }?>
-                                    <?php
-                                       }
-                                    }
-                                    ?>
-                                 </div>
-                                 <input type="hidden" name="is_search" value="true">
-                                 <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                                    <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
+                              </form>
+                           </div>
+                           <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                              <div>
+                                 <?php
+                                    if($allow_delete) {
+                                 ?>
+                                 <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                                 <?php } ?>
+                                 <?php
+                                    if($allow_update) {
+                                 ?>
+                                 <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                 <?php } ?>
+                                 <?php
+                                    if($allow_read) {
+                                 ?>
+                                 <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                                 <?php } ?>
+                                 <?php
+                                    if($allow_insert) {
+                                 ?>
+                                 <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                                 <?php } ?>
                               </div>
-                              <div class="d-flex a-start" style="">
-                                 <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$select_publish != "" ? "display:block;": "display:none;";?>margin-top:10px;">
-                                    <span class="k-select-opt-remove"></span>
-                                    <select name="select_publish" class="form-control">
-                                       <option value="">Tình trạng xuất bản</option>
-                                       <option value="1" <?=$select_publish == 1 ? "selected='selected'" : "";?>>Đã xuất bản</option>
-                                       <option value="00" <?=$select_publish == "00" ? "selected='selected'" : "";?>>Chưa xuất bản</option>
-                                    </select>
-                                 </div>
-                              </div> 
-                              <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
-                                 <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
-                                    <!--<label for="">Sắp xếp:</label>-->
-                                    <select name="orderByColumn" class="ml-10 form-control col-5">
-                                       <option value="">Sắp xếp theo cột</option>
-                                       <option value="pi.name" <?=$orderByColumn == "pi.name" ? "selected" : "";?>>Tên sản phẩm</option>
-                                       <option value="pi.count" <?=$orderByColumn == "pi.count" ? "selected" : "";?>>Số lượng</option>
-                                       <option value="pi.price" <?=$orderByColumn == "pi.price" ? "selected" : "";?>>Đơn giá</option>
-                                       <option value="pt.name" <?=$orderByColumn == "pt.name" ? "selected" : "";?>>Danh mục</option>
-                                       <option value="pi.created_at" <?=$orderByColumn == "pi.created_at" ? "selected" : "";?>>Ngày đăng</option>
-                                    </select>
-                                    <select name="orderStatus" class="ml-10 form-control col-5">
-                                       <option value="">Thao tác sắp xếp</option>
-                                       <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
-                                       <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
-                                 </div>     
+                              <div class="section-save">
+                                 <?php
+                                    if($upt_more == 1 && $allow_update){
+                                 ?>
+                                 <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                                 <?php } ?>
                               </div>
-                              <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
-                        </form>
+                           </div>
+                           <table id="m-product-info" class="table table-bordered table-striped">
+                              <thead>
+                                 <tr style="cursor:pointer;">
+                                    <th style="width:20px !important;">
+                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                    </th>
+                                    <th class="w-100 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="th-ten-san-pham">Tên sản phẩm <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="w-120 th-so-luong">Số lượng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="w-150 th-don-gia">Đơn giá <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="w-200 th-danh-muc">Danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="w-100">Tình trạng</th>
+                                    <th class="w-150 th-ngay-dang">Ngày đăng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                    <th class="w-200">Thao tác</th>
+                                 </tr>
+                              </thead>
+                              <?php
+                                 $get = $_GET;
+                                 unset($get['page']);
+                                 $str_get = http_build_query($get);
+                                 if($str) {
+                                    $where .= " and pi.id in ($str)";
+                                 }
+                                 $cnt = 0;
+                                 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                 $limit = $_SESSION['paging'];
+                                 $start_page = $limit * ($page - 1);
+                                 $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
+                                 $total = fetch_row($sql_get_total)['countt'];
+                                 $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
+                                 $rows = fetch_all(sql_query(($sql_get_product)));
+                              ?>
+                              <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-san-pham" class="list-product">
+                              <?php
+                                 foreach($rows as $row) {
+                              ?>
+                                    <tr id="<?=$row["id"];?>">
+                                       <td>
+                                          <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                       </td>
+                                       <td class="so-thu-tu w-150"><?=$total - ($start_page + $cnt);?></td>
+                                       <td class="ten-san-pham">
+                                          <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
+                                       </td>
+                                       <td class="so-luong">
+                                          <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
+                                       </td>
+                                       <td class="don-gia">
+                                          <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
+                                       </td>
+                                       <td class="danh-muc"><?=$row['pt_name']?></td>
+                                       <td>
+                                          <div class="custom-control custom-switch">
+                                             <input type="checkbox" onchange="toggleActiveProduct('<?=$row['pt_id']?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                             <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
+                                          </div>  
+                                       </td>
+                                       <td class="ngay-dang"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                                       <td>
+                                          <?php
+                                             if($upt_more != 1) {
+                                          ?>
+                                          <?php
+                                             if($allow_read){
+                                          ?>
+                                          <button onclick="readModal()" class="btn-xem-san-pham dt-button button-grey"
+                                          data-id="<?=$row["id"];?>" >
+                                          Xem
+                                          </button>
+                                          <?php } ?>
+                                          <?php
+                                             if($allow_update) {
+                                          ?>
+                                          <button onclick="openModalUpdate()" class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
+                                          data-id="<?=$row["id"];?>" >
+                                          Sửa
+                                          </button>
+                                          <?php } ?>
+                                          <?php
+                                             if($allow_delete) {
+                                          ?>
+                                          <button onclick="processDelete()" class="btn-xoa-san-pham dt-button button-red" data-id="<?=$row["id"];?>">
+                                          Xoá
+                                          </button>
+                                          <?php } ?>
+                                          <?php
+                                             } else {
+                                          ?>
+                                             <button dt-count="0" onclick="uptMore2()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["id"];?>">
+                                          Sửa
+                                          </button>
+                                          <?php 
+                                             } 
+                                          ?>
+                                       </td>
+                                    </tr>
+                                 <?php
+                                    $cnt++;
+                                 }
+                                 ?>
+                              </tbody>
+                              <tfoot>
+                                 <tr>
+                                    <th style="width:20px !important;">
+                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                    </th>
+                                    <th>Số thứ tự</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Danh mục</th>
+                                    <th>Tình trạng</th>
+                                    <th>Ngày đăng</th>
+                                    <th>Thao tác</th>
+                                 </tr>
+                              </tfoot>
+                           </table> 
+                           <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
+                                 
+                           </ul> 
+                        </div>  
                      </div>
-                     <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                        <div>
-                           <?php
-                              if($allow_delete) {
-                           ?>
-                           <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_update) {
-                           ?>
-                           <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_read) {
-                           ?>
-                           <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_insert) {
-                           ?>
-                           <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_check_product) {
-                           ?>
-                           <!--<button onclick="checkProduct()" class="dt-button button-blue">Đăng bán nhanh</button>
-                           <?php } ?>
-                           <button onclick="cancelProduct()" class="dt-button button-blue">Ngừng bán nhanh</button>-->
-                        </div>
-                        <div class="section-save">
-                           <?php
-                              if($upt_more == 1 && $allow_update){
-                           ?>
-                           <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-                           <?php } ?>
-                        </div>
-                     </div>
-                     
-                     <table id="m-product-info" class="table table-bordered table-striped">
-                        <thead>
-                           <tr>
-                              <th></th>
-                              <th class="w-100">Số thứ tự</th>
-                              <th>Tên sản phẩm</th>
-                              <th>Số lượng</th>
-                              <th>Đơn giá</th>
-                              <?=$upt_more == 1 ? "<th >Mô tả sản phẩm</th>" : "";?>
-                              <th>Danh mục</th>
-                              <th class="w-100">Tình trạng</th>
-                              <th>Ngày đăng</th>
-                              <th>Thao tác</th>
-                           </tr>
-                        </thead>
-                        <tbody id="list-san-pham">
-                        <?php
-                           // set get
-                           $get = $_GET;
-                           unset($get['page']);
-                           $str_get = http_build_query($get);
-                           // query
-                           if($str) {
-                              $where .= " and pi.id in ($str)";
-                           }
-                           $cnt = 0;
-                           $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                           $limit = $_SESSION['paging'];
-                           $start_page = $limit * ($page - 1);
-                           $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                           $total = fetch_row($sql_get_total)['countt'];
-                           if($upt_more == 1) {
-                              $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id',pi.description as 'pi_description' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                           } else {
-                              $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                           }
-                           //print_r($sql_get_product);
-                           $rows = db_query($sql_get_product);
-                           log_v($sql_get_product);
-                           foreach($rows as $row) {
-                           ?>
-                              <tr id="<?=$row["id"];?>">
-                                 <td></td>
-                                 <td><?=$total - ($start_page + $cnt);?></td>
-                                 <td>
-                                    <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
-                                 </td>
-                                 <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
-                                 </td>
-                                 <td>
-                                    <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
-                                 </td>
-                                 <?=$upt_more == 1 ? "<td><textarea name='pi_description' class='t-summernote'>" . $row['pi_description'] . "</textarea><span class='text-danger'></span></td>" : "";?>
-                                 <td><?=$row['pt_name']?></td>
-                                 <td>
-                                    <div class="custom-control custom-switch">
-                                       <input type="checkbox" onchange="toggleActiveProduct('<?=$row['pt_id']?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                       <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                    </div>  
-                                 </td>
-                                 <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                 <td>
-                                    <?php
-                                       if($upt_more != 1) {
-                                    ?>
-                                    <?php
-                                       if($allow_read){
-                                    ?>
-                                    <button class="btn-xem-san-pham dt-button button-grey"
-                                    data-id="<?=$row["id"];?>" >
-                                    Xem
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       if($allow_update) {
-                                    ?>
-                                    <button class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
-                                    data-id="<?=$row["id"];?>" >
-                                    Sửa
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       if($allow_delete) {
-                                    ?>
-                                    <button class="btn-xoa-san-pham dt-button button-red" data-id="<?=$row["id"];?>">
-                                    Xoá
-                                    </button>
-                                    <?php } ?>
-                                    <?php
-                                       } else {
-                                    ?>
-                                       <button dt-count="0" onclick="uptThisRow()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["id"];?>">
-                                    Sửa
-                                    </button>
-                                    <?php 
-                                       } 
-                                    ?>
-                                 </td>
-                              </tr>
-                           <?php
-                              $cnt++;
-                           }
-                           ?>
-                        </tbody>
-                        <tfoot>
-                           <tr>
-                              <th></th>
-                              <th>Số thứ tự</th>
-                              <th>Tên sản phẩm</th>
-                              <th>Số lượng</th>
-                              <th>Đơn giá</th>
-                              <?=$upt_more == 1 ? "<th>Mô tả sản phẩm</th>" : "";?>
-                              <th>Danh mục</th>
-                              <th>Tình trạng</th>
-                              <th>Ngày đăng</th>
-                              <th>Thao tác</th>
-                           </tr>
-                        </tfoot>
-                     </table>
                   </div>
-                  <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
-                        
-                  </ul>
                </div>
             </div>
          </div>
@@ -829,26 +624,13 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <ul class="nav nav-tabs" style="width:100%;" id="custom-tabs-two-tab" role="tablist">
-            <li class="nav-item">
-               <a class="nav-link active" style="font-weight:bolder;" id="custom-tabs-two-home-tab" data-toggle="pill" href="#custom-tabs-two-home" role="tab" aria-controls="custom-tabs-two-home" aria-selected="true">Thông tin sản phẩm</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-profile-tab" data-toggle="pill" href="#custom-tabs-two-profile" role="tab" aria-controls="custom-tabs-two-profile" aria-selected="false">Thông số kỹ thuật</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-messages-tab" data-toggle="pill" href="#custom-tabs-two-messages" role="tab" aria-controls="custom-tabs-two-messages" aria-selected="false">Điểm nổi bật</a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" style="font-weight:bolder;" id="custom-tabs-two-settings-tab" data-toggle="pill" href="#custom-tabs-two-settings" role="tab" aria-controls="custom-tabs-two-settings" aria-selected="false">Phân loại tìm kiếm</a>
-            </li>
-         </ul>
+        <h4>Thông tin sản phẩm</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-         <div class="tab-content" id="custom-tabs-two-tabContent">
+         <div id='form-product'>
          </div>
       </div>
     </div>
@@ -865,7 +647,7 @@
         </button>
       </div>
       <div class="modal-body">
-         <div id="form-product2" class="modal-body">
+         <div id="form-insert" class="modal-body">
             <div class="row j-between a-center">
                <div style="margin-left: 7px;" class="form-group">
                      <label for="">Nhập số dòng: </label>
@@ -887,10 +669,10 @@
                <div class="d-flex f-column form-group">
                      <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                      <div class="file file-csv mr-10">
-                        <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                        <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2'])">
                      </div>
                      <div class="file file-excel mr-10">
-                        <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                        <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2'])">
                      </div>
                      <div class="d-empty">
                         <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
@@ -918,32 +700,6 @@
     </div>
   </div>
 </div>
-<div class="modal fade" id="modal-xl3">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-         <h4 id="msg-del" class="modal-title">Thêm tab lọc dữ liệu</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-         <div id="tab-filter">
-            <div class="col-12" style="padding-right:0px;padding-left:0px;">
-               <div class="form-group">
-                  <label for="">Nhập tiêu đề cho tab: </label>
-                  <input name="tab_name" type="text" placeholder="Nhập tiêu đề cho tab..." class="form-control">
-               </div>
-            </div>
-            <div class="col-12 d-flex a-center j-center">
-               <button type="button" onclick="saveTabFilter()" style="width:50px;" class="dt-button button-purple">Ok</button>
-            </div>
-         </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!--html & css section end-->
 <?php
    include_once("include/bottom.meta.php");
@@ -955,244 +711,10 @@
     include_once("include/dt_script.php");
 ?>
 <script src="js/toastr.min.js"></script>
-<script>
-	toastr.options = {
-	  "closeButton": false,
-	  "debug": false,
-	  "newestOnTop": false,
-	  "progressBar": false,
-	  "positionClass": "toast-bottom-right",
-	  "preventDuplicates": false,
-	  "onclick": null,
-	  "showDuration": "300",
-	  "hideDuration": "1000",
-	  "timeOut": "5000",
-	  "extendedTimeOut": "1000",
-	  "showEasing": "swing",
-	  "hideEasing": "linear",
-	  "showMethod": "fadeIn",
-	  "hideMethod": "fadeOut"
-	}
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script src="js/khoi_all.js"></script>
 <script>
-   function focusInputTabName(evt) {
-      event.preventDefault();
-      let text = $(evt).find('button').text();
-      if(!$(evt).hasClass('tab-active')) {
-         $(evt).find('button').replaceWith(`<input onblur="changeTabName(this)" type='text' value='${text}' class='form-control' style='border-radius:0px;height:100%;width:100%;border:none;border-top:5px solid #007bff;'>`)
-      } else {
-         $(evt).find('button').replaceWith(`<input onblur="changeTabName(this)" type='text' value='${text}' class='form-control' style='border-radius:0px;height:100%;width:100%;border:none;border-top:5px solid #007bff;border-right:1px solid #ddd !important;'>`)
-      }
-      $(evt).find('input').focus();
-      $(evt).find('input').select();
-      $(evt).find('span').hide();
-   }
-   function changeTabName(evt) {
-      let new_tab_name = $(evt).val();
-      //console.log(new_tab_name);
-      let index = $(event.currentTarget).closest('.li-tab').attr('data-index');
-      if(new_tab_name == "") {
-         toastr["error"]("Vui lòng không để trống tên tab");
-         return;
-      } else {
-         $.ajax({
-            url:window.location.href,
-            type:"POST",
-            data: {
-               status:"changeTabNameFilter",
-               new_tab_name : new_tab_name,
-               index : index,
-            },success:function(data) {
-               console.log(data);
-               data = JSON.parse(data);
-               if(data.msg == "ok") {
-                  $(evt).siblings('span').show();
-                  $(evt).replaceWith(`<button onclick="location.href='${data.tab_urlencode}'" class="tab">${new_tab_name}</button>`);
-               }
-            }
-         })
-      }
-   }
-   function saveTabFilter(tab_name){
-      let tab_urlencode = "http://localhost/project/admin/product_manage.php?tab_unique=all";
-      $.ajax({
-         url:window.location.href,
-         type:"POST",
-         data: {
-            status:"saveTabFilter",
-            tab_name : tab_name,
-            tab_urlencode : tab_urlencode,
-         },success:function(data) {
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               location.href=data.tab_urlencode;
-            }
-         }
-      })
-   }
-   function delTabFilter(is_active){
-      let evt = $(event.currentTarget);
-      let index = evt.closest('.li-tab').attr('data-index');
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: {
-            status: "deleteTabFilter",
-            index: index,
-            is_active_2: is_active,
-         },success:function(data){
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               if(is_active.trim() == '') {
-                  let next = evt.closest('li').nextAll();
-                  evt.closest('li').css({"visibility":"hidden"});
-                  next.animate({'right':'220px'},"fast",() => {
-                     evt.closest('.li-tab').remove();
-                     ik = 0;
-                     $('.k-tab-delete').each(function(){
-                        if($(this).closest('.li-tab').hasClass('tab-active')) {
-                           $(this).attr('onclick',`delTabFilter('1')`);
-                        } else {
-                           $(this).attr('onclick',`delTabFilter('')`);
-                        }
-                        $(this).closest('.li-tab').attr('data-index',ik);
-                        ik++;
-                     })
-                     next.css({'right':'0px'});
-                  });
-               } else if(is_active == 1) {
-                  location.href=data.tab_urlencode;
-               }
-            }
-         }
-      })
-   }
-   function toggleActiveProduct(category_product_type_id){
-      event.preventDefault();
-      let id = $(event.currentTarget).closest("tr").attr("id");
-      let status = !$(event.currentTarget).is(":checked") ? "deactive" : "active";
-      let target = $(event.currentTarget);
-      console.log(status);
-      console.log("id: " + id);
-      $.ajax({
-        url:window.location.href,
-        type:"POST",
-        data: {
-         token: "<?php echo_token();?>",
-         id:id,
-         status:status,
-         category_id:category_product_type_id,
-        },success:function(data){
-          console.log(data);
-          data = JSON.parse(data);
-          if(data.msg == "active") {
-            toastr["success"](data.success);
-            target.prop("checked",true);
-          } else if(data.msg == "not_ok"){
-            toastr["error"](data.error);
-            target.prop("checked",false);
-          } else if(data.msg == "deactive") {
-            toastr["success"](data.success);
-            target.prop("checked",false);
-          } 
-        }
-      })
-   }
-   function xlsx2input(input) {
-      if(input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-               var data = e.target.result;
-               var workbook = XLSX.read(data, {
-                  type: 'binary'
-               });
-               var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
-               console.log(XL_row_object);
-               setDataFromXLSX(XL_row_object,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
-            };
-            reader.onerror = function(ex) {
-               console.log(ex);
-            };
-            reader.readAsBinaryString(input.files[0]);
-            //console.log("aaa");
-      }
-   }
-   function csv2input(input) {
-      let arr = [];
-      if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload=function(e){
-               arr = reader.result.split(/\r\n|\n/);
-               console.log(arr);
-               // step 1
-               let columns = arr[0].split(/\,/);
-               let arr_csv = [];
-               arr.shift();
-               for(i = 0 ; i < arr.length ; i++) {
-                  let new_arr = arr[i].split(/\,/);
-                  //console.log(new_arr);
-                  let new_obj = {};
-                  for(j = 0 ; j < columns.length ; j++) {
-                        new_obj[columns[j]] = new_arr[j];
-                        //console.log(new_obj);
-                  }
-                  arr_csv.push(new_obj);
-               }
-               console.log(arr_csv);
-               setDataFromCSV(arr_csv,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2']);
-            }
-            reader.readAsText(input.files[0]);
-      }
-   }
-   function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
-      if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-         $("[data-plus]").attr("data-plus",arr_csv.length);
-         showRow(1);
-         let i = 0;
-         arr_csv_columns.forEach(function(ele,ind){
-               $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-               if(!isNaN(arr_csv[i][ele])) {
-                  $(this).val(parseInt(arr_csv[i][ele]).toLocaleString().replace(/\,/g, "."));
-               } else {
-                  $(this).val(arr_csv[i][ele]);
-               }
-                  i++;
-               });
-               i = 0; 
-         });
-      } else {
-         $.alert({
-               title:"Thông báo",
-               content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-         });
-      }
-      $("input[name='read_csv']").val("");
-   }
-   function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
-      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-         $("[data-plus]").attr("data-plus",arr_xlsx.length);
-            showRow(1);
-            let i = 0;
-            arr_excel_columns.forEach(function(ele,ind){
-               $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                  if(!isNaN(arr_xlsx[i][ele])) {
-                     $(this).val(parseInt(arr_xlsx[i][ele]).toLocaleString().replace(/\,/g, "."));
-                  } else {
-                     $(this).val(arr_xlsx[i][ele]);
-                  }
-                  i++;
-               });
-               i = 0; 
-            });
-      } else {
-            $.alert({
-               title:"Thông báo",
-               content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-            });
-      }
-      $("input[name='read_excel']").val("");
-   }
+   $('.select-type2').select2();
 </script>
 <!--searching filter-->
 <script>
@@ -1209,35 +731,23 @@
       }
       $("select[name='search_option'] > option[value='']").prop('selected',true);
    }
-   $('.k-select-opt-remove').click(function(){
+   function selectOptionRemove(){
       $(event.currentTarget).siblings('select').find('option').prop("selected",false);
       $(event.currentTarget).siblings('select').find("option[value='']").prop("selected",true);
       $(event.currentTarget).siblings('.ele-select').remove()
       $(event.currentTarget).siblings("div").find("input").val("");
       $(event.currentTarget).closest('div').css({"display":"none"});
-   });
-   $('.k-select-opt-ins').click(function(){
+   }
+   function selectOptionInsert(){
       let file_html = "";
-      if($(event.currentTarget).closest('#s-count2').length) {
-         file_html = `
-            <div class="ele-select ele-count2 mt-10">
-               <div class="" style="display:flex;">
-                  <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <div class="ml-10" style="display:flex;">
-                  <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
-            </div>
-         `
-      } else if($(event.currentTarget).closest('#s-type2').length) {
+      if($(event.currentTarget).closest('#s-type2').length) {
          file_html = `
          <div class="ele-select ele-type2 mt-10">
             <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
                <option value="">Chọn danh mục cần tìm</option>
                <?php
                   $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                  $rows2 = db_query($sql);
+                  $rows2 = fetch_all(sql_query($sql));
                   foreach($rows2 as $row2) {
                ?>
                   <option value="<?=$row2['id']?>" <?=$pt_type == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
@@ -1248,30 +758,6 @@
             <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
          </div>
          `;
-      } else if($(event.currentTarget).closest('#s-date2').length) {
-         file_html = `
-         <div class="ele-select ele-date2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-price2').length) {
-         file_html = `
-         <div class="ele-select ele-price2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="price_min[]" placeholder="Giá 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="price_max[]" placeholder="Giá 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-            </div>
-            <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
       } else if($(event.currentTarget).closest('#s-cols').length) {
          file_html = `
          <div class="ele-select ele-cols mt-10">
@@ -1280,8 +766,8 @@
          </div>
          `;
       }
-      $(file_html).appendTo($(this).parent());
-      $(this).parent().css({
+      $(file_html).appendTo($(event.currentTarget).parent());
+      $(event.currentTarget).parent().css({
          "flex-direction": "column",
          "justify-content": "space-between",
       });
@@ -1298,11 +784,10 @@
          });
       } 
       $('.select-type2').select2();
-   });
+   }
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
-   
 </script>
 <!-- multi file upload-->
 <script>
@@ -1399,24 +884,21 @@
 	//
 
 	function readURL(input,key) {
-		// key = "file_" + key;
-		// 8_del, 8_upt
-		 let target = event.currentTarget;
-		 console.log(input.files);
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			arr_input_file.set(key,key);
-			console.log(arr_input_file);
-			reader.onload = function (e) {
-			   $(target).parent().css({
-				'background-image' : 'url("' + e.target.result + '")',
-				'background-size': 'cover',
-				'background-position': '50%'
-			   });
-			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
-			}
-			reader.readAsDataURL(input.files[0]);
-		 }
+      let target = event.currentTarget;
+      console.log(input.files);
+      if (input.files && input.files[0]) {
+         var reader = new FileReader();
+         arr_input_file.set(key,key);
+         console.log(arr_input_file);
+         reader.onload = function (e) {
+            $(target).parent().css({
+            'background-image' : 'url("' + e.target.result + '")',
+            'background-size': 'cover',
+            'background-position': '50%'
+            });
+         }
+         reader.readAsDataURL(input.files[0]);
+      }
 	 };
 	 function removeImage(input,key){
 		//key = "file_" + key;
@@ -1478,160 +960,278 @@
 		}
 	 }
 </script>
-<!-- datatable and function crud js-->
 <script>
-   var dt_pi;
-   $(document).ready(function (e) {
-      $('.select-type2').select2();
-      $.fn.dataTable.moment('DD-MM-YYYY');
-      dt_pi = $("#m-product-info").DataTable({
-         "sDom": 'RBlfrtip',
-         columnDefs: [
-            { 
-               "name":"pi-checkbox",
-               "orderable": false,
-               "className": 'select-checkbox',
-               "targets": 0
-            },{ 
-               "name":"manipulate",
-               "orderable": false,
-               "className": 'manipulate',
-               "targets": <?=$upt_more == 1 ? 9 : 8;?>
-            },{
-               "type": 'formatted-num',
-               "targets": [4,3],
-            },
-         ],
-         select: {
-            style: 'multi+shift',
-            selector: 'td:first-child'
-         },
-         order: [
-            [1, 'desc']
-         ],
-         "language": {
-            "emptyTable": "Không có dữ liệu",
-            "sZeroRecords": 'Không tìm thấy kết quả',
-            "infoEmpty": "",
-            "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
-            "search":"Tìm kiếm trong bảng này:",   
-            "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-            "select": {
-              "rows": "Đã chọn %d dòng",
-            },
-            "buttons": {
-               "copy": 'Copy',
-               "copySuccess": {
-                  1: "Bạn đã sao chép một dòng thành công",
-                  _: "Bạn đã sao chép %d dòng thành công"
-               },
-               "copyTitle": 'Thông báo',
-            }
-            
-         },
-         "responsive": false, 
-         "lengthChange": true, 
-         "autoWidth": false,
-         "paging":false,
-         "searchHighlight": true,
-         "buttons": [
-            {
-               "extend": "excel",
-               "text": "Excel (2)",
-               "key": {
-                  "key": '2',
-               },
-               "autoFilter": true,
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "title": "Dữ liệu sản phẩm trích xuất ngày <?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "pdfHtml5",
-               "text": "PDF (3)",
-               "key": {
-                  "key": '3',
-               },
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "title": "Dữ liệu sản phẩm trích xuất ngày <?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "csv",
-               "text": "CSV (4)",
-               "charset": 'UTF-8',
-               "bom": true,
-               "key": {
-                  "key": '4',
-               },
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "colvis",
-               "text": "Ẩn / Hiện cột (7)",
-               "columns": ':not(.select-checkbox)',
-               "key": {
-                  "key": '7',
-               },
-               
-            }
-        ]
-      })
-      dt_pi.buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
-      dt_pi.search('').draw();
-      //
-      dt_pi.on("click", "th.select-checkbox", function() {
-         if ($("th.select-checkbox").hasClass("selected")) {
-            dt_pi.rows().deselect();
-            $("th.select-checkbox").removeClass("selected");
-         } else {
-            dt_pi.rows().select();
-            $("th.select-checkbox").addClass("selected");
+   function readURL2(input){
+      if (input.files && input.files[0]) {
+         var reader = new FileReader();
+         reader.onload = function (e) {
+            $('#display-image').attr('src', e.target.result);
          }
-      }).on("select deselect", function() {
-         if (dt_pi.rows({
-                  selected: true
-            }).count() !== dt_pi.rows().count()) {
-            $("th.select-checkbox").removeClass("selected");
-         } else {
-            $("th.select-checkbox").addClass("selected");
+         reader.readAsDataURL(input.files[0]);
+      }
+   }
+   function validate(){
+      let test = true
+      let name = $('input[name=ten_san_pham]').val();
+      let category = $('input[name="category_id"]').val();
+      let count = $('input[name=so_luong]').val();
+      let price = $('input[name=don_gia]').val();
+      let description = $('#summernote').summernote('code');
+      if(name.trim() == "") {
+         $('input[name=ten_san_pham]').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Tên sản phẩm không được để trống"
+         });
+         test = false;
+      } else if(count.trim() == "") {
+         $('input[name=so_luong]').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Số lượng không được để trống"
+         });
+         test = false;
+      } else if(category.trim() == "") {
+         $('#menu').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Danh mục sản phẩm không được để trống"
+         });
+         test = false;
+      } else if(price.trim() == "") {
+         $('input[name=don_gia]').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Đơn giá không được để trống"
+         });
+         test = false;
+      } else if(description.trim() == "<p><br></p>") {
+         $('.note-editable.card-block').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Mô tả sản phẩm không được để trống"
+         });
+         test = false;
+      }
+      return test;
+   }
+   function openModalInsert(){
+      $('#form-product').load("ajax_product_info.php?status=Insert",() => {
+         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+         $('#btn-luu-san-pham').text("Thêm");
+         $(function(){
+            setTimeout(() => {
+               $('#summernote').summernote({height: 120,lang: 'vi-VN'});
+            },100);
+            $(".parent[data-id]").click(function(e){
+               let child = $(e.currentTarget).find('li').length;
+               if(!child){
+                  //console.log("nufew");
+                  let id = $(e.currentTarget).attr('data-id');
+                  let name = $(e.currentTarget).text();
+                  name = name.substr(0,name.length - 1);
+                  console.log(name);
+                  //console.log(id);
+                  $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
+                     $("input[name='category_id']").val(id);
+                     $("input[name='category_name']").val(name);
+                     $("#breadcrumb-menu").empty();
+                     $("#breadcrumb-menu").append(data);
+                     /*$("#breadcrumb-menu").parent().css({"margin-top":"-25px"});*/
+                  });
+               }
+            })
+            init_map_file();
+         });
+         $("#fileInput").on("change",function(){
+            $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+            readURL(this); 
+         });
+         $('#file_input_anh_mo_ta').on('change', function() {
+            imagesPreview(this,'#image_preview');
+         });
+      });
+   }  
+   function openModalUpdate(){
+      let id = $(event.currentTarget).attr('data-id');
+      $(event.currentTarget).closest("tr").addClass("bg-color-selected");
+      $('#form-product').load("ajax_product_info.php?status=Update&id=" + id,() => {
+         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+         $('#btn-luu-san-pham').text("Sửa");
+         $(function(){
+            setTimeout(() => {
+               $('#summernote').summernote({height: 120,lang: 'vi-VN'});
+            },100);
+            $(".parent[data-id]").click(function(e){
+               let child = $(e.currentTarget).find('li').length;
+               if(!child){
+                  let id = $(e.currentTarget).attr('data-id');
+                  let name = $(e.currentTarget).text();
+                  name = name.substr(0,name.length - 1);
+                  console.log(name);
+                  $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
+                     $("input[name='category_id']").val(id);
+                     $("input[name='category_name']").val(name);
+                     $("#breadcrumb-menu").empty();
+                     $("#breadcrumb-menu").append(data);
+                  });
+               }
+            })
+            init_map_file();
+         });
+         $("#fileInput").on("change",function(){
+            $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+            readURL(this); 
+         });
+         $('#file_input_anh_mo_ta').on('change', function() {
+            imagesPreview(this,'#image_preview');
+         });
+      });
+   }
+   function readModal(){
+      let id = $(event.currentTarget).attr('data-id');
+      $(event.currentTarget).closest("tr").addClass("bg-color-selected");
+      $('#form-product').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
+         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+      });
+   }
+   function processModalInsertUpdate(){
+      event.preventDefault();
+      let formData = new FormData($('#form-san-pham')[0]);
+      let number = 1;
+      formData.append('id',$('input[name=id]').val());
+      formData.append('name',$('input[name=ten_san_pham]').val());
+      formData.append('description',$('#summernote').summernote('code'));
+      formData.append('count',$('input[name=so_luong]').val());
+      formData.append('number',$('input[name=number]').val());
+      formData.append('price',$('input[name=don_gia]').val());
+      formData.append('category_id',$("input[name='category_id']").val());
+      formData.append('category_name',$("input[name='category_name']").val());
+      formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
+      if(status == "Insert"){
+         game();
+      } else {
+         gameChange();
+      }
+      formData.append('list_file_del',$('input[name="list_file_del"]').val());
+      let img = document.getElementsByName('img[]');
+      let file = $('input[name=img_sanpham_file]')[0].files;
+      //console.log(file);
+      if(file.length > 0) {
+         formData.append('img_sanpham_file',file[0]); 
+      }
+      if(img.length > 0) {
+         let len = img.length;
+         for(let i = 0 ; i < len ;i++) {
+            formData.append('img',$('input[name="img[]"]')[i].files);
+         }
+      }
+      if(validate()) {
+         $.ajax({
+            url:window.location.href,
+            type:"POST",
+            cache:false,
+            dataType:"json",
+            contentType: false,
+            processData: false,
+            data:formData,
+            success:function(res_json){
+               if(res_json.msg == 'ok'){
+                  let status = $('#btn-luu-san-pham').attr('data-status').trim();
+                  if(status == "Insert"){
+                     setTimeout(() => {
+                        $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
+                     },1000);
+                     msg = "Thêm dữ liệu thành công.";
+                     $.alert({
+                        title: "Thông báo",
+                        content: msg,
+                        buttons: {
+                           Ok : function(){
+                              location.href="product_manage.php";
+                           }
+                        }
+                     });
+                     if($('#display-image').length){
+                        $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
+                     }
+                  } else if(status == "Update") {
+                     msg = "Sửa dữ liệu thành công.";
+                     $.alert({
+                        title: "Thông báo",
+                        content: msg,
+                        buttons: {
+                           Ok : function(){
+                              location.href="product_manage.php";
+                           }
+                        }
+                     });
+                  }
+                  $('#form-san-pham').trigger('reset');
+                  $("#msg_style").removeAttr('style');
+                  $("#msg").text(msg);
+                  $('#modal-xl').modal('hide');
+               } else if(res_json.msg == 'not_ok') {
+                  $.alert({
+                     title: "Thông báo",
+                     content: res_json.error
+                  });
+               }
+            },
+            error: function (data) {
+               console.log('Error:', data);
+            }
+         });
+      }
+   }
+   function processDelete(){
+      let id = $(event.currentTarget).attr('data-id');
+      let target = $(event.currentTarget);
+      target.closest("tr").addClass("bg-color-selected");
+      $.confirm({
+         title: 'Thông báo',
+         content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
+         buttons: {
+            Có: function () {
+               $.ajax({
+                  url:window.location.href,
+                  type:"POST",
+                  cache:false,
+                  data:{
+                     token: "<?php echo_token(); ?>",
+                     id: id,
+                     status: "Delete",
+                  },
+                  success:function(res){
+                     console.log(id);
+                     res_json = JSON.parse(res);
+                     if(res_json.msg == "ok") {
+                        arr_input_file = new Map();
+                        arr_list_file_del = [];
+                        $.alert({
+                           title: "Thông báo",
+                           content: res_json.success
+                        });
+                        //$('#san-pham' + res_json.id).remove();
+                        dt_pi.row(click_number).remove().draw();
+                     } else {
+                        $.alert({
+                           title: "Thông báo",
+                           content: res.error
+                        });
+                     }
+                  }
+               });
+            },
+            Không: function () {
+               target.closest("tr").removeClass("bg-color-selected");
+            },
          }
       });
-      //
-      // php auto select all rows when focus update all function execute
-      <?=$upt_more == 1 ? 'dt_pi.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
-   });
-   $("#modal-xl2").on("hidden.bs.modal",function(){
-      let html = $("#form-product2 table");
-      console.log(html.html());
-      $("#form-product2 table tbody").remove();
-      $("input[name='count2']").val("");
-      $("input[name='count2']").attr("data-plus",0);
-   })
-   $('#modal-xl2').on('hidden.bs.modal', function (e) {
-      $('#form-product2 table tbody').remove();
-      $('#form-product2 #paging').remove();
-      $('[data-plus]').attr('data-plus',0);
-    })
-   function delEmpty(){
-      $.confirm({
-        title:"Thông báo",
-        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
-        buttons: {
-          "Có": function(){
-            $('#form-product2 table > tbody').remove();
-            $('#form-product2 #paging').remove();
-            $('[data-plus]').attr('data-plus',0);
-          },"Không":function(){
-
-          }
-        }
-      });  
    }
+</script>
+<script>
+   setSortTable();
    function insAll(){
       let test = true;
       let formData = new FormData();
@@ -1828,65 +1428,7 @@
       }
      
    }
-   function delMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      for(i = 0 ; i < _data.length ; i++) {
-         arr_del.push(_data[i].DT_RowId);
-      }
-      if(_data.length > 0) {
-         $.confirm({
-            title: "Thông báo",
-            content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
-            buttons: {
-               "Có": function(){
-                  $.ajax({
-                     url: window.location.href,
-                     type: "POST",
-                     data: {
-                        status: "del_more",
-                        token: "<?php echo_token(); ?>",
-                        rows: arr_del.join(","),
-                     },
-                     success: function(data){
-                        data = JSON.parse(data);
-                        if(data.msg == "ok"){
-                           $.alert({
-                              title: "Thông báo",
-                              content: "Bạn đã xoá dữ liệu thành công",
-                              buttons: {
-                                 "Ok": function(){
-                                    location.href="product_manage.php";
-                                 }
-                              }
-                           })
-                        }
-                     },error: function(data){
-                        console.log("Error:" + data);
-                     }
-                  });
-               },"Không": function(){
-
-               }
-            }
-         });
-      } else {
-         $.alert({
-            title: "Thông báo",
-            content: "Bạn chưa chọn dòng cần xoá",
-         });
-      }
-   }
-   function uptMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      for(i = 0 ; i < _data.length ; i++) {
-         arr_del.push(_data[i].DT_RowId);
-      }
-      let str_arr_upt = arr_del.join(",");
-      location.href="product_manage.php?upt_more=1&str=" + str_arr_upt;
-   }
-   function uptThisRow(){
+   function uptMore2(){
       let test = true;
       let this2 = $(event.currentTarget).closest("tr");
       let name = $(event.currentTarget).closest("tr").find("td input[name='pi_name']").val();
@@ -1923,10 +1465,6 @@
       } else  {
          this2.find("td .t-summernote").siblings("span.text-danger").text("");
       } 
-      console.log(name);
-      console.log(count);
-      console.log(price);
-      console.log(description);
       this2 = $(event.currentTarget);
       if(test) {
          $.ajax({
@@ -1961,10 +1499,6 @@
             }
          });
       }
-   }
-   function insMore(){
-      //$('#modal-xl2').modal('show');
-      $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
    }
    function insMore2(){
       let test = true;
@@ -2065,266 +1599,11 @@
          })
       }
    }
-   var count_row_z_index = 1000000;
-   function showRow(page,apply_dom = true){
-      let count = $('[data-plus]').attr('data-plus');
-      limit = 7;
-      if(apply_dom) {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-product2 table').remove();
-        $('#form-product2 #paging').remove();
-        let html = `
-        <table class='table table-bordered' style="height:auto;">
-          <thead>
-            <tr>
-              <th>Số thứ tự</th>
-              <th>Tên sp</th>
-              <th class="w-300">Danh mục</th>
-              <th>Số lượng</th>
-              <th>Đơn giá</th>
-              <th>Mô tả sp</th>
-              <th>Ảnh đại diện</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-        `;
-        count2 = parseInt(count / 7);
-        g = 1;
-        for(i = 0 ; i < count2 ; i++) {
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(j = 0 ; j < 7 ; j++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;position:relative;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child" >
-                                 <?php echo show_menu();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                     </div>
-                  </td>
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        if(count % 7 != 0) {
-          count3 = count % 7;
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;outline:none !important;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child">
-                                 <?php echo show_menu_3();?>
-                              </ul>
-                              <input type="hidden" name="category_id">
-                           </li>
-                        </ul>
-                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                     </div>
-                  </td>  
-                  <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                  <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-                  <td>
-                     <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
-                        <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                     </div>
-                     <p class='text-danger'></p>
-                  </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        html += `
-          </table>
-        `;
-        html += `
-          <div id="paging" style="justify-content:center;" class="col-12 d-flex">
-            <nav id="pagination2" class="d-flex j-center" style="width:100%;">
-            </nav>
-          </div>
-        `;
-        $(html).appendTo('#form-product2');
-        apply_dom = false;
-        $('.t-bd-1').css({"display":"contents"});
-        
-        console.log(html);
-      } else {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('.t-bd').css({"display":"none"});
-        $('.t-bd-' + page).css({"display":"contents"});
-      }
-      $('#pagination2').pagination({
-        items: count,
-        itemsOnPage: limit,
-        currentPage: page,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      $('#pagination2 > ul').addClass('d-flex j-center');
-      $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-product2 table tbody').remove();
-        $('#form-product2 #paging').remove();
-        $('input[name="count2"]').val("");
-      })
-   } 
-   function insRow(){
-      num_of_row_insert = $('input[name="count3"]').val();
-      if(num_of_row_insert == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Vui lòng không để trống số dòng cần thêm",
-         })
-         return;
-      } 
-      for(i = 0 ; i < num_of_row_insert ; i++) {
-         let page = $('[data-plus]').attr('data-plus');
-         let html = "";
-         let count2 = parseInt(page / 7) + 1;
-         html = `
-            <tr data-row-id='${parseInt(page) + 1}'>
-               <td>${parseInt(page) + 1}</td>
-               <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
-               <td>
-                  <div style="display:flex;flex-direction:column;outline:none !important;">
-                     <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                        <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                           <a href="#">Chọn danh mục</a>
-                           <ul class="child">
-                              <?php echo show_menu_3();?>
-                           </ul>
-                           <input type="hidden" name="category_id">
-                        </li>
-                     </ul>
-                     <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                     <p class='text-danger'></p>
-                  </div>
-               </td>
-               <td><input class='kh-inp-ctrl' name='count_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><input class='kh-inp-ctrl' name='price_p2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-               <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
-               <td>
-                  <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                     <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
-                  </div>
-                  <p class='text-danger'></p>
-               </td>
-               
-               <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-            </tr>
-         `;
-         if(page % 7 != 0) {
-            $('.t-bd').css({"display":"none"});
-            $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-            $(html).appendTo(`.t-bd-${count2}`);
-         } else {
-            $('.t-bd').css({"display":"none"});
-            html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-            $(html).appendTo('#form-product2 table');
-         }
-         if(page == 0) {
-         let html2 = `<div id="paging" class="col-12 d-flex">
-            <nav id="pagination2" class="d-flex j-center" style="width:100%;">
-            </nav>
-          </div>`;
-          
-         $(html2).appendTo('#form-product2');
-         
-         }
-         $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-         $('input[name="count2"]').val(parseInt(page) + 1);
-         $('#pagination2').pagination({
-            items: parseInt(page) + 1,
-            itemsOnPage: 7,
-            currentPage: count2,
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-               showRow(pageNumber,false);
-            },
-            cssStyle: 'light-theme',
-         });
-         $('#pagination2 > ul').addClass('d-flex j-center');
-      }
-      
-   }
-   function delRow(){
-      let count_del = $("input[name=count3]").val();
-      if(count_del == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Vui lòng không để trống số dòng cần xoá",
-         })
-         return;
-      }
-      for(i = 0 ; i < count_del ; i++) {
-         let page = $('[data-plus]').attr('data-plus');
-         if(page < 0) {
-            $('[data-plus]').attr('data-plus',0);
-            return;
-         }
-         let currentPage1 = page / 7;
-         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-         $(`[data-row-id="${page}"]`).remove();
-         page--;
-         $('[data-plus]').attr('data-plus',page);
-         $('input[name="count2"]').val(page);
-         currentPage1 = page / 7;
-         if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-         else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-         $('.t-bd').css({"display":"none"});
-         $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-         $('#pagination2').pagination({
-            items: parseInt(page),
-            itemsOnPage: 7,
-            currentPage: currentPage1,
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-               showRow(pageNumber,false);
-            },
-
-            cssStyle: 'light-theme',
-         });
-         count_row_z_index++;
-      }
-      
+   function load_menu(){
+      let html =`<?php echo show_menu_3();?>`;
+      $('.aaab').empty();
+      $(html).appendTo('.aaab');
+      $(event.currentTarget).removeAttr('onmouseover');
    }
    function show_menu_root(){
       let child = $(event.currentTarget).find('li').length;
@@ -2341,431 +1620,16 @@
          });
       }
    }
-   function checkProduct(){
-      let _data = dt_pi.rows(".selected").select().data();
-      let formData = new FormData();
-      if(_data.length == 0) {
-         $.alert({
-            title:"Thông báo",
-            content:"Vui lòng dòng sản phẩm cần kiểm tra",
-         });
-         return;
-      }
-      for(i = 0 ; i < _data.length ; i++) {
-         formData.append("pi_id[]",_data[i].DT_RowId);
-      }
-      formData.append("token","<?php echo_token(); ?>");
-      formData.append("status","check_all");
-      formData.append("len",_data.length);
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: formData,
-         cache: false,
-         contentType: false,
-         processData: false,
-         success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã xuất bản sản phẩm thành công",
-                  buttons: {
-                     "Ok": function(){
-                        location.reload();
-                     }
-                  }
-               });
-            }
-         },
-         error: function(data){
-            console.log("Error: " + data);
-         }
-      });
-   }
-   function readMore(){
-      let arr_del = [];
-      let _data = dt_pi.rows(".selected").select().data();
-      let count4 = _data.length;
-      for(i = 0 ; i < count4 ; i++) {
-        arr_del.push(_data[i].DT_RowId);
-      }
-      let str_arr_upt = arr_del.join(",");
-      if(arr_del.length == 0) {
-        $.alert({
-          title: "Thông báo",
-          content: "Bạn vui lòng chọn dòng cần xem",
-        });
-        return;
-      }
-      $('#custom-tabs-two-tabContent').load(`ajax_product_info.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
-        let html2 = `
-          <div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination3">
-            </nav>
-          </div>
-        `;
-        $(html2).appendTo('#custom-tabs-two-tabContent');
-        $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-        $('.tb-read').css({
-          "display":"none",
-        });
-        $('.tb-read-1').css({
-          "display":"contents",
-        });
-        $('#pagination3').pagination({
-         items: count4,
-         itemsOnPage: 1,
-         currentPage: 1,
-         prevText: "<",
-         nextText: ">",
-         onPageClick: function(pageNumber,event){
-            $(`.tb-read`).css({"display":"none"});
-            $(`.tb-read-${pageNumber}`).css({"display":"contents"});
-         },
-         cssStyle: 'light-theme',
-        });
-        $('.k-combobox').select2({
-           
-        });
-      });
-   }
 </script>
 <!--processing crud-->
 <script>
    $(document).ready(function(){
-      $('.t-summernote').summernote({
-         height: 1,
-         width: 400,
-         lang: 'vi-VN' // default: 'en-US'
-      });
-      $(".kh-datepicker2").datepicker({
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: 'dd-mm-yy',
-        onSelect: function(dateText, inst) {
-            console.log(dateText.split("-"));
-            dateText = dateText.split("-");
-            $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-        }
-      });
-      // 
       $("#modal-xl").on("hidden.bs.modal",function(){
          arr_list_file_del = [];
          arr_input_file = new Map();
          $("input[name='list_file_del']").val("");
-         console.log(arr_list_file_del);
-         console.log(arr_input_file);
          $('tr').removeClass('bg-color-selected');
       })
-      const imagesPreview = (input , parent) => {
-         if (input.files) {
-               var filesAmount = input.files.length;
-               for (i = 0; i < filesAmount; i++) {
-                  var reader = new FileReader();
-                  reader.onload = (event) => {
-                     $(parent).append('<div class="img-child filtr-item col-sm-1">'
-                     + '<img src="' + event.target.result + '" class="img-fluid mb-2">'
-                     + '<button type="button" class="icon-x btn-xoa-anh-mo-ta-san-pham btn btn-tool"><i class="fas fa-times"></i></button>'
-                     +'</div>');
-                  }
-                  reader.readAsDataURL(input.files[i]);
-               }
-         }
-      };
-      const readURL = (input) => {
-         if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-               $('#display-image').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-         }
-      };
-      // validate
-      const validate = () => {
-         let test = true
-         let name = $('input[name=ten_san_pham]').val();
-         let category = $('input[name="category_id"]').val();
-         let count = $('input[name=so_luong]').val();
-         let price = $('input[name=don_gia]').val();
-         let description = $('#summernote').summernote('code');
-         if(name.trim() == "") {
-            $('input[name=ten_san_pham]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Tên sản phẩm không được để trống"
-            });
-            test = false;
-         } else if(count.trim() == "") {
-            $('input[name=so_luong]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Số lượng không được để trống"
-            });
-            test = false;
-         } else if(category.trim() == "") {
-            $('#menu').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Danh mục sản phẩm không được để trống"
-            });
-            test = false;
-         } else if(price.trim() == "") {
-            $('input[name=don_gia]').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Đơn giá không được để trống"
-            });
-            test = false;
-         } else if(description.trim() == "<p><br></p>") {
-            $('.note-editable.card-block').focus();
-            $.alert({
-               title: "Thông báo",
-               content: "Mô tả sản phẩm không được để trống"
-            });
-            test = false;
-         }
-         return test;
-      }
-      $('#file_input_anh_mo_ta').on('change', function() {
-         imagesPreview(this,'#image_preview');
-      });
-      // Insert san pham
-      var click_number;
-      $(document).on('click','#btn-them-san-pham',function(event){
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Insert",() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('#btn-luu-san-pham').text("Thêm");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
-               },100);
-               $(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     //console.log("nufew");
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     //console.log(id);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                        /*$("#breadcrumb-menu").parent().css({"margin-top":"-25px"});*/
-                     });
-                  }
-               })
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
-            $('#file_input_anh_mo_ta').on('change', function() {
-               imagesPreview(this,'#image_preview');
-            });
-         });
-         
-      });
-      // Update sản phẩm
-      $(document).on('click','.btn-sua-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?status=Update&id=" + id,() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('#btn-luu-san-pham').text("Sửa");
-            $(function(){
-               setTimeout(() => {
-                  $('#summernote').summernote({height: 120,lang: 'vi-VN'});
-               },100);
-               $(".parent[data-id]").click(function(e){
-                  let child = $(e.currentTarget).find('li').length;
-                  if(!child){
-                     let id = $(e.currentTarget).attr('data-id');
-                     let name = $(e.currentTarget).text();
-                     name = name.substr(0,name.length - 1);
-                     console.log(name);
-                     $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                        $("input[name='category_id']").val(id);
-                        $("input[name='category_name']").val(name);
-                        $("#breadcrumb-menu").empty();
-                        $("#breadcrumb-menu").append(data);
-                     });
-                  }
-               })
-               init_map_file();
-            });
-            $("#fileInput").on("change",function(){
-               $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-               readURL(this); 
-            });
-            $('#file_input_anh_mo_ta').on('change', function() {
-               imagesPreview(this,'#image_preview');
-            });
-            $('.k-combobox').select2({
-               tags:true,
-            });
-         });
-      });
-      // Delete sản phẩm
-      $(document).on('click','.btn-xoa-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         let target = $(event.currentTarget);
-         target.closest("tr").addClass("bg-color-selected");
-         $.confirm({
-            title: 'Thông báo',
-            content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
-            buttons: {
-               Có: function () {
-                  $.ajax({
-                     url:window.location.href,
-                     type:"POST",
-                     cache:false,
-                     data:{
-                        token: "<?php echo_token(); ?>",
-                        id: id,
-                        status: "Delete",
-                     },
-                     success:function(res){
-                        console.log(id);
-                        res_json = JSON.parse(res);
-                        if(res_json.msg == "ok") {
-                           arr_input_file = new Map();
-                           arr_list_file_del = [];
-                           $.alert({
-                              title: "Thông báo",
-                              content: res_json.success
-                           });
-                           //$('#san-pham' + res_json.id).remove();
-                           dt_pi.row(click_number).remove().draw();
-                        } else {
-                           $.alert({
-                              title: "Thông báo",
-                              content: res.error
-                           });
-                        }
-                     }
-                  });
-               },
-               Không: function () {
-                  target.closest("tr").removeClass("bg-color-selected");
-               },
-            }
-         });
-      });
-      // Xem san pham
-      $(document).on('click','.btn-xem-san-pham',function(event){
-         let id = $(event.currentTarget).attr('data-id');
-         $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-         $('#custom-tabs-two-tabContent').load("ajax_product_info.php?id=" + id + "&status=Read",() => {
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-         });
-      });
-      // xử lý thao tác Insert Update
-      $(document).on('click','#btn-luu-san-pham',function(event){
-         event.preventDefault();
-         let formData = new FormData($('#form-san-pham')[0]);
-         let number = 1;
-         //console.log($('input[name=number]').val());
-         formData.append('token',"<?php echo_token(); ?>");
-         formData.append('id',$('input[name=id]').val());
-         formData.append('name',$('input[name=ten_san_pham]').val());
-         formData.append('description',$('#summernote').summernote('code'));
-         formData.append('count',$('input[name=so_luong]').val());
-         formData.append('number',$('input[name=number]').val());
-         formData.append('price',$('input[name=don_gia]').val());
-         formData.append('category_id',$("input[name='category_id']").val());
-         formData.append('category_name',$("input[name='category_name']").val());
-         formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
-         if(status == "Insert"){
-            game();
-         } else {
-            console.log(formData.get('token') + "  aaa");
-            gameChange();
-         }
-         formData.append('list_file_del',$('input[name="list_file_del"]').val());
-         let img = document.getElementsByName('img[]');
-         let file = $('input[name=img_sanpham_file]')[0].files;
-         //console.log(file);
-         if(file.length > 0) {
-            formData.append('img_sanpham_file',file[0]); 
-         }
-         if(img.length > 0) {
-            let len = img.length;
-            for(let i = 0 ; i < len ;i++) {
-               formData.append('img',$('input[name="img[]"]')[i].files);
-            }
-         }
-         if(validate()) {
-            $.ajax({
-               url:window.location.href,
-               type:"POST",
-               cache:false,
-               dataType:"json",
-               contentType: false,
-               processData: false,
-               data:formData,
-               success:function(res_json){
-                  //console.log(res_json);
-                  if(res_json.msg == 'ok'){
-                     let status = $('#btn-luu-san-pham').attr('data-status').trim();
-                     if(status == "Insert"){
-                        setTimeout(() => {
-                           $("#san-pham" + res_json.id).css('background-color','#d4efecc2');
-                        },1000);
-                        msg = "Thêm dữ liệu thành công.";
-                        $.alert({
-                           title: "Thông báo",
-                           content: msg,
-                           buttons: {
-                              Ok : function(){
-                                 location.href="product_manage.php";
-                              }
-                           }
-                        });
-                        dt_pi.row.add(record[0]).draw();
-                        //alert(msg);
-                        if($('#display-image').length){
-                           $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
-                        }
-                     } else if(status == "Update") {
-                        //console.log(res_json);
-                        msg = "Sửa dữ liệu thành công.";
-                        $.alert({
-                           title: "Thông báo",
-                           content: msg,
-                           buttons: {
-                              Ok : function(){
-                                 location.href="product_manage.php";
-                              }
-                           }
-                        });
-                     }
-                     $('#form-san-pham').trigger('reset');
-                     $("#msg_style").removeAttr('style');
-                     $("#msg").text(msg);
-                     $('#modal-xl').modal('hide');
-                  } else if(res_json.msg == 'not_ok') {
-                     $.alert({
-                        title: "Thông báo",
-                        content: res_json.error
-                     });
-                  }
-               },
-               error: function (data) {
-                  /*alert('<?php
-                     print_r($_SESSION['token_2']);
-                  ?>');*/
-                  console.log('Error:', data);
-               }
-            });
-         }
-      });
    });
 </script>
 <script>
@@ -2857,7 +1721,7 @@
                   $path = $dir . "/" . $file_name ;
                   move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
                   $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-                  db_query($sql_update);
+                  sql_query($sql_update);
                }
                $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
                if(count($_FILES['img']['name']) > 0) {
@@ -2882,7 +1746,7 @@
                   if(count($__arr) > 0) {
                      $sql .= implode(",",$__arr);
                      //print_r($sql);
-                     db_query($sql);
+                     sql_query($sql);
                   }
                }
                $success = "Insert dữ liệu thành công.";
@@ -2909,7 +1773,7 @@
             $path = $dir . "/" . $file_name ;
             move_uploaded_file($_FILES['img_sanpham_file']['tmp_name'],$path);
             $sql_update = "Update product_info set img_name='$path' where id = '$id'";
-            db_query($sql_update);
+            sql_query($sql_update);
          }
          $list_file_del_length = count($list_file_del);
          for($i = 0 ; $i < count($list_file_del) ; $i++) {
@@ -2921,7 +1785,7 @@
                   chmod($dir, 0777);
                }
                $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $img_order";
-               db_query($sql_delete_file);
+               sql_query($sql_delete_file);
                array_splice($list_file_del,$i, 1);
                $i--;
             }
@@ -2960,7 +1824,7 @@
                         move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
                         @chmod($dir, 0777);
                         $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and img_order='$img_order'";
-                        db_query($sql_update_file);
+                        sql_query($sql_update_file);
                      }
                   }
                   if($error == UPLOAD_ERR_NO_FILE) {
@@ -2971,7 +1835,7 @@
                if(count($__arr) > 0) {
                   $sql .= implode(",",$__arr);
                   //print_r($sql);
-                  db_query($sql);
+                  sql_query($sql);
                }
             }
          }
@@ -3047,7 +1911,7 @@
                $path = $dir . "/" . $file_name ;
                move_uploaded_file($_FILES['file_p2']['tmp_name'],$path);
                $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-               db_query($sql_update);
+               sql_query($sql_update);
             }
             echo_json(["msg" => "ok"]);
          }
@@ -3118,28 +1982,29 @@
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "saveTabFilter") {
-         $tab_name = isset($_REQUEST['tab_name']) ? $_REQUEST['tab_name'] : null;
+         $_SESSION['product_tab_id'] = isset($_SESSION['product_tab_id']) ? $_SESSION['product_tab_id'] + 1 : 1;
+         $tab_name = isset($_SESSION['product_tab_id']) ? "tab_" . $_SESSION['product_tab_id'] : null;
          $_SESSION['tab_id'] = isset($_SESSION['tab_id']) ? $_SESSION['tab_id'] + 1 : 1;
          $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
          $tab_unique = uniqid("tab_");
-         $_SESSION['tab'] = isset($_SESSION['tab']) ? $_SESSION['tab'] : [];
-         array_push($_SESSION['tab'],[
+         $_SESSION['product_manage_tab'] = isset($_SESSION['product_manage_tab']) ? $_SESSION['product_manage_tab'] : [];
+         array_push($_SESSION['product_manage_tab'],[
             "tab_unique" => $tab_unique,
             "tab_name" => $tab_name,
             "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
          ]);
-         echo_json(["msg" => "ok","tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+         echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['product_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
       } else if($status == "deleteTabFilter") {
          $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
          $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
-         array_splice($_SESSION['tab'],$index,1);
+         array_splice($_SESSION['product_manage_tab'],$index,1);
          if(trim($is_active_2) == "") {
             echo_json(["msg" => "ok"]);
          }  else if($is_active_2 == 1) {
-            if(array_key_exists($index,$_SESSION['tab'])) {
-               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index]['tab_urlencode']]);
-            } else if(array_key_exists($index - 1,$_SESSION['tab'])){
-               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index - 1]['tab_urlencode']]);
+            if(array_key_exists($index,$_SESSION['product_manage_tab'])) {
+               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['product_manage_tab'][$index]['tab_urlencode']]);
+            } else if(array_key_exists($index - 1,$_SESSION['product_manage_tab'])){
+               echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['product_manage_tab'][$index - 1]['tab_urlencode']]);
             } else {
                echo_json(["msg" => "ok","tab_urlencode" => "product_manage.php?tab_unique=all"]);
             }
@@ -3147,8 +2012,8 @@
       } else if($status == "changeTabNameFilter") {
          $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
          $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
-         $_SESSION['tab'][$index]['tab_name'] = $new_tab_name;
-         echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['tab'][$index]['tab_urlencode']]);
+         $_SESSION['product_manage_tab'][$index]['tab_name'] = $new_tab_name;
+         echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['product_manage_tab'][$index]['tab_urlencode']]);
       }
    }
 ?>

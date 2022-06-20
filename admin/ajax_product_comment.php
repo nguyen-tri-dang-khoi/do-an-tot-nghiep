@@ -9,59 +9,16 @@
         unset($get['page']);
         $str_get = http_build_query($get);
         // query
-
         $cnt = 0;
         $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
         $limit = 2;
         $start_page = $limit * ($page - 1);
         $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join customer cus on pcm.customer_id = cus.id where product_info_id = '$id' ";
         $total = fetch(sql_query($sql_get_count))['cnt'];
-        //$sql = "select pcm.id as 'pcm_id', cus.id as 'cus_id',pcm.rate as 'pcm_rate',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',cus.email as 'cus_email' from product_comment pcm inner join customer cus on pcm.customer_id = cus.id where product_info_id = '$id' and pcm.reply_id is null limit $start_page,$limit";
         $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null";
         $comments = fetch_all(sql_query($sql));
         
 ?>
-<!--<table class="table table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>Số thứ tự</th>
-            <th>Khách hàng</th>
-            <th>Bình luận</th>
-            <th>Đánh giá</th>
-            <th>Tình trạng</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody class="">
-        <?php
-            
-            foreach($comments as $row) {
-        ?>
-            <tr id="<?=$row['pcm_id']?>">
-                <td><?=$total - ($start_page + $cnt);?></td>
-                <td><?=$row['cus_email']?></td>
-                <td><?=$row['pcm_comment']?></td>
-                <td>
-                    <?php
-                        for($ik = 0 ; $ik < $row['pcm_rate']; $ik++) {
-                    ?>
-                    <i style="color:#fde16d;" class="fas fa-star"></i>
-                    <?php }?>
-                </td>
-                <td>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" onchange="toggleActiveComment('<?=$row['pcm_id']?>','<?= $row['pcm_is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['pcm_id'];?>" <?= $row['pcm_is_active'] == 1 ? "checked" : "";?>>
-                        <label class="custom-control-label" for="customSwitches<?=$row['pcm_id'];?>"></label>
-                    </div>  
-                </td>
-                <td>
-                    <button onclick="replyComment('<?=$row['pcm_id']?>')" class="dt-button button-blue">Trả lời</button>
-                    <button onclick="delComment('<?=$row['pcm_id']?>')" class="dt-button button-red">Xoá</button>
-                </td>
-            </tr>
-        <?php $cnt++; } ?>
-    </tbody>
-</table>-->
 <style>
     .kh-name {
         font-weight:bold;
@@ -164,68 +121,6 @@
                     <textarea style="height:45px;border-radius:15px;width:400px;max-width:400px;" type="text" name="reply<?=$comment['pcm_id']?>" class="form-control ml-10"></textarea>
                     <button onclick="sendComment('<?=$comment['pcm_id']?>','<?=$id;?>')" style="height:45px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
                 </div>
-                <!--<div class="info mt-10">
-                    <div class="d-flex">
-                        <div class="kh-img">
-                            <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;width:50px;height:50px;" src="img/client.png" alt=""> 
-                        </div>
-                        <div class="ml-10">
-                            <div class="info">
-                                <span class="kh-name">Nguyễn Trí Đăng Khôi</span>
-                                <span class="kh-time-cmt ml-15">(26-05-2022 18:36:25)</span>
-                                <div class="kh-content">
-                                    <span>Sản phẩm tuyệt cú mèo</span>
-                                </div>
-                                <div class="kh-reply">
-                                    <span style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
-                                    <span class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
-                                </div>
-                                <div class="reply">
-                                    <img src="img/reply.svg" alt=""> 
-                                    <span>1 phản hồi</span>
-                                </div>
-                                <div class="input-reply d-flex a-center">
-                                    <div class="kh-img">
-                                        <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;" width="50" height="50" src="upload/user/125/ea09d145ca7feb1c1f7c926f1a376d6b125.jpg" alt="">
-                                    </div>
-                                    <textarea style="height:50px;border-radius:15px;width:400px;max-width:400px;"type="text" name="reply" class="form-control ml-10"></textarea>
-                                    <button style="height:45px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
-                                </div>
-                            </div>
-                            <div class="info mt-10">
-                                <div class="d-flex">
-                                    <div class="kh-img">
-                                        <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;width:50px;height:50px;" src="img/client.png" alt=""> 
-                                    </div>
-                                    <div class="ml-10">
-                                        <div class="info">
-                                            <span class="kh-name">Nguyễn Trí Đăng Khôi</span>
-                                            <span class="kh-time-cmt ml-15">(26-05-2022 18:36:25)</span>
-                                            <div class="kh-content">
-                                                <span>Sản phẩm tuyệt cú mèo</span>
-                                            </div>
-                                            <div class="kh-reply">
-                                                <span style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
-                                                <span class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
-                                            </div>
-                                            <div class="reply">
-                                                <img src="img/reply.svg" alt=""> 
-                                                <span>1 phản hồi</span>
-                                            </div>
-                                            <div class="input-reply d-flex a-center">
-                                                <div class="kh-img">
-                                                    <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;" width="50" height="50" src="upload/user/125/ea09d145ca7feb1c1f7c926f1a376d6b125.jpg" alt="">
-                                                </div>
-                                                <textarea style="height:50px;border-radius:15px;width:400px;max-width:400px;"type="text" name="reply" class="form-control ml-10"></textarea>
-                                                <button style="height:32px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
             </div>
         </div>
         <?php $cnt++;} ?>
@@ -315,68 +210,6 @@
                 <textarea style="height:45px;border-radius:15px;width:400px;max-width:400px;"type="text" name="reply<?=$reply['pcm_id']?>" class="form-control ml-10"></textarea>
                 <button onclick="sendComment('<?=$reply['pcm_id']?>','<?=$id;?>')" style="height:45px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
             </div>
-            <!--<div class="info mt-10">
-                <div class="d-flex">
-                    <div class="kh-img">
-                        <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;width:50px;height:50px;" src="img/client.png" alt=""> 
-                    </div>
-                    <div class="ml-10">
-                        <div class="info">
-                            <span class="kh-name">Nguyễn Trí Đăng Khôi</span>
-                            <span class="kh-time-cmt ml-15">(26-05-2022 18:36:25)</span>
-                            <div class="kh-content">
-                                <span>Sản phẩm tuyệt cú mèo</span>
-                            </div>
-                            <div class="kh-reply">
-                                <span style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
-                                <span class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
-                            </div>
-                            <div class="reply">
-                                <img src="img/reply.svg" alt=""> 
-                                <span>1 phản hồi</span>
-                            </div>
-                            <div class="input-reply d-flex a-center">
-                                <div class="kh-img">
-                                    <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;" width="50" height="50" src="upload/user/125/ea09d145ca7feb1c1f7c926f1a376d6b125.jpg" alt="">
-                                </div>
-                                <textarea style="height:50px;border-radius:15px;width:400px;max-width:400px;"type="text" name="reply" class="form-control ml-10"></textarea>
-                                <button style="height:32px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
-                            </div>
-                        </div>
-                        <div class="info mt-10">
-                            <div class="d-flex">
-                                <div class="kh-img">
-                                    <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;width:50px;height:50px;" src="img/client.png" alt=""> 
-                                </div>
-                                <div class="ml-10">
-                                    <div class="info">
-                                        <span class="kh-name">Nguyễn Trí Đăng Khôi</span>
-                                        <span class="kh-time-cmt ml-15">(26-05-2022 18:36:25)</span>
-                                        <div class="kh-content">
-                                            <span>Sản phẩm tuyệt cú mèo</span>
-                                        </div>
-                                        <div class="kh-reply">
-                                            <span style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
-                                            <span class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
-                                        </div>
-                                        <div class="reply">
-                                            <img src="img/reply.svg" alt=""> 
-                                            <span>1 phản hồi</span>
-                                        </div>
-                                        <div class="input-reply d-flex a-center">
-                                            <div class="kh-img">
-                                                <img style="border-radius:50%;border:1px solid #c1bcbc;padding:3px;" width="50" height="50" src="upload/user/125/ea09d145ca7feb1c1f7c926f1a376d6b125.jpg" alt="">
-                                            </div>
-                                            <textarea style="height:50px;border-radius:15px;width:400px;max-width:400px;"type="text" name="reply" class="form-control ml-10"></textarea>
-                                            <button style="height:32px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;" class="btn a-center d-flex" type="button"><img src="img/send.png" alt=""></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
     </div>
 <?php 

@@ -4,8 +4,8 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {
-        $sql_get_user_info = "select id,type,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
-        $result = fetch_row($sql_get_user_info,[$id]);
+        $sql_get_user_info = "select id,type,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
+        $result = fetch(sql_query($sql_get_user_info));
 ?>
 <?php
     if($result['countt'] == 1) { 
@@ -63,10 +63,9 @@
             </div>
         </div>
     </div>
-    <input type="hidden" name="token" value="<?php echo_token();?>">
     <input type="hidden" name="id" value="<?php echo $id;?>">
     <div class="card-footer">
-        <button id="btn-update" type="submit" class="dt-button button-purple">Sửa dữ liệu</button>
+        <button onclick="processModalUpdate()" id="btn-update" type="submit" class="dt-button button-purple">Sửa dữ liệu</button>
     </div>
 <?php 
     } 
@@ -131,16 +130,14 @@
         </div>
     </div>
 </div>
-<input type="hidden" name="token" value="<?php echo_token();?>">
-<!-- /.card-body -->
 <div class="card-footer">
-    <button id="btn-insert" type="submit" class="dt-button button-purple">Thêm dữ liệu</button>
+    <button onclick="processModalInsert()" id="btn-insert" type="submit" class="dt-button button-purple">Thêm dữ liệu</button>
 </div>
 <?php } ?>
 <?php
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = ? and is_delete = 0 limit 1";
-        $result = fetch_row($sql_get_user_info,[$id]);
+        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
+        $result = fetch(sql_query($sql_get_user_info));
 ?>
     <div class="card-body">
         <table class="table table-bordered">

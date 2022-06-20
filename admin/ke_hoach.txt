@@ -1,0 +1,7 @@
+-- xu ly chuc nang crud tuong thich voi ajax (1)
+-- xu ly chuc nang crud tuong thich voi ajax (2: load)
+-- sua chuc nang toan bo sang ham sql_query()
+-- add gia goc vao xu ly ajax x
+-- fix loi load bieu do ben thong ke
+-- bo tab "tat ca"
+-- fix loi select2

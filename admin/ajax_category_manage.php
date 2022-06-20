@@ -7,8 +7,8 @@
     $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
     if($status == "Update") {
         if($id) {
-            $sql = "select id, name from product_type where is_delete = 0 and id = ?";
-            $result = fetch_row($sql,[$id]);       
+            $sql = "select id, name from product_type where is_delete = 0 and id = '$id'";
+            $result = fetch(sql_query($sql));       
 ?>
 <div class="card-body">
     <div class="form-group">
@@ -18,13 +18,11 @@
         <?php if($parent_id) { ?>
             <input type="hidden" name="parent_id" value="<?=$parent_id;?>">
         <?php } ?>
-		<input type="hidden" name="number" value="<?=$number?>">
-        <input type="hidden" name="token" value="<?php echo_token();?>">
     </div>
     <div id="product_type_err" class="text-danger"></div>
 </div>
 <div class="card-footer">
-    <button data-status="<?=$status;?>" id="btn-luu-loai-san-pham" type="submit" class="dt-button button-purple">Sửa</button>
+    <button onclick="processModalInsertUpdate()" data-status="<?=$status;?>" id="btn-luu-loai-san-pham" type="submit" class="dt-button button-purple">Sửa</button>
 </div>
 
 <?php
@@ -40,19 +38,17 @@
         <?php if($parent_id) { ?>
             <input type="hidden" name="parent_id" value="<?=$parent_id;?>">
         <?php } ?>
-        <input type="hidden" name="token" value="<?php echo_token();?>">
-		<input type="hidden" name="number" value="<?=$number?>">
     </div>
     <div id="product_type_err" class="text-danger"></div>
 </div>
 <div class="card-footer">
-    <button data-status="<?=$status;?>" id="btn-luu-loai-san-pham" type="submit" class="dt-button button-purple">Thêm</button>
+    <button onclick="processModalInsertUpdate()" data-status="<?=$status;?>" id="btn-luu-loai-san-pham" type="submit" class="dt-button button-purple">Thêm</button>
 </div>
 <?php
     } if($status == "Read") {
         if($id) {
-            $sql = "select id, name, created_at from product_type where is_delete = 0 and id = ?";
-            $result = fetch_row($sql,[$id]);
+            $sql = "select id, name, created_at from product_type where is_delete = 0 and id = '$id'";
+            $result = fetch(sql_query($sql));
 ?>
 <div class="card-body">
     <table class="table table-bordered">
@@ -79,7 +75,7 @@
             $_name = $res['name'];
             $_created_at = $res['created_at'] ? Date("d-m-Y H:i:s",strtotime($res['created_at'])) : "";
             $tbody .= "
-                <tbody style='display:none;' class='t-bd-read tb-bd-read-$i'>
+                <tbody style='display:none;' class='t-bd-read t-bd-read-$i'>
                     <tr>
                         <th>Tên danh mục: </th>
                         <td>$_name</td>

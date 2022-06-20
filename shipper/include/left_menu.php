@@ -80,6 +80,91 @@
     .container-fluid {
         margin-left: -8px;
     }
+    .sidebar-open .kh-padding {
+        margin-left:300px !important;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    .sidebar-open nav {
+        margin-left:-25px !important;
+    }
+    .sidebar-open .main-sidebar {
+        display:block;
+    }
+    .sidebar-open .content-wrapper {
+        margin-left:-300px !important;
+    }
+</style>
+<style>
+    @media only screen and (max-width: 600px) {
+        td > img {
+            width:100px !important;
+            height:100px !important;
+        }
+    }
+    @media only screen and (max-width: 500px) {
+        h1 {
+            font-size:16px !important;
+        }
+        h2 {
+            font-size:15px !important;
+        }
+        h3 {
+            font-size:14px !important;
+        }
+        h4,h5,h6 {
+            font-size:13px !important;
+        }
+        p,label,input.form-control,th,td,button,li > a,a {
+            font-size:11px !important;
+        }
+        input.form-control {
+            padding:4px 10px;
+            height:30px;
+        }
+        
+        button[class='close'] {
+            font-size:18px !important;
+        }
+        .list-row form {
+            width:200px !important;
+        }
+        .form-group {
+            margin-bottom:.3rem;
+        }
+        .list-row form label,.form-group label {
+            margin-bottom:0px;
+        }
+        .list-row form input {
+            height: 1.5rem;
+        }
+        .main-sidebar {
+            width:210px;
+        }
+        input[placeholder] {
+            font-size:10px !important;
+        }
+        .main-sidebar {
+            width:220px !important;
+        }
+        .main-header a[data-widget='pushmenu'] {
+            height:2rem;
+        }
+        
+    }
+    @media only screen and (max-width: 400px) {
+        p,label,input,th,td,button,li > a,a {
+            font-size:10px !important;
+        }
+    }
+    @media only screen and (max-width: 378px) {
+        th,td {
+            font-size:9px !important;
+        }
+        th.w-300 {
+            width:100px !important;
+        }
+    }
 </style>
 <div class="wrapper">
     <aside class="main-sidebar root-bg-color" style="width:274px;">
@@ -109,7 +194,7 @@
         <a class="nav-link ml-15" data-widget="pushmenu" href="#" role="button">
             <i class="fas fa-bars root-color"></i>
         </a>
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav ml-auto list-row">
             <li>
                 <form action="paging_ok.php" method="post" style="display: flex;align-items: center;justify-content: space-between;width: 230px;">
                     <label for="">Số dòng: </label>

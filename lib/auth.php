@@ -24,27 +24,6 @@
             } 
         }
     }
-    /*function echo_token($url = ""){
-        if($url == "") {
-            $url = get_url_current_page();
-        }
-        if(empty($_SESSION['key'])){
-            $_SESSION['key'] = bin2hex(random_bytes(32));
-        }
-        echo hash_hmac('sha256', $url, $_SESSION["key"]);
-    }*/
-    /*function is_post_method($token = "",$url = ""){
-        if($url == ""){
-            $url = get_url_current_page();
-        }
-        if(isset($_POST["token"])) {
-            $token = $_POST["token"];
-        }
-        if(empty($_SESSION['key'])){
-            $_SESSION['key'] = bin2hex(random_bytes(32));
-        }
-        return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && $_SERVER["REQUEST_METHOD"] == "POST";
-    }*/
     function echo_token(){
         echo "123";
     }
@@ -69,18 +48,6 @@
 			exit();
 		}
 	}
-    /*function is_get_method_csrf($token = "",$url = ""){
-        if($url == ""){
-            $url = get_url_current_page();
-        }
-        if(isset($_POST["token"])) {
-            $token = $_POST["token"];
-        }
-        if(empty($_SESSION['key'])){
-            $_SESSION['key'] = bin2hex(random_bytes(32));
-        }
-        return hash_equals($token, hash_hmac('sha256', $url, $_SESSION["key"])) && ($_SERVER["REQUEST_METHOD"] == "GET");
-    }*/
     function is_get_method(){
         return ($_SERVER["REQUEST_METHOD"] == "GET");  
     }

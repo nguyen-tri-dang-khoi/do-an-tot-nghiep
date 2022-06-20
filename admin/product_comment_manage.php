@@ -455,7 +455,7 @@
                                           <option value="">Chọn danh mục cần tìm</option>
                                           <?php
                                              $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                             $rows2 = db_query($sql);
+                                             $rows2 = fetch_all(sql_query($sql));
                                              foreach($rows2 as $row2) {
                                           ?>
                                              <option value="<?=$row2['id']?>"><?=$row2['name'];?></option>
@@ -476,7 +476,7 @@
                                           <option value="">Chọn danh mục cần tìm</option>
                                           <?php
                                              $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                                             $rows2 = db_query($sql);
+                                             $rows2 = fetch_all(sql_query($sql));
                                              foreach($rows2 as $row2) {
                                           ?>
                                              <option value="<?=$row2['id']?>" <?=$pt == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
@@ -554,7 +554,7 @@
                             $total = fetch_row($sql_get_total)['countt'];
                             $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
                            //print_r($sql_get_product);
-                           $rows = db_query($sql_get_product);
+                           $rows = fetch_all(sql_query($sql_get_product));
                            foreach($rows as $row) {
                            ?>
                               <tr id="<?=$row["id"];?>">
@@ -638,115 +638,6 @@
 	}
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<!--searching filter-->
-<script>
-   function choose_type_search(){
-      let _option = $("select[name='search_option'] > option:selected").val();
-      if(_option.indexOf("2") > -1) {
-         if(_option.indexOf("all") > -1) {
-            $(".s-all2").css({"display": "flex"});
-         } else {
-            $(`#s-${_option}`).css({"display": "flex"});
-         }
-      } else {
-         $('#s-cols').css({"display": "flex"});
-      }
-      $("select[name='search_option'] > option[value='']").prop('selected',true);
-   }
-   $('.k-select-opt-remove').click(function(){
-      $(event.currentTarget).siblings('select').find('option').prop("selected",false);
-      $(event.currentTarget).siblings('select').find("option[value='']").prop("selected",true);
-      $(event.currentTarget).siblings('.ele-select').remove()
-      $(event.currentTarget).siblings("div").find("input").val("");
-      $(event.currentTarget).closest('div').css({"display":"none"});
-   });
-   $('.k-select-opt-ins').click(function(){
-      let file_html = "";
-      if($(event.currentTarget).closest('#s-count2').length) {
-         file_html = `
-            <div class="ele-select ele-count2 mt-10">
-               <div class="" style="display:flex;">
-                  <input type="text" name="count_min[]" placeholder="Sl 1" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <div class="ml-10" style="display:flex;">
-                  <input type="text" name="count_max[]" placeholder="Sl 2" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
-            </div>
-         `
-      } else if($(event.currentTarget).closest('#s-type2').length) {
-         file_html = `
-         <div class="ele-select ele-type2 mt-10">
-            <select class="select-type2" style="width:100%" class="form-control" name="pt_type[]">
-               <option value="">Chọn danh mục cần tìm</option>
-               <?php
-                  $sql = "select * from product_type where is_delete = 0 and id in (select distinct product_type_id from product_info where is_delete = 0)";
-                  $rows2 = db_query($sql);
-                  foreach($rows2 as $row2) {
-               ?>
-                  <option value="<?=$row2['id']?>" <?=$pt_type == $row2['id'] ? "selected" : ""; ?>><?=$row2['name'];?></option>
-               <?php
-                  }
-               ?>
-            </select>
-            <span onclick="select_remove_child('.ele-type2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-date2').length) {
-         file_html = `
-         <div class="ele-select ele-date2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-price2').length) {
-         file_html = `
-         <div class="ele-select ele-price2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="price_min[]" placeholder="Giá 1" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="price_max[]" placeholder="Giá 2" class="form-control" value="" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-            </div>
-            <span onclick="select_remove_child('.ele-price2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-cols').length) {
-         file_html = `
-         <div class="ele-select ele-cols mt-10">
-            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-            <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      }
-      $(file_html).appendTo($(this).parent());
-      $(this).parent().css({
-         "flex-direction": "column",
-         "justify-content": "space-between",
-      });
-      if($(event.currentTarget).closest('#s-date2').length) {
-         $(".kh-datepicker2").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            onSelect: function(dateText, inst) {
-                  console.log(dateText.split("-"));
-                  dateText = dateText.split("-");
-                  $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-            }
-         });
-      } 
-      $('.select-type2').select2();
-   });
-   function select_remove_child(_class){
-      $(event.currentTarget).closest(_class).remove();
-   }
-</script>
 <script>
    function showListComment(id,page=1) {
       $('#list-product-comment').load(`ajax_product_comment.php?status=show_list_comment&id=${id}&page=${page}`,() => {
@@ -873,7 +764,7 @@
 <!-- datatable and function crud js-->
 <script>
    var dt_pi;
-   $(document).ready(function (e) {
+   /*$(document).ready(function (e) {
       $('.select-type2').select2();
       $.fn.dataTable.moment('DD-MM-YYYY');
       dt_pi = $("#m-product-info").DataTable({
@@ -993,7 +884,7 @@
       //
       // php auto select all rows when focus update all function execute
       <?=$upt_more == 1 ? 'dt_pi.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
-   });
+   });*/
    $("#modal-xl2").on("hidden.bs.modal",function(){
       let html = $("#form-product2 table");
       console.log(html.html());

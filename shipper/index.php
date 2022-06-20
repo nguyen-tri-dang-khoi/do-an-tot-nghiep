@@ -81,6 +81,7 @@
     a.small-box-footer {
         color:#fff !important;
     }
+    
 </style>
 <div class="content-wrapper" style="margin-left:290px;">
     <div class="content-header">
@@ -96,7 +97,7 @@
     <section class="content" >
         <div class="container-fluid" >
             <div class="row kh-padding">
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-2">
                         <div class="inner">
                             <h3>150</h3>
@@ -108,7 +109,7 @@
                         <a href="#" class="small-box-footer">Xem thêm <i class="fas fa-arrow-circle-right"></i></a>
                     </div>
                 </div>
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-3">
                         <div class="inner">
                             <h3>150</h3>
@@ -121,7 +122,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-4">
                         <div class="inner">
                             <h3>150</h3>
@@ -134,7 +135,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-6">
+                <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-5">
                         <div class="inner">
                             <h3>150</h3>
@@ -148,7 +149,7 @@
                 </div>
             </div>
             <div class="row kh-padding">
-                <div class="col-6">
+                <div class="col-lg-6 col-sm-12">
                     <h3 style="font-weight:bold;color:#17a2b8;">Đơn chưa giao</h3>
                     <table class="table table-striped table-bordered" >
                         <thead>
@@ -177,7 +178,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="col-6">
+                <div class="col-lg-6 col-sm-12">
                     <h3 style="font-weight:bold;color:#28a745">Đơn đã giao</h3>
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -208,7 +209,7 @@
                 </div>
             </div>
             <div class="row kh-padding mt-20">
-                <div class="col-6 kh-order-delay">
+                <div class="col-lg-6 col-sm-12 kh-order-delay">
                     <h3 style="font-weight:bold;color:#f012be;">Đơn hoãn giao</h3>
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -237,7 +238,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="col-6">
+                <div class="col-lg-6 col-sm-12">
                     <h3 style="font-weight:bold;color:#dc3545;">Đơn huỷ giao</h3>
                     <table class="table table-striped table-bordered">
                         <thead>

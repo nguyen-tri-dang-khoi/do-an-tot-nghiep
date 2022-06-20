@@ -6,196 +6,126 @@
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     
     if($id && $status == "Update") {
-        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
-        $result = fetch_row($sql_get_all,[$id]);
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+        $result = fetch(sql_query($sql_get_all));
 ?>
-<div class="tab-pane fade show active" id="custom-tabs-two-home" role="tabpanel" aria-labelledby="custom-tabs-two-home-tab">
-    <form id="form-san-pham" method="post" enctype='multipart/form-data'> 
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 form-group">
-                    <label for="ten_san_pham">Tên sản phẩm</label>
-                    <input type="text" name="ten_san_pham" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo $result['pi_name']?>">
-                </div>
-                <div class="col-md-6 form-group">
-                    <label for="so_luong">Số lượng</label>
-                    <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng" value="<?=number_format($result['count'],0,'','.');?>">
+<form id="form-san-pham" method="post" enctype='multipart/form-data'> 
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="ten_san_pham">Tên sản phẩm</label>
+                <input type="text" name="ten_san_pham" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo $result['pi_name']?>">
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="so_luong">Số lượng</label>
+                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng" value="<?=number_format($result['count'],0,'','.');?>">
+            </div>
+        </div>
+        <div class="row" style="margin-left:0px;flex-direction:column;">
+            <label style="margin-bottom:-5px;" for="danh_muc">Danh mục sản phẩm</label>
+            <div style="display:flex;flex-direction:row;align-items:center;">
+                <ul tabindex="1" class="col-md-6" style="padding-left:0px;height: 65px;" id="menu">
+                    <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                        <a href="#">Chọn danh mục</a>
+                        <ul class="child" >
+                            <?php echo show_menu();?>
+                        </ul>
+                    </li>
+                </ul>
+                <nav id="breadcrumb-menu" class="col-md-6" aria-label="breadcrumb">
+                    <?=generate_breadcrumb_menus($result['pi_type_id']);?>
+                </nav>
+            </div>
+            <input type="hidden" name="category_id" value="<?=$result['pi_type_id'];?>">
+            <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
+        </div>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label for="don_gia">Đơn giá</label>
+                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
+                <div id="price_err" class="text-danger"></div>
+            </div>
+            <div class="col-md-6 form-group">
+                <label for="exampleInputFile">Upload ảnh đại diện</label>
+                <div class="input-group">
+                <div class="custom-file">
+                    <input id="fileInput" name="img_sanpham_file" onchange="readURL2(this)" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile">
+                    <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
                 </div>
             </div>
-            <div class="row" style="margin-left:0px;flex-direction:column;">
-                <label style="margin-bottom:-5px;" for="danh_muc">Danh mục sản phẩm</label>
-                <div style="display:flex;flex-direction:row;align-items:center;">
-                    <ul tabindex="1" class="col-md-6" style="padding-left:0px;height: 65px;" id="menu">
-                        <li class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                            <a href="#">Chọn danh mục</a>
-                            <ul class="child" >
-                                <?php echo show_menu();?>
-                            </ul>
-                        </li>
-                    </ul>
-                    <nav id="breadcrumb-menu" class="col-md-6" aria-label="breadcrumb">
-                        <?=generate_breadcrumb_menus($result['pi_type_id']);?>
-                    </nav>
-                </div>
-                <input type="hidden" name="category_id" value="<?=$result['pi_type_id'];?>">
-                <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
+            <div class="img-fluid" id="where-replace">
+                <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
             </div>
-            <div class="row">
-                <div class="col-md-6 form-group">
-                    <label for="don_gia">Đơn giá</label>
-                    <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
-                    <div id="price_err" class="text-danger"></div>
-                </div>
-                <div class="col-md-6 form-group">
-                    <label for="exampleInputFile">Upload ảnh đại diện</label>
-                    <div class="input-group">
-                    <div class="custom-file">
-                        <input id="fileInput" name="img_sanpham_file" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile">
-                        <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
-                    </div>
-                </div>
-                <!--_DIR_["IMG"]["ADMINS"];?>product/echo $result["img_name"];-->
-                <div class="img-fluid" id="where-replace">
-                    <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
-                </div>
-                <div id="image_err" class="text-danger"></div>
-            </div>
-            <div class="form-group" style="width:100%;">
-                <label for="">Ảnh mô tả sản phẩm</label>
-                <div class="kh-files">
-                    <div class="kh-file-lists">
-                        <?php
-                            $sql = "select * from product_image where product_info_id = '$id'";
-                            $result2 = db_query($sql);
-                            $list_file_del = [];
-                            $i = 0;
-                            foreach($result2 as $res){
-                                array_push($list_file_del,$res['img_order']);
-                        ?>
-                        <?php
-                            if($i % 6 == 0) {
-                                echo '<div class="kh-file-list">';
-                            }
-                        ?>
-                            <div data-id="<?=$res['img_order']?>"  class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url('<?=$res['img_id']?>');">
-                                <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'<?=$res['img_order'];?>')">
-                                <div class="kh-custom-remove-img" style="display:block;">
-                                    <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'<?=$res['img_order'];?>')"></span>
+            <div id="image_err" class="text-danger"></div>
+        </div>
+        <div class="form-group" style="width:100%;">
+            <label for="">Ảnh mô tả sản phẩm</label>
+            <div class="kh-files">
+                <div class="kh-file-lists">
+                    <?php
+                        $sql = "select * from product_image where product_info_id = '$id'";
+                        $result2 = fech_all(sql_query($sql));
+                        $list_file_del = [];
+                        $i = 0;
+                        foreach($result2 as $res){
+                            array_push($list_file_del,$res['img_order']);
+                    ?>
+                    <?php
+                        if($i % 6 == 0) {
+                            echo '<div class="kh-file-list">';
+                        }
+                    ?>
+                        <div data-id="<?=$res['img_order']?>"  class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url('<?=$res['img_id']?>');">
+                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'<?=$res['img_order'];?>')">
+                            <div class="kh-custom-remove-img" style="display:block;">
+                                <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'<?=$res['img_order'];?>')"></span>
+                            </div>
+                        </div>
+                    <?php
+                        if($i % 6 == 5) {
+                            echo '</div>';
+                        }	
+                    ?>
+                    <?php
+                            $i++;
+                        }
+                    ?>
+                    <?php
+                        if($i % 6 != 0 && $i != 0) {
+                            echo "</div>";
+                        }	
+                    ?>
+                    <?php if($i == 0) {?>
+                        <div class="kh-file-list">
+                            <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                                <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'1')">
+                                <div class="kh-custom-remove-img" style="display:none;">
+                                    <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'1')"></span>
                                 </div>
                             </div>
-                        <?php
-                            if($i % 6 == 5) {
-                                echo '</div>';
-                            }	
-                        ?>
-                        <?php
-                                $i++;
-                            }
-                        ?>
-                        <?php
-                            if($i % 6 != 0 && $i != 0) {
-                                echo "</div>";
-                            }	
-                        ?>
-                        <?php if($i == 0) {?>
-                            <div class="kh-file-list">
-                                <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                                    <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'1')">
-                                    <div class="kh-custom-remove-img" style="display:none;">
-                                        <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'1')"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                            }
-                        ?>
-                    </div>
-                    <input name="list_file_del" type='hidden' value="<?=implode(",",$list_file_del);?>">
-                    <div class="kh-div-append-file">
-                        <button type="button" class="kh-btn-append-file" onclick="addFileInputChange('.kh-file-list:last-child')">+</button>
-                    </div>
+                        </div>
+                    <?php
+                        }
+                    ?>
+                </div>
+                <input name="list_file_del" type='hidden' value="<?=implode(",",$list_file_del);?>">
+                <div class="kh-div-append-file">
+                    <button type="button" class="kh-btn-append-file" onclick="addFileInputChange('.kh-file-list:last-child')">+</button>
                 </div>
             </div>
-            <div class="form-group" style="width:100%;">
-                <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
-                <textarea name="mo_ta_san_pham" id="summernote"><?=$result['description'] ? $result['description'] : ""?></textarea>
-                <div id="name_desc_err" class="text-danger"></div>
-            </div>
         </div>
-        <input type="hidden" name="token" value="<?php echo_token();?>">
-        <input type="hidden" name="number" value="<?=$number;?>">
-        <div class="card-footer">
-            <button id="btn-luu-san-pham" data-status="Update" type="submit" class="dt-button button-purple">Đăng sản phẩm lên</button>
-            <input type="hidden" name="id" value="<?=$result['pi_id'];?>">      
-        </div>
-    </form>
-</div>
-</div>
-<div class="tab-pane fade" id="custom-tabs-two-profile" role="tabpanel" aria-labelledby="custom-tabs-two-profile-tab">
-    <div class="form-group row">
-        <div class="col-3">
-            <label for="">Hệ điều hành:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select>               
-        </div>
-        <div class="col-3">
-            <label for="">RAM:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
-        <div class="col-3">
-            <label for="">CPU:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
-        <div class="col-3">
-            <label for="">Card đồ hoạ:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
+        <div class="form-group" style="width:100%;">
+            <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
+            <textarea name="mo_ta_san_pham" id="summernote"><?=$result['description'] ? $result['description'] : ""?></textarea>
+            <div id="name_desc_err" class="text-danger"></div>
         </div>
     </div>
-    <div class="form-group row">
-        <div class="col-3">
-            <label for="">Kích thước màn hình:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
-        <div class="col-3">
-            <label for="">Độ phẩn giải màn hình:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
-        <div class="col-3">
-            <label for="">Ổ cứng:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
-        <div class="col-3">
-            <label for="">Thương hiệu sản phẩm:</label>
-            <select class="form-control k-combobox" style="width:100%;" name="ram_id" id="">
-                <option value="">aaaa</option>
-            </select> 
-        </div>
+    <input type="hidden" name="number" value="<?=$number;?>">
+    <div class="card-footer">
+        <button id="btn-luu-san-pham" data-status="Update" type="submit" class="dt-button button-purple">Đăng sản phẩm lên</button>
+        <input type="hidden" name="id" value="<?=$result['pi_id'];?>">      
     </div>
-
-    <div class="form-group">
-        <label for="">Ram</label>
-        <select class="form-control" name="ram_id" id=""></select>
-    </div>
-</div>
-<div class="tab-pane fade" id="custom-tabs-two-messages" role="tabpanel" aria-labelledby="custom-tabs-two-messages-tab">
-    b
-</div>
-<div class="tab-pane fade" id="custom-tabs-two-settings" role="tabpanel" aria-labelledby="custom-tabs-two-settings-tab">
-    c
-</div>
+</form>
 <?php
     }
     if($status == "Insert") {
@@ -242,7 +172,7 @@
                 <label for="exampleInputFile">Upload ảnh đại diện</label>
                 <div class="input-group">
                     <div class="custom-file">
-                        <input id="fileInput" name="img_sanpham_file" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile">
+                        <input id="fileInput" name="img_sanpham_file" type="file" accept="image/*" onchange="readURL2(this)" class="custom-file-input" id="exampleInputFile">
                         <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
                     </div>
                 </div>
@@ -277,17 +207,15 @@
             <div id="name_desc_err" class="text-danger"></div>
         </div>
     </div>
-    <input type="hidden" name="token" value="<?php echo_token();?>">
-    <input type="hidden" name="number" value="<?=$number2;?>">
     <div class="card-footer">
         <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="dt-button button-purple">Đăng sản phẩm lên</button>
-        <input type="hidden" name="id" >      
+        <input type="hidden" name="id" >
     </div>
 </form>
 <?php } if($id && $status == "Read") {?>
     <?php
-        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
-        $result = fetch_row($sql_get_all,[$id]);    
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+        $result = fetch(sql_query($sql_get_all));    
     ?>
     <div class="card-body">
         <table class="table table-bordered">
@@ -328,7 +256,7 @@
                         <div class="kh-file-lists">
                             <?php
                                 $sql = "select * from product_image where product_info_id = '$id' order by img_order asc";
-                                $result2 = db_query($sql);
+                                $result2 = fetch_all(sql_query($sql));
                                 $list_file_del = [];
                                 $i = 0;
                                 foreach($result2 as $res){
@@ -395,11 +323,11 @@
             foreach($arr as $id) {
                 $html_file = '<div class="kh-files"><div class="kh-file-lists">';
 
-                $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = ? and pi.is_delete = 0 limit 1";
-                $result = fetch_row($sql_get_all,[$id]); 
+                $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+                $result = fetch(sql_query($sql_get_all)); 
                 //
                 $sql2 = "select * from product_image where product_info_id = '$id' order by img_order asc";
-                $result2 = db_query($sql2);
+                $result2 = fetch_all(sql_query($sql2));
                 $list_file_del = [];
                 $i2 = 0;
                 foreach($result2 as $res){
@@ -425,7 +353,7 @@
                     </div>';
                 }	
                 //
-                $html .= '<tbody style="display:none;" class="tb-read tb-read-' . $i .'">
+                $html .= '<tbody style="display:none;" class="t-bd-read t-bd-read-' . $i .'">
                     <tr>
                         <th class="w-250">Tên sản phẩm</th>
                         <td class="width-auto">' . $result['pi_name'] . '</td>

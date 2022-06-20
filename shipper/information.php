@@ -19,18 +19,18 @@
         color: #d9585c;
         font-weight:bold;
     }
+    
 </style>
 <div class="content-wrapper" style="margin-left:290px;">
     <div class="content-header">
         <div class="container-fluid">   
-            <div class="row mb-2 kh-padding">
-                <div class="col-sm-12 d-flex j-between">
-                    <h1 style="font-weight:bold;color:#d9585c;" class="m-0">Trang thông tin cá nhân</h1>
-                    <div>
+            <div class="row mb-2 kh-padding d-flex j-between">
+                <h1 class="col-md-6 col-sm-12" style="font-weight:bold;color:#d9585c;" class="m-0">Trang thông tin cá nhân</h1>
+                <div class="col-md-6 col-sm-12 row mt-15" style="justify-content:end;">
+                    <div style="">
                         <button onclick="showModalShipper('<?=$_SESSION['shipper_id'];?>')" class="btn" style="background-color:#d9585c;color:#fff;font-weight:bold">Sửa thông tin</button>
                         <button onclick="showModalShipperChangePass('<?=$_SESSION['shipper_id'];?>')" class="btn" style="background-color:#d9585c;color:#fff;font-weight:bold">Đổi mật khẩu</button>
                     </div>
-                    
                 </div>
             </div>
             <hr style="">
@@ -72,7 +72,6 @@
                     </table>
                 </div>
             </div>
-            
         </div>
     </section>
 </div>

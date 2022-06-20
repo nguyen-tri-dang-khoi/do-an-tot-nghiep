@@ -171,11 +171,6 @@
             $where .= " $order_by";
         }
 ?>
-<link rel="stylesheet" href="css/select.dataTables.min.css">
-<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
-<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/toastr.min.css">
 <!--html & css section start-->
 <style>
@@ -277,7 +272,11 @@
       text-align: center;
       color: #9900ff;
    }
+   .sort-asc,.sort-desc {
+        display: none;
+    }
 </style>
+
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
     <section class="content">
@@ -298,336 +297,385 @@
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body">
-                     <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                        <form style="" autocomplete="off" action="category_discount_manage.php" method="get">
-                            <div class="d-flex a-start">
-                                <div class="" style="margin-top:5px;">
-                                    <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                        <option value="">Bộ lọc tìm kiếm</option>
-                                        <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                        <option value="product_type_id2" <?=$search_option == 'product_type_id2' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
-                                        <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
-                                        <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
-                                        <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
-                                        <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                            </div>
-                            <div class="d-flex a-start mt-10">
-                                <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
-                                <span class="k-select-opt-remove"></span>
-                                <span class="k-select-opt-ins"></span>
-                                <div class="ele-cols d-flex f-column">
-                                    <select name="search_option" class="form-control mb-10">
-                                        <option value="">Chọn cột tìm kiếm</option>
-                                        <option value="product_type_id" <?=$search_option == 'product_type_id' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
-                                        <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
-                                        <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
-                                        <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
-                                        <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                    </select>
-                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                                </div>
+                    <div id="load-all">
+                        <link rel="stylesheet" href="css/tab.css">             
+                        <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
+                            <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;padding-right:0px;padding-left:0px;list-style-type:none;" id="ul-tab-id" class="d-flex ul-tab">
                                 <?php
-                                if(is_array($keyword)) {
-                                    foreach($keyword as $key) {
+                                    $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                                    $_SESSION['category_discount_manage_tab'] = isset($_SESSION['category_discount_manage_tab']) ? $_SESSION['category_discount_manage_tab'] : [];
+                                    $_SESSION['category_discount_tab_id'] = isset($_SESSION['category_discount_tab_id']) ? $_SESSION['category_discount_tab_id'] : 0;
                                 ?>
-                                    <?php
-                                    if($key != "") {
-                                    ?>
-                                        <div class="ele-select ele-cols mt-10">
-                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                            <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_discount_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                                <?php
+                                    $ik = 0;
+                                    $is_active = false;
+                                    if(count($_SESSION['category_discount_manage_tab']) > 0) {
+                                        foreach($_SESSION['category_discount_manage_tab'] as $tab) {
+                                        if($tab['tab_unique'] == $tab_unique) {
+                                            $_SESSION['category_discount_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                        }
+                                ?>
+                                    <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                                        <button onclick="loadDataInTab('<?=$_SESSION['category_discount_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                        <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                    </li>
+                                <?php
+                                        $ik++;
+                                    }
+                                }
+                                ?>
+                            </ul>
+                            <div class="d-flex j-center a-center" style="position:relative;">
+                                <div onclick="saveTabFilter()" style="" class="add-tab">
+                                    <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="img-load" style="display:none;text-align:center;" class="d-flex" style="width:100%;">
+                            <img src="img/load.gif" alt="">
+                        </div>
+                        <div id="is-load">
+                            <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                                <form style="" autocomplete="off" action="category_discount_manage.php" method="get">
+                                    <div class="d-flex a-start">
+                                        <div class="" style="margin-top:5px;">
+                                            <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                                <option value="">Bộ lọc tìm kiếm</option>
+                                                <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                                <option value="product_type_id2" <?=$search_option == 'product_type_id2' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
+                                                <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
+                                                <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
+                                                <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
+                                                <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                            </select>
                                         </div>
-                                    <?php
-                                    }
-                                    ?>
-                                <?php   
-                                    }
-                                }
-                                ?>
-                                </div>
-                                <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                <span class="k-select-opt-remove"></span>
-                                <span class="k-select-opt-ins"></span>
-                                <div class="ele-date2">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                        <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
+                                        <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                                     </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                    </div>
-                                </div>
-                                <?php
-                                    if(is_array($date_start_1) && is_array($date_start_2)) {
-                                        foreach(array_combine($date_start_1,$date_start_2) as $d_start_1 => $d_start_2){
-                                ?>
-                                <?php
-                                    if($d_start_1 != "" || $d_start_2 != "") {
-                                ?>
-                                <div class="ele-select ele-date2 mt-10">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_start_1 ? Date("d-m-Y",strtotime($d_start_1)) : "";?>">
-                                    </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_start_2 ? Date("d-m-Y",strtotime($d_start_2)) : "";?>">
-                                    </div>
-                                    <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                                </div>
-                                <?php
-                                }
-                                ?>
-                                <?php 
+                                    <div class="d-flex a-start mt-10">
+                                        <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-cols d-flex f-column">
+                                            <select name="search_option" class="form-control mb-10">
+                                                <option value="">Chọn cột tìm kiếm</option>
+                                                <option value="product_type_id" <?=$search_option == 'product_type_id' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
+                                                <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
+                                                <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
+                                                <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
+                                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                            </select>
+                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                                        </div>
+                                        <?php
+                                        if(is_array($keyword)) {
+                                            foreach($keyword as $key) {
+                                        ?>
+                                            <?php
+                                            if($key != "") {
+                                            ?>
+                                                <div class="ele-select ele-cols mt-10">
+                                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                                </div>
+                                            <?php
+                                            }
+                                            ?>
+                                        <?php   
+                                            }
                                         }
-                                    }
-                                ?>
-                                </div>
-                                <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 && $date_end_1 != [""] || $date_end_2 && $date_end_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                <span class="k-select-opt-remove"></span>
-                                <span class="k-select-opt-ins"></span>
-                                <div class="ele-date2">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                    </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                    </div>
-                                </div>
-                                <?php
-                                    if(is_array($date_end_1) && is_array($date_end_2)) {
-                                        foreach(array_combine($date_end_1,$date_end_2) as $d_end_1 => $d_end_2){
-                                ?>
-                                <?php
-                                    if($d_end_1 != "" || $d_end_2 != "") {
-                                ?>
-                                <div class="ele-select ele-date_end2 mt-10">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_end_1 ? Date("d-m-Y",strtotime($d_end_1)) : "";?>">
-                                    </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_end_2 ? Date("d-m-Y",strtotime($d_end_2)) : "";?>">
-                                    </div>
-                                    <span onclick="select_remove_child('.ele-date_end2')" class="kh-select-child-remove"></span>
-                                </div>
-                                <?php
-                                }
-                                ?>
-                                <?php 
+                                        ?>
+                                        </div>
+                                        <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-date2">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                        </div>
+                                        <?php
+                                            if(is_array($date_start_1) && is_array($date_start_2)) {
+                                                foreach(array_combine($date_start_1,$date_start_2) as $d_start_1 => $d_start_2){
+                                        ?>
+                                        <?php
+                                            if($d_start_1 != "" || $d_start_2 != "") {
+                                        ?>
+                                        <div class="ele-select ele-date2 mt-10">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_start_1 ? Date("d-m-Y",strtotime($d_start_1)) : "";?>">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_start_2 ? Date("d-m-Y",strtotime($d_start_2)) : "";?>">
+                                            </div>
+                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                        </div>
+                                        <?php
                                         }
-                                    }
-                                ?>
-                                </div>
-                                <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                <span class="k-select-opt-remove"></span>
-                                <span class="k-select-opt-ins"></span>
-                                <div class="ele-date2">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                    </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                    </div>
-                                </div>
-                                <?php
-                                    if(is_array($date_start_1) && is_array($date_start_2)) {
-                                        foreach(array_combine($date_start_1,$date_start_2) as $d_min_1 => $d_min_2){
-                                ?>
-                                <?php
-                                    if($d_min_1 != "" || $d_min_2 != "") {
-                                ?>
-                                <div class="ele-select date_created_at2 mt-10">
-                                    <div class="" style="display:flex;">
-                                        <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min_1 ? Date("d-m-Y",strtotime($d_min_1)) : "";?>">
-                                    </div>
-                                    <div class="ml-10" style="display:flex;">
-                                        <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_min_2 ? Date("d-m-Y",strtotime($d_min_2)) : "";?>">
-                                    </div>
-                                    <span onclick="select_remove_child('.date_created_at2')" class="kh-select-child-remove"></span>
-                                </div>
-                                <?php
-                                }
-                                ?>
-                                <?php 
+                                        ?>
+                                        <?php 
+                                                }
+                                            }
+                                        ?>
+                                        </div>
+                                        <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 && $date_end_1 != [""] || $date_end_2 && $date_end_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-date2">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                        </div>
+                                        <?php
+                                            if(is_array($date_end_1) && is_array($date_end_2)) {
+                                                foreach(array_combine($date_end_1,$date_end_2) as $d_end_1 => $d_end_2){
+                                        ?>
+                                        <?php
+                                            if($d_end_1 != "" || $d_end_2 != "") {
+                                        ?>
+                                        <div class="ele-select ele-date_end2 mt-10">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_end_1 ? Date("d-m-Y",strtotime($d_end_1)) : "";?>">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_end_2 ? Date("d-m-Y",strtotime($d_end_2)) : "";?>">
+                                            </div>
+                                            <span onclick="select_remove_child('.ele-date_end2')" class="kh-select-child-remove"></span>
+                                        </div>
+                                        <?php
                                         }
-                                    }
-                                ?>
-                                </div>
-                                <input type="hidden" name="is_search" value="true">
-                                
+                                        ?>
+                                        <?php 
+                                                }
+                                            }
+                                        ?>
+                                        </div>
+                                        <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                        <span class="k-select-opt-remove"></span>
+                                        <span class="k-select-opt-ins"></span>
+                                        <div class="ele-date2">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                                            </div>
+                                        </div>
+                                        <?php
+                                            if(is_array($date_start_1) && is_array($date_start_2)) {
+                                                foreach(array_combine($date_start_1,$date_start_2) as $d_min_1 => $d_min_2){
+                                        ?>
+                                        <?php
+                                            if($d_min_1 != "" || $d_min_2 != "") {
+                                        ?>
+                                        <div class="ele-select date_created_at2 mt-10">
+                                            <div class="" style="display:flex;">
+                                                <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min_1 ? Date("d-m-Y",strtotime($d_min_1)) : "";?>">
+                                            </div>
+                                            <div class="ml-10" style="display:flex;">
+                                                <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_min_2 ? Date("d-m-Y",strtotime($d_min_2)) : "";?>">
+                                            </div>
+                                            <span onclick="select_remove_child('.date_created_at2')" class="kh-select-child-remove"></span>
+                                        </div>
+                                        <?php
+                                        }
+                                        ?>
+                                        <?php 
+                                                }
+                                            }
+                                        ?>
+                                        </div>
+                                        <input type="hidden" name="is_search" value="true">
+                                        
+                                    </div>
+                                    <div class="d-flex a-start" style="">
+                                        <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
+                                        <span class="k-select-opt-remove"></span>
+                                        <select name="is_active" class="form-control">
+                                            <option value="">Tình trạng kích hoạt</option>
+                                            <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
+                                            <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
+                                        </select>
+                                        </div>
+                                    </div> 
+                                    <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                                        <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
+                                        <!--<label for="">Sắp xếp:</label>-->
+                                        <select name="orderByColumn" class="ml-10 form-control col-5">
+                                            <option value="">Sắp xếp theo cột</option>
+                                            <option value="product_type_id" <?=$orderByColumn == "product_type_id" ? "selected" : "";?>>Danh mục khuyến mãi</option>
+                                            <option value="discount_percent" <?=$orderByColumn == "discount_percent" ? "selected" : "";?>>Khuyến mãi (%)</option>
+                                            <option value="date_start" <?=$orderByColumn == "date_start" ? "selected" : "";?>>Ngày bắt đầu</option>
+                                            <option value="date_end" <?=$orderByColumn == "date_end" ? "selected" : "";?>>Ngày kết thúc</option>
+                                            <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày đăng</option>
+                                        </select>
+                                        <select name="orderStatus" class="ml-10 form-control col-5">
+                                            <option value="">Thao tác sắp xếp</option>
+                                            <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                            <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                                        </div>     
+                                    </div>   
+                                </form>
                             </div>
-                            <div class="d-flex a-start" style="">
-                                <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
-                                <span class="k-select-opt-remove"></span>
-                                <select name="is_active" class="form-control">
-                                    <option value="">Tình trạng kích hoạt</option>
-                                    <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
-                                    <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
-                                </select>
-                                </div>
-                            </div> 
-                            <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
-                                <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
-                                <!--<label for="">Sắp xếp:</label>-->
-                                <select name="orderByColumn" class="ml-10 form-control col-5">
-                                    <option value="">Sắp xếp theo cột</option>
-                                    <option value="product_type_id" <?=$orderByColumn == "product_type_id" ? "selected" : "";?>>Danh mục khuyến mãi</option>
-                                    <option value="discount_percent" <?=$orderByColumn == "discount_percent" ? "selected" : "";?>>Khuyến mãi (%)</option>
-                                    <option value="date_start" <?=$orderByColumn == "date_start" ? "selected" : "";?>>Ngày bắt đầu</option>
-                                    <option value="date_end" <?=$orderByColumn == "date_end" ? "selected" : "";?>>Ngày kết thúc</option>
-                                    <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày đăng</option>
-                                </select>
-                                <select name="orderStatus" class="ml-10 form-control col-5">
-                                    <option value="">Thao tác sắp xếp</option>
-                                    <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
-                                    <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
-                                </select>
-                                <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
-                                </div>     
-                            </div>   
-                        </form>
-                     </div>
-                     <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                        <div>
-                           <?php
-                              if($allow_delete) {
-                           ?>
-                           <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_update) {
-                           ?>
-                           <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_read) {
-                           ?>
-                           <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                           <?php } ?>
-                           <?php
-                              if($allow_insert) {
-                           ?>
-                           <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                           <?php } ?>
-                        </div>
-                        <div class="section-save">
-                           <?php
-                              if($upt_more == 1 && $allow_update){
-                           ?>
-                           <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-                           <?php } ?>
-                        </div>
-                     </div>
-                     <table id="m-danh-muc-khuyen-mai" class="table table-bordered table-striped">
-                        <thead>
-                           <tr>
-                              <th></th>
-                              <th>Số thứ tự</th>
-                              <th>Danh mục khuyến mãi</th>
-                              <th>Khuyến mãi (%)</th>
-                              <th>Ngày bắt đầu</th>
-                              <th>Ngày hết hạn</th>
-                              <th>Tình trạng</th>
-                              <th>Ngày tạo</th>
-                              <th>Thao tác</th>
-                           </tr>
-                        </thead>
-                        <tbody id="list-khuyen-mai">
-                        <?php
-                        $get = $_GET;
-                        unset($get['page']);
-                        $str_get = http_build_query($get);
-                        // query
-                        $cnt = 0;
-                        $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                        $limit = $_SESSION['paging'];
-                        $start_page = $limit * ($page - 1);
-                        $sql_get_total = "select count(*) as 'countt' from product_type_discount $where";
-                        $total = fetch_row($sql_get_total)['countt'];
-                        $sql_get_product = "select * from product_type_discount n $where limit $start_page,$limit";
-                        $rows = db_query($sql_get_product);
-                        foreach($rows as $row) {
-                        ?>
-                           <tr id="<?=$row["id"];?>">
-                                <td></td>
-                                <td><?=$total - ($start_page + $cnt);?></td>
-                                <td>
-                                    <nav id="breadcrumb-menu2" class="" aria-label="breadcrumb">
-                                        <?=generate_breadcrumb_menus($row['product_type_id']);?>
-                                    </nav>
-                                </td>
-                                <td><?=$upt_more == 1 ? "<input name='ptd_discount_percent' class='form-control' type='text' value='" .$row['discount_percent']."'>" : $row['discount_percent'];?></td>
-                                <td>
+                            <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                                <div>
                                     <?php
-                                        if($upt_more == 1) {
+                                        if($allow_delete) {
                                     ?>
-                                    <?=$row['date_start'] ? "<input name='ptd_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_start'])) ."'>" : "";?> 
-                                    <?php } else { ?>
-                                    <?=$row['date_start'] ? Date("d-m-Y",strtotime($row['date_start'])) : "";?>
-                                    <?php }?>
-                                </td>
-                                <td>
-                                    <?php
-                                        if($upt_more == 1) {
-                                    ?>
-                                    <?=$row['date_end'] ? "<input name='ptd_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_end'])) ."'>" : "";?> 
-                                    <?php } else {?>
-                                    <?=$row['date_end'] ? Date("d-m-Y",strtotime($row['date_end'])) : "";?>
+                                    <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
                                     <?php } ?>
-                                </td>
-                                <td>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" onchange="toggleActive('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                        <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                    </div>  
-                                </td>
-                                <td><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                <td>
                                     <?php
-                                    if($upt_more == 1) {
+                                        if($allow_update) {
                                     ?>
-                                        <button onclick="uptThisRow()" dt-count="0" class=" dt-button button-green"
-                                        data-id="<?=$row["id"];?>" >
-                                        Sửa
-                                        </button>
-                                    <?php } else {?>
-                                        <button class="btn-xem-khuyen-mai dt-button button-grey"
-                                        data-id="<?=$row["id"];?>">
-                                        Xem
-                                        </button>
-                                        <button class="btn-sua-khuyen-mai dt-button button-green"
-                                        data-id="<?=$row["id"];?>" >
-                                        Sửa
-                                        </button>
-                                        <button class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
-                                        Xoá
-                                        </button>
-                                    <?php }?>
-                                </td>
-                           </tr>
-                        <?php
-                           $cnt++;
-                        }
-                        ?>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                              <th></th>
-                              <th>Số thứ tự</th>
-                              <th>Danh mục khuyến mãi</th>
-                              <th>Khuyến mãi (%)</th>
-                              <th>Ngày bắt đầu</th>
-                              <th>Ngày hết hạn</th>
-                              <th>Tình trạng</th>
-                              <th>Ngày tạo</th>
-                              <th>Thao tác</th>
-                            </tr>
-                        </tfoot>
-                     </table>
+                                    <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                    <?php } ?>
+                                    <?php
+                                        if($allow_read) {
+                                    ?>
+                                    <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                                    <?php } ?>
+                                    <?php
+                                        if($allow_insert) {
+                                    ?>
+                                    <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                                    <?php } ?>
+                                </div>
+                                <div class="section-save">
+                                    <?php
+                                        if($upt_more == 1 && $allow_update){
+                                    ?>
+                                    <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <table id="m-danh-muc-khuyen-mai" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr style="cursor:pointer;">
+                                        <th style="width:20px !important;">
+                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                        </th>
+                                        <th class="th-so-thu-tu w-120">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="th-danh-muc-khuyen-mai w-300">Danh mục khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="th-khuyen-mai w-150">Khuyến mãi (%) <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="th-ngay-bat-dau w-120">Ngày bắt đầu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="th-ngay-het-han w-120">Ngày hết hạn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="w-100">Tình trạng</th>
+                                        <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                        <th class="w-200">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <?php
+                                $get = $_GET;
+                                unset($get['page']);
+                                $str_get = http_build_query($get);
+                                // query
+                                $cnt = 0;
+                                $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                $limit = $_SESSION['paging'];
+                                $start_page = $limit * ($page - 1);
+                                $sql_get_total = "select count(*) as 'countt' from product_type_discount $where";
+                                $total = fetch(sql_query($sql_get_total))['countt'];
+                                $sql_get_product = "select * from product_type_discount n $where limit $start_page,$limit";
+                                ?>
+                                <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-category-discount" id="list-khuyen-mai">
+                                <?php
+                                $rows = fetch_all(sql_query($sql_get_product));
+                                foreach($rows as $row) {
+                                ?>
+                                    <tr id="<?=$row["id"];?>">
+                                        <td>
+                                            <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-category-discount')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                        </td>
+                                        <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
+                                        <td class="danh-muc-khuyen-mai">
+                                            <nav id="breadcrumb-menu2" class="" aria-label="breadcrumb">
+                                                <?=generate_breadcrumb_menus($row['product_type_id']);?>
+                                            </nav>
+                                        </td>
+                                        <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='ptd_discount_percent' class='form-control' type='text' value='" .$row['discount_percent']."'>" : $row['discount_percent'];?></td>
+                                        <td class="ngay-bat-dau">
+                                            <?php
+                                                if($upt_more == 1) {
+                                            ?>
+                                            <?=$row['date_start'] ? "<input name='ptd_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_start'])) ."'>" : "";?> 
+                                            <?php } else { ?>
+                                            <?=$row['date_start'] ? Date("d-m-Y",strtotime($row['date_start'])) : "";?>
+                                            <?php }?>
+                                        </td>
+                                        <td class="ngay-het-han">
+                                            <?php
+                                                if($upt_more == 1) {
+                                            ?>
+                                            <?=$row['date_end'] ? "<input name='ptd_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_end'])) ."'>" : "";?> 
+                                            <?php } else {?>
+                                            <?=$row['date_end'] ? Date("d-m-Y",strtotime($row['date_end'])) : "";?>
+                                            <?php } ?>
+                                        </td>
+                                        <td>
+                                            <div class="custom-control custom-switch">
+                                                <input type="checkbox" onchange="toggleActive('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                                <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
+                                            </div>  
+                                        </td>
+                                        <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                                        <td>
+                                            <?php
+                                            if($upt_more == 1) {
+                                            ?>
+                                                <button onclick="uptMore2()" dt-count="0" class=" dt-button button-green"
+                                                data-id="<?=$row["id"];?>" >
+                                                Sửa
+                                                </button>
+                                            <?php } else {?>
+                                                <button class="btn-xem-khuyen-mai dt-button button-grey"
+                                                data-id="<?=$row["id"];?>">
+                                                Xem
+                                                </button>
+                                                <button class="btn-sua-khuyen-mai dt-button button-green"
+                                                data-id="<?=$row["id"];?>" >
+                                                Sửa
+                                                </button>
+                                                <button class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
+                                                Xoá
+                                                </button>
+                                            <?php }?>
+                                        </td>
+                                    </tr>
+                                <?php
+                                    $cnt++;
+                                }
+                                ?>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th style="width:20px !important;">
+                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                        </th>
+                                        <th>Số thứ tự</th>
+                                        <th>Danh mục khuyến mãi</th>
+                                        <th>Khuyến mãi (%)</th>
+                                        <th>Ngày bắt đầu</th>
+                                        <th>Ngày hết hạn</th>
+                                        <th>Tình trạng</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                            <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
+                                
+                            </ul>
+                        </div>
                   </div>
-                  <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
-                        
-                  </ul>
                </div>
             </div>
          </div>
@@ -683,10 +731,10 @@
                <div class="d-flex f-column form-group">
                     <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                         <div class="file file-csv mr-10">
-                            <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                            <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Danh mục khuyến mãi','Khuyến mãi (%)','Ngày bắt đầu','Ngày hết hạn'],['product_type_id','ptd_discount_percent2','ptd_date_start2','ptd_date_end2'])">
                         </div>
                         <div class="file file-excel mr-10">
-                            <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                            <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Danh mục khuyến mãi','Khuyến mãi (%)','Ngày bắt đầu','Ngày hết hạn'],['product_type_id','ptd_discount_percent2','ptd_date_start2','ptd_date_end2'])">
                         </div>
                         <div class="d-empty">
                             <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
@@ -721,224 +769,17 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="js/toastr.min.js"></script>
-<script>
-	toastr.options = {
-	  "closeButton": false,
-	  "debug": false,
-	  "newestOnTop": false,
-	  "progressBar": false,
-	  "positionClass": "toast-bottom-right",
-	  "preventDuplicates": false,
-	  "onclick": null,
-	  "showDuration": "300",
-	  "hideDuration": "1000",
-	  "timeOut": "5000",
-	  "extendedTimeOut": "1000",
-	  "showEasing": "swing",
-	  "hideEasing": "linear",
-	  "showMethod": "fadeIn",
-	  "hideMethod": "fadeOut"
-	}
-</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script src="js/toastr.min.js"></script>
+<script src="js/khoi_all.js"></script>
+
 <!--js section end-->
 <script>
-    function xlsx2input(input) {
-        if(input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var data = e.target.result;
-                var workbook = XLSX.read(data, {
-                    type: 'binary'
-                });
-                var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
-                console.log(XL_row_object);
-                setDataFromXLSX(XL_row_object,['Danh mục khuyến mãi','Khuyến mãi (%)','Ngày bắt đầu','Ngày hết hạn'],['product_type_id','ptd_discount_percent2','ptd_date_start2','ptd_date_end2']);
-            };
-            reader.onerror = function(ex) {
-                console.log(ex);
-            };
-            reader.readAsBinaryString(input.files[0]);
-        }
-    }
-    function csv2input(input) {
-      let arr = [];
-      if (input.files && input.files[0]) {
-          var reader = new FileReader();
-          reader.onload=function(e){
-              arr = reader.result.split(/\r\n|\n/);
-              console.log(arr);
-              // step 1
-              let columns = arr[0].split(/\,/);
-              let arr_csv = [];
-              arr.shift();
-              for(i = 0 ; i < arr.length ; i++) {
-                  let new_arr = arr[i].split(/\,/);
-                  //console.log(new_arr);
-                  let new_obj = {};
-                  for(j = 0 ; j < columns.length ; j++) {
-                      new_obj[columns[j]] = new_arr[j];
-                      //console.log(new_obj);
-                  }
-                  arr_csv.push(new_obj);
-              }
-              console.log(arr_csv);
-              setDataFromCSV(arr_csv,['Danh mục khuyến mãi','Khuyến mãi (%)','Ngày bắt đầu','Ngày hết hạn'],['product_type_id','ptd_discount_percent2','ptd_date_start2','ptd_date_end2']);
-          }
-          reader.readAsText(input.files[0]);
-      }
-    }
-    function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
-        if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-            $("[data-plus]").attr("data-plus",arr_csv.length);
-            showRow(1);
-            let i = 0;
-            arr_csv_columns.forEach(function(ele,ind){
-                $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                    $(this).val(arr_csv[i][ele]);
-                    i++;
-                });
-                i = 0; 
-            });
-        } else {
-            $.alert({
-                title:"Thông báo",
-                content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-            });
-        }
-        $("input[name='read_csv']").val("");
-    }
-    function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
-      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-          $("[data-plus]").attr("data-plus",arr_xlsx.length);
-          showRow(1);
-          let i = 0;
-          arr_excel_columns.forEach(function(ele,ind){
-            $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                $(this).val(arr_xlsx[i][ele]);
-                i++;
-            });
-            i = 0; 
-          });
-      } else {
-          $.alert({
-              title:"Thông báo",
-              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-          });
-      }
-      $("input[name='read_excel']").val("");
-    }
+    setSortTable();    
 </script>
 <!--js section start-->
 <script>
-    // xem nhanh
-    function readMore(){
-        let arr_del = [];
-        let _data = dt_ptd.rows(".selected").select().data();
-        let count4 = _data.length;
-        for(i = 0 ; i < count4 ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        let str_arr_upt = arr_del.join(",");
-        console.log(str_arr_upt);
-        if(arr_del.length == 0) {
-            $.alert({
-                title: "Thông báo",
-                content: "Bạn vui lòng chọn dòng cần xem",
-            });
-            return;
-        }
-        $('#form-danh-muc-khuyen-mai').load(`ajax_category_discount_manage.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
-            let html2 = `
-            <div id="paging" style="justify-content:center;" class="row">
-                <nav id="pagination3">
-                </nav>
-            </div>
-            `;
-            $(html2).appendTo('#form-danh-muc-khuyen-mai');
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('.t-bd-read').css({
-                "display":"none",
-            });
-            $('.t-bd-read-1').css({
-                "display":"contents",
-            });
-            $('#pagination3').pagination({
-                items: count4,
-                itemsOnPage: 1,
-                currentPage: 1,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                    $(`.t-bd-read`).css({"display":"none"});
-                    $(`.t-bd-read-${pageNumber}`).css({"display":"contents"});
-                },
-                cssStyle: 'light-theme',
-            });
-        });
-    }
-    // xoá nhanh
-    function delMore(){
-        let arr_del = [];
-        let _data = dt_ptd.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        if(_data.length > 0) {
-            $.confirm({
-                title: "Thông báo",
-                content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
-                buttons: {
-                "Có": function(){
-                    $.ajax({
-                        url: window.location.href,
-                        type: "POST",
-                        data: {
-                            status: "del_more",
-                            token: "<?php echo_token(); ?>",
-                            rows: arr_del.join(","),
-                        },
-                        success: function(data){
-                            data = JSON.parse(data);
-                            if(data.msg == "ok"){
-                            $.alert({
-                                title: "Thông báo",
-                                content: "Bạn đã xoá dữ liệu thành công",
-                                buttons: {
-                                    "Ok": function(){
-                                        location.href="category_discount_manage.php";
-                                    }
-                                }
-                            })
-                            }
-                        },error: function(data){
-                            console.log("Error:" + data);
-                        }
-                    });
-                },"Không": function(){
-
-                }
-                }
-            });
-        } else {
-            $.alert({
-                title: "Thông báo",
-                content: "Bạn chưa chọn dòng cần xoá",
-            });
-        }
-    }
-    // sửa nhanh
-    function uptMore(){
-        let arr_del = [];
-        let _data = dt_ptd.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        let str_arr_upt = arr_del.join(",");
-        location.href="category_discount_manage.php?upt_more=1&str=" + str_arr_upt;
-    }
-    function uptThisRow(){
+    function uptMore2(){
         let test = true;
         let ptd_discount_percent = $(event.currentTarget).closest("tr").find("td input[name='ptd_discount_percent']").val();
         let ptd_date_start = $(event.currentTarget).closest("tr").find("td input[name='ptd_date_start']").val();
@@ -1537,133 +1378,6 @@
     }
     $(document).ready(function (e) {
         $('.select-type2').select2();
-        $.fn.dataTable.moment('DD-MM-YYYY');
-        $('#first_tab').on('focus', function() {
-            $('input[tabindex="1"].kh-inp-ctrl').first().focus();
-        });
-        $('#btn-role-fast').on('focus',function(){
-            $('input[tabindex="<?=$cnt;?>"]').focus();
-        });
-        dt_ptd = $("#m-danh-muc-khuyen-mai").DataTable({
-            "sDom": 'RBlfrtip',
-            "columnDefs": [
-                { 
-                    "name":"pi-checkbox",
-                    "orderable": false,
-                    "className": 'select-checkbox',
-                    "targets": 0
-                },{ 
-                    "name":"manipulate",
-                    "orderable": false,
-                    "className": 'manipulate',
-                    "targets": 8
-                }, 
-            ],
-            "select": {
-                style: 'multi+shift',
-                selector: 'td:first-child'
-            },
-            "order": [
-                [1, 'desc']
-            ],
-            "language": {
-                "emptyTable": "Không có dữ liệu",
-                "sZeroRecords": 'Không tìm thấy kết quả',
-                "infoEmpty": "",
-                "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
-                "search":"Tìm kiếm trong bảng này:",   
-                "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-                "select": {
-                    "rows": "Đã chọn %d dòng",
-                },
-                "buttons": {
-                    "copy": 'Copy',
-                    "copySuccess": {
-                        1: "Bạn đã sao chép một dòng thành công",
-                        _: "Bạn đã sao chép %d dòng thành công"
-                    },
-                    "copyTitle": 'Thông báo',
-                }
-            },
-            "paging":true,
-            "responsive": true, 
-            "oColReorder": {
-                "bAddFixed":false
-            },
-            "lengthChange": false, 
-            "autoWidth": false,
-            "paging":false,
-            "searchHighlight": true,
-            "buttons": [
-                {
-                    "extend": "excel",
-                    "text": "Excel (2)",
-                    "key": {
-                        "key": '2',
-                    },
-                    "autoFilter": true,
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "pdf",
-                    "text": "PDF (3)",
-                    "key": {
-                        "key": '3',
-                    },
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "csv",
-                    "text": "CSV (4)",
-                    "charset": 'UTF-8',
-                    "bom": true,
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "key": {
-                        "key": '4',
-                    },
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "colvis",
-                    "text": "Ẩn / Hiện cột (7)",
-                    "columns": ':not(.select-checkbox)',
-                    "key": {
-                        "key": '7',
-                    },
-                }
-                
-            ],
-        });
-        dt_ptd.buttons.exportData( {
-            columns: ':visible'
-        });
-        dt_ptd.on("click", "th.select-checkbox", function() {
-            if ($("th.select-checkbox").hasClass("selected")) {
-                dt_ptd.rows().deselect();
-                $("th.select-checkbox").removeClass("selected");
-            } else {
-                dt_ptd.rows().select();
-                $("th.select-checkbox").addClass("selected");
-            }
-        }).on("select deselect", function() {
-            if (dt_ptd.rows({
-                    selected: true
-                }).count() !== dt_ptd.rows().count()) {
-                $("th.select-checkbox").removeClass("selected");
-            } else {
-                $("th.select-checkbox").addClass("selected");
-            }
-        });
-        //
-        // php auto select all rows when focus update all function execute
-        //$upt_more == 1 ? 'dt_ptd.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";
     });
 </script>
 <!--searching filter-->
@@ -1754,6 +1468,26 @@
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
+</script>
+<script>
+    function validate(){
+
+    }
+    function validateModal(){
+        
+    }
+    function openModalInsert(){
+
+    }
+    function openModalUpdate(){
+
+    }
+    function processModalInsertUpdate(){
+
+    }
+    function processDelete(){
+
+    }
 </script>
 <script>
     $(document).ready(function(){
@@ -2196,6 +1930,38 @@
                 }
                 echo_json(["msg" => "ok"]);
             }
+        } else if($status == "saveTabFilter") {
+            $_SESSION['category_discount_tab_id'] = isset($_SESSION['category_discount_tab_id']) ? $_SESSION['category_discount_tab_id'] + 1 : 1;
+            $tab_name = isset($_SESSION['category_discount_tab_id']) ? "tab_" . $_SESSION['category_discount_tab_id'] : null;
+            $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
+            $tab_unique = uniqid("tab_");
+            $_SESSION['category_discount_manage_tab'] = isset($_SESSION['category_discount_manage_tab']) ? $_SESSION['category_discount_manage_tab'] : [];
+            array_push($_SESSION['category_discount_manage_tab'],[
+               "tab_unique" => $tab_unique,
+               "tab_name" => $tab_name,
+               "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
+            ]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['category_discount_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+        } else if($status == "deleteTabFilter") {
+            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+            $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
+            array_splice($_SESSION['category_discount_manage_tab'],$index,1);
+            if(trim($is_active_2) == "") {
+                echo_json(["msg" => "ok"]);
+            }  else if($is_active_2 == 1) {
+                if(array_key_exists($index,$_SESSION['category_discount_manage_tab'])) {
+                    echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['category_discount_manage_tab'][$index]['tab_urlencode']]);
+                } else if(array_key_exists($index - 1,$_SESSION['category_discount_manage_tab'])){
+                    echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['category_discount_manage_tab'][$index - 1]['tab_urlencode']]);
+                } else {
+                    echo_json(["msg" => "ok","tab_urlencode" => "category_discount_manage.php?tab_unique=all"]);
+                }
+            }
+        } else if($status == "changeTabNameFilter") {
+            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+            $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
+            $_SESSION['category_discount_manage_tab'][$index]['tab_name'] = $new_tab_name;
+            echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['category_discount_manage_tab'][$index]['tab_urlencode']]);
         }
     }
 ?>

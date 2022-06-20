@@ -3,12 +3,12 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {
-        $sql_get_all = "select * from coupon where id = ? limit 1";
-        $result = fetch_row($sql_get_all,[$id]);
+        $sql_get_all = "select * from coupon where id = '$id' limit 1";
+        $result = fetch(sql_query($sql_get_all));
 ?>
 
 <div class="card-body">
-<div class="row">
+    <div class="row">
         <div class="col-md-6 form-group">
             <label for="coupon_code">Nhập mã khuyến mãi:</label>
             <input type="text" name="coupon_code" class="form-control" value="<?=$result['coupon_code'] ? $result['coupon_code'] : "";?>" placeholder="Nhập mã khuyến mãi...">
@@ -22,37 +22,36 @@
     </div>
     <div class="row">
         <div class="col-md-4 form-group">
-            <label for="coupon_discount_percent">Khuyến mãi (đơn vị %) :</label>
-            <input min="1" max="99" type="number" name="coupon_discount_percent" value="<?=$result['coupon_discount_percent'] ? $result['coupon_discount_percent'] : "";?>" class="form-control">
+            <label for="coupon_discount_percent">Khuyến mãi (đơn vị %):</label>
+            <input min="1" max="99" placeholder="Nhập khuyến mãi (1 - 100%)..." type="number" name="coupon_discount_percent" value="<?=$result['coupon_discount_percent'] ? $result['coupon_discount_percent'] : "";?>" class="form-control">
             <div id="coupon_discount_percent_err" class="coupon-validate text-danger"></div>
         </div>
         <div class="col-md-4 form-group">
-            <label for="coupon_if_subtotal_min">Số tiền tối thiểu :</label>
-            <input type="number" name="coupon_if_subtotal_min" value="<?=$result['coupon_if_subtotal_min'] ? $result['coupon_if_subtotal_min'] : "";?>" class="form-control">
+            <label for="coupon_if_subtotal_min">Số tiền tối thiểu:</label>
+            <input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type="text" name="coupon_if_subtotal_min" placeholder="Nhập điều kiện tổng tiền hoá đơn tối thiểu..." value="<?=$result['coupon_if_subtotal_min'] ? number_format($result['coupon_if_subtotal_min'],0,".",".") : "";?>" class="form-control">
             <div id="coupon_if_subtotal_min_err" class="coupon-validate text-danger"></div>
         </div>
         <div class="col-md-4 form-group">
-            <label for="coupon_if_subtotal_max">Số tiền tối đa :</label>
-            <input type="number" name="coupon_if_subtotal_max" value="<?=$result['coupon_if_subtotal_max'] ? $result['coupon_if_subtotal_max'] : "";?>" class="form-control">
+            <label for="coupon_if_subtotal_max">Số tiền tối đa:</label>
+            <input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type="text" name="coupon_if_subtotal_max" placeholder="Nhập điều kiện tổng tiền hoá đơn tối đa..." value="<?=$result['coupon_if_subtotal_max'] ? number_format($result['coupon_if_subtotal_max'],0,".",".") : "";?>" class="form-control">
             <div id="coupon_if_subtotal_max_err" class="coupon-validate text-danger"></div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3 form-group">
-            <label for="coupon_date_start">Thời gian bắt đầu :</label>
-            <input type="text" name="coupon_date_start" data-coupon-date="<?=$result['coupon_date_start'] ? Date("Y-m-d",strtotime($result['coupon_date_start'])) : ""?>" value="<?=$result['coupon_date_start'] ? Date('d-m-Y',strtotime($result['coupon_date_start'])) : "";?>" class="form-control is-date-coupon-start">
+        <div class="col-md-4 form-group">
+            <label for="coupon_date_start">Thời gian bắt đầu:</label>
+            <input type="text" placeholder="Nhập thời gian bắt dầu khuyến mãi..." name="coupon_date_start" value="<?=$result['coupon_date_start'] ? Date('d-m-Y',strtotime($result['coupon_date_start'])) : "";?>" class="form-control is-date-coupon-start">
             <div id="coupon_date_start_err" class="coupon-validate text-danger"></div>
         </div>
-        <div class="col-md-3 form-group">
-            <label for="coupon_date_end">Thời gian kết thúc :</label>
-            <input type="text" name="coupon_date_end" data-coupon-date="<?=$result['coupon_date_end'] ? Date("Y-m-d",strtotime($result['coupon_date_end'])) : ""?>" value="<?=$result['coupon_date_end'] ? Date('d-m-Y',strtotime($result['coupon_date_end'])) : "";?>" class="form-control is-date-coupon-end">
+        <div class="col-md-4 form-group">
+            <label for="coupon_date_end">Thời gian kết thúc:</label>
+            <input placeholder="Nhập thời gian kết thúc khuyến mãi..." type="text" name="coupon_date_end"  value="<?=$result['coupon_date_end'] ? Date('d-m-Y',strtotime($result['coupon_date_end'])) : "";?>" class="form-control is-date-coupon-end">
             <div id="coupon_date_end_err" class="coupon-validate text-danger"></div>
         </div>
     </div>
 </div>
-<input type="hidden" name="token" value="<?php echo_token();?>">
 <div class="card-footer">
-    <button id="btn-update" type="button" class="dt-button button-purple">Sửa</button>
+    <button id="btn-update" onclick="processModalUpdate()" type="button" class="dt-button button-purple">Sửa</button>
     <input type="hidden" name="id" value="<?=$result['id'];?>">      
 </div>
 <?php
@@ -74,41 +73,40 @@
     <div class="row">
         <div class="col-md-4 form-group">
             <label for="coupon_discount_percent">Khuyến mãi (đơn vị %) :</label>
-            <input min="1" max="99" type="number" name="coupon_discount_percent" class="form-control">
+            <input min="1" max="99" type="number" name="coupon_discount_percent" class="form-control" placeholder="Nhập khuyến mãi (1 - 100%)...">
             <div id="coupon_discount_percent_err" class="coupon-validate text-danger"></div>
         </div>
         <div class="col-md-4 form-group">
             <label for="coupon_if_subtotal_min">Số tiền tối thiểu:</label>
-            <input type="number" name="coupon_if_subtotal_min" class="form-control">
+            <input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type="text" name="coupon_if_subtotal_min" class="form-control" placeholder="Nhập điều kiện tổng tiền hoá đơn tối thiểu...">
             <div id="coupon_if_subtotal_min_err" class="coupon-validate text-danger"></div>
         </div>
         <div class="col-md-4 form-group">
             <label for="coupon_if_subtotal_max">Số tiền tối đa:</label>
-            <input type="number" name="coupon_if_subtotal_max" class="form-control">
+            <input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type="text" name="coupon_if_subtotal_max" class="form-control" placeholder="Nhập điều kiện tổng tiền hoá đơn tối đa...">
             <div id="coupon_if_subtotal_max_err" class="coupon-validate text-danger"></div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3 form-group">
-            <label for="coupon_date_start">Thời gian bắt đầu :</label>
-            <input type="text" name="coupon_date_start" class="form-control is-date-coupon-begin">
+        <div class="col-md-4 form-group">
+            <label for="coupon_date_start">Thời gian bắt đầu:</label>
+            <input type="text" name="coupon_date_start" class="form-control is-date-coupon-begin" placeholder="Nhập thời gian bắt dầu khuyến mãi...">
             <div id="coupon_date_start_err" class="coupon-validate text-danger"></div>
         </div>
-        <div class="col-md-3 form-group">
-            <label for="coupon_date_end">Thời gian kết thúc :</label>
-            <input type="text" name="coupon_date_end" class="form-control is-date-coupon-end">
+        <div class="col-md-4 form-group">
+            <label for="coupon_date_end">Thời gian kết thúc:</label>
+            <input type="text" name="coupon_date_end" class="form-control is-date-coupon-end" placeholder="Nhập thời gian kết thúc khuyến mãi...">
             <div id="coupon_date_end_err" class="coupon-validate text-danger"></div>
         </div>
     </div>
 </div>
-<input type="hidden" name="token" value="<?php echo_token();?>">
 <div class="card-footer">
-    <button id="btn-insert" type="button" class="dt-button button-purple">Thêm</button>    
+    <button id="btn-insert" onclick="processModalInsert()" type="button" class="dt-button button-purple">Thêm</button>    
 </div>
 <?php } if($id && $status == "Read") {?>
     <?php
-        $sql_get_all = "select * from coupon where id = ? limit 1";
-        $result = fetch_row($sql_get_all,[$id]);    
+        $sql_get_all = "select * from coupon where id = '$id' limit 1";
+        $result = fetch(sql_query($sql_get_all));    
     ?>
     <div class="card-body">
         <table class="table table-bordered">
@@ -126,11 +124,11 @@
             </tr>
             <tr>
                 <th class='w-200'>Số tiền tối thiểu</th>
-                <td><?=$result['coupon_if_subtotal_min'];?></td>
+                <td><?=number_format($result['coupon_if_subtotal_min'],0,".",".");?></td>
             </tr>
             <tr>
                 <th class='w-200'>Số tiền tối đa</th>
-                <td><?=$result['coupon_if_subtotal_max'];?></td>
+                <td><?=number_format($result['coupon_if_subtotal_max'],0,".",".");?></td>
             </tr>
             <tr>
                 <th class='w-200'>Thời gian bắt đầu</th>
@@ -173,11 +171,11 @@
             </tr>
             <tr>
                 <th class='w-200'>Số tiền tối thiểu</th>
-                <td>" . $res['coupon_if_subtotal_min'] . "</td>
+                <td>" . number_format($res['coupon_if_subtotal_min'],0,".",".") . "</td>
             </tr>
             <tr>
                 <th class='w-200'>Số tiền tối đa</th>
-                <td>" . $res['coupon_if_subtotal_max'] . "</td>
+                <td>" . number_format($res['coupon_if_subtotal_max'],0,".",".") . "</td>
             </tr>
             <tr>
                 <th class='w-200'>Thời gian bắt đầu</th>

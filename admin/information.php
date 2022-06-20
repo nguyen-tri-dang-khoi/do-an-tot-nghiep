@@ -10,8 +10,8 @@
 <!--html & css section start-->
 <?php
     $session_id = $_SESSION["id"];
-    $sql_get_info = "select * from user where id = ?";
-    $admin_info = fetch_row($sql_get_info,[$session_id]);
+    $sql_get_info = "select * from user where id = '$session_id'";
+    $admin_info = fetch(sql_query($sql_get_info));
 ?>
 <div class="container-wrapper" style="margin-left:250px;">
     <section class="content-header">
@@ -123,7 +123,6 @@
 ?>
 <script>
   function openPromptAuthEmail(){
-    let token = "<?php echo_token();?>";
     $.ajax({
       url:window.location.href,
       type: "POST",
@@ -144,7 +143,6 @@
     })
   }
   function openPromptAuthPhone(){
-    let token = "<?php echo_token();?>";
     $.ajax({
       url: window.location.href,
       type: "POST",

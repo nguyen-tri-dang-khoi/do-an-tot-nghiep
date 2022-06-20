@@ -1,6 +1,7 @@
 /*
   flex-box
 */
+
 .a-center {
   align-items: center !important;
 }
@@ -195,6 +196,12 @@
 .w-20-imp {
   width:20px !important;
 }
+.w-50-imp {
+  width:50px !important;
+}
+.w-170-imp {
+  width:170px !important;
+}
 .w-200-imp {
   width:200px !important;
 }
@@ -277,6 +284,15 @@ button .highlight , button .highlight {
 }
 .w-150 {
   width: 150px !important;
+}
+.w-170 {
+  width: 170px !important;
+}
+.w-30 {
+  width: 30px !important;
+}
+.w-50 {
+  width: 50px !important;
 }
 .w-120 {
   width: 120px !important;
@@ -617,21 +633,21 @@ li.nav-item {
 }
 .kh-custom-btn-remove::after {
   position: absolute;
-    content: "\00d7";
-    font-size: 20px;
-    color: #fff4f8 !important;
-    /* background: #ddd; */
-    display: flex;
-    left:90%;
-    justify-content: center;
-    align-items: center;
-    top: -14px;
-    border-radius: 50%;
-    border: 1px solid;
-    width: 20px;
-    height: 20px;
-    background: #e91e63 !important;
-    cursor: pointer;
+  content: "\00d7";
+  font-size: 20px;
+  color: #fff4f8 !important;
+  /* background: #ddd; */
+  display: flex;
+  left:90%;
+  justify-content: center;
+  align-items: center;
+  top: -14px;
+  border-radius: 50%;
+  border: 1px solid;
+  width: 20px;
+  height: 20px;
+  background: #e91e63 !important;
+  cursor: pointer;
 }
 .kh-div-append-file{
   width:90px;
@@ -650,3 +666,79 @@ li.nav-item {
   display:flex;
   justify-content:space-between;
 }
+
+/*.ul-tab {
+  border:none;
+  border-bottom:1px solid #ddd; 
+}
+.tab {
+  padding:10px 7px;
+  border:none;
+  border-bottom: 1px solid #ddd;
+  height:calc(100% + 1px);
+  display: flex;
+  align-items: center;
+  width:100%;
+}
+.tab-active > .tab{
+  background-color:#fff;
+  border:1px solid #ddd;
+  border-top:5px solid red;
+  border-bottom:1px solid #fff;
+  border-left:none;
+  width:100%;
+  font-weight:bold;
+}
+.li-tab:not(.tab-active) {
+  border-right:1px solid #ddd;
+}
+.li-tab{
+  transition: margin-left 3s ease-in-out 0s;
+  position:relative;
+  width:220px;
+  max-width:220px;
+}
+.tab-active > .tab-1 {
+  border-left:1px solid #ddd;
+}
+.btn-add-tab {
+  border-radius:50%;
+  background-color:#fff;
+  color:black;
+  border:2px solid black;
+  width:40px;
+  height:40px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+.add-tab-plus {
+  font-size: 30px;
+  font-weight: 500;
+}
+.k-tab-delete::after {
+  position: absolute;
+  content: "\00d7";
+  font-size: 21px;
+  display: flex;
+  justify-content: center;
+  border-radius:50%;
+  align-items: center;
+  right: 7px;
+  top: 14px;
+  border: 2px solid black;
+  width: 24px;
+  height: 24px;
+  background: #fff !important;
+  cursor: pointer;
+  margin: 0 auto;
+  font-weight:bold;
+}
+.tab-active .k-tab-delete::after {
+  border-color:red;
+  color:red;
+  right:7px;
+}
+li.li-tab:last-child > button.tab {
+  border-right:1px solid #ddd;
+}*/

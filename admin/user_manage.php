@@ -84,44 +84,30 @@
                 $where .= " and ($wh_child)";
             }
         }
-        if($birthday_min && is_array($birthday_min) && $birthday_max && is_array($birthday_max)) {
-            $wh_child = [];
-            foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max) {
-                if($b_min != "" && $b_max != "") {
-                    $b_min = Date("Y-m-d",strtotime($b_min));
-                    $b_max = Date("Y-m-d",strtotime($b_max));
-                    array_push($wh_child,"(birthday >= '$b_min 00:00:00' and birthday <= '$b_max 23:59:59')");
-                } else if($b_min == "" && $b_max != ""){
-                    $b_min = Date("Y-m-d",strtotime($b_min));
-                    array_push($wh_child,"(birthday >= '$b_min 00:00:00')");
-                } else if($b_min != "" && $b_max == ""){
-                    $b_max = Date("Y-m-d",strtotime($b_max));
-                    array_push($wh_child,"(birthday <= '$b_max 23:59:59')");
-                }
-            }
-            $wh_child = implode(" or ",$wh_child);
-            if($wh_child != "") {
-                $where .= " and ($wh_child)";
+        if($birthday_min && $birthday_max) {
+            if($birthday_min != "" && $birthday_max != "") {
+                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
+                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
+                $where .= " and (birthday >= '$birthday_min 00:00:00' and birthday <= '$birthday_max 23:59:59')";
+            } else if($birthday_min == "" && $birthday_max != ""){
+                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
+                $where .= " and (birthday >= '$birthday_min 00:00:00')";
+            } else if($birthday_min != "" && $birthday_max == ""){
+                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
+                $where .= " and (birthday <= '$birthday_max 23:59:59')";
             }
         }
-        if($date_min && is_array($date_min) && $date_max && is_array($date_max)) {
-            $wh_child = [];
-            foreach(array_combine($date_min,$date_max) as $d_min => $d_max) {
-                if($d_min != "" && $d_max != "") {
-                    $d_min = Date("Y-m-d",strtotime($d_min));
-                    $d_max = Date("Y-m-d",strtotime($d_max));
-                    array_push($wh_child,"(created_at >= '$d_min 00:00:00' and created_at <= '$d_max 23:59:59')");
-                } else if($d_min != "" && $d_max == "") {
-                    $d_min = Date("Y-m-d",strtotime($d_min));
-                    array_push($wh_child,"(created_at >= '$d_min 00:00:00')");
-                } else if($d_min == "" && $d_max != "") {
-                    $d_max = Date("Y-m-d",strtotime($d_max));
-                    array_push($wh_child,"(created_at <= '$d_max 23:59:59')");
-                }
-            }
-            $wh_child = implode(" or ",$wh_child);
-            if($wh_child != "") {
-                $where .= " and ($wh_child)";
+        if($date_min && $date_max) {
+            if($date_min != "" && $date_max != "") {
+                $date_min = Date("Y-m-d",strtotime($date_min));
+                $date_max = Date("Y-m-d",strtotime($date_max));
+                $where .= " and (created_at >= '$date_min 00:00:00' and created_at <= '$date_max 23:59:59')";
+            } else if($date_min != "" && $date_max == "") {
+                $date_min = Date("Y-m-d",strtotime($date_min));
+                $where .= " and (created_at >= '$date_min 00:00:00')";
+            } else if($date_min == "" && $date_max != "") {
+                $date_max = Date("Y-m-d",strtotime($date_max));
+                $where .= " and (created_at <= '$date_max 23:59:59')";
             }
         }
         if($str) {
@@ -134,22 +120,10 @@
         log_v($where);
 ?>
 <style>
-    table.dataTable tr th.select-checkbox.selected::after {
-      content: "\2713";
-      margin-top: -11px;
-      margin-left: -4px;
-      text-align: center;
-      color: #9900ff;
-    }
-    .dt-buttons {
-       float:left;
+    .sort-asc,.sort-desc {
+        display: none;
     }
 </style>
-<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
-<link rel="stylesheet" href="css/select.dataTables.min.css">
-<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <link rel="stylesheet" href="css/toastr.min.css">
 <div class="container-wrapper" style="margin-left: 250px;">
     <div class="container-fluid">
@@ -163,331 +137,330 @@
                             if($allow_insert) {
                         ?>
                         <div class="card-tools">
-                            <button id="btn-add-user" class="dt-button button-blue">Thêm nhân viên</button>
+                            <button id="btn-add-user" onclick="openModalInsert()" class="dt-button button-blue">Thêm nhân viên</button>
                         </div>
                         <?php } ?>
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <div class="col-12" style="padding:0;">
-                            <form action="user_manage.php" method="get">
-                                <div class="d-flex a-start">
-                                    <div class="" style="margin-top:5px;">
-                                        <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                            <option value="">Bộ lọc tìm kiếm</option>
-                                            <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                            <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
-                                            <option value="birthday2" <?=$search_option == 'birthday2' ? 'selected="selected"' : '' ?>>Ngày sinh</option>
-                                            <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                        </select>
-                                    </div>
-                                    <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-cols d-flex f-column">
-                                            <select name="search_option" class="form-control mb-10">
-                                                <option value="">Chọn cột tìm kiếm</option>
-                                                <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
-                                                <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
-                                                <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
-                                                <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
-                                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                            </select>
-                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                                        </div>
-                                        <?php
-                                        if(is_array($keyword)) {
-                                            foreach($keyword as $key) {
-                                        ?>
-                                            <?php
-                                            if($key != "") {
-                                            ?>
-                                            <div class="ele-select ele-cols mt-10">
-                                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-                                            </div>
-                                            <?php
-                                            }
-                                            ?>
-                                        <?php   
-                                            }
-                                        }
-                                        ?>
-                                    </div>
-                                    <div id="s-birthday2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($birthday_min && $birthday_min != [""] || $birthday_max && $birthday_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-date2">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                        </div>
-                                        <?php
-                                            if(is_array($birthday_min) && is_array($birthday_max)) {
-                                                foreach(array_combine($birthday_min,$birthday_max) as $b_min => $b_max){
-                                        ?>
-                                        <?php
-                                            if($b_min != "" || $b_max != "") {
-                                        ?>
-                                        <div class="ele-select ele-date2 mt-10">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker-ym form-control" value="<?=$b_min ? Date("d-m-Y",strtotime($b_min)) : "";?>">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker-ym form-control" value="<?=$b_max ? Date("d-m-Y",strtotime($b_max)) : "";?>">
-                                            </div>
-                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                                        </div>
-                                        <?php
-                                        }
-                                        ?>
-                                        <?php 
-                                                }
-                                            }
-                                        ?>
-                                    </div>
-                                    <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min && $date_min != [""] || $date_max && $date_max != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-date2">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                        </div>
-                                        <?php
-                                            if(is_array($date_min) && is_array($date_max)) {
-                                                foreach(array_combine($date_min,$date_max) as $d_min => $d_max){
-                                        ?>
-                                        <?php
-                                            if($d_min != "" || $d_max != "") {
-                                        ?>
-                                        <div class="ele-select ele-date2 mt-10">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="<?=$d_min ? Date("d-m-Y",strtotime($d_min)) : "";?>">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="<?=$d_max ? Date("d-m-Y",strtotime($d_max)) : "";?>">
-                                            </div>
-                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-                                        </div>
-                                        <?php
-                                        }
-                                        ?>
-                                        <?php 
-                                                }
-                                            }
-                                        ?>
-                                    </div>
-                                    <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                                </div>
-                                <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
-                                    <div style="" class="form-group row">
-                                        <select name="orderByColumn" class="ml-10 form-control col-5">
-                                            <option value="">Sắp xếp theo cột</option>
-                                            <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên đầy đủ</option>
-                                            <option value="email" <?=$orderByColumn == "email" ? "selected" : "";?>>Email</option>
-                                            <option value="phone" <?=$orderByColumn == "phone" ? "selected" : "";?>>Số điện thoại</option>
-                                            <option value="cmnd" <?=$orderByColumn == "cmnd" ? "selected" : "";?>>Số chứng minh nhân dân</option>
-                                            <option value="address" <?=$orderByColumn == "address" ? "selected" : "";?>>Địa chỉ</option>
-                                            <option value="birthday" <?=$orderByColumn == "birthday" ? "selected" : "";?>>Ngày sinh</option>
-                                            <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
-                                        </select>
-                                        <select name="orderStatus" class="ml-10 form-control col-5">
-                                            <option value="">Thao tác sắp xếp</option>
-                                            <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
-                                            <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
-                                    </div>       
-                                </div>    
-                            </form>
-                        </div>
-                        <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                            <div>
-                                <?php
-                                    if($allow_delete) {
-                                ?>
-                                <button tabindex="-1" onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_update) {
-                                ?>
-                                <button tabindex="-1" onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_read) {
-                                ?>
-                                <button tabindex="-1" onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_insert) {
-                                ?>
-                                <button tabindex="-1" onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_lock){
-                                ?>
-                                <button tabindex="1" onclick="lockMore()" class="dt-button button-brown">Khoá nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_unlock){
-                                ?>
-                                <button tabindex="1" onclick="unlockMore()" class="dt-button button-brown">Mở khoá nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_role){
-                                ?>
-                                <button tabindex="1" onclick="roleMore()" id="btn-role-fast" class="dt-button button-purple">Phân quyền</button>
-                                <?php } ?>
-                            </div>
-                            <div class="section-save">
-                                <?php
-                                    if($upt_more == 1 && $allow_update){
-                                ?>
-                                <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-                                <?php } ?>
-                            </div>
-                        </div>
-                        <?php
-							// set get
-							$get = $_GET;
-							unset($get['page']);
-							$str_get = http_build_query($get);
-							// query
-                            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                            $limit = $_SESSION['paging'];
-                            $start_page = $limit * ($page - 1);
-                            $sql_get_total = "select count(*) as 'countt' from user $where";
-                            $total = fetch_row($sql_get_total)['countt'];
-                            $sql_get_user = "select * from user $where limit $start_page,$limit";
-                            //print_r($sql_get_user);
-                            /*print_r($arr_paras);*/
-							$cnt=0;
-                            $rows = db_query($sql_get_user);
-                        ?>
-                        <!--Table user-->
-                        <div class="table-responsive">
-                            <table id="m-user-table" class="table table-bordered table-striped ">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th class="w-100">Số thứ tự</th>
-                                        <th>Tên đầy đủ</th>
-                                        <th>Email</th>
-                                        <th>Số điện thoại</th>
-                                        <th class="w-200">Số chứng minh nhân dân</th>
-                                        <th class="w-150">Địa chỉ</th>
-                                        <th class="w-100">Ngày sinh</th>
-                                        <th>Ngày tạo</th>
-                                        <th class="w-200">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="m-user-body">
-                                    <?php foreach($rows as $row) { ?>
-                                        <?php $cnt1 = $cnt + 1;?>
-                                        <tr id="<?=$row["id"];?>">
-                                            <td></td>
-                                            <td><?=$total - ($start_page + $cnt);?></td>
-                                            <td>
-                                                <?php
-                                                    if($upt_more == 1) {
-                                                        echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'><span class='text-danger'></span>";
-                                                    } else {
-                                                        if($row['is_lock'] == 1){
-                                                            echo '<i class="fas fa-lock mr-1"></i>';
-                                                        }
-                                                        echo $row["full_name"];
-                                                    }
-                                                ?>
-                                            </td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
-                                            <td><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
-                                            <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
-                                            <td>
-                                                <?php 
-                                                    if($upt_more == 1) {
-                                                        if(strlen($row["birthday"]) > 0) {
-                                                            echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'><span class='text-danger'></span>";
-                                                        } else {
-                                                            echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''><span class='text-danger'></span>";
-                                                        }
-                                                    } else {
-                                                        if(strlen($row["birthday"]) > 0) {
-                                                            echo Date("d-m-Y",strtotime($row["birthday"]));
-                                                        } else {
-                                                            echo "";
-                                                        }
-                                                    }
-                                                ?>
-                                            </td>
-                                            <td><?=$row["created_at"] ? Date("d-m-Y",strtotime($row["created_at"])) : "";?></td>
-                                            <td>
-                                                <?php
-                                                    if($upt_more != 1) {
-                                                ?>
-                                                <?php
-                                                    if($allow_read) {
-                                                ?>
-                                                <button class="btn-read-user dt-button button-grey"
-                                                data-id="<?=$row["id"];?>">Xem</button>
-                                                <?php } ?>
-                                                <?php
-                                                    if($allow_update) {
-                                                ?>
-                                                <button class="btn-update-user dt-button button-green"
-                                                data-id="<?=$row["id"];?>">Sửa</button>
-                                                <?php } ?>
-                                                <?php
-                                                    if($allow_delete) {
-                                                ?>
-                                                <button class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
-                                                </button>
-                                                <?php } ?>
-                                                <?php
-                                                    } else {
-                                                ?>
-                                                <?php
-                                                    if($allow_update) {
-                                                ?>
-                                                <button tabindex="0" dt-count="0" data-id="<?=$row["id"];?>" onclick="uptThisRow()" class="dt-button button-green">Sửa</button>
-                                                <?php } ?>
-                                                <?php
-                                                    }
-                                                ?>
-                                            </td>
-                                        </tr>
-                                    <?php 
-                                            $cnt++;
-                                        } 
+                        <div id="load-all">
+                            <link rel="stylesheet" href="css/tab.css">             
+                            <div style="padding-right:0px;padding-left:0px" class="col-12 mb-20 d-flex a-center j-between">
+                                <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;padding-right:0px;padding-left:0px;list-style-type:none;" id="ul-tab-id" class="d-flex ul-tab">
+                                    <?php
+                                        $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                                        $_SESSION['user_manage_tab'] = isset($_SESSION['user_manage_tab']) ? $_SESSION['user_manage_tab'] : [];
+                                        $_SESSION['user_tab_id'] = isset($_SESSION['user_tab_id']) ? $_SESSION['user_tab_id'] : 0;
                                     ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th></th>
-                                        <th>Số thứ tự</th>
-                                        <th>Tên đầy đủ</th>
-                                        <th>Email</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Số chứng minh nhân dân</th>
-                                        <th>Địa chỉ</th>
-                                        <th>Ngày sinh</th>
-                                        <th>Ngày tạo</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div style="justify-content:center;" class="row">
-                            <ul id="pagination" class="pagination">
-                                
-                            </ul>
+                                    <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('user_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
+                                    <?php
+                                        $ik = 0;
+                                        $is_active = false;
+                                        if(count($_SESSION['user_manage_tab']) > 0) {
+                                            foreach($_SESSION['user_manage_tab'] as $tab) {
+                                            if($tab['tab_unique'] == $tab_unique) {
+                                                $_SESSION['user_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                            }
+                                    ?>
+                                        <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                                            <button onclick="loadDataInTab('<?=$_SESSION['user_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                            <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                        </li>
+                                    <?php
+                                            $ik++;
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                                <div class="ml-10 d-flex j-center a-center" style="position:relative;">
+                                    <div onclick="saveTabFilter()" style="" class="add-tab">
+                                        <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="img-load" style="display:none;text-align:center;" class="d-flex" style="width:100%;">
+                                <img src="img/load.gif" alt="">
+                            </div>
+                            <div id="is-load">
+                                <div class="col-12" style="padding:0;">
+                                    <form id="form-filter" action="user_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
+                                        <div class="d-flex a-start">
+                                            <div class="" style="margin-top:5px;">
+                                                <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                                    <option value="">Bộ lọc tìm kiếm</option>
+                                                    <option value="keyword" <?=$search_option == 'type' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                                    <option value="date2" <?=$search_option == 'date2' ? 'selected="selected"' : '' ?>>Phạm vi ngày</option>
+                                                    <option value="birthday2" <?=$search_option == 'birthday2' ? 'selected="selected"' : '' ?>>Ngày sinh</option>
+                                                    <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                                </select>
+                                            </div>
+                                            <div id="s-cols" class="k-select-opt ml-15 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
+                                                <div class="ele-cols d-flex f-column">
+                                                    <select name="search_option" class="form-control mb-10">
+                                                        <option value="">Chọn cột tìm kiếm</option>
+                                                        <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
+                                                        <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
+                                                        <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
+                                                        <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
+                                                        <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                                    </select>
+                                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                                                </div>
+                                                <?php
+                                                if(is_array($keyword)) {
+                                                    foreach($keyword as $key) {
+                                                ?>
+                                                    <?php
+                                                    if($key != "") {
+                                                    ?>
+                                                    <div class="ele-select ele-cols mt-10">
+                                                        <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                        <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                                    </div>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                <?php   
+                                                    }
+                                                }
+                                                ?>
+                                            </div>
+                                            <div id="s-birthday2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($birthday_min || $birthday_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-date2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="birthday_min" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="<?=$birthday_min;?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="birthday_max" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="<?=$birthday_max;?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="s-date2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_min || $date_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-date2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="date_min" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="<?=$date_min;?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="date_max" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="<?=$date_max;?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
+                                            <button type="submit" class="btn btn-default ml-15" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                                        </div>
+                                        <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                                            <div style="" class="form-group row">
+                                                <select name="orderByColumn" class="ml-10 form-control col-5">
+                                                    <option value="">Sắp xếp theo cột</option>
+                                                    <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên đầy đủ</option>
+                                                    <option value="email" <?=$orderByColumn == "email" ? "selected" : "";?>>Email</option>
+                                                    <option value="phone" <?=$orderByColumn == "phone" ? "selected" : "";?>>Số điện thoại</option>
+                                                    <option value="cmnd" <?=$orderByColumn == "cmnd" ? "selected" : "";?>>Số chứng minh nhân dân</option>
+                                                    <option value="address" <?=$orderByColumn == "address" ? "selected" : "";?>>Địa chỉ</option>
+                                                    <option value="birthday" <?=$orderByColumn == "birthday" ? "selected" : "";?>>Ngày sinh</option>
+                                                    <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
+                                                </select>
+                                                <select name="orderStatus" class="ml-10 form-control col-5">
+                                                    <option value="">Thao tác sắp xếp</option>
+                                                    <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                                    <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                                </select>
+                                                <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                                            </div>       
+                                        </div>    
+                                    </form>
+                                </div>
+                                <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                                    <div>
+                                        <?php
+                                            if($allow_delete) {
+                                        ?>
+                                        <button tabindex="-1" onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_update) {
+                                        ?>
+                                        <button tabindex="-1" onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_read) {
+                                        ?>
+                                        <button tabindex="-1" onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_insert) {
+                                        ?>
+                                        <button tabindex="-1" onclick="insMore(3)" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_lock){
+                                        ?>
+                                        <button tabindex="1" onclick="lockMore()" class="dt-button button-brown">Khoá nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_unlock){
+                                        ?>
+                                        <button tabindex="1" onclick="unlockMore()" class="dt-button button-brown">Mở khoá nhanh</button>
+                                        <?php } ?>
+                                        <?php
+                                            if($allow_role){
+                                        ?>
+                                        <button tabindex="1" onclick="roleMore()" id="btn-role-fast" class="dt-button button-purple">Phân quyền</button>
+                                        <?php } ?>
+                                    </div>
+                                    <div class="section-save">
+                                        <?php
+                                            if($upt_more == 1 && $allow_update){
+                                        ?>
+                                        <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                                <?php
+                                    // set get
+                                    $get = $_GET;
+                                    unset($get['page']);
+                                    $str_get = http_build_query($get);
+                                    // query
+                                    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                    $limit = $_SESSION['paging'];
+                                    $start_page = $limit * ($page - 1);
+                                    $sql_get_total = "select count(*) as 'countt' from user $where";
+                                    $total = fetch_row($sql_get_total)['countt'];
+                                    $sql_get_user = "select * from user $where limit $start_page,$limit";
+                                    
+                                    $cnt=0;
+                                    $rows = fetch_all(sql_query($sql_get_user));
+                                ?>
+                                <!--Table user-->
+                                <div class="table-responsive">
+                                    <table id="m-user-table" class="table table-bordered table-striped ">
+                                        <thead>
+                                            <tr style="cursor:pointer;">
+                                                <th style="width:20px !important;">
+                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-ten-day-du">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-170 th-email">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-170 th-so-dien-thoai">Số điện thoại <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-300 th-so-cmnd">Số chứng minh nhân dân <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-300">Địa chỉ</th>
+                                                <th class="w-150 th-ngay-sinh">Ngày sinh <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-200">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-user" id="m-user-body">
+                                            <?php foreach($rows as $row) { ?>
+                                                <?php $cnt1 = $cnt + 1;?>
+                                                <tr id="<?=$row["id"];?>">
+                                                    <td>
+                                                        <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                    </td>
+                                                    <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
+                                                    <td class="ten-day-du">
+                                                        <?php
+                                                            if($upt_more == 1) {
+                                                                echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'><span class='text-danger'></span>";
+                                                            } else {
+                                                                if($row['is_lock'] == 1){
+                                                                    echo '<i class="fas fa-lock mr-1"></i>';
+                                                                }
+                                                                echo $row["full_name"];
+                                                            }
+                                                        ?>
+                                                    </td>
+                                                    <td class="email"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
+                                                    <td class="so-dien-thoai"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
+                                                    <td class="so-cmnd"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
+                                                    <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
+                                                    <td class="ngay-sinh">
+                                                        <?php 
+                                                            if($upt_more == 1) {
+                                                                if(strlen($row["birthday"]) > 0) {
+                                                                    echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'><span class='text-danger'></span>";
+                                                                } else {
+                                                                    echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''><span class='text-danger'></span>";
+                                                                }
+                                                            } else {
+                                                                if(strlen($row["birthday"]) > 0) {
+                                                                    echo Date("d-m-Y",strtotime($row["birthday"]));
+                                                                } else {
+                                                                    echo "";
+                                                                }
+                                                            }
+                                                        ?>
+                                                    </td>
+                                                    <td class="ngay-tao"><?=$row["created_at"] ? Date("d-m-Y",strtotime($row["created_at"])) : "";?></td>
+                                                    <td>
+                                                        <?php
+                                                            if($upt_more != 1) {
+                                                        ?>
+                                                        <?php
+                                                            if($allow_read) {
+                                                        ?>
+                                                        <button onclick="openModalRead()" class="btn-read-user dt-button button-grey"
+                                                        data-id="<?=$row["id"];?>">Xem</button>
+                                                        <?php } ?>
+                                                        <?php
+                                                            if($allow_update) {
+                                                        ?>
+                                                        <button onclick="openModalUpdate()" class="btn-update-user dt-button button-green"
+                                                        data-id="<?=$row["id"];?>">Sửa</button>
+                                                        <?php } ?>
+                                                        <?php
+                                                            if($allow_delete) {
+                                                        ?>
+                                                        <button onclick="processDelete" class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
+                                                        </button>
+                                                        <?php } ?>
+                                                        <?php
+                                                            } else {
+                                                        ?>
+                                                        <?php
+                                                            if($allow_update) {
+                                                        ?>
+                                                        <button tabindex="0" dt-count="0" data-id="<?=$row["id"];?>" onclick="uptMore2()" class="dt-button button-green">Sửa</button>
+                                                        <?php } ?>
+                                                        <?php
+                                                            }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+                                            <?php 
+                                                    $cnt++;
+                                                } 
+                                            ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th style="width:20px !important;">
+                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th>Số thứ tự</th>
+                                                <th>Tên đầy đủ</th>
+                                                <th>Email</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Số chứng minh nhân dân</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                                <div style="justify-content:center;" class="row">
+                                    <ul id="pagination" class="pagination">
+                                        
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -579,9 +552,6 @@
                 <div class="k-role-set">
                     
                 </div>
-                <!--<div class="card-footer">
-                    <button id="btn-role" type="submit" class="dt-button button-purple">Lưu thay đổi</button>
-                </div>-->
             </div>
         </div>
     </div>
@@ -596,7 +566,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="form-user2" class="modal-body">
+                <div id="form-insert" class="modal-body">
                     <div class="row j-between a-center">
                         <div style="margin-left: 7px;" class="form-group">
                             <label for="">Nhập số dòng: </label>
@@ -618,10 +588,10 @@
                         <div class="d-flex f-column form-group">
                             <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                             <div class="file file-csv mr-10">
-                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
+                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2'])">
                             </div>
                             <div class="file file-excel mr-10">
-                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
+                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2'])">
                             </div>
                             <div class="d-empty">
                                 <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
@@ -656,115 +626,11 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="js/toastr.min.js"></script>
-<script>
-	toastr.options = {
-	  "closeButton": false,
-	  "debug": false,
-	  "newestOnTop": false,
-	  "progressBar": false,
-	  "positionClass": "toast-bottom-right",
-	  "preventDuplicates": false,
-	  "onclick": null,
-	  "showDuration": "300",
-	  "hideDuration": "1000",
-	  "timeOut": "5000",
-	  "extendedTimeOut": "1000",
-	  "showEasing": "swing",
-	  "hideEasing": "linear",
-	  "showMethod": "fadeIn",
-	  "hideMethod": "fadeOut"
-	}
-</script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script src="js/toastr.min.js"></script>
+<script src="js/khoi_all.js"></script>
 <script>
-    function xlsx2input(input) {
-      if(input.files && input.files[0]) {
-          var reader = new FileReader();
-          reader.onload = function(e) {
-              var data = e.target.result;
-              var workbook = XLSX.read(data, {
-                  type: 'binary'
-              });
-              var XL_row_object = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[workbook.SheetNames[0]]);
-              console.log(XL_row_object);
-              setDataFromXLSX(XL_row_object,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
-          };
-          reader.onerror = function(ex) {
-              console.log(ex);
-          };
-          reader.readAsBinaryString(input.files[0]);
-          //console.log("aaa");
-      }
-    }
-    function csv2input(input) {
-      let arr = [];
-      if (input.files && input.files[0]) {
-          var reader = new FileReader();
-          reader.onload=function(e){
-              arr = reader.result.split(/\r\n|\n/);
-              console.log(arr);
-              // step 1
-              let columns = arr[0].split(/\,/);
-              let arr_csv = [];
-              arr.shift();
-              for(i = 0 ; i < arr.length ; i++) {
-                  let new_arr = arr[i].split(/\,/);
-                  //console.log(new_arr);
-                  let new_obj = {};
-                  for(j = 0 ; j < columns.length ; j++) {
-                      new_obj[columns[j]] = new_arr[j];
-                      //console.log(new_obj);
-                  }
-                  arr_csv.push(new_obj);
-              }
-              console.log(arr_csv);
-              setDataFromCSV(arr_csv,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2']);
-          }
-          reader.readAsText(input.files[0]);
-      }
-    }
-    function setDataFromCSV(arr_csv,arr_csv_columns,arr_input_names) {
-        if(arr_csv_columns.every(key => Object.keys(arr_csv[0]).includes(key))) {
-            $("[data-plus]").attr("data-plus",arr_csv.length);
-            showRow(1);
-            let i = 0;
-            arr_csv_columns.forEach(function(ele,ind){
-                $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                    $(this).val(arr_csv[i][ele]);
-                    i++;
-                });
-                i = 0; 
-            });
-        } else {
-            $.alert({
-                title:"Thông báo",
-                content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-            });
-        }
-        $("input[name='read_csv']").val("");
-    }
-    function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
-      if(arr_excel_columns.every(key => Object.keys(arr_xlsx[0]).includes(key))) {
-          $("[data-plus]").attr("data-plus",arr_xlsx.length);
-          showRow(1);
-          let i = 0;
-          arr_excel_columns.forEach(function(ele,ind){
-            $(`td [name='${arr_input_names[ind]}'].kh-inp-ctrl`).each(function(){
-                $(this).val(arr_xlsx[i][ele]);
-                i++;
-            });
-            i = 0; 
-          });
-      } else {
-          $.alert({
-              title:"Thông báo",
-              content: "Vui lòng nhập đúng tên cột khi đổ dữ liệu"
-          });
-      }
-      $("input[name='read_excel']").val("");
-    }
+    setSortTable();
 </script>
 <!--searching filter-->
 <script>
@@ -781,48 +647,23 @@
       }
       $("select[name='search_option'] > option[value='']").prop('selected',true);
    }
-   $('.k-select-opt-remove').click(function(){
+   function selectOptionRemove(){
       $(event.currentTarget).siblings('.ele-select').remove()
       $(event.currentTarget).siblings("div").find("input").val("");
       $(event.currentTarget).closest('div').css({"display":"none"});
-   });
-   $('.k-select-opt-ins').click(function(){
+   }
+   function selectOptionInsert(){
         let file_html = "";
-        if($(event.currentTarget).closest('#s-date2').length) {
-            file_html = `
-            <div class="ele-select ele-date2 mt-10">
-                <div class="" style="display:flex;">
-                <input type="text" name="date_min[]" placeholder="Ngày tạo 1" class="kh-datepicker2 form-control" value="">
-                </div>
-                <div class="ml-10" style="display:flex;">
-                <input type="text" name="date_max[]" placeholder="Ngày tạo 2" class="kh-datepicker2 form-control" value="">
-                </div>
-                <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-            </div>
-            `;
-        } else if($(event.currentTarget).closest('#s-birthday2').length) {
-            file_html = `
-            <div class="ele-select ele-date2 mt-10">
-                <div class="" style="display:flex;">
-                <input type="text" name="birthday_min[]" placeholder="Ngày sinh 1" class="kh-datepicker2 form-control" value="">
-                </div>
-                <div class="ml-10" style="display:flex;">
-                <input type="text" name="birthday_max[]" placeholder="Ngày sinh 2" class="kh-datepicker2 form-control" value="">
-                </div>
-                <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-            </div>
-            `;
-        } else if($(event.currentTarget).closest('#s-cols').length) {
+        if($(event.currentTarget).closest('#s-cols').length) {
             file_html = `
             <div class="ele-select ele-cols mt-10">
                 <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                 <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
             </div>
-            
             `;
         }
-        $(file_html).appendTo($(this).parent());
-        $(this).parent().css({
+        $(file_html).appendTo($(event.currentTarget).parent());
+        $(event.currentTarget).parent().css({
             "flex-direction": "column",
             "justify-content": "space-between",
         });
@@ -841,11 +682,299 @@
                 e.preventDefault();
             }
         })
-   });
+   }
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
    
+</script>
+<script>
+    function validate(){
+        let test = true;
+        let full_name = $('#full_name').val();
+        let email = $('#email').val();
+        let cmnd = $('#cmnd').val();
+        let phone = $('#phone').val();
+        let address = $('#address').val();
+        let birthday = $('#birthday').val();
+        let password = $('#password').val();
+        let type = $('#type > option:selected').val();
+        if(full_name == "") {
+            $('#full_name').focus();
+            $.alert({
+                title: "",
+                content: "Họ tên nhân viên không được để trống.",
+            });
+            //$('#full_name').focus();
+            test = false;
+        } else if(email == "") {
+            $('#email').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Email nhân viên không được để trống.",
+            });
+            test = false;
+        } else if(phone == "") {
+            $('#phone').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Số điện thoại nhân viên không được để trống."
+            });
+            test = false;
+        } else if(cmnd == "") {
+            $('#cmnd').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Số chứng minh nhân dân của nhân viên không được để trống."
+            });
+            test = false;
+        } else if(birthday == "") {
+            $('#birthday').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Ngày sinh của nhân viên không được để trống."
+            });
+            test = false;
+        } else if(address == "") {
+            $('#address').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Địa chỉ của nhân viên không được để trống."
+            });
+            test = false;
+        } else if(password == "") {
+            $('#password').focus();
+            $.alert({
+                title: "Thông báo",
+                content: "Mật khẩu của nhân viên không được để trống.",
+            });
+            test = false;
+        } else if(type == "") {
+            $.alert({
+                title: "Thông báo",
+                content: "Chức vụ của nhân viên không được để trống.",
+            });
+            test = false;
+        }
+        return test;
+    }
+    function readURL(input){
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+            $('#display-image').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function openModalInsert(){
+        $('#manage_user').load("ajax_user.php?status=Insert",() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $("#birthday").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+                onSelect: function(dateText,inst) {
+                    console.log(dateText.split("-"));
+                    dateText = dateText.split("-");
+                    $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+                }
+            });
+            $("#fileInput").on("change",function(){
+                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+                readURL(this); 
+            });
+        })
+    }
+    function openModalRead(){
+        let id = $(e.currentTarget).attr('data-id');
+        let target = $(e.currentTarget);
+        target.closest("tr").addClass("bg-color-selected");
+        $('#manage_user').load("ajax_user.php?status=Read&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+        })
+    }
+    function openModalUpdate(){
+        let id = $(event.currentTarget).attr('data-id');
+        $(event.currentTarget).closest("tr").addClass("bg-color-selected");
+        $('#manage_user').load("ajax_user.php?status=Update&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $("#birthday").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+                onSelect: function(dateText, inst) {
+                    console.log(dateText.split("-"));
+                    dateText = dateText.split("-");
+                    $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
+                }
+            });
+            $("#fileInput").on("change",function(){
+                $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
+                readURL(this); 
+            });
+        })
+    }
+    function processModalInsert(){
+        event.preventDefault();
+        if(validate()) {
+            let file = $('input[name="img_name"]')[0].files;
+            let formData = new FormData($('#manage_user')[0]);
+            formData.append("status","Insert");
+            formData.append("full_name",$('#full_name').val());
+            formData.append("email",$('#email').val());
+            formData.append("phone",$('#phone').val());
+            formData.append("cmnd",$('#cmnd').val());
+            formData.append("address",$('#address').val());
+            
+            let birthday = $('#birthday').val().split('-');
+            birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+            formData.append("birthday",birthday);
+            formData.append("type",$('select[name="type"] > option:selected').val());
+            formData.append("password",$('#password').val());  
+            if(file.length > 0) {
+                formData.append('img_name',file[0]);
+            }
+            $.ajax({
+                url:window.location.href,
+                type: "POST",
+                cache:false,
+                dataType:"json",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success:function(data){
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.success,
+                            buttons: {
+                                "Ok": function(){
+                                    location.href="user_manage.php";
+                                },
+                            }
+                        });
+                    } else {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.error
+                        });
+                    }
+                    $('#modal-xl').modal('hide');
+                },
+                error:function(data) {
+                    console.log("Error:",data);
+                }
+            });
+            
+        }
+    }
+    function processModalUpdate(){
+        event.preventDefault();
+        if(validate()) {
+            let file = $('input[name="img_name"]')[0].files;
+            let formData = new FormData($('#manage_user')[0]);
+            formData.append("token","<?php echo_token();?>");
+            formData.append("status","Update");
+            formData.append("id",$('input[name=id]').val());
+            formData.append("full_name",$('#full_name').val());
+            formData.append("email",$('#email').val());
+            formData.append("phone",$('#phone').val());
+            formData.append("cmnd",$('#cmnd').val());
+            formData.append("address",$('#address').val());
+            let birthday = $('#birthday').val().split('-');
+            birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+            formData.append("birthday",birthday);
+            formData.append("type",$('select[name="type"] > option:selected').val());
+            formData.append("password",$('#password').val());
+            if(file.length > 0) {
+                formData.append('img_name',file[0]); 
+            }
+            if(validate()) {
+                $.ajax({
+                url:window.location.href,
+                type: "POST",
+                cache:false,
+                dataType:"json",
+                contentType: false,
+                processData: false,
+                data: formData,
+                success:function(data){
+                    //data = JSON.parse(data);
+                    console.log(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.success,
+                            buttons: {
+                                "Ok": function(){
+                                    location.reload();
+                                },
+                            }
+                        });
+                    } else {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.error
+                        });
+                    }
+                    $('#modal-xl').modal('hide');
+                },
+                error:function(data) {
+                    console.log("Error:",data);
+                }
+            });
+            }
+            
+        }
+    }
+    function processDelete(){
+        let id = $(e.currentTarget).attr('data-id');
+        let target = $(event.currentTarget);
+        target.closest("tr").addClass("bg-color-selected");
+        $.confirm({
+            title: 'Thông báo',
+            content: 'Bạn có chắc chắn muốn xoá thông tin nhân viên này ?',
+            buttons: {
+                Có: function(){
+                    $.ajax({
+                        url:window.location.href,
+                        type:"POST",
+                        cache:false,
+                        data: {
+                            
+                            id: id,
+                            status: "Delete",
+                        },
+                        success:function(data){
+                            data = JSON.parse(data);
+                            if(data.msg == "ok") {
+                                $.alert({
+                                    title: "Thông báo",
+                                    content: data.success,
+                                    buttons: {
+                                        "Ok": function(){
+                                            location.reload();
+                                        },
+                                    }
+                                });
+                            } else {
+                                $.alert({
+                                    title: "Thông báo",
+                                    content: data.error,
+                                });
+                            }
+                        },
+                        error:function(data) {
+                            console.log("Error:",data);
+                        }
+                    });
+                },Không: function(){
+                    target.closest("tr").removeClass("bg-color-selected");
+                }
+            }
+        });
+    }
 </script>
 <script>
     var dt_user;
@@ -859,138 +988,8 @@
             $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
         }
     })
-    
-    $(document).ready(function (e) {
-        $.fn.dataTable.moment('DD-MM-YYYY');
-        $('#first_tab').on('focus', function() {
-            $('input[tabindex="1"].kh-inp-ctrl').first().focus();
-        });
-        $('#btn-role-fast').on('focus',function(){
-            $('input[tabindex="<?=$cnt;?>"]').focus();
-        });
-        dt_user = $("#m-user-table").DataTable({
-            "sDom": 'RBlfrtip',
-            "columnDefs": [
-                { 
-                    "name":"pi-checkbox",
-                    "orderable": false,
-                    "className": 'select-checkbox',
-                    "targets": 0
-                },{ 
-                    "name":"manipulate",
-                    "orderable": false,
-                    "className": 'manipulate',
-                    "targets": 9
-                }, 
-            ],
-            "select": {
-                style: 'multi+shift',
-                selector: 'td:first-child'
-            },
-            "order": [
-                [1, 'desc']
-            ],
-            "language": {
-                "emptyTable": "Không có dữ liệu",
-                "sZeroRecords": 'Không tìm thấy kết quả',
-                "infoEmpty": "",
-                "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
-                "search":"Tìm kiếm trong bảng này:",   
-                "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-                "select": {
-                    "rows": "Đã chọn %d dòng",
-                },
-                "buttons": {
-                    "copy": 'Copy',
-                    "copySuccess": {
-                        1: "Bạn đã sao chép một dòng thành công",
-                        _: "Bạn đã sao chép %d dòng thành công"
-                    },
-                    "copyTitle": 'Thông báo',
-                }
-            },
-            "paging":true,
-            "responsive": true, 
-            "oColReorder": {
-                "bAddFixed":false
-            },
-            "lengthChange": false, 
-            "autoWidth": false,
-            "paging":false,
-            "searchHighlight": true,
-            "buttons": [
-                {
-                    "extend": "excel",
-                    "text": "Excel (2)",
-                    "key": {
-                        "key": '2',
-                    },
-                    "autoFilter": true,
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "pdf",
-                    "text": "PDF (3)",
-                    "key": {
-                        "key": '3',
-                    },
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "title": "Dữ liệu danh sách nhân viên trích xuất ngày <?=Date("d-m-Y",time());?>",
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "csv",
-                    "text": "CSV (4)",
-                    "charset": 'UTF-8',
-                    "bom": true,
-                    "filename": "danh_sach_nhan_vien_ngay_<?=Date("d-m-Y",time());?>",
-                    "key": {
-                        "key": '4',
-                    },
-                    "exportOptions":{
-                        columns: ':visible:not(.select-checkbox):not(.manipulate)'
-                    },
-                },{
-                    "extend": "colvis",
-                    "text": "Ẩn / Hiện cột (7)",
-                    "columns": ':not(.select-checkbox)',
-                    "key": {
-                        "key": '7',
-                    },
-                }
-                
-            ],
-        });
-        dt_user.buttons.exportData( {
-            columns: ':visible'
-        });
-        dt_user.on("click", "th.select-checkbox", function() {
-            if ($("th.select-checkbox").hasClass("selected")) {
-                dt_user.rows().deselect();
-                $("th.select-checkbox").removeClass("selected");
-            } else {
-                dt_user.rows().select();
-                $("th.select-checkbox").addClass("selected");
-            }
-        }).on("select deselect", function() {
-            if (dt_user.rows({
-                    selected: true
-                }).count() !== dt_user.rows().count()) {
-                $("th.select-checkbox").removeClass("selected");
-            } else {
-                $("th.select-checkbox").addClass("selected");
-            }
-        });
-        //
-        // php auto select all rows when focus update all function execute
-        <?=$upt_more == 1 ? 'dt_user.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
-    });
     $("#modal-xl3").on("hidden.bs.modal",function(){
-      $("#form-user2 table tbody").remove();
+      $("#form-insert table tbody").remove();
       $("input[name='count2']").val("");
       $("input[name='count2']").attr("data-plus",0);
     })
@@ -998,42 +997,10 @@
       $("tr").removeClass('bg-color-selected');
     })
     $('#modal-xl3').on('hidden.bs.modal', function (e) {
-      $('#form-user2 table tbody').remove();
-      $('#form-user2 #paging').remove();
+      $('#form-insert table tbody').remove();
+      $('#form-insert #paging').remove();
       $('[data-plus]').attr('data-plus',0);
     })
-    function delEmpty(){
-      $.confirm({
-        title:"Thông báo",
-        content:"Bạn có chắc chắn muốn xoá toàn bộ dòng ?",
-        buttons: {
-          "Có": function(){
-            $('#form-user2 table > tbody').remove();
-            $('#form-user2 #paging').remove();
-            $('[data-plus]').attr('data-plus',0);
-          },"Không":function(){
-
-          }
-        }
-      });
-     
-    }
-    function showPicker(){
-        $('input[name="u_birthday2"]').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            onSelect: function(dateText,inst) {
-                console.log(dateText.split("-"));
-                dateText = dateText.split("-");
-                $(this).attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-            }
-        });
-    }
-    function insMore(){
-      //$('#modal-xl2').modal('show');
-      $('#modal-xl3').modal({backdrop: 'static', keyboard: false});
-    }
     function insMore2(){
         let test = true;
         let this2 = $(event.currentTarget).closest('tr');
@@ -1228,7 +1195,7 @@
       }
       
     }
-    function insRow(){
+    /*function insRow(){
         num_of_row_insert = $('input[name="count3"]').val();
         if(num_of_row_insert == "") {
             $.alert({
@@ -1268,14 +1235,14 @@
             } else {
                 $('.t-bd').css({"display":"none"});
                 html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-                $(html).appendTo('#form-user2 table');
+                $(html).appendTo('#form-insert table');
             }
             if(page == 0) {
                 let html2 = `<div id="paging" style="justify-content:center;" class="row">
                     <nav id="pagination2">
                     </nav>
                 </div>`;
-                $(html2).appendTo('#form-user2');
+                $(html2).appendTo('#form-insert');
             }
             $('[data-plus]').attr('data-plus',parseInt(page) + 1);
             $('input[name="count2"]').val(parseInt(page) + 1);
@@ -1292,55 +1259,14 @@
             });
             showPicker();
         }
-    }
-      
-    function delRow(){
-        let count_del = $("input[name=count3]").val();
-        if(count_del == "") {
-            $.alert({
-                title: "Thông báo",
-                content: "Vui lòng không để trống số dòng cần xoá",
-            })
-            return;
-        }
-        for(i = 0 ; i < count_del ; i++) {
-            let page = $('[data-plus]').attr('data-plus');
-            if(page < 0) {
-                $('[data-plus]').attr('data-plus',0);
-                return;
-            }
-            let currentPage1 = page / 7;
-            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-            $(`[data-row-id="${page}"]`).remove();
-            page--;
-            $('[data-plus]').attr('data-plus',page);
-            $('input[name="count2"]').val(page);
-            currentPage1 = page / 7;
-            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-            else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-            $('.t-bd').css({"display":"none"});
-            $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-            $('#pagination2').pagination({
-                items: parseInt(page),
-                itemsOnPage: 7,
-                currentPage: currentPage1,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                showRow(pageNumber,false);
-                },
-                cssStyle: 'light-theme',
-            });
-        }
-      
-    }
-    function showRow(page,apply_dom = true){
+    }*/
+    /*function showRow(page,apply_dom = true){
       let count = $('[data-plus]').attr('data-plus');
       limit = 7;
       if(apply_dom) {
         $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-user2 table').remove();
-        $('#form-user2 #paging').remove();
+        $('#form-insert table').remove();
+        $('#form-insert #paging').remove();
         let html = `
         <table class='table table-bordered' style="height:auto;">
           <thead>
@@ -1423,7 +1349,7 @@
             </nav>
           </div>
         `;
-        $(html).appendTo('#form-user2');
+        $(html).appendTo('#form-insert');
         apply_dom = false;
         $('.t-bd-1').css({"display":"contents"});
         console.log(html);
@@ -1445,11 +1371,11 @@
       });
       showPicker();
       $('#modal-xl3').on('hidden.bs.modal', function (e) {
-        $('#form-user2 table tbody').remove();
-        $('#form-user2 #paging').remove();
+        $('#form-insert table tbody').remove();
+        $('#form-insert #paging').remove();
         $('input[name="count2"]').val("");
       })
-    } 
+    } */
     function uptAll(){
         let test = true;
         let formData = new FormData();
@@ -1716,7 +1642,7 @@
                 user_id : user_id,
                 role: role,
                 menu: menu,
-                token: "<?php echo_token();?>",
+                
             },
             success: function(data){
                 console.log(data);
@@ -1746,17 +1672,13 @@
                 user_id: user_id,
                 menu_id: menu_id,
                 role: role,
-                token: "<?php echo_token();?>",
+                
             },
             success:function(data){
                 console.log(data);
                 data = JSON.parse(data);
                 if(data.msg == "ok") {
                     $('.k-role-set').load("ajax_user_role.php?id=" + user_id,() => {
-                        /*$.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã sửa quyền thành công",
-                        });*/
 						toastr["success"]("Bạn đã sửa quyền thành công");
                     });
                 }
@@ -1774,17 +1696,13 @@
                 status: "del_role",
                 user_id: user_id,
                 menu_id: menu_id,
-                token: "<?php echo_token();?>",
+                
             },
             success:function(data){
                 console.log(data);
                 data = JSON.parse(data);
                 if(data.msg == "ok") {
                     $('.k-role-set').load("ajax_user_role.php?id=" + user_id,() => {
-                        /*$.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã xoá quyền thành công",
-                        });*/
 						toastr["success"]("Bạn đã xoá quyền thành công");
                     });
                 }
@@ -1793,50 +1711,6 @@
                 console.log("Error: " + data);
             }
         })
-    }
-    function readMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        let count4 = _data.length;
-        for(i = 0 ; i < count4 ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        let str_arr_upt = arr_del.join(",");
-        if(arr_del.length == 0) {
-            $.alert({
-            title: "Thông báo",
-            content: "Bạn vui lòng chọn dòng cần xem",
-            });
-            return;
-        }
-        $('#manage_user').load(`ajax_user.php?status=read_more&str_arr_upt=${str_arr_upt}`,() => {
-            let html2 = `
-            <div id="paging" style="justify-content:center;" class="row">
-                <nav id="pagination3">
-                </nav>
-            </div>
-            `;
-            $(html2).appendTo('#manage_user');
-            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            $('.t-bd-read').css({
-                "display":"none",
-            });
-            $('.t-bd-read-1').css({
-                "display":"contents",
-            });
-            $('#pagination3').pagination({
-                items: count4,
-                itemsOnPage: 1,
-                currentPage: 1,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                    $(`.t-bd-read`).css({"display":"none"});
-                    $(`.t-bd-read-${pageNumber}`).css({"display":"contents"});
-                },
-                cssStyle: 'light-theme',
-            });
-        });
     }
     function roleMore(){
         let arr_del = [];
@@ -1876,55 +1750,6 @@
             }
         });
     }
-    function delMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        if(_data.length > 0) {
-            $.confirm({
-                title: "Thông báo",
-                content: "Bạn có chắc chắn muốn xoá " + _data.length + " dòng này",
-                buttons: {
-                "Có": function(){
-                    $.ajax({
-                        url: window.location.href,
-                        type: "POST",
-                        data: {
-                            status: "del_more",
-                            token: "<?php echo_token(); ?>",
-                            rows: arr_del.join(","),
-                        },
-                        success: function(data){
-                            data = JSON.parse(data);
-                            if(data.msg == "ok"){
-                            $.alert({
-                                title: "Thông báo",
-                                content: "Bạn đã xoá dữ liệu thành công",
-                                buttons: {
-                                    "Ok": function(){
-                                        location.href="user_manage.php";
-                                    }
-                                }
-                            })
-                            }
-                        },error: function(data){
-                            console.log("Error:" + data);
-                        }
-                    });
-                },"Không": function(){
-
-                }
-                }
-            });
-        } else {
-            $.alert({
-                title: "Thông báo",
-                content: "Bạn chưa chọn dòng cần xoá",
-            });
-        }
-    }
     function uptMore(){
         let arr_del = [];
         let _data = dt_user.rows(".selected").select().data();
@@ -1934,7 +1759,7 @@
         let str_arr_upt = arr_del.join(",");
         location.href="user_manage.php?upt_more=1&str=" + str_arr_upt;
     }
-    function uptThisRow(){
+    function uptMore2(){
         let test = true;
         let name = $(event.currentTarget).closest("tr").find("td input[name='u_fullname']").val();
         let email = $(event.currentTarget).closest("tr").find("td input[name='u_email']").val();
@@ -2021,311 +1846,6 @@
     }
 </script>
 <script>
-    $(document).ready(function(){
-        // validate
-        const validate = () => {
-            let test = true;
-            let full_name = $('#full_name').val();
-            let email = $('#email').val();
-            let cmnd = $('#cmnd').val();
-            let phone = $('#phone').val();
-            let address = $('#address').val();
-            let birthday = $('#birthday').val();
-            let password = $('#password').val();
-            let type = $('#type > option:selected').val();
-            if(full_name == "") {
-                $('#full_name').focus();
-                $.alert({
-                    title: "",
-                    content: "Họ tên nhân viên không được để trống.",
-                });
-                //$('#full_name').focus();
-                test = false;
-            } else if(email == "") {
-                $('#email').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Email nhân viên không được để trống.",
-                });
-                test = false;
-            } else if(phone == "") {
-                $('#phone').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Số điện thoại nhân viên không được để trống."
-                });
-                test = false;
-            } else if(cmnd == "") {
-                $('#cmnd').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Số chứng minh nhân dân của nhân viên không được để trống."
-                });
-                test = false;
-            } else if(birthday == "") {
-                $('#birthday').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Ngày sinh của nhân viên không được để trống."
-                });
-                test = false;
-            } else if(address == "") {
-                $('#address').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Địa chỉ của nhân viên không được để trống."
-                });
-                test = false;
-            } else if(password == "") {
-                $('#password').focus();
-                $.alert({
-                    title: "Thông báo",
-                    content: "Mật khẩu của nhân viên không được để trống.",
-                });
-                test = false;
-            } else if(type == "") {
-                $.alert({
-                    title: "Thông báo",
-                    content: "Chức vụ của nhân viên không được để trống.",
-                });
-                test = false;
-            }
-            return test;
-        };
-        // show image
-        const readURL = (input) => {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                $('#display-image').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-        // mở modal thêm dữ liệu
-        var click_number;
-        $(document).on('click','#btn-add-user',(e) => {
-            $('#manage_user').load("ajax_user.php?status=Insert",() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-                $("#birthday").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $("#fileInput").on("change",function(){
-                    $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-                    readURL(this); 
-                });
-            })
-        });
-        // mở modal sửa dữ liệu
-        $(document).on('click','.btn-update-user',function(e) {  
-            let id = $(e.currentTarget).attr('data-id');
-            $(e.currentTarget).closest("tr").addClass("bg-color-selected");
-            $('#manage_user').load("ajax_user.php?status=Update&id=" + id,() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-                $("#birthday").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText, inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('#birthday').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $("#fileInput").on("change",function(){
-                    $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-                    readURL(this); 
-                });
-            })
-        });
-        // thêm 
-        $(document).on('click','#btn-insert',function(e){
-            event.preventDefault();
-            if(validate()) {
-                let file = $('input[name="img_name"]')[0].files;
-                let formData = new FormData($('#manage_user')[0]);
-                formData.append("token","<?php echo_token();?>");
-                formData.append("status","Insert");
-                formData.append("full_name",$('#full_name').val());
-                formData.append("email",$('#email').val());
-                formData.append("phone",$('#phone').val());
-                formData.append("cmnd",$('#cmnd').val());
-                formData.append("address",$('#address').val());
-                
-                let birthday = $('#birthday').val().split('-');
-                birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
-                formData.append("birthday",birthday);
-                formData.append("type",$('select[name="type"] > option:selected').val());
-                formData.append("password",$('#password').val());  
-                if(file.length > 0) {
-                    formData.append('img_name',file[0]);
-                }
-                $.ajax({
-                    url:window.location.href,
-                    type: "POST",
-                    cache:false,
-                    dataType:"json",
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success:function(data){
-                        if(data.msg == "ok") {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.success,
-                                buttons: {
-                                    "Ok": function(){
-                                        location.href="user_manage.php";
-                                    },
-                                }
-                            });
-                        } else {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.error
-                            });
-                        }
-                        $('#modal-xl').modal('hide');
-                    },
-                    error:function(data) {
-                        console.log("Error:",data);
-                    }
-                });
-                
-            }
-        });
-        // sửa 
-        $(document).on('click','#btn-update',function(e){
-            event.preventDefault();
-            if(validate()) {
-                let file = $('input[name="img_name"]')[0].files;
-                let formData = new FormData($('#manage_user')[0]);
-                formData.append("token","<?php echo_token();?>");
-                formData.append("status","Update");
-                formData.append("id",$('input[name=id]').val());
-                formData.append("full_name",$('#full_name').val());
-                formData.append("email",$('#email').val());
-                formData.append("phone",$('#phone').val());
-                formData.append("cmnd",$('#cmnd').val());
-                formData.append("address",$('#address').val());
-                let birthday = $('#birthday').val().split('-');
-                birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
-                formData.append("birthday",birthday);
-                formData.append("type",$('select[name="type"] > option:selected').val());
-                formData.append("password",$('#password').val());
-                if(file.length > 0) {
-                    formData.append('img_name',file[0]); 
-                }
-                if(validate()) {
-                    $.ajax({
-                    url:window.location.href,
-                    type: "POST",
-                    cache:false,
-                    dataType:"json",
-                    contentType: false,
-                    processData: false,
-                    data: formData,
-                    success:function(data){
-                        //data = JSON.parse(data);
-                        console.log(data);
-                        if(data.msg == "ok") {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.success,
-                                buttons: {
-                                    "Ok": function(){
-                                        location.reload();
-                                    },
-                                }
-                            });
-                        } else {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.error
-                            });
-                        }
-                        $('#modal-xl').modal('hide');
-                    },
-                    error:function(data) {
-                        console.log("Error:",data);
-                    }
-                });
-                }
-                
-            }
-        });
-        // xoá 
-        $(document).on('click','.btn-delete-row',function(e){
-            /*click_number = $(this).closest('tr');
-            console.log(click_number);*/
-            let id = $(e.currentTarget).attr('data-id');
-            let target = $(e.currentTarget);
-            target.closest("tr").addClass("bg-color-selected");
-            $.confirm({
-                title: 'Thông báo',
-			    content: 'Bạn có chắc chắn muốn xoá thông tin nhân viên này ?',
-                buttons: {
-                    Có: function(){
-                        $.ajax({
-                            url:window.location.href,
-                            type:"POST",
-                            cache:false,
-                            data: {
-                                token: "<?php echo_token();?>",
-                                id: id,
-                                status: "Delete",
-                            },
-                            success:function(data){
-                                data = JSON.parse(data);
-                                if(data.msg == "ok") {
-                                    $.alert({
-                                        title: "Thông báo",
-                                        content: data.success,
-                                        buttons: {
-                                            "Ok": function(){
-                                                location.reload();
-                                            },
-                                        }
-                                    });
-                                    //$('#user-' + id).remove();
-                                    /*console.log(click_number);
-                                    dt_user.row(click_number).remove().draw();*/
-                                } else {
-                                    $.alert({
-                                        title: "Thông báo",
-                                        content: data.error,
-                                    });
-                                }
-                            },
-                            error:function(data) {
-                                console.log("Error:",data);
-                            }
-                        });
-                    },Không: function(){
-                        target.closest("tr").removeClass("bg-color-selected");
-                    }
-                }
-            });
-        });
-        // xem
-        $(document).on('click','.btn-read-user',function(e){
-            let id = $(e.currentTarget).attr('data-id');
-            let target = $(e.currentTarget);
-            target.closest("tr").addClass("bg-color-selected");
-            $('#manage_user').load("ajax_user.php?status=Read&id=" + id,() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            })
-        });
-    });
-</script>
-<script>
    $(function() {
     $('#pagination').pagination({
         items: <?=$total;?>,
@@ -2391,7 +1911,7 @@
                $path = $dir . "/" . $file_name ;
                move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
                $sql_update = "update user set img_name='$path' where id = '$id'";
-               db_query($sql_update);
+               sql_query($sql_update);
             }
             $sql = "Update user set full_name = '$full_name',type = '$type',email = '$email',phone = '$phone',cmnd = '$cmnd',address = '$address',birthday = '$birthday' where id = '$id'";
             sql_query($sql);
@@ -2423,7 +1943,7 @@
                     $path = $dir . "/" . $file_name ;
                     move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
                     $sql_update = "update user set img_name='$path' where id = '$insert'";
-                    db_query($sql_update);
+                    sql_query($sql_update);
                 }
                 $__arr['id'] = $insert;
             }
@@ -2552,6 +2072,38 @@
                 }
                 echo_json(["msg" => "ok"]);
             }
-        }
+        } else if($status == "saveTabFilter") {
+            $_SESSION['user_tab_id'] = isset($_SESSION['user_tab_id']) ? $_SESSION['user_tab_id'] + 1 : 1;
+            $tab_name = isset($_SESSION['user_tab_id']) ? "tab_" . $_SESSION['user_tab_id'] : null;
+            $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
+            $tab_unique = uniqid("tab_");
+            $_SESSION['user_manage_tab'] = isset($_SESSION['user_manage_tab']) ? $_SESSION['user_manage_tab'] : [];
+            array_push($_SESSION['user_manage_tab'],[
+               "tab_unique" => $tab_unique,
+               "tab_name" => $tab_name,
+               "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
+            ]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['user_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+         } else if($status == "deleteTabFilter") {
+            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+            $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
+            array_splice($_SESSION['user_manage_tab'],$index,1);
+            if(trim($is_active_2) == "") {
+               echo_json(["msg" => "ok"]);
+            }  else if($is_active_2 == 1) {
+               if(array_key_exists($index,$_SESSION['user_manage_tab'])) {
+                  echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
+               } else if(array_key_exists($index - 1,$_SESSION['user_manage_tab'])){
+                  echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index - 1]['tab_urlencode']]);
+               } else {
+                  echo_json(["msg" => "ok","tab_urlencode" => "user_manage.php?tab_unique=all"]);
+               }
+            }
+         } else if($status == "changeTabNameFilter") {
+            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+            $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
+            $_SESSION['user_manage_tab'][$index]['tab_name'] = $new_tab_name;
+            echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
+         }
     }
 ?>

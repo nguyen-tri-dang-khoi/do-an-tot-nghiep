@@ -2,11 +2,9 @@
     include_once("../lib/database.php");
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-    //print_r($status);
-    //print_r($id);
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from customer where id = ? and is_delete = 0 limit 1";
-        $result = fetch_row($sql_get_user_info,[$id]);
+        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from customer where id = '$id' and is_delete = 0 limit 1";
+        $result = fetch(sql_query($sql_get_user_info));
 ?>
 <div class="card-body">
     <table class="table table-bordered">

@@ -169,17 +169,17 @@
         </div>
     </div>
 <?php
-    } else if($status == "show_order_detail_fast") {
+    } else if($status == "read_more") {
         $arr = explode(",",$str_arr_upt);
         $i = 1;
         foreach($arr as $order_id) {
-            $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join customer c on
+            $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join customer c on
             c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
             $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
             $client_order = fetch(sql_query($sql_get_client_order));
             $detail_order = fetch_all(sql_query($sql_get_detail_order));
 ?>
-    <div class="t-row t-row-<?=$i;?>" style="display:none;">
+    <div class="t-bd-read t-bd-read-<?=$i;?>" style="display:none;">
         <div class="row">
             <div class="col-md-6">
                 <h4>Thông tin khách hàng</h4>
@@ -224,7 +224,7 @@
                     </tr>
                     <tr>
                         <th>Tình trạng thanh toán</th>
-                        <td><?=$client_order['payment_status'] == 1 ? "Đã thanh toán" : "Chưa thanh toán";?></td>
+                        <td><?=$client_order['payment_status_id'] == 1 ? "Đã thanh toán" : "Chưa thanh toán";?></td>
                     </tr>
                     <tr>
                         <th>Phương thức thanh toán</th>
