@@ -35,7 +35,7 @@
       $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
       $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
       $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-      $order_by = "";
+      $order_by = "Order by pi.id desc";
       $where = "where 1=1 and pi.is_delete = 0 ";
       $wh_child = [];
       $arr_search = [];
@@ -134,9 +134,10 @@
          }
       }
       if($orderStatus && $orderByColumn) {
-         $order_by .= "ORDER BY $orderByColumn $orderStatus";
-         $where .= " $order_by";
+         $order_by = "ORDER BY $orderByColumn $orderStatus";
+         
       }
+      $where .= " $order_by";
       log_v($where);
 ?>
 <!--html & css section start-->
@@ -267,18 +268,19 @@
                         </div>
                      </div>
                   </div>
-                  <div class="card-body">
+                  <div class="card-body ok-game-start">
                      <div id="load-all">
                         <link rel="stylesheet" href="css/tab.css">             
                         <div style="padding-right:0px;padding-left:0px; flex: 1;display: flex;overflow: auto;overflow-y:hidden;" class="col-12 mb-20 j-between d-flex a-center">
                            <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;" class="ul-tab" id="ul-tab-id">
-                              
                               <?php
                                  $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                                 
                                  $_SESSION['product_manage_tab'] = isset($_SESSION['product_manage_tab']) ? $_SESSION['product_manage_tab'] : [];
                                  $_SESSION['product_tab_id'] = isset($_SESSION['product_tab_id']) ? $_SESSION['product_tab_id'] : 0;
                               ?>
-                              <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('product_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                              <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('product_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
+
                               <?php
                                  $ik = 0;
                                  $is_active = false;
@@ -290,7 +292,9 @@
                               ?>
                                  <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
                                     <button onclick="loadDataInTab('<?=$_SESSION['product_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                    
                                     <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                    
                                  </li>
                               <?php
                                     $ik++;
@@ -470,7 +474,7 @@
                                  <?php
                                     if($allow_update) {
                                  ?>
-                                 <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                 <button onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
                                  <?php } ?>
                                  <?php
                                     if($allow_read) {
@@ -491,7 +495,8 @@
                                  <?php } ?>
                               </div>
                            </div>
-                           <table id="m-product-info" class="table table-bordered table-striped">
+                           <div class="table-game-start">
+                           <table id="table-product_manage" class="table table-bordered table-striped">
                               <thead>
                                  <tr style="cursor:pointer;">
                                     <th style="width:20px !important;">
@@ -607,7 +612,8 @@
                                     <th>Thao tác</th>
                                  </tr>
                               </tfoot>
-                           </table> 
+                           </table>
+                           </div>
                            <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
                                  
                            </ul> 
@@ -1642,9 +1648,10 @@
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
       prevText: "<",
       nextText: ">",
-		onPageClick: function(){
-
-		},
+		onPageClick: function(pageNumber,event){
+         event.preventDefault();
+         loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
+      },
       cssStyle: 'light-theme'
     });
   });
@@ -1993,7 +2000,7 @@
             "tab_name" => $tab_name,
             "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
          ]);
-         echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['product_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+         echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['product_manage_tab'])- 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
       } else if($status == "deleteTabFilter") {
          $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
          $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;

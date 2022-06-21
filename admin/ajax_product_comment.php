@@ -13,9 +13,9 @@
         $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
         $limit = 2;
         $start_page = $limit * ($page - 1);
-        $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join customer cus on pcm.customer_id = cus.id where product_info_id = '$id' ";
+        $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join customer cus on pcm.customer_id = cus.id where product_info_id = '$id' and pcm.is_delete = 0";
         $total = fetch(sql_query($sql_get_count))['cnt'];
-        $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null";
+        $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null and pcm.is_delete = 0";
         $comments = fetch_all(sql_query($sql));
         
 ?>
@@ -94,7 +94,7 @@
                         <span onclick="delComment('<?=$comment['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>   
                     </div>
                     <?php
-                        $sql22 = "select count(*) as 'cnt' from product_comment where reply_id = " . $comment['pcm_id'];
+                        $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = " . $comment['pcm_id'];
                         $cnt_comment = fetch(sql_query($sql22))['cnt'];
                         if($cnt_comment > 0) {
                     ?>
@@ -129,7 +129,7 @@
 <div></div>
 <!--<div data-item="<?=$limit?>" data-total="<?=$total?>" data-page="<?=$page;?>" id="pagination-comment" style="width:100%;" class="mt-20 d-flex a-center j-center"></div>-->
 <?php } else if ($status=="show_reply_ok") {
-    $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id = " . $reply_id;
+    $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.is_delete = 0 and pcm.reply_id = " . $reply_id;
     $replies = fetch_all(sql_query($sql));
     foreach($replies as $reply){
         $row = "";
@@ -183,7 +183,7 @@
                     <span onclick="delComment('<?=$reply['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
                 </div>
                 <?php
-                    $sql22 = "select count(*) as 'cnt' from product_comment where reply_id = " . $reply['pcm_id'];
+                    $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = " . $reply['pcm_id'];
                     $cnt_reply = fetch(sql_query($sql22))['cnt'];
                     if($cnt_reply > 0) {
                 ?>

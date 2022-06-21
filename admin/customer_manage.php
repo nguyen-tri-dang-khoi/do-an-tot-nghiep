@@ -29,7 +29,7 @@
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $where = "where 1=1 and is_delete = 0 ";
-        $order_by = "";
+        $order_by = "Order by id desc";
         $wh_child = [];
         $arr_search = [];
         if($keyword && is_array($keyword)) {
@@ -99,9 +99,10 @@
             }
         }
         if($orderByColumn && $orderStatus) {
-            $order_by .= "ORDER BY $orderByColumn $orderStatus";
-            $where .= " $order_by";
+            $order_by = "ORDER BY $orderByColumn $orderStatus";
+           
         }
+        $where .= " $order_by";
         log_v($where);
 ?>
 <!--html & css section start-->
@@ -120,7 +121,7 @@
                     <div class="card-header">
                         <h3 class="card-title">Quản lý khách hàng</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body ok-game-start">
                         <div id="load-all">
                             <link rel="stylesheet" href="css/tab.css">             
                             <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
@@ -130,7 +131,7 @@
                                         $_SESSION['customer_manage_tab'] = isset($_SESSION['customer_manage_tab']) ? $_SESSION['customer_manage_tab'] : [];
                                         $_SESSION['customer_tab_id'] = isset($_SESSION['customer_tab_id']) ? $_SESSION['customer_tab_id'] : 0;
                                     ?>
-                                    <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('customer_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                                    <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('customer_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
                                     <?php
                                         $ik = 0;
                                         $is_active = false;
@@ -281,67 +282,69 @@
                                     $rows = fetch_all(sql_query($sql_get_customer));
                                     $cnt = 0;
                                 ?>
-                                <table id="m-customer-table" class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr style="cursor:pointer;">
-                                            <th style="width:20px !important;">
-                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                            </th>
-                                            <th class="th-so-thu-tu w-120">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-ten-day-du w-200">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-email w-170">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-so-dien-thoai w-200">Số điện thoại <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-dia-chi w-300">Địa chỉ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-ngay-sinh w-120">Ngày sinh <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="th-ngay-tao w-120">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-200">Thao tác</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-customer">
-                                    <?php foreach($rows as $row) { ?>
-                                        <tr id="<?=$row["id"]?>">
-                                            <td>
-                                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-customer')" type="checkbox" name="check_id<?=$row["id"];?>">
-                                            </td>
-                                            <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
-                                            <td class="ten-day-du">
-                                                <?php 
-                                                    if($row['is_lock'] == 1){
-                                                        echo '<i class="fas fa-lock mr-1"></i>';
-                                                    }
-                                                    echo $row["full_name"];
-                                                ?>
-                                            </td>
-                                            <td class="email"><?=$row["email"]?></td>
-                                            <td class="so-dien-thoai"><?=$row["phone"]?></td>
-                                            <td class="dia-chi"><?=$row["address"]?></td>
-                                            <td class="ngay-sinh"><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
-                                            <td class="ngay-tao"><?=Date("d-m-Y",strtotime($row["created_at"]));?></td>
-                                            <td>
-                                                <button onclick="openModalRead()" class="btn-read-customer dt-button button-grey"data-id="<?=$row["id"];?>">Xem</button>
-                                            </td>
-                                        </tr>
-                                        <?php 
-                                                $cnt++;
-                                            } 
-                                        ?>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th style="width:20px !important;">
-                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                            </th>
-                                            <th>Số thứ tự</th>
-                                            <th>Tên đầy đủ</th>
-                                            <th>Email</th>
-                                            <th>Số điện thoại</th>
-                                            <th>Địa chỉ</th>
-                                            <th>Ngày sinh</th>
-                                            <th>Ngày tạo</th>
-                                            <th>Thao tác</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                                <div class="table-game-start">
+                                    <table id="table-customer_manage" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr style="cursor:pointer;">
+                                                <th style="width:20px !important;">
+                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th class="th-so-thu-tu w-120">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-ten-day-du w-200">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-email w-170">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-so-dien-thoai w-200">Số điện thoại <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-dia-chi w-300">Địa chỉ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-ngay-sinh w-120">Ngày sinh <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-ngay-tao w-120">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-200">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-customer">
+                                        <?php foreach($rows as $row) { ?>
+                                            <tr id="<?=$row["id"]?>">
+                                                <td>
+                                                    <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-customer')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                </td>
+                                                <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
+                                                <td class="ten-day-du">
+                                                    <?php 
+                                                        if($row['is_lock'] == 1){
+                                                            echo '<i class="fas fa-lock mr-1"></i>';
+                                                        }
+                                                        echo $row["full_name"];
+                                                    ?>
+                                                </td>
+                                                <td class="email"><?=$row["email"]?></td>
+                                                <td class="so-dien-thoai"><?=$row["phone"]?></td>
+                                                <td class="dia-chi"><?=$row["address"]?></td>
+                                                <td class="ngay-sinh"><?=Date("d-m-Y",strtotime($row["birthday"]));?></td>
+                                                <td class="ngay-tao"><?=Date("d-m-Y",strtotime($row["created_at"]));?></td>
+                                                <td>
+                                                    <button onclick="openModalRead()" class="btn-read-customer dt-button button-grey"data-id="<?=$row["id"];?>">Xem</button>
+                                                </td>
+                                            </tr>
+                                            <?php 
+                                                    $cnt++;
+                                                } 
+                                            ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th style="width:20px !important;">
+                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th>Số thứ tự</th>
+                                                <th>Tên đầy đủ</th>
+                                                <th>Email</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
                                 <div style="justify-content:center;" class="row mt-15">
                                     <ul id="pagination" class="pagination">
                                     </ul>
@@ -449,7 +452,7 @@
 </script>
 <script>
     function openModalRead(){
-        let id = $(e.currentTarget).attr('data-id');
+        let id = $(event.currentTarget).attr('data-id');
         $('#manage_customer').load("ajax_customer.php?status=Read&id=" + id,() => {
             console.log("ajax_customer.php?status=Read&id=" + id);
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
@@ -564,9 +567,10 @@
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
         prevText: "<",
         nextText: ">",
-		onPageClick: function(){
-			//window.location.href=""
-		},
+		onPageClick: function(pageNumber,event){
+            event.preventDefault();
+            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
+        },
         cssStyle: 'light-theme'
     });
   });
@@ -606,7 +610,7 @@
                "tab_name" => $tab_name,
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
-            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['customer_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['customer_manage_tab'])- 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
         } else if($status == "deleteTabFilter") {
             $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
             $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;

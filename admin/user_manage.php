@@ -41,7 +41,7 @@
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $where = "where 1=1 and is_delete = 0";
-        $order_by = "";
+        $order_by = "Order by user.id desc";
         $wh_child = [];
         $arr_search = [];
         if($keyword && is_array($keyword)) {
@@ -114,9 +114,10 @@
             $where .= " and user.id in ($str)";
         }
         if($orderByColumn && $orderStatus) {
-            $order_by .= "ORDER BY $orderByColumn $orderStatus";
-            $where .= " $order_by";
+            $order_by = "ORDER BY $orderByColumn $orderStatus";
+            
         }
+        $where .= " $order_by";
         log_v($where);
 ?>
 <style>
@@ -142,7 +143,7 @@
                         <?php } ?>
                     </div>
                     <!-- /.card-header -->
-                    <div class="card-body">
+                    <div class="card-body ok-game-start">
                         <div id="load-all">
                             <link rel="stylesheet" href="css/tab.css">             
                             <div style="padding-right:0px;padding-left:0px" class="col-12 mb-20 d-flex a-center j-between">
@@ -337,8 +338,8 @@
                                     $rows = fetch_all(sql_query($sql_get_user));
                                 ?>
                                 <!--Table user-->
-                                <div class="table-responsive">
-                                    <table id="m-user-table" class="table table-bordered table-striped ">
+                                <div class="table-responsive table-game-start">
+                                    <table id="table-user_manage" class="table table-bordered table-striped ">
                                         <thead>
                                             <tr style="cursor:pointer;">
                                                 <th style="width:20px !important;">
@@ -787,8 +788,8 @@
         })
     }
     function openModalRead(){
-        let id = $(e.currentTarget).attr('data-id');
-        let target = $(e.currentTarget);
+        let id = $(event.currentTarget).attr('data-id');
+        let target = $(event.currentTarget);
         target.closest("tr").addClass("bg-color-selected");
         $('#manage_user').load("ajax_user.php?status=Read&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
@@ -1855,9 +1856,10 @@
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
         prevText: "<",
         nextText: ">",
-		onPageClick: function(){
-			//window.location.href=""
-		},
+		onPageClick: function(pageNumber,event){
+            event.preventDefault();
+            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
+        },
         cssStyle: 'light-theme'
     });
   });
@@ -2083,7 +2085,7 @@
                "tab_name" => $tab_name,
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
-            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['user_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['user_manage_tab']) - 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
          } else if($status == "deleteTabFilter") {
             $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
             $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;

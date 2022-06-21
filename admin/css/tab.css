@@ -37,7 +37,7 @@ position: relative;
 left: -7px;
 }*/
 .tab {
-padding:12px 9px;
+padding:7px 9px;
 border-left:none;
 border-right:none;
 border-top:2px dashed #2196f3;
@@ -53,7 +53,7 @@ width:100%;
 border-radius: 22px 22px 0px 0px;
 }
 .tab-active > .tab{
-border:1px solid #ddd;
+
 /*border-top:5px solid red;*/
 background-color: #2196f3;
 color:#fff;
@@ -61,20 +61,6 @@ width:100%;
 font-weight: 600;
 
 }
-.tab-active .k-tab-delete::after {
-/*border:1px solid #fff !important;*/
-}
-/*.tab-active > .tab {
-background-color: #fff;
-border: 1px solid #ddd;
-border-top: 5px solid #fff;
-border-bottom: 1px solid #fff;
-border-left: none;
-border-right: none;
-width: 100%;
-font-weight: bold;
-border-radius: 23px 6px 0px 5px;
-}*/
 .li-tab:not(.tab-active) {
    /*border-right:1px solid #ddd;*/
 }
@@ -117,7 +103,7 @@ border-radius: 23px 6px 0px 5px;
    align-items: center;
    color: #fff;
    right: 8px;
-   top: 16px;
+   top: 10px;
    border: 2px solid #fff;
    width: 30px;
    height: 30px;
@@ -132,7 +118,7 @@ border-radius: 23px 6px 0px 5px;
    color:#fff;
    right:7px;
    font-size:30px;
-   top: 16px;
+   top: 10px;
 }
 li.li-tab:last-child > button.tab {
    border-right:1px solid #ddd;

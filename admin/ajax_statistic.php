@@ -14,9 +14,12 @@
     use PhpOffice\PhpSpreadsheet\Style\Color as StyleColor;
     use PhpOffice\PhpSpreadsheet\Style\Border as StyleBorder;
     use PhpOffice\PhpSpreadsheet\Style\Fill as StyleFill;
-    $is_download = true;
+    $is_download = false;
     $case = isset($_REQUEST["case"]) ? $_REQUEST["case"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+    if($status == "statistic_excel_download") {
+        $is_download = true;
+    }
     $year = isset($_REQUEST["year"]) ? $_REQUEST["year"] : null;
     $month = isset($_REQUEST["month"]) ? $_REQUEST["month"] : null;
     $day = isset($_REQUEST["day"]) ? $_REQUEST["day"] : null;
@@ -168,7 +171,7 @@
             array_push($_dat['profit'],0);
         }
         $sql_case_1 = "select $select,count(ord.id) as 'cnt',sum(ord.total) as 'total' from orders ord $where $gb";
-        $sql_case_3 = "select $select, sum(od.count) as 'cntProduct' ,sum(od.price_root) as 'sumPriceRoot' from orders ord inner join order_detail od on ord.id = od.order_id $where $gb";
+        $sql_case_3 = "select $select, sum(od.count) as 'cntProduct' ,sum(od.cost) as 'sumPriceRoot' from orders ord inner join order_detail od on ord.id = od.order_id $where $gb";
         $pdo_statistic = sql_query($sql_case_1);
         foreach(fetch_all($pdo_statistic) as $row) {
             $_dat['countOrder'][$row[$k_word] - 1] = $row['cnt'];

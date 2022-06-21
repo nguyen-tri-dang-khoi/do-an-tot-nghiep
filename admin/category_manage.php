@@ -25,7 +25,7 @@
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $parent_id = isset($_REQUEST['parent_id']) ? $_REQUEST['parent_id'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $order_by =  "";
+        $order_by =  "order by id desc";
         $where = "where 1 = 1 and is_delete = 0";
         if($parent_id) {
           $where .= " and parent_id = '$parent_id'";
@@ -39,10 +39,10 @@
         }
         if($orderByColumn && $orderStatus) {
           if(in_array($orderByColumn,['name','created_at'])) {
-            $order_by .= "ORDER BY $orderByColumn $orderStatus";
-            $where .= " $order_by";
-          }
+            $order_by = "ORDER BY $orderByColumn $orderStatus";
+          } 
         }
+        $where .= " $order_by";
         // code to be executed get method
 ?>
 <!--html & css section start-->
@@ -88,7 +88,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-body">
+            <div class="card-body ok-game-start">
               <div id="load-all">
                 <link rel="stylesheet" href="css/tab.css">         
                 <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-start j-between">
@@ -98,7 +98,8 @@
                         $_SESSION['category_manage_tab'] = isset($_SESSION['category_manage_tab']) ? $_SESSION['category_manage_tab'] : [];
                         $_SESSION['category_tab_id'] = isset($_SESSION['category_tab_id']) ? $_SESSION['category_tab_id'] : 0;
                       ?>
-                      <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                      <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
+
                       <?php
                         $ik = 0;
                         $is_active = false;
@@ -110,7 +111,9 @@
                       ?>
                         <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
                             <button onclick="loadDataInTab('<?=$_SESSION['category_manage_tab'][$ik]['tab_urlencode'];?>')"  class="tab"><?=$tab['tab_name'];?></button>
+                            
                             <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                            
                         </li>
                       <?php
                             $ik++;
@@ -184,7 +187,7 @@
                           <?php
                             if($allow_update) {
                           ?>
-                          <button tabindex="-1" onclick="uptMore(,'<?=$parent_id;?>','<?=$tab_unique?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                          <button tabindex="-1" onclick="uptMore('<?=$parent_id;?>','<?=$tab_unique?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
                           <?php }?>
                           <?php
                             if($allow_read) {
@@ -205,116 +208,120 @@
                           <?php } ?>
                         </div>
                       </div>
-                      <table id="m-product-type" class="table table-bordered table-striped">
-                        <thead>
-                          <tr style="cursor:pointer;">
-                            <th style="width:20px !important;">
-                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                            </th>
-                            <th class="th-so-thu-tu w-150">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-danh-muc">Tên danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-ngay-tao w-150">Ngày thêm <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="w-100">Tình trạng</th>
-                            <th class="w-200">Thao tác</th>
-                          </tr>
-                        </thead>
-                        <?php
-                          $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
-                          $get = $_GET;
-                          unset($get['page']);
-                          $str_get = http_build_query($get);
-                          $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                          $limit = $_SESSION['paging'];
-                          $start_page = $limit * ($page - 1);
-                          $sql_get_total = "select count(*) as 'countt' from product_type $where";
-                          $total = fetch(sql_query($sql_get_total))['countt'];
-                          $cnt = 0;
-                          $sql_get_product_type = "select * from product_type $where limit $start_page,$limit";
-                          $product_types = fetch_all(sql_query($sql_get_product_type));
-                        ?>
-                        <tbody dt-parent-id="<?=$parent_id ? $parent_id : NULL;?>" dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-product-type">
-                        <?php foreach($product_types as $product_type) {?>
-                          <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
-                            <td>
-                              <input style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
+                      <div class="table-game-start">
+                        <table id="table-category_manage" class="table table-bordered table-striped">
+                          <thead>
+                            <tr style="cursor:pointer;">
+                              <th style="width:20px !important;">
+                                  <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                              </th>
+                              <th class="th-so-thu-tu w-150">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                              <th class="th-danh-muc">Tên danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                              <th class="th-ngay-tao w-150">Ngày thêm <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                              <th class="w-100">Tình trạng</th>
+                              <th class="w-200">Thao tác</th>
+                            </tr>
+                          </thead>
+                          <?php
+                            $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
+                            $get = $_GET;
+                            unset($get['page']);
+                            $str_get = http_build_query($get);
+                            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                            $limit = $_SESSION['paging'];
+                            $start_page = $limit * ($page - 1);
+                            $sql_get_total = "select count(*) as 'countt' from product_type $where";
+                            $total = fetch(sql_query($sql_get_total))['countt'];
+                            $cnt = 0;
+                            $sql_get_product_type = "select * from product_type $where limit $start_page,$limit";
+                            log_v($sql_get_product_type);
+                            $product_types = fetch_all(sql_query($sql_get_product_type));
+                          ?>
+                          <tbody dt-parent-id="<?=$parent_id ? $parent_id : NULL;?>" dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-product-type">
+                          <?php foreach($product_types as $product_type) {?>
+                            <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
+                              <td>
+                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
+                              </td>
+                              <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
+                                <?=$total - ($start_page + $cnt);?>
                             </td>
-                            <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
-                              <?=$total - ($start_page + $cnt);?>
-                           </td>
-                            <?php
-                              if($upt_more != 1){
-                            ?>
-                            <td class="danh-muc" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=$product_type["name"];?></td>
-                            <?php
-                              } else {
-                            ?>
-                            <td class="danh-muc"><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
-                            <?php
-                              }
-                            ?>
-                            
-                            <td class="ngay-tao" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
-                            <td>
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox" onchange="toggleActiveCategory()" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
-                                <label class="custom-control-label" for="customSwitches<?=$product_type['id'];?>"></label>
-                              </div>
-                            </td>
-                            <td>
                               <?php
-                                if($upt_more != 1) {
+                                if($upt_more != 1){
                               ?>
-                              <?php
-                                if($allow_read) {
-                              ?>
-                              <button onclick="readModal()" class="btn-xem-loai-san-pham dt-button button-grey"
-                              data-id="<?=$product_type["id"];?>">
-                              Xem
-                              </button>
-                              <?php } ?>
-                              <?php if($allow_update) {?>
-                              <button onclick="openModalUpdate()" class="btn-sua-loai-san-pham dt-button button-green"
-                              data-id="<?=$product_type["id"];?>" data-number="<?=$total - ($start_page + $cnt);?>">
-                              Sửa
-                              </button>
-                              <?php 
-                                } 
-                                if($allow_delete) {
-                              ?>
-                              <button onclick="processDelete()" class="btn-xoa-loai-san-pham dt-button button-red" data-id="<?=$product_type["id"];?>">
-                              Xoá
-                              </button>
-                              <?php } ?>
+                              <td class="danh-muc" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=$product_type["name"];?></td>
                               <?php
                                 } else {
                               ?>
-                              <button tabindex="-1" data-id="<?=$product_type["id"];?>" onclick="uptMore2()" class="dt-button button-green">Sửa</button>
+                              <td class="danh-muc"><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
                               <?php
                                 }
                               ?>
-                            </td>
-                          </tr>
-                          <?php 
-                            $cnt++;
-                            } 
-                          ?>
-                        </tbody>
-                        <tfoot>
-                          <tr>
-                            <th><input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()"></th>
-                            <th>Số thứ tự</th>
-                            <th>Tên danh mục</th>
-                            <th>Ngày thêm</th>
-                            <th>Tình trạng</th>
-                            <th>Thao tác</th>
-                          </tr>
-                        </tfoot>
-                      </table>
-                      <div style="justify-content:center;" class="row">
-                        <nav id="pagination" aria-label="Page navigation example">
-
-                        </nav>
+                              
+                              <td class="ngay-tao" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
+                              <td>
+                                <div class="custom-control custom-switch">
+                                  <input type="checkbox" onchange="toggleActiveCategory()" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
+                                  <label class="custom-control-label" for="customSwitches<?=$product_type['id'];?>"></label>
+                                </div>
+                              </td>
+                              <td>
+                                <?php
+                                  if($upt_more != 1) {
+                                ?>
+                                <?php
+                                  if($allow_read) {
+                                ?>
+                                <button onclick="readModal()" class="btn-xem-loai-san-pham dt-button button-grey"
+                                data-id="<?=$product_type["id"];?>">
+                                Xem
+                                </button>
+                                <?php } ?>
+                                <?php if($allow_update) {?>
+                                <button onclick="openModalUpdate()" class="btn-sua-loai-san-pham dt-button button-green"
+                                data-id="<?=$product_type["id"];?>" data-number="<?=$total - ($start_page + $cnt);?>">
+                                Sửa
+                                </button>
+                                <?php 
+                                  } 
+                                  if($allow_delete) {
+                                ?>
+                                <button onclick="processDelete()" class="btn-xoa-loai-san-pham dt-button button-red" data-id="<?=$product_type["id"];?>">
+                                Xoá
+                                </button>
+                                <?php } ?>
+                                <?php
+                                  } else {
+                                ?>
+                                <button tabindex="-1" data-id="<?=$product_type["id"];?>" onclick="uptMore2()" class="dt-button button-green">Sửa</button>
+                                <?php
+                                  }
+                                ?>
+                              </td>
+                            </tr>
+                            <?php 
+                              $cnt++;
+                              } 
+                            ?>
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                              <th><input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()"></th>
+                              <th>Số thứ tự</th>
+                              <th>Tên danh mục</th>
+                              <th>Ngày thêm</th>
+                              <th>Tình trạng</th>
+                              <th>Thao tác</th>
+                            </tr>
+                          </tfoot>
+                        </table>
+                        
                       </div>
+                      <div style="justify-content:center;" class="row">
+                          <nav id="pagination" aria-label="Page navigation example">
+
+                          </nav>
+                        </div>
                     </div>
                   </div>
                 </div>      
@@ -673,7 +680,6 @@
       type:"POST",
       cache:false,
       data:{
-        token: "<?php echo_token();?>",
         id: $('input[name=id]').val(),
         parent_id: "<?=$parent_id?>",
         name:$('input[name=ten_loai_san_pham]').val(),
@@ -694,7 +700,8 @@
               content: "Thêm danh mục thành công",
               buttons: {
                 "Ok": function(){
-                  location.href="category_manage.php";
+                  //location.href="category_manage.php";
+                  loadDataComplete();
                 }
               }
             });
@@ -731,8 +738,9 @@
       hrefTextSuffix: "<?='&' . $str_get;?>",
       prevText: "<",
       nextText: ">",
-      onPageClick: function(){
-
+      onPageClick: function(pageNumber,event){
+        event.preventDefault();
+        loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
       },
       cssStyle: 'light-theme'
     });

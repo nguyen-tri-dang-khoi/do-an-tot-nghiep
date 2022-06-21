@@ -24,7 +24,7 @@
                     </div>
                     <p style="font-weight:bold;margin:0">Mốc thời gian: </p>
                     <div class="row">
-                        <select style="cursor:not-allowed;" onchange="showDataStatistic()" class="form-control form-group col-3" name="year" disabled>
+                        <select style="cursor:not-allowed;" onchange="showDataStatistic2()" class="form-control form-group col-3" name="year" disabled>
                             <option value="">Chọn năm</option>
                             <?php
                                 for($i = 2022 ; $i <= Date('Y') ; $i++) {
@@ -40,7 +40,7 @@
                             <option value="<?=$i;?>"><?=$i;?></option>
                             <?php } ?>
                         </select>
-                        <select style="cursor:not-allowed;" onchange="showDataStatistic()" class="form-control form-group col-3" name="day" disabled>
+                        <select style="cursor:not-allowed;" onchange="showDataStatistic2()" class="form-control form-group col-3" name="day" disabled>
                             <option value="">Chọn ngày</option>
                         </select>
                     </div>
@@ -95,9 +95,10 @@
             $('.area-filter select').css({"cursor":"default"});
         } else {
             $('.area-filter select:not(.list-statistic)').prop("disabled",true);
+            $('.area-filter select > option[value=""]').prop("selected",true);
             $('.area-filter select:not(.list-statistic)').css({"cursor":"not-allowed"});
         }
-        showDataStatistic();
+        showDataStatistic2();
     }
     function showDataStatistic(status=""){
         let day = $("select[name='day'] > option:selected").val();
@@ -151,6 +152,51 @@
         }
         
     }
+    function showDataStatistic2(){
+        let day = $("select[name='day'] > option:selected").val();
+        let month = $("select[name='month'] > option:selected").val();
+        let year = $("select[name='year'] > option:selected").val();
+        let case2 = $("select[name='type_statistic'] > option:selected").val();
+        if(year != "") {
+            console.log(case2);
+            $.ajax({
+                url:"ajax_statistic.php",
+                type:"POST",
+                data: {
+                    year: year,
+                    month: month,
+                    day: day,
+                    case: case2,
+                },success:function(data2){
+                    console.log(data2);
+                    data2 = JSON.parse(data2);
+                    if(data2.msg == "ok") {
+                        let _label = [];
+                        let _data = [];
+                        delete data2['msg'];
+                        for(let i2 = 0 ; i2 < data2.label ; i2++) 
+                        {
+                            _label.push(parseInt(i2) + 1);
+                            _data.push(data2[i2]);
+                        }
+                        delete data2['label'];
+
+                        console.log(_data);
+                        if(case2 == 1) {
+                            myChart.data.datasets[0].label = "Thống kê doanh thu";
+                        } else if(case2 == 2) {
+                            myChart.data.datasets[0].label = "Thống kê số lượng đơn hàng";
+                        }
+                        myChart.data.labels = _label;
+                        myChart.data.datasets[0].data = _data;
+                        myChart.update();
+                    }
+                },error:function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
+    } 
     function showDay() {
         let months_31 = [1,3,5,7,8,10,12]; // tháng 31 ngày
         let months_30 = [4,6,9,11]; // tháng 30 ngày
@@ -173,7 +219,7 @@
         }
         $("select[name='day']").empty();
         $(html).appendTo("select[name='day']");
-        showDataStatistic();
+        showDataStatistic2();
     }
 </script>
 

@@ -9,6 +9,7 @@
         $choose_district_id  = isset($_REQUEST['choose_district_id']) ? $_REQUEST['choose_district_id'] : null;
         $choose_ward_id  = isset($_REQUEST['choose_ward_id']) ? $_REQUEST['choose_ward_id'] : null;
         $upt_more  = isset($_REQUEST['upt_more ']) ? $_REQUEST['upt_more '] : null;
+        $order_by = "Order by df.id desc";
         $where = "where 1 = 1 and df.is_delete = 0";
         if($choose_province_id) {
             $where .= " and df.province_id = '$choose_province_id'";
@@ -19,6 +20,7 @@
         if($choose_ward_id) {
             $where .= " and df.ward_id = '$choose_ward_id'";
         }
+        $where .= " $order_by";
 ?>
 <style>
     .sort-asc,.sort-desc {
@@ -44,7 +46,7 @@
                             <?php } ?>
                         </div>
                         <!-- /.card-header -->
-                        <div class="card-body">
+                        <div class="card-body ok-game-start">
                             <div id="load-all">   
                                 <link rel="stylesheet" href="css/tab.css">          
                                 <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
@@ -54,7 +56,7 @@
                                         $_SESSION['delivery_fee_manage_tab'] = isset($_SESSION['delivery_fee_manage_tab']) ? $_SESSION['delivery_fee_manage_tab'] : [];
                                         $_SESSION['delivery_fee_tab_id'] = isset($_SESSION['delivery_fee_tab_id']) ? $_SESSION['delivery_fee_tab_id'] : 0;
                                     ?>
-                                    <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('delivery_fee_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                                    <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('delivery_fee_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
                                     <?php
                                         $ik = 0;
                                         $is_active = false;
@@ -66,7 +68,13 @@
                                     ?>
                                         <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
                                             <button onclick="loadDataInTab('<?=$_SESSION['delivery_fee_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                            <?php
+                                            if($tab['tab_unique'] != 'first_tab') {
+                                            ?>
                                             <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                            <?php
+                                            }
+                                            ?>
                                         </li>
                                     <?php
                                             $ik++;
@@ -151,7 +159,7 @@
                                         <?php
                                             if($allow_update) {
                                         ?>
-                                        <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                        <button onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
                                         <?php } ?>
                                         <?php
                                             if($allow_read) {
@@ -186,8 +194,8 @@
                                         $cnt = 0;
                                         $rows = fetch_all(sql_query($sql_get_delivery_fee));
                                     ?>
-                                    <div class="table-responsive">
-                                        <table id="m-delivery-fee-table" class="table table-bordered table-striped">
+                                    <div class="table-responsive table-game-start">
+                                        <table id="table-delivery_fee_manage" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr style="cursor:pointer;">
                                                     <th style="width:20px !important;">
@@ -596,9 +604,10 @@
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
         prevText: "<",
         nextText: ">",
-		onPageClick: function(){
-			//window.location.href=""
-		},
+		onPageClick: function(pageNumber,event){
+            event.preventDefault();
+            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
+        },
         cssStyle: 'light-theme'
     });
   });
@@ -640,7 +649,7 @@
                "tab_name" => $tab_name,
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
-            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['delivery_fee_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['delivery_fee_manage_tab']) - 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
          } else if($status == "deleteTabFilter") {
             $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
             $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;

@@ -163,9 +163,6 @@
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
-<link rel="stylesheet" href="css/dataTables.bootstrap4.min.css">
-<link rel="stylesheet" href="css/responsive.bootstrap4.min.css">
-<link rel="stylesheet" href="css/buttons.bootstrap4.min.css">
 <link rel="stylesheet" href="css/toastr.min.css">
 <style>
    .dt-buttons {
@@ -179,105 +176,6 @@
       padding-top: 3px;
    }
 </style>
-<style>
-   .img-child {
-      position: relative;
-      margin: 12px;
-      border: 1px solid #b34d4d;
-      box-shadow: 2px 2px 14px #f7c5c5c7;
-   }
-   .img-child .btn-tool {
-      margin:unset;
-   }
-   .icon-x {
-		position:absolute;
-		top:0px;
-		right:0px;
-		cursor:pointer;
-   }
-  .icon-x:hover {
-    background-color:red;
-    color:white;
-   }
-   li[data-parent_id_2]:hover {
-      cursor:pointer;
-   }
-   table.dataTable span.highlight {
-    /*border-radius: 5px;
-    text-align: center;*/
-    color: red;
-    font-weight:600;
-    border:none;
-    /*border-bottom: 1px solid #17a2b8;*/
-    /*padding: 0px 1px;*/
-   }
-   .card-header::after{
-      display:none;
-   }
-   .parent {
-      padding-left:5px;
-      display: block;
-      position: relative;
-      width: 100%;
-      z-index: 5;
-      float: left;
-      line-height: 30px;
-      background-color: #ffffff;
-      cursor:pointer;
-   }
-   .parent a{
-      margin: 10px;
-      color: #495057;
-      text-decoration: none;
-   }
-   .parent:hover > ul {
-      display:block;
-      position:absolute;
-   }
-   .child {
-      display: none;
-      width:250px;
-      box-shadow: 2px 3px 13px 1px #ddd;
-   }
-   .child li {
-      background-color: #E4EFF7;
-      line-height: 30px;
-      width:100%;
-   }
-   .child li a{
-      color: #000000;
-   }
-   ul{
-      list-style: none;
-      margin: 0;padding: 0px; 
-      min-width:10em;
-   }
-   ul ul ul{
-      left: 100%;
-      top: 0;
-      margin-left:1px;
-   }
-   li:hover {
-      /*background-color: #95B4CA;*/
-   }
-   .parent li:hover {
-      background-color: #F0F0F0 !important;
-   }
-   .expand{
-      font-size:12px;
-      float:right;
-      margin-right:5px;
-   }
-   table.dataTable tr th.select-checkbox.selected::after {
-      content: "\2713";
-      margin-top: -11px;
-      margin-left: -4px;
-      text-align: center;
-      color: #9900ff;
-   }
-</style>
-<link rel="stylesheet" href="css/select.dataTables.min.css">
-<link rel="stylesheet" href="css/colReorder.dataTables.min.css">
 <div class="container-wrapper" style="margin-left:250px;">
   <div class="container-fluid" style="padding:0px;">
     <section class="content">
@@ -551,7 +449,7 @@
                             $limit = $_SESSION['paging'];
                             $start_page = $limit * ($page - 1);
                             $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                            $total = fetch_row($sql_get_total)['countt'];
+                            $total = fetch(sql_query($sql_get_total))['countt'];
                             $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
                            //print_r($sql_get_product);
                            $rows = fetch_all(sql_query($sql_get_product));
@@ -611,9 +509,6 @@
 <?php
    include_once("include/bottom.meta.php");
 ?>
-
-<script src="js/summernote.min.js"></script>
-<script src="js/summernote-vi-VN.js"></script>
 <?php
     include_once("include/dt_script.php");
 ?>
@@ -715,14 +610,13 @@
                   url:window.location.href,
                   type:"POST",
                   data: {
-                     token : "<?php echo_token();?>",
                      status: "Delete",
                      id: comment_id,
                   },success:function(data) {
                      console.log(data);
                      data = JSON.parse(data);
                      if(data.msg == "ok") {
-                        evt.closest(`.d-flex`).remove();
+                        evt.closest(`.d-flex.mt-10`).remove();
                      }
                   },error:function(data){
                      console.log("Error: " + data);
@@ -763,128 +657,6 @@
 </script>
 <!-- datatable and function crud js-->
 <script>
-   var dt_pi;
-   /*$(document).ready(function (e) {
-      $('.select-type2').select2();
-      $.fn.dataTable.moment('DD-MM-YYYY');
-      dt_pi = $("#m-product-info").DataTable({
-         "sDom": 'RBlfrtip',
-         columnDefs: [
-            { 
-               "name":"pi-checkbox",
-               "orderable": false,
-               "className": 'select-checkbox',
-               "targets": 0
-            },{ 
-               "name":"manipulate",
-               "orderable": false,
-               "className": 'manipulate',
-               "targets": 3
-            }
-         ],
-         select: {
-            style: 'multi+shift',
-            selector: 'td:first-child'
-         },
-         order: [
-            [1, 'desc']
-         ],
-         "language": {
-            "emptyTable": "Không có dữ liệu",
-            "sZeroRecords": 'Không tìm thấy kết quả',
-            "infoEmpty": "",
-            "infoFiltered":"Lọc dữ liệu từ _MAX_ dòng",
-            "search":"Tìm kiếm trong bảng này:",   
-            "info":"Hiển thị từ dòng _START_ đến dòng _END_ trên tổng số _TOTAL_ dòng",
-            "select": {
-              "rows": "Đã chọn %d dòng",
-            },
-            "buttons": {
-               "copy": 'Copy',
-               "copySuccess": {
-                  1: "Bạn đã sao chép một dòng thành công",
-                  _: "Bạn đã sao chép %d dòng thành công"
-               },
-               "copyTitle": 'Thông báo',
-            }
-            
-         },
-         "responsive": false, 
-         "lengthChange": true, 
-         "autoWidth": false,
-         "paging":false,
-         "searchHighlight": true,
-         "buttons": [
-            {
-               "extend": "excel",
-               "text": "Excel (2)",
-               "key": {
-                  "key": '2',
-               },
-               "autoFilter": true,
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "title": "Dữ liệu sản phẩm trích xuất ngày <?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "pdfHtml5",
-               "text": "PDF (3)",
-               "key": {
-                  "key": '3',
-               },
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "title": "Dữ liệu sản phẩm trích xuất ngày <?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "csv",
-               "text": "CSV (4)",
-               "charset": 'UTF-8',
-               "bom": true,
-               "key": {
-                  "key": '4',
-               },
-               "filename": "danh_sach_san_pham_ngay_<?=Date("d-m-Y",time());?>",
-               "exportOptions":{
-                  columns: ':visible:not(.select-checkbox):not(.manipulate)'
-               },
-            },{
-               "extend": "colvis",
-               "text": "Ẩn / Hiện cột (7)",
-               "columns": ':not(.select-checkbox)',
-               "key": {
-                  "key": '7',
-               },
-               
-            }
-        ]
-      })
-      dt_pi.buttons().container().appendTo('#m-product-info_wrapper .col-md-6:eq(0)');
-      dt_pi.search('').draw();
-      //
-      dt_pi.on("click", "th.select-checkbox", function() {
-         if ($("th.select-checkbox").hasClass("selected")) {
-            dt_pi.rows().deselect();
-            $("th.select-checkbox").removeClass("selected");
-         } else {
-            dt_pi.rows().select();
-            $("th.select-checkbox").addClass("selected");
-         }
-      }).on("select deselect", function() {
-         if (dt_pi.rows({
-                  selected: true
-            }).count() !== dt_pi.rows().count()) {
-            $("th.select-checkbox").removeClass("selected");
-         } else {
-            $("th.select-checkbox").addClass("selected");
-         }
-      });
-      //
-      // php auto select all rows when focus update all function execute
-      <?=$upt_more == 1 ? 'dt_pi.rows().select();' . PHP_EOL . '$("th.select-checkbox").addClass("selected");'.PHP_EOL  : "";?>
-   });*/
    $("#modal-xl2").on("hidden.bs.modal",function(){
       let html = $("#form-product2 table");
       console.log(html.html());
@@ -941,8 +713,10 @@
          sql_query($sql_ins_comment);
          echo_json(["msg" => "ok"]);
       } else if($status == "Delete") {
-         $sql_del = "Delete from product_comment where id = '$id'";
+         /*$sql_del = "Delete from product_comment where id = '$id'";
          sql_query($sql_del);
+         echo_json(["msg" => "ok"]);*/
+         exec_delete_comment(NULL,$id);
          echo_json(["msg" => "ok"]);
       } else if($status == "Active") {
          exec_toggle_comment(NULL,$id,"Active");

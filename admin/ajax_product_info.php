@@ -40,11 +40,17 @@
             <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
         </div>
         <div class="row">
-            <div class="col-md-6 form-group">
+            <div class="col-md-3 form-group">
+                <label for="don_gia">Giá gốc</label>
+                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
+                <div id="price_err" class="text-danger"></div>
+            </div>
+            <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
                 <div id="price_err" class="text-danger"></div>
             </div>
+            
             <div class="col-md-6 form-group">
                 <label for="exampleInputFile">Upload ảnh đại diện</label>
                 <div class="input-group">
@@ -64,7 +70,7 @@
                 <div class="kh-file-lists">
                     <?php
                         $sql = "select * from product_image where product_info_id = '$id'";
-                        $result2 = fech_all(sql_query($sql));
+                        $result2 = fetch_all(sql_query($sql));
                         $list_file_del = [];
                         $i = 0;
                         foreach($result2 as $res){
@@ -163,7 +169,12 @@
             <input type="hidden" name="category_name" value="">
         </div>
         <div class="row">
-            <div class="col-md-6 form-group">
+            <div class="col-md-3 form-group">
+                <label for="don_gia">Giá gốc</label>
+                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
+                <div id="price_err" class="text-danger"></div>
+            </div>
+            <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia" class="form-control" placeholder="Nhập đơn giá">
                 <div id="price_err" class="text-danger"></div>
@@ -214,7 +225,7 @@
 </form>
 <?php } if($id && $status == "Read") {?>
     <?php
-        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.cost,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_all));    
     ?>
     <div class="card-body">
@@ -234,6 +245,10 @@
             <tr>
                 <th>Số lượng</th>
                 <td class="width-auto"><?=number_format($result['count'],0,'','.');?></td>
+            </tr>
+            <tr>
+                <th>Giá gốc</th>
+                <td class="width-auto"><?=number_format($result['cost'],0,'','.') . "đ";?></td>
             </tr>
             <tr>
                 <th>Đơn giá</th>
@@ -371,9 +386,14 @@
                         <td class="width-auto">' . number_format($result['count'],0,'','.') . '</td>
                     </tr>
                     <tr>
+                        <th>Giá gốc</th>
+                        <td class="width-auto">' . number_format($result['cost'],0,'','.') . "đ" . '</td>
+                    </tr>
+                    <tr>
                         <th>Đơn giá</th>
                         <td class="width-auto">' . number_format($result['price'],0,'','.') . "đ" . '</td>
                     </tr>
+                    
                     <tr>
                         <th>Ảnh đại diện</th>
                         <td class="width-auto">

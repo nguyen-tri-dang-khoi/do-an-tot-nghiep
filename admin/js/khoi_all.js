@@ -419,7 +419,7 @@ function loadDataInTab(url){
     $(".img-load").show();
     $("#is-load").hide();
     setTimeout(() => {
-        $('.card-body').load(`${url} #load-all`,() => {
+        $('.ok-game-start').load(`${url} #load-all`,() => {
           $('#select-type2').select2();
           $('#pagination').pagination({
               items: $('[dt-items]').attr('dt-items'),
@@ -442,6 +442,28 @@ function loadDataInTab(url){
           $('[class*=select-type]').select2();
         })
     },500);
+}
+function loadDataComplete(){
+    $(`.table-game-start`).load(`${window.location.href} #table-${file_name_config}`,() => {
+        $('#select-type2').select2();
+        $('#pagination').pagination({
+            items: $('[dt-items]').attr('dt-items'),
+            itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
+            currentPage: $('[dt-page]').attr('dt-page'),
+            hrefTextPrefix: "?page=",
+            hrefTextSuffix: `&`+ $('[dt-url]').attr('dt-url'),
+            prevText: "<",
+            nextText: ">",
+            onPageClick: function(pageNumber,event){
+                event.preventDefault();
+                loadDataInTab(window.location.protocol + window.location.pathname + `?page=${pageNumber}&` +  $('[dt-url]').attr('dt-url'));
+            },
+            cssStyle: 'light-theme'
+        });
+        setSortTable(file_name_config);
+        showPicker();
+        $('[class*=select-type]').select2();
+    })
 }
 function searchTabLoad(form_id){
     event.preventDefault();
@@ -630,7 +652,6 @@ function sortTable(event,type,class_td,asc_desc = "asc"){
         obj_html_td[$(this).text().trim()].push("<tr>" + $(this).parent().html().trim() + "</tr>");
       }
     })
-    //console.log(Object.keys(obj_html_td).sort(function(a,b){return b-a;}));
     console.log(obj_html_td);
     let html_result = "";
     let result = [];
@@ -676,7 +697,7 @@ function sortTable(event,type,class_td,asc_desc = "asc"){
     result.forEach(function(ele,ind){
       html_result += obj_html_td[`${ele}`].join("");
     })
-    $(`${tbody_read}`).empty();
+    $(`tbody${tbody_read}`).empty();
     $(html_result).appendTo(`${tbody_read}`);
     if(asc_desc == "asc"){
       target.attr('onclick',`sortTable(this,'${type}','${class_td}','desc')`);

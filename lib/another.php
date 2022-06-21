@@ -204,6 +204,31 @@
         $res = del_pi_when_del_pt($connection,$parent_id);
         return $res;   
     }
+    //
+    function exec_delete_comment($connection = NULL,$id = NULL){
+        if(!$connection) {
+            $connection = $GLOBALS['link'];
+        }
+        $res = delete_comment($connection,$id);   
+        return $res; 
+    }
+    function delete_comment($connection = NULL,$id){
+        $sql = "";
+        if(is_null($id)) {
+            $sql = "select * from product_comment where reply_id is NULL and is_delete = 0";
+        } else {
+            $sql = "select * from product_comment where reply_id = $id and is_delete = 0";
+        }
+        $stmt = $connection->prepare($sql);
+        $stmt->execute();
+        $sql_upt_pt = "Update product_comment set is_delete = 1 where id = " . $id;
+        sql_query($sql_upt_pt);
+        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            delete_comment($connection,$result["id"]);
+        }       
+        return true;
+    }
+    //
     function exec_deactive_all($connection = NULL,$parent_id = NULL) {
         if(!$connection) {
             $connection = $GLOBALS['link'];

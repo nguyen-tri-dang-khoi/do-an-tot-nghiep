@@ -32,7 +32,7 @@
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         //
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $order_by = "";
+        $order_by = "ORDER BY id desc";
         $where = "where 1=1 and is_delete = 0 ";
         $wh_child = [];
         $arr_search = [];
@@ -176,9 +176,10 @@
             $where .= " and is_active='$is_active'";
         }
         if($orderStatus && $orderByColumn) {
-            $order_by .= "ORDER BY $orderByColumn $orderStatus";
-            $where .= " $order_by";
+            $order_by = "ORDER BY $orderByColumn $orderStatus";
+            
         }
+        $where .= " $order_by";
         // code to be executed get method
 ?>
 <!--html & css section start-->
@@ -194,362 +195,364 @@
   }
 </style>
 <div class="container-wrapper" style="margin-left:250px;">
-  <div class="container-fluid" style="padding:0px;">
-    <section class="content">
-        <div class="row">
-            <div class="col-12">
-               <div class="card">
-                  <div class="card-header" style="display: flex;justify-content: space-between;">
-                     <h3 class="card-title">Quản lý mã khuyến mãi</h3>
-                     <div class="card-tools">
-                        <div class="input-group">
-                        <div class="input-group-append">
-                           <button onclick="openModalInsert()" id="btn-them-khuyen-mai" class="dt-button button-blue">
-                              Tạo mã khuyến mãi
-                           </button>
-                        </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                  <div id="load-all">
-                        <link rel="stylesheet" href="css/tab.css">             
-                        <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
-                            <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;padding-right:0px;padding-left:0px;list-style-type:none;" id="ul-tab-id" class="d-flex ul-tab">
-                                <?php
-                                    $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
-                                    $_SESSION['coupon_manage_tab'] = isset($_SESSION['coupon_manage_tab']) ? $_SESSION['coupon_manage_tab'] : [];
-                                    $_SESSION['coupon_tab_id'] = isset($_SESSION['coupon_tab_id']) ? $_SESSION['coupon_tab_id'] : 0;
-                                ?>
-                                <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('coupon_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
-                                <?php
-                                    $ik = 0;
-                                    $is_active = false;
-                                    if(count($_SESSION['coupon_manage_tab']) > 0) {
-                                        foreach($_SESSION['coupon_manage_tab'] as $tab) {
-                                        if($tab['tab_unique'] == $tab_unique) {
-                                            $_SESSION['coupon_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
-                                        }
-                                ?>
-                                    <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
-                                        <button onclick="loadDataInTab('<?=$_SESSION['coupon_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
-                                        <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                                    </li>
-                                <?php
-                                        $ik++;
-                                    }
-                                }
-                                ?>
-                            </ul>
-                            <div class="d-flex j-center a-center" style="position:relative;">
-                                <div onclick="saveTabFilter()" style="" class="add-tab">
-                                    <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
-                                </div>
+    <div class="container-fluid" style="padding:0px;">
+        <section class="content">
+            <div class="row">
+                <div class="col-12">
+                <div class="card">
+                    <div class="card-header" style="display: flex;justify-content: space-between;">
+                        <h3 class="card-title">Quản lý mã khuyến mãi</h3>
+                        <div class="card-tools">
+                            <div class="input-group">
+                            <div class="input-group-append">
+                            <button onclick="openModalInsert()" id="btn-them-khuyen-mai" class="dt-button button-blue">
+                                Tạo mã khuyến mãi
+                            </button>
                             </div>
-                        </div>
-                        <div class="img-load" style="display:none;text-align:center;" class="d-flex" style="width:100%;">
-                            <img src="img/load.gif" alt="">
-                        </div>
-                        <div id="is-load">
-                            <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                                <form style="" id="form-filter" autocomplete="off" action="coupon_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
-                                    <div class="d-flex a-start">
-                                        <div class="" style="margin-top:5px;">
-                                            <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                                <option value="">Bộ lọc tìm kiếm</option>
-                                                <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                                <option value="subtotal_min2" <?=$search_option == 'subtotal_min2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối thiểu</option>
-                                                <option value="subtotal_max2" <?=$search_option == 'subtotal_max2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối đa</option>
-                                                <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
-                                                <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
-                                                <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
-                                                <option value="is_active2" <?=$search_option == 'is_active2' ? 'selected="selected"' : '' ?>>Tình trạng</option>
-                                                <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                            </select>
-                                        </div>
-                                        <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
-                                        <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                                    </div>
-                                    <div class="d-flex a-start mt-10">
-                                        <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
-                                        <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                        <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
-                                        <div class="ele-cols d-flex f-column">
-                                            <select name="search_option" class="form-control mb-10">
-                                                <option value="">Chọn cột tìm kiếm</option>
-                                                <option value="coupon_code" <?=$search_option == 'coupon_code' ? 'selected="selected"' : '' ?>>Mã khuyến mãi</option>
-                                                <option value="coupon_if_subtotal_min" <?=$search_option == 'coupon_if_subtotal_min' ? 'selected="selected"' : '' ?>>Số tiền tối thiểu</option>
-                                                <option value="coupon_if_subtotal_max" <?=$search_option == 'coupon_if_subtotal_max' ? 'selected="selected"' : '' ?>>Số tiền tối đa</option>
-                                                <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
-                                                <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
-                                                <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
-                                                <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                            </select>
-                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                                        </div>
-                                        <?php
-                                        if(is_array($keyword)) {
-                                            foreach($keyword as $key) {
-                                        ?>
-                                            <?php
-                                            if($key != "") {
-                                            ?>
-                                                <div class="ele-select ele-cols mt-10">
-                                                    <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                                    <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-                                                </div>
-                                            <?php
-                                            }
-                                            ?>
-                                        <?php   
-                                            }
-                                        }
-                                        ?>
-                                        </div>
-                                        <div id="s-subtotal_min2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_min_1 || $subtotal_min_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <div class="ele-subtotal_min2">
-                                                <div class="" style="display:flex;">
-                                                    <input type="text" name="subtotal_min_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_1 ? number_format($subtotal_min_1,0,".",".") : '';?>">
-                                                </div>
-                                                <div class="ml-10" style="display:flex;">
-                                                    <input type="text" name="subtotal_min_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_2 ? number_format($subtotal_min_2,0,".",".") : '';?>">
-                                                </div>
-                                            </div>
-                                            </div>
-                                        <div id="s-subtotal_max2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_max_1 || $subtotal_max_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <div class="ele-subtotal_max2">
-                                                <div class="" style="display:flex;">
-                                                    <input type="text" name="subtotal_max_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
-                                                </div>
-                                                <div class="ml-10" style="display:flex;">
-                                                    <input type="text" name="subtotal_max_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 || $date_start_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <div class="ele-date2">
-                                                <div class="" style="display:flex;">
-                                                    <input type="text" name="date_start_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_start_1 ? Date("d-m-Y",strtotime($date_start_1)) : ''?>">
-                                                </div>
-                                                <div class="ml-10" style="display:flex;">
-                                                    <input type="text" name="date_start_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_start_2 ? Date("d-m-Y",strtotime($date_start_2)) : ''?>">
-                                                </div>
-                                            </div>
-                                            </div>
-                                        <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 || $date_end_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <div class="ele-date2">
-                                                <div class="" style="display:flex;">
-                                                    <input type="text" name="date_end_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_end_1 ? Date("d-m-Y",strtotime($date_end_1)) : ''?>">
-                                                </div>
-                                                <div class="ml-10" style="display:flex;">
-                                                    <input type="text" name="date_end_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_end_2 ? Date("d-m-Y",strtotime($date_end_2)) : ''?>">
-                                                </div>
-                                            </div>
-                                            </div>
-                                        <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_created_at_1 || $date_created_at_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <div class="ele-date2">
-                                                <div class="" style="display:flex;">
-                                                    <input type="text" name="date_created_at_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_created_at_1 ? Date("d-m-Y",strtotime($date_created_at_1)) : ''?>">
-                                                </div>
-                                                <div class="ml-10" style="display:flex;">
-                                                    <input type="text" name="date_created_at_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_created_at_2 ? Date("d-m-Y",strtotime($date_created_at_2)) : ''?>">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex a-start" style="">
-                                        <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
-                                        <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                        <select name="is_active" class="form-control">
-                                            <option value="">Tình trạng kích hoạt</option>
-                                            <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
-                                            <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
-                                        </select>
-                                        </div>
-                                    </div> 
-                                    <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
-                                        <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
-                                        <!--<label for="">Sắp xếp:</label>-->
-                                        <select name="orderByColumn" class="ml-10 form-control col-5">
-                                            <option value="">Sắp xếp theo cột</option>
-                                            <option value="coupon_code" <?=$orderByColumn == "coupon_code" ? "selected" : "";?>>Mã khuyến mãi</option>
-                                            <option value="coupon_discount_percent" <?=$orderByColumn == "coupon_discount_percent" ? "selected" : "";?>>Khuyến mãi (%)</option>
-                                            <option value="coupon_if_subtotal_min" <?=$orderByColumn == "coupon_if_subtotal_min" ? "selected" : "";?>>Số tiền tối thiểu</option>
-                                            <option value="coupon_if_subtotal_max" <?=$orderByColumn == "coupon_if_subtotal_max" ? "selected" : "";?>>Số tiền tối đa</option>
-                                            <option value="coupon_date_start" <?=$orderByColumn == "coupon_date_start" ? "selected" : "";?>>Ngày bắt đầu</option>
-                                            <option value="coupon_date_end" <?=$orderByColumn == "coupon_date_end" ? "selected" : "";?>>Ngày kết thúc</option>
-                                            <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày đăng</option>
-                                        </select>
-                                        <select name="orderStatus" class="ml-10 form-control col-5">
-                                            <option value="">Thao tác sắp xếp</option>
-                                            <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
-                                            <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
-                                        </select>
-                                        <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
-                                        </div>     
-                                    </div>   
-                                </form>
                             </div>
-                            <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
-                                <div>
-                                <?php
-                                    if($allow_delete) {
-                                ?>
-                                <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_update) {
-                                ?>
-                                <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_read) {
-                                ?>
-                                <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                                <?php } ?>
-                                <?php
-                                    if($allow_insert) {
-                                ?>
-                                <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                                <?php } ?>
-                                </div>
-                                <div class="section-save">
-                                <?php
-                                    if($upt_more == 1 && $allow_update){
-                                ?>
-                                <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
-                                <?php } ?>
-                                </div>
-                            </div>
-                            <table id="m-khuyen-mai" class="table table-bordered table-striped">
-                                <thead>
-                                <tr style="cursor:pointer;">
-                                        <th style="width:20px !important;">
-                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                        </th>
-                                        <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-ma-khuyen-mai">Mã khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-khuyen-mai">Khuyến mãi (%) <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-gia-tri-toi-thieu">Giá trị tối thiểu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-gia-tri-toi-da">Giá trị tối đa <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-ngay-bat-dau">Ngày bắt đầu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-150 th-ngay-het-han">Ngày hết hạn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-100">Tình trạng</th>
-                                        <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                        <th class="w-200">Thao tác</th>
-                                </tr>
-                                </thead>
-                                <?php
-                                $get = $_GET;
-                                unset($get['page']);
-                                $str_get = http_build_query($get);
-                                // query
-                                $cnt = 0;
-                                $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-                                $limit = $_SESSION['paging'];
-                                $start_page = $limit * ($page - 1);
-                                $sql_get_total = "select count(*) as 'countt' from coupon $where";
-                                $total = fetch(sql_query($sql_get_total))['countt'];
-                                $sql_get_product = "select * from coupon n $where limit $start_page,$limit";
-                                ?>
-                                <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
-                                <?php
-                                $rows = fetch_all(sql_query($sql_get_product));
-                                foreach($rows as $row) {
-                                ?>
-                                    <tr id="<?=$row["id"];?>">
-                                        <td>
-                                            <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-coupon')" type="checkbox" name="check_id<?=$row["id"];?>">
-                                        </td>
-                                        <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
-                                        <td class="ma-khuyen-mai"><?=$upt_more == 1 ? "<input name='c_code' class='form-control' type='text' value='" . $row['coupon_code'] . "'>" : $row['coupon_code'];?></td>
-                                        <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='c_discount_percent' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'>" : $row['coupon_discount_percent'];?></td>
-                                        <td class="gia-tri-toi-thieu"><?=$upt_more == 1 ? "<input name='c_if_subtotal_min' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" . number_format($row['coupon_if_subtotal_min'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_min'],0,".",".");?></td>
-                                        <td class="gia-tri-toi-da"><?=$upt_more == 1 ? "<input name='c_if_subtotal_max' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" .number_format($row['coupon_if_subtotal_max'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_max'],0,".",".");?></td>
-                                        <td class="ngay-bat-dau">
-                                            <?php
-                                                if($upt_more == 1) {
-                                            ?>
-                                            <?=$row['coupon_date_start'] ? "<input name='c_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'>" : "";?> 
-                                            <?php } else { ?>
-                                            <?=$row['coupon_date_start'] ? Date("d-m-Y",strtotime($row['coupon_date_start'])) : "";?>
-                                            <?php }?>
-                                        </td>
-                                        <td class="ngay-het-han">
-                                            <?php
-                                                if($upt_more == 1) {
-                                            ?>
-                                            <?=$row['coupon_date_end'] ? "<input name='c_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'>" : "";?> 
-                                            <?php } else {?>
-                                            <?=$row['coupon_date_end'] ? Date("d-m-Y",strtotime($row['coupon_date_end'])) : "";?>
-                                            <?php } ?>
-                                        </td>
-                                        <td>
-                                            <div class="custom-control custom-switch">
-                                                <input type="checkbox" onchange="toggleActiveCoupon('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                                <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                            </div>  
-                                        </td>
-                                        <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                        <td>
-                                            <?php
-                                            if($upt_more == 1) {
-                                            ?>
-                                                <button onclick="uptMore2()" dt-count="0" class=" dt-button button-green"
-                                                data-id="<?=$row["id"];?>" >
-                                                Sửa
-                                                </button>
-                                            <?php } else {?>
-                                                <button onclick="openModalRead()" class="btn-xem-khuyen-mai dt-button button-grey"
-                                                data-id="<?=$row["id"];?>">
-                                                Xem
-                                                </button>
-                                                <button onclick="openModalUpdate()" class="btn-sua-khuyen-mai dt-button button-green"
-                                                data-id="<?=$row["id"];?>" >
-                                                Sửa
-                                                </button>
-                                                <button onclick="processDelete()" class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
-                                                Xoá
-                                                </button>
-                                            <?php }?>
-                                        </td>
-                                    </tr>
-                                <?php
-                                $cnt++;
-                                }
-                                ?>
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <th style="width:20px !important;">
-                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                        </th>
-                                        <th>Số thứ tự</th>
-                                        <th>Mã khuyến mãi</th>
-                                        <th>Khuyến mãi (%)</th>
-                                        <th>Giá trị tối thiểu</th>
-                                        <th>Giá trị tối đa</th>
-                                        <th>Ngày bắt đầu</th>
-                                        <th>Ngày hết hạn</th>
-                                        <th>Tình trạng</th>
-                                        <th>Ngày tạo</th>
-                                        <th>Thao tác</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                            <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
-                            
-                            </ul>
                         </div>
                     </div>
+                  <!-- /.card-header -->
+                    <div class="card-body ok-game-start">
+                        <div id="load-all">
+                            <link rel="stylesheet" href="css/tab.css">             
+                            <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
+                                <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;padding-right:0px;padding-left:0px;list-style-type:none;" id="ul-tab-id" class="d-flex ul-tab">
+                                    <?php
+                                        $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                                        $_SESSION['coupon_manage_tab'] = isset($_SESSION['coupon_manage_tab']) ? $_SESSION['coupon_manage_tab'] : [];
+                                        $_SESSION['coupon_tab_id'] = isset($_SESSION['coupon_tab_id']) ? $_SESSION['coupon_tab_id'] : 0;
+                                    ?>
+                                    <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('coupon_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
+                                    <?php
+                                        $ik = 0;
+                                        $is_active = false;
+                                        if(count($_SESSION['coupon_manage_tab']) > 0) {
+                                            foreach($_SESSION['coupon_manage_tab'] as $tab) {
+                                            if($tab['tab_unique'] == $tab_unique) {
+                                                $_SESSION['coupon_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                            }
+                                    ?>
+                                        <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                                            <button onclick="loadDataInTab('<?=$_SESSION['coupon_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
+                                            <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                                            
+                                        </li>
+                                    <?php
+                                            $ik++;
+                                        }
+                                    }
+                                    ?>
+                                </ul>
+                                <div class="d-flex j-center a-center" style="position:relative;">
+                                    <div onclick="saveTabFilter()" style="" class="add-tab">
+                                        <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="img-load" style="display:none;text-align:center;" class="d-flex" style="width:100%;">
+                                <img src="img/load.gif" alt="">
+                            </div>
+                            <div id="is-load">
+                                <div class="col-12" style="padding-right:0px;padding-left:0px;">
+                                    <form style="" id="form-filter" autocomplete="off" action="coupon_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
+                                        <div class="d-flex a-start">
+                                            <div class="" style="margin-top:5px;">
+                                                <select onchange="choose_type_search()" class="form-control" name="search_option">
+                                                    <option value="">Bộ lọc tìm kiếm</option>
+                                                    <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
+                                                    <option value="subtotal_min2" <?=$search_option == 'subtotal_min2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối thiểu</option>
+                                                    <option value="subtotal_max2" <?=$search_option == 'subtotal_max2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối đa</option>
+                                                    <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
+                                                    <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
+                                                    <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
+                                                    <option value="is_active2" <?=$search_option == 'is_active2' ? 'selected="selected"' : '' ?>>Tình trạng</option>
+                                                    <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                                </select>
+                                            </div>
+                                            <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
+                                            <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
+                                        </div>
+                                        <div class="d-flex a-start mt-10">
+                                            <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
+                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                            <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
+                                            <div class="ele-cols d-flex f-column">
+                                                <select name="search_option" class="form-control mb-10">
+                                                    <option value="">Chọn cột tìm kiếm</option>
+                                                    <option value="coupon_code" <?=$search_option == 'coupon_code' ? 'selected="selected"' : '' ?>>Mã khuyến mãi</option>
+                                                    <option value="coupon_if_subtotal_min" <?=$search_option == 'coupon_if_subtotal_min' ? 'selected="selected"' : '' ?>>Số tiền tối thiểu</option>
+                                                    <option value="coupon_if_subtotal_max" <?=$search_option == 'coupon_if_subtotal_max' ? 'selected="selected"' : '' ?>>Số tiền tối đa</option>
+                                                    <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
+                                                    <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
+                                                    <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
+                                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                                </select>
+                                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                                            </div>
+                                            <?php
+                                            if(is_array($keyword)) {
+                                                foreach($keyword as $key) {
+                                            ?>
+                                                <?php
+                                                if($key != "") {
+                                                ?>
+                                                    <div class="ele-select ele-cols mt-10">
+                                                        <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                        <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                                    </div>
+                                                <?php
+                                                }
+                                                ?>
+                                            <?php   
+                                                }
+                                            }
+                                            ?>
+                                            </div>
+                                            <div id="s-subtotal_min2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_min_1 || $subtotal_min_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-subtotal_min2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="subtotal_min_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_1 ? number_format($subtotal_min_1,0,".",".") : '';?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="subtotal_min_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_2 ? number_format($subtotal_min_2,0,".",".") : '';?>">
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div id="s-subtotal_max2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_max_1 || $subtotal_max_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-subtotal_max2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="subtotal_max_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="subtotal_max_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 || $date_start_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-date2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="date_start_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_start_1 ? Date("d-m-Y",strtotime($date_start_1)) : ''?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="date_start_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_start_2 ? Date("d-m-Y",strtotime($date_start_2)) : ''?>">
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 || $date_end_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-date2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="date_end_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_end_1 ? Date("d-m-Y",strtotime($date_end_1)) : ''?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="date_end_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_end_2 ? Date("d-m-Y",strtotime($date_end_2)) : ''?>">
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_created_at_1 || $date_created_at_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
+                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                                <div class="ele-date2">
+                                                    <div class="" style="display:flex;">
+                                                        <input type="text" name="date_created_at_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_created_at_1 ? Date("d-m-Y",strtotime($date_created_at_1)) : ''?>">
+                                                    </div>
+                                                    <div class="ml-10" style="display:flex;">
+                                                        <input type="text" name="date_created_at_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_created_at_2 ? Date("d-m-Y",strtotime($date_created_at_2)) : ''?>">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex a-start" style="">
+                                            <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
+                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                            <select name="is_active" class="form-control">
+                                                <option value="">Tình trạng kích hoạt</option>
+                                                <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
+                                                <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
+                                            </select>
+                                            </div>
+                                        </div> 
+                                        <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
+                                            <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
+                                            <!--<label for="">Sắp xếp:</label>-->
+                                            <select name="orderByColumn" class="ml-10 form-control col-5">
+                                                <option value="">Sắp xếp theo cột</option>
+                                                <option value="coupon_code" <?=$orderByColumn == "coupon_code" ? "selected" : "";?>>Mã khuyến mãi</option>
+                                                <option value="coupon_discount_percent" <?=$orderByColumn == "coupon_discount_percent" ? "selected" : "";?>>Khuyến mãi (%)</option>
+                                                <option value="coupon_if_subtotal_min" <?=$orderByColumn == "coupon_if_subtotal_min" ? "selected" : "";?>>Số tiền tối thiểu</option>
+                                                <option value="coupon_if_subtotal_max" <?=$orderByColumn == "coupon_if_subtotal_max" ? "selected" : "";?>>Số tiền tối đa</option>
+                                                <option value="coupon_date_start" <?=$orderByColumn == "coupon_date_start" ? "selected" : "";?>>Ngày bắt đầu</option>
+                                                <option value="coupon_date_end" <?=$orderByColumn == "coupon_date_end" ? "selected" : "";?>>Ngày kết thúc</option>
+                                                <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày đăng</option>
+                                            </select>
+                                            <select name="orderStatus" class="ml-10 form-control col-5">
+                                                <option value="">Thao tác sắp xếp</option>
+                                                <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
+                                                <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
+                                            </div>     
+                                        </div>   
+                                    </form>
+                                </div>
+                                <div class="col-12 mb-3 d-flex j-between" style="padding-right:0px;padding-left:0px;">
+                                    <div>
+                                    <?php
+                                        if($allow_delete) {
+                                    ?>
+                                    <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
+                                    <?php } ?>
+                                    <?php
+                                        if($allow_update) {
+                                    ?>
+                                    <button onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                    <?php } ?>
+                                    <?php
+                                        if($allow_read) {
+                                    ?>
+                                    <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
+                                    <?php } ?>
+                                    <?php
+                                        if($allow_insert) {
+                                    ?>
+                                    <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
+                                    <?php } ?>
+                                    </div>
+                                    <div class="section-save">
+                                    <?php
+                                        if($upt_more == 1 && $allow_update){
+                                    ?>
+                                    <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
+                                    <?php } ?>
+                                    </div>
+                                </div>
+                                <div class="table-game-start">
+                                <table id="table-coupon_manage" class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr style="cursor:pointer;">
+                                            <th style="width:20px !important;">
+                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                            </th>
+                                            <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-ma-khuyen-mai">Mã khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-khuyen-mai">Khuyến mãi (%) <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-gia-tri-toi-thieu">Giá trị tối thiểu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-gia-tri-toi-da">Giá trị tối đa <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-ngay-bat-dau">Ngày bắt đầu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-150 th-ngay-het-han">Ngày hết hạn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-100">Tình trạng</th>
+                                            <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                            <th class="w-200">Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <?php
+                                    $get = $_GET;
+                                    unset($get['page']);
+                                    $str_get = http_build_query($get);
+                                    // query
+                                    $cnt = 0;
+                                    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                    $limit = $_SESSION['paging'];
+                                    $start_page = $limit * ($page - 1);
+                                    $sql_get_total = "select count(*) as 'countt' from coupon $where";
+                                    $total = fetch(sql_query($sql_get_total))['countt'];
+                                    $sql_get_product = "select * from coupon n $where limit $start_page,$limit";
+                                    ?>
+                                    <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
+                                    <?php
+                                    $rows = fetch_all(sql_query($sql_get_product));
+                                    foreach($rows as $row) {
+                                    ?>
+                                        <tr id="<?=$row["id"];?>">
+                                            <td>
+                                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-coupon')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                            </td>
+                                            <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
+                                            <td class="ma-khuyen-mai"><?=$upt_more == 1 ? "<input name='c_code' class='form-control' type='text' value='" . $row['coupon_code'] . "'>" : $row['coupon_code'];?></td>
+                                            <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='c_discount_percent' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'>" : $row['coupon_discount_percent'];?></td>
+                                            <td class="gia-tri-toi-thieu"><?=$upt_more == 1 ? "<input name='c_if_subtotal_min' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" . number_format($row['coupon_if_subtotal_min'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_min'],0,".",".");?></td>
+                                            <td class="gia-tri-toi-da"><?=$upt_more == 1 ? "<input name='c_if_subtotal_max' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" .number_format($row['coupon_if_subtotal_max'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_max'],0,".",".");?></td>
+                                            <td class="ngay-bat-dau">
+                                                <?php
+                                                    if($upt_more == 1) {
+                                                ?>
+                                                <?=$row['coupon_date_start'] ? "<input name='c_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'>" : "";?> 
+                                                <?php } else { ?>
+                                                <?=$row['coupon_date_start'] ? Date("d-m-Y",strtotime($row['coupon_date_start'])) : "";?>
+                                                <?php }?>
+                                            </td>
+                                            <td class="ngay-het-han">
+                                                <?php
+                                                    if($upt_more == 1) {
+                                                ?>
+                                                <?=$row['coupon_date_end'] ? "<input name='c_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'>" : "";?> 
+                                                <?php } else {?>
+                                                <?=$row['coupon_date_end'] ? Date("d-m-Y",strtotime($row['coupon_date_end'])) : "";?>
+                                                <?php } ?>
+                                            </td>
+                                            <td>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" onchange="toggleActiveCoupon('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                                    <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
+                                                </div>  
+                                            </td>
+                                            <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                                            <td>
+                                                <?php
+                                                if($upt_more == 1) {
+                                                ?>
+                                                    <button onclick="uptMore2()" dt-count="0" class=" dt-button button-green"
+                                                    data-id="<?=$row["id"];?>" >
+                                                    Sửa
+                                                    </button>
+                                                <?php } else {?>
+                                                    <button onclick="openModalRead()" class="btn-xem-khuyen-mai dt-button button-grey"
+                                                    data-id="<?=$row["id"];?>">
+                                                    Xem
+                                                    </button>
+                                                    <button onclick="openModalUpdate()" class="btn-sua-khuyen-mai dt-button button-green"
+                                                    data-id="<?=$row["id"];?>" >
+                                                    Sửa
+                                                    </button>
+                                                    <button onclick="processDelete()" class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
+                                                    Xoá
+                                                    </button>
+                                                <?php }?>
+                                            </td>
+                                        </tr>
+                                    <?php
+                                    $cnt++;
+                                    }
+                                    ?>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th style="width:20px !important;">
+                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                            </th>
+                                            <th>Số thứ tự</th>
+                                            <th>Mã khuyến mãi</th>
+                                            <th>Khuyến mãi (%)</th>
+                                            <th>Giá trị tối thiểu</th>
+                                            <th>Giá trị tối đa</th>
+                                            <th>Ngày bắt đầu</th>
+                                            <th>Ngày hết hạn</th>
+                                            <th>Tình trạng</th>
+                                            <th>Ngày tạo</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                </div>
+                                <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
+                                
+                                </ul>
+                            </div>
+                        </div>
                   </div>
-                  
                </div>
             </div>
          </div>
@@ -1274,7 +1277,7 @@
                             content: data.success,
                             buttons: {
                                 "Ok": function(){
-                                    location.href="coupon_manage.php";
+                                    loadDataComplete();
                                 },
                             }
                         });
@@ -1327,7 +1330,7 @@
                             content: data.success,
                             buttons: {
                                 "Ok": function(){
-                                    location.href="coupon_manage.php";
+                                    loadDataComplete();
                                 },
                             }
                         });
@@ -1376,7 +1379,7 @@
                                     content: data.success,
                                     buttons: {
                                         "Ok": function(){
-                                            location.reload();
+                                            loadDataComplete();
                                         },
                                     }
                                 });
@@ -1437,9 +1440,10 @@
 		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
         prevText: "<",
         nextText: ">",
-		onPageClick: function(){
-			//window.location.href=""
-		},
+		onPageClick: function(pageNumber,event){
+            event.preventDefault();
+            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
+        },
         cssStyle: 'light-theme'
     });
   });
@@ -1570,7 +1574,7 @@
                "tab_name" => $tab_name,
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
-            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['coupon_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['coupon_manage_tab'])- 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
         } else if($status == "deleteTabFilter") {
             $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
             $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
