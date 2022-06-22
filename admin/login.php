@@ -63,7 +63,6 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="token" value="<?php echo_token();?>">
                 <div class="row">
                     <div class="col-5">
                         <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>

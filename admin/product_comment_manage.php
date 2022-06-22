@@ -580,7 +580,6 @@
             url:window.location.href,
             type:"POST",
             data: {
-               token : "<?php echo_token();?>",
                comment: comment,
                status: "Send",
                reply_id: reply_id,
@@ -634,7 +633,6 @@
          url:window.location.href,
          type:"POST",
          data: {
-            token : "<?php echo_token();?>",
             status: status,
             id: comment_id,
          },success:function(data) {

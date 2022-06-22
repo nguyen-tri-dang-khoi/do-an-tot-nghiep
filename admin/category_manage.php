@@ -441,7 +441,7 @@
       url:window.location.href,
       type:"POST",
       data: {
-        token: "<?php echo_token();?>",
+        
         id:id,
         status:status,
       },success:function(data){
@@ -501,7 +501,6 @@
       data: {
         "status": "upt_all",
         "json": json,
-        "parent_id": "<?=$parent_id;?>",
       },
       success: function(data){
         console.log(data);
@@ -510,11 +509,6 @@
           $.alert({
             title: "Thông báo",
             content: "Bạn đã sửa thành công",
-            buttons: {
-              "Ok": function(){
-                location.reload();
-              }
-            }
           })
         }
       },
@@ -564,12 +558,15 @@
                   $.alert({
                     title: "Thông báo",
                     content: "Bạn đã thêm dữ liệu thành công",
-                    buttons: {
-                      "Ok": function(){
-                        location.reload();
-                      }
-                    }
                   });
+                  $("#form-insert table tbody").remove();
+                  $("input[name='count2']").val("");
+                  $("input[name='count3']").val("");
+                  $("input[name='count2']").attr("data-plus",0);
+                  $("input[name='count3']").attr("data-plus",0);
+                  $('#form-insert #paging').remove();
+                  $('#modal-xl2').modal('hide');
+                  loadDataComplete('Insert');
                 }
               },
               error: function(data){
@@ -586,7 +583,11 @@
     
   }
   function openModalInsert(){
-    $('#form-loai-san-pham').load("ajax_category_manage.php?parent_id=<?=$parent_id;?>" + "&status=Insert",() => {
+    let parameters = new URLSearchParams(location.search);
+    //console.log(location.search);
+    let parent_id = parameters.get('parent_id');
+    console.log(parent_id);
+    $('#form-loai-san-pham').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
       $('#modal-xl').modal({backdrop: 'static', keyboard: false});
     });
   }
@@ -629,7 +630,6 @@
                 type:"POST",
                 cache:false,
                 data:{
-                  token: "<?php echo_token();?>",
                   id: id,
                   status: "Delete",
                 },
@@ -640,12 +640,8 @@
                     $.alert({
                       title: "Thông báo",
                       content: res_json.success,
-                      buttons: {
-                        "Ok": function(){
-                          location.reload();
-                        }
-                      }
                     });
+                    loadDataComplete();
                   } else {
                     $.alert({
                       title: "Thông báo",
@@ -681,7 +677,6 @@
       cache:false,
       data:{
         id: $('input[name=id]').val(),
-        parent_id: "<?=$parent_id?>",
         name:$('input[name=ten_loai_san_pham]').val(),
         status: $('#btn-luu-loai-san-pham').attr("data-status"),
         number: $('input[name=number]').val(),
@@ -689,7 +684,6 @@
       success:function(res){
         console.log(res);
         let res_json = JSON.parse(res);
-        
         $('#form-loai-san-pham').trigger('reset');
         $('#modal-xl').modal('hide');
         if(res_json.msg == "ok"){
@@ -698,24 +692,14 @@
             $.alert({
               title: "Thông báo",
               content: "Thêm danh mục thành công",
-              buttons: {
-                "Ok": function(){
-                  //location.href="category_manage.php";
-                  loadDataComplete();
-                }
-              }
             });
-            //dt_pt.row.add(record[0]).draw();
+            loadDataComplete('Insert');
           } else if(status == "Update") {
             $.alert({
               title: "Thông báo",
               content: "Sửa danh mục thành công",
-              buttons: {
-                "Ok": function(){
-                  location.reload();
-                }
-              }
             });
+            loadDataComplete();
           }
         } else {
           $.alert({
@@ -822,21 +806,16 @@
         echo_json(["msg" => "ok"]);
       } else if($status == "upt_all") {
         $json = isset($_REQUEST["json"]) ? $_REQUEST["json"] : null;
-        $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
         if($json) {
           //print_r($json);
           $rows = (array)json_decode($json);
-          if(!$parent_id || $parent_id == ""){
-            $parent_id = null;
-          }
           foreach($rows as $key => $value) {
-            db_update_by_id('product_type',['name'=>$value,'parent_id' => $parent_id],[$key]);
+            db_update_by_id('product_type',['name'=>$value],[$key]);
           }
           echo_json(["msg" => "ok"]);
         }
       } else if($status == "saveTabFilter") {
         $_SESSION['category_tab_id'] = isset($_SESSION['category_tab_id']) ? $_SESSION['category_tab_id'] + 1 : 1;
-        //$tab_name = isset($_REQUEST['tab_name']) ? $_REQUEST['tab_name'] : null;
         $tab_name = isset($_SESSION['category_tab_id']) ? "tab_" . $_SESSION['category_tab_id'] : null;
         $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
         $tab_unique = uniqid("tab_");

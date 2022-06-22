@@ -475,7 +475,6 @@
                             type: "POST",
                             data: {
                                 status: "unlock_more",
-                                token: "<?php echo_token(); ?>",
                                 rows: arr_del.join(","),
                             },
                             success: function(data){
@@ -524,7 +523,6 @@
                             type: "POST",
                             data: {
                                 status: "lock_more",
-                                token: "<?php echo_token(); ?>",
                                 rows: arr_del.join(","),
                             },
                             success: function(data){

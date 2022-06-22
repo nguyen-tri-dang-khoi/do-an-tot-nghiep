@@ -177,7 +177,6 @@
                     data: {
                       status: "auth_otp_phone",
                       otp_user_input: otp_user_input,
-                      token: "<?php echo_token();?>",
                     },success:function(data) {
                       console.log(data);
                       data = JSON.parse(data);
@@ -252,8 +251,6 @@
             let phone = $('input[name=phone]').val();
             let birthday = $('input[name=birthday]').attr('data-date');
             let address = $('input[name=address]').val();
-            // let img = $('#display-image').attr('data-img');
-            let token = "<?php echo_token();?>";
             if(old_pass == ""){
               $.alert({
                 title: "Thông báo",
@@ -271,13 +268,6 @@
             formData.append('birthday',birthday);
             formData.append('address',address);
             formData.append('old_pass',old_pass);
-            formData.append('token',token);
-            /*console.log(name);
-            console.log(email);
-            console.log(phone);
-            console.log(birth);
-            console.log(address);
-            console.log(old_pass);*/
             let url = window.location.href;
             // xu ly anh
             let file = $('input[name=img_admin_file]')[0].files;

@@ -68,13 +68,7 @@
                                     ?>
                                         <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
                                             <button onclick="loadDataInTab('<?=$_SESSION['delivery_fee_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
-                                            <?php
-                                            if($tab['tab_unique'] != 'first_tab') {
-                                            ?>
                                             <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                                            <?php
-                                            }
-                                            ?>
                                         </li>
                                     <?php
                                             $ik++;
@@ -474,12 +468,8 @@
                         $.alert({
                             title: "Thông báo",
                             content: data.success,
-                            buttons: {
-                                "Ok": function(){
-                                    location.href="delivery_fee_manage.php";
-                                },
-                            }
                         });
+                        loadDataComplete();
                     } else {
                         $.alert({
                             title: "Thông báo",
@@ -515,18 +505,13 @@
                     processData: false,
                     data: formData,
                     success:function(data){
-                        //data = JSON.parse(data);
-                        console.log(data);
+                        data = JSON.parse(data);
                         if(data.msg == "ok") {
                             $.alert({
                                 title: "Thông báo",
                                 content: data.success,
-                                buttons: {
-                                    "Ok": function(){
-                                        location.reload();
-                                    },
-                                }
                             });
+                            loadDataComplete();
                         } else {
                             $.alert({
                                 title: "Thông báo",
@@ -570,12 +555,8 @@
                                 $.alert({
                                     title: "Thông báo",
                                     content: data.success,
-                                    buttons: {
-                                        "Ok": function(){
-                                            location.reload();
-                                        },
-                                    }
                                 });
+                                loadDataComplete();
                             } else {
                                 $.alert({
                                     title: "Thông báo",

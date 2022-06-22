@@ -135,7 +135,6 @@
       }
       if($orderStatus && $orderByColumn) {
          $order_by = "ORDER BY $orderByColumn $orderStatus";
-         
       }
       $where .= " $order_by";
       log_v($where);
@@ -967,7 +966,7 @@
 	 }
 </script>
 <script>
-   function readURL2(input){
+   function readURLok(input){
       if (input.files && input.files[0]) {
          var reader = new FileReader();
          reader.onload = function (e) {
@@ -1051,10 +1050,10 @@
          });
          $("#fileInput").on("change",function(){
             $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-            readURL(this); 
+            readURLok(this); 
          });
          $('#file_input_anh_mo_ta').on('change', function() {
-            imagesPreview(this,'#image_preview');
+            readURLok(this,'#image_preview');
          });
       });
    }  
@@ -1087,10 +1086,10 @@
          });
          $("#fileInput").on("change",function(){
             $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-            readURL(this); 
+            readURLok(this); 
          });
          $('#file_input_anh_mo_ta').on('change', function() {
-            imagesPreview(this,'#image_preview');
+            readURLok(this,'#image_preview');
          });
       });
    }
@@ -1152,12 +1151,8 @@
                      $.alert({
                         title: "Thông báo",
                         content: msg,
-                        buttons: {
-                           Ok : function(){
-                              location.href="product_manage.php";
-                           }
-                        }
                      });
+                     loadDataComplete('Insert');
                      if($('#display-image').length){
                         $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
                      }
@@ -1166,12 +1161,8 @@
                      $.alert({
                         title: "Thông báo",
                         content: msg,
-                        buttons: {
-                           Ok : function(){
-                              location.href="product_manage.php";
-                           }
-                        }
                      });
+                     loadDataComplete();
                   }
                   $('#form-san-pham').trigger('reset');
                   $("#msg_style").removeAttr('style');
@@ -1193,7 +1184,6 @@
    function processDelete(){
       let id = $(event.currentTarget).attr('data-id');
       let target = $(event.currentTarget);
-      target.closest("tr").addClass("bg-color-selected");
       $.confirm({
          title: 'Thông báo',
          content: 'Bạn có chắc chắn muốn xoá sản phẩm này ?',
@@ -1204,7 +1194,6 @@
                   type:"POST",
                   cache:false,
                   data:{
-                     token: "<?php echo_token(); ?>",
                      id: id,
                      status: "Delete",
                   },
@@ -1218,8 +1207,7 @@
                            title: "Thông báo",
                            content: res_json.success
                         });
-                        //$('#san-pham' + res_json.id).remove();
-                        dt_pi.row(click_number).remove().draw();
+                        loadDataComplete();
                      } else {
                         $.alert({
                            title: "Thông báo",
@@ -1298,7 +1286,6 @@
             test = false;
          }
       });
-      formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
       if(count == 0) {
@@ -1330,7 +1317,7 @@
                               content: "Bạn đã thêm dữ liệu thành công",
                               buttons: {
                                  "Ok": function(){
-                                    location.reload();
+                                    loadDataComplete();
                                  }
                               }
                            });
@@ -1401,7 +1388,6 @@
             test = false;
          }
       });
-      formData.append("token","<?php echo_token(); ?>");
       formData.append("status","upt_all");
       formData.append("len",_data.length);
       if(test) {
@@ -1483,7 +1469,6 @@
                pi_price: price,
                pi_description: description,
                pi_id: id,
-               token: '<?php echo_token();?>'
             },success: function(data){
                data = JSON.parse(data);
                if(data.msg == "ok"){
@@ -1568,7 +1553,6 @@
          formData.append("type_p2",type_p2);
          formData.append("desc_p2",desc_p2);
          formData.append("status","ins_more");
-         formData.append("token","<?php echo_token();?>");
          if(file.length > 0) {
             formData.append('file_p2',file[0]); 
          }
@@ -1676,7 +1660,6 @@
       }
       $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
       $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-      $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
       $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
       $count = isset($_REQUEST["count"]) ? str_replace(".","",$_REQUEST["count"]) : null;
@@ -1684,7 +1667,6 @@
       $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
       $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
       $price = isset($_REQUEST["price"]) ? str_replace(".","",$_REQUEST["price"]) : null;
-      //
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
       if($list_file_del){
          $list_file_del = explode(",",$list_file_del);
@@ -1757,7 +1739,7 @@
                   }
                }
                $success = "Insert dữ liệu thành công.";
-               echo_json(["msg" => "ok","number"=>$number,"success" => $success,"id"=>$insert,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id" => $category_id,"image"=>$image,"price"=>$price,"count"=>$count,"created_at"=>date('d-m-Y H-i-s',time())]);
+               echo_json(["msg" => "ok","success" => $success,"id"=>$insert]);
             }
          }
       } else if($status == "Update") {
@@ -1857,7 +1839,7 @@
          if($image) {
             $image = $image['img_name'];
          }
-         echo_json(["msg" => "ok","number" => $number,'success' => $success,"id" => $id,"name"=>$name,"description"=>$description,"category_name"=>$category_name,"category_id"=>$category_id,"image"=>$image,"price"=>$price,"count"=>$count]);
+         echo_json(["msg" => "ok",'success' => $success]);
       } else if($status == "active") {
          $sql = "select is_active from product_type where id = '$category_id' limit 1";
          $res22 = fetch(sql_query($sql));

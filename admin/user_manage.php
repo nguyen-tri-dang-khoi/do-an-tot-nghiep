@@ -851,7 +851,7 @@
                             content: data.success,
                             buttons: {
                                 "Ok": function(){
-                                    location.href="user_manage.php";
+                                    loadDataComplete();
                                 },
                             }
                         });
@@ -875,7 +875,6 @@
         if(validate()) {
             let file = $('input[name="img_name"]')[0].files;
             let formData = new FormData($('#manage_user')[0]);
-            formData.append("token","<?php echo_token();?>");
             formData.append("status","Update");
             formData.append("id",$('input[name=id]').val());
             formData.append("full_name",$('#full_name').val());
@@ -909,7 +908,7 @@
                             content: data.success,
                             buttons: {
                                 "Ok": function(){
-                                    location.reload();
+                                    loadDataComplete();
                                 },
                             }
                         });
@@ -955,7 +954,7 @@
                                     content: data.success,
                                     buttons: {
                                         "Ok": function(){
-                                            location.reload();
+                                            loadDataComplete();
                                         },
                                     }
                                 });
@@ -1061,7 +1060,6 @@
             formData.append("u_address2",u_address2);
             formData.append("u_birthday2",u_birthday2);
             formData.append("status","ins_more");
-            formData.append("token","<?php echo_token();?>");
             let this2 = $(event.currentTarget);
             $.ajax({
                 url: window.location.href,
@@ -1156,7 +1154,6 @@
           test = false;
         }
       });
-      formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
       if(count == 0) {
@@ -1451,7 +1448,6 @@
             }
         });
         if(test) {
-            formData.append("token","<?php echo_token(); ?>");
             formData.append("status","upt_all");
             formData.append("len",_data.length);
             $.ajax({
@@ -1500,7 +1496,6 @@
                             type: "POST",
                             data: {
                                 status: "unlock_more",
-                                token: "<?php echo_token(); ?>",
                                 rows: arr_del.join(","),
                             },
                             success: function(data){
@@ -1549,7 +1544,6 @@
                             type: "POST",
                             data: {
                                 status: "lock_more",
-                                token: "<?php echo_token(); ?>",
                                 rows: arr_del.join(","),
                             },
                             success: function(data){
@@ -1726,7 +1720,6 @@
             data: {
                 status: "role_load",
                 roles: str_arr_upt,
-                token: '<?php echo_token();?>',
             },
             success: function(data){
                 console.log(data);
@@ -1821,7 +1814,6 @@
                     u_cmnd: cmnd,
                     u_id: id,
                     u_birthday: birthday,
-                    token: '<?php echo_token();?>'
                 },success: function(data){
                     data = JSON.parse(data);
                     if(data.msg == "ok"){

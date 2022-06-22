@@ -747,7 +747,6 @@
                   type:"POST",
                   cache:false,
                   data:{
-                     token: "<?php echo_token(); ?>",
                      id: id,
                      status: "Delete",
                   },
@@ -811,8 +810,6 @@
             test = false;
          }
       });
-      
-      formData.append("token","<?php echo_token(); ?>");
       formData.append("status","ins_all");
       formData.append("len",len);
       if(count == 0) {
@@ -886,7 +883,6 @@
          formData.append("n_content2",n_content2);
          formData.append("img3",img3);
          formData.append("status","ins_more");
-         formData.append("token","<?php echo_token();?>");
          if(img3.length > 0) {
             formData.append('img3',img3[0]); 
          }
@@ -958,7 +954,6 @@
          }
       });
       if(test) {
-         formData.append("token","<?php echo_token(); ?>");
          formData.append("status","upt_all");
          formData.append("len",_data.length);
          $.ajax({
@@ -1018,7 +1013,6 @@
             n_title: title,
             n_content: content,
             n_id: id,
-            token: '<?php echo_token();?>'
          },success: function(data){
                data = JSON.parse(data);
                if(data.msg == "ok"){

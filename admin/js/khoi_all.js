@@ -415,9 +415,15 @@ var html_config = {
         }
     },
 };
-function loadDataInTab(url){
+window.addEventListener('popstate', () => {
+    loadDataInTab(document.location,false);
+});
+function loadDataInTab(url,pushState = true){
     $(".img-load").show();
     $("#is-load").hide();
+    if(pushState) {
+        window.history.pushState('ok', 'hi', `${url}`);
+    }
     setTimeout(() => {
         $('.ok-game-start').load(`${url} #load-all`,() => {
           $('#select-type2').select2();
@@ -430,8 +436,8 @@ function loadDataInTab(url){
               prevText: "<",
               nextText: ">",
               onPageClick: function(pageNumber,event){
-                  event.preventDefault();
-                  loadDataInTab(window.location.protocol + window.location.pathname + `?page=${pageNumber}&` +  $('[dt-url]').attr('dt-url'));
+                event.preventDefault();
+                loadDataInTab(window.location.protocol + window.location.pathname + `?page=${pageNumber}&` +  $('[dt-url]').attr('dt-url'));
               },
               cssStyle: 'light-theme'
           });
@@ -443,8 +449,29 @@ function loadDataInTab(url){
         })
     },500);
 }
-function loadDataComplete(){
-    $(`.table-game-start`).load(`${window.location.href} #table-${file_name_config}`,() => {
+function loadDataComplete(status = ""){
+    let parameters = new URLSearchParams(location.search);
+    let page = parameters.get('page');
+    let tab_unique = parameters.get('tab_unique');
+    let parent_id = parameters.get('parent_id');
+    let location_ok = window.location.href;
+    if($('input[name=check_all]').is(':checked')) {
+        if(page == 1 || page == null) {
+            page = parseInt(page) + 1;
+        } else if(page > 1){
+            page = page - 1;
+        }
+        location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
+    } 
+    if(status == "Insert") {
+        if(parent_id != null) {
+            location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}&parent_id=${parent_id}`;
+        } else {
+            location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}`;
+        }
+        
+    }
+    $(`.table-game-start`).load(`${location_ok} #table-${file_name_config}`,() => {
         $('#select-type2').select2();
         $('#pagination').pagination({
             items: $('[dt-items]').attr('dt-items'),
@@ -463,6 +490,7 @@ function loadDataComplete(){
         setSortTable(file_name_config);
         showPicker();
         $('[class*=select-type]').select2();
+        window.history.pushState('ok', 'ok', `${location_ok}`);
     })
 }
 function searchTabLoad(form_id){
@@ -470,7 +498,7 @@ function searchTabLoad(form_id){
     loadDataInTab(window.location.protocol + window.location.pathname + "?" + $(`${form_id}`).serialize());
 }
 function saveTabFilter(){
-    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?tab_unique=all`;
+    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
     $.ajax({
         url:window.location.href,
         type:"POST",
@@ -1196,12 +1224,8 @@ function delMore(){
                         $.alert({
                             title: "Thông báo",
                             content: "Bạn đã xoá dữ liệu thành công",
-                            buttons: {
-                              "Ok": function(){
-                                
-                              }
-                            }
                         });
+                        loadDataComplete();
                       }
                   },error: function(data){
                       console.log("Error:" + data);

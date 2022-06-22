@@ -91,7 +91,6 @@
               old_pass: old_pass,
               new_pass: new_pass,
               confirm_new_pass: confirm_new_pass,
-              token: "<?php echo_token() ;?>"
             },
             success:function(res_json){
                 res_json = JSON.parse(res_json);

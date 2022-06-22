@@ -820,7 +820,6 @@
                     ptd_date_start: ptd_date_start,
                     ptd_date_end: ptd_date_end,
                     ptd_id : ptd_id,
-                    token: '<?php echo_token();?>'
                 },success: function(data){
                     data = JSON.parse(data);
                     if(data.msg == "ok"){
@@ -901,7 +900,6 @@
             }
         });
         if(test) {
-            formData.append("token","<?php echo_token(); ?>");
             formData.append("status","upt_all");
             formData.append("len",_data.length);
             $.ajax({
@@ -990,7 +988,6 @@
             formData.append("ptd_date_start2",ptd_date_start2);
             formData.append("ptd_date_end2",ptd_date_end2);
             formData.append("status","ins_more");
-            formData.append("token","<?php echo_token();?>");
             let this2 = $(event.currentTarget);
             $.ajax({
                 url: window.location.href,
@@ -1359,7 +1356,6 @@
             url:window.location.href,
             type:"POST",
             data:{
-                token: "<?php echo_token();?>",
                 id: id,
                 status: status 
             },
@@ -1770,7 +1766,6 @@
                             type:"POST",
                             cache:false,
                             data: {
-                                token: "<?php echo_token();?>",
                                 id: id,
                                 status: "Delete",
                             },

@@ -712,7 +712,7 @@
                     content: data.success,
                     buttons: {
                       "Ok":function(){
-                        location.reload();
+                        loadDataComplete();
                       }
                     }
                   });
@@ -755,7 +755,7 @@
                       content: data.success,
                       buttons: {
                         "Ok":function(){
-                          location.reload();
+                          loadDataComplete();
                         }
                       }
                     });

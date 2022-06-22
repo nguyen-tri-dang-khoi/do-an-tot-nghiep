@@ -55,7 +55,7 @@
                 <label for="exampleInputFile">Upload ảnh đại diện</label>
                 <div class="input-group">
                 <div class="custom-file">
-                    <input id="fileInput" name="img_sanpham_file" onchange="readURL2(this)" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile">
+                    <input id="fileInput" name="img_sanpham_file" onchange="readURLok(this)" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile">
                     <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
                 </div>
             </div>
@@ -126,9 +126,8 @@
             <div id="name_desc_err" class="text-danger"></div>
         </div>
     </div>
-    <input type="hidden" name="number" value="<?=$number;?>">
     <div class="card-footer">
-        <button id="btn-luu-san-pham" data-status="Update" type="submit" class="dt-button button-purple">Đăng sản phẩm lên</button>
+        <button onclick="processModalInsertUpdate()" id="btn-luu-san-pham" data-status="Update" type="submit" class="dt-button button-purple">Đăng sản phẩm lên</button>
         <input type="hidden" name="id" value="<?=$result['pi_id'];?>">      
     </div>
 </form>
@@ -183,7 +182,7 @@
                 <label for="exampleInputFile">Upload ảnh đại diện</label>
                 <div class="input-group">
                     <div class="custom-file">
-                        <input id="fileInput" name="img_sanpham_file" type="file" accept="image/*" onchange="readURL2(this)" class="custom-file-input" id="exampleInputFile">
+                        <input id="fileInput" name="img_sanpham_file" type="file" accept="image/*" onchange="readURLok(this)" class="custom-file-input" id="exampleInputFile">
                         <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
                     </div>
                 </div>
@@ -219,7 +218,7 @@
         </div>
     </div>
     <div class="card-footer">
-        <button id="btn-luu-san-pham" type="submit" data-status="Insert" class="dt-button button-purple">Đăng sản phẩm lên</button>
+        <button onclick="processModalInsertUpdate()" id="btn-luu-san-pham" type="submit" data-status="Insert" class="dt-button button-purple">Đăng sản phẩm lên</button>
         <input type="hidden" name="id" >
     </div>
 </form>
