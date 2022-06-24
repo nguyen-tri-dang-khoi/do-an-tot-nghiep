@@ -1,8 +1,6 @@
 <?php
     include_once("../lib/database.php");
-    logout_session_timeout();
-    check_access_token();
-    redirect_if_login_success();
+
     if(is_get_method()) {
         include_once("include/head.meta.php");
         // code to be executed get method
@@ -110,8 +108,8 @@
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and type = 'officer'  or type = 'admin' limit 1";
-        $row = fetch_row($sql,[$email]);
+        $sql = "select id,type,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and type = 'officer'  or type = 'admin' limit 1";
+        $row = fetch(sql_query($sql,[$email]));
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
         }

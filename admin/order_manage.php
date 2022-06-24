@@ -1,8 +1,5 @@
 <?php
     include_once("../lib/database.php");
-    logout_session_timeout();
-    check_access_token();
-    redirect_if_login_status_false();
     if(is_get_method()) {
         $allow_read = false;
         if(check_permission_crud("order_manage.php","read")) {
@@ -22,8 +19,6 @@
         $select_payment_status_id = isset($_REQUEST['select_payment_status_id']) ? $_REQUEST['select_payment_status_id'] : null;
         $select_payment_method = isset($_REQUEST['select_payment_method']) ? $_REQUEST['select_payment_method'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $is_search = isset($_REQUEST['is_search']) ? true : false;
         $where = "where 1=1 ";
         $order_by = "Order by o.id desc";
         $wh_child = [];
@@ -66,31 +61,22 @@
               $where .= " and ($wh_child)";
           }
         }
-        if($total_min && $total_max) {
-          if($total_min != "" && $total_max != "") {
-            $total_min = str_replace(".","",$total_min);
-            $total_max = str_replace(".","",$total_max);
-            $where .= " and (total >= '$total_min' and total <= '$total_max')";
-          } else if($total_min == "" && $total_max != ""){
-            $total_max = str_replace(".","",$total_max);
-            $where .= " and (total <= '$total_max')";
-          } else if($total_min != "" && $total_max == ""){
-            $total_min = str_replace(".","",$total_min);
-            $where .= " and (total >= '$total_min')";
-          }
+        if($total_min) {
+          $total_min = str_replace(".","",$total_min);
+          $where .= " and (total >= '$total_min')";
         }
-        if($date_min && $date_max) {
-          if($date_min != "" && $date_max != "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (o.created_at >= '$date_min 00:00:00' and o.created_at <= '$date_max 23:59:59')";
-          } else if($date_min != "" && $date_max == "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $where .= " and (o.created_at >= '$date_min 00:00:00')";
-          } else if($date_min == "" && $date_max != "") {
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (o.created_at <= '$date_max 23:59:59')";
-          }
+        if($total_max) {
+          $total_max = str_replace(".","",$total_max);
+          $where .= " and (total <= '$total_max')";
+        }
+
+        if($date_min) {
+          $date_min = Date("Y-m-d",strtotime($date_min));
+          $where .= " and (o.created_at >= '$date_min 00:00:00')";
+        }
+        if($date_max) {
+          $date_max = Date("Y-m-d",strtotime($date_max));
+          $where .= " and (o.created_at <= '$date_max 23:59:59')";
         }
         if($select_payment_status_id) {
           if($select_payment_status_id == "payment_completed"){
@@ -106,7 +92,7 @@
           $order_by = "ORDER BY $orderByColumn $orderStatus";
         }
         $where .= " $order_by";
-        log_v($where);
+        //log_v($where);
 ?>
 <!--html & css section start-->
 <style>
@@ -311,18 +297,14 @@
                           </tr>
                         </thead>
                         <?php
-                          // set get
-                          $get = $_GET;
-                          unset($get['page']);
-                          $str_get = http_build_query($get);
                           // query
-                          $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                          $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                           $limit = $_SESSION['paging'];
                           $start_page = $limit * ($page - 1);
                           $sql_get_total = "select count(*) as 'countt' from orders o inner join customer c on o.customer_id = c.id $where";
                           $total = fetch(sql_query($sql_get_total))['countt'];
                         ?>
-                        <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-order">
+                        <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-order">
                         <?php
                           
                           $sql_get_order = "select o.id as 'o_id',o.is_cancel as 'o_is_cancel',o.delivery_status_id as 'o_delivery_status_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status_id,
@@ -775,27 +757,9 @@
     }
    
 </script>
-
-<script>
-  $(function() {
-    $('#pagination').pagination({
-    items: <?=$total;?>,
-    itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-    prevText: "<",
-    nextText: ">",
-		onPageClick: function(pageNumber,event){
-      event.preventDefault();
-      loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-    },
-        cssStyle: 'light-theme'
-    });
-  });
-</script>
 <!--js section end-->
 <?php
+    include_once("include/pagination.php");
     include_once("include/footer.php");
 ?>
 <?php

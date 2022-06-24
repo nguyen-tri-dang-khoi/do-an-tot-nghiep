@@ -1,9 +1,8 @@
 <?php
     include_once("../lib/database_v2.php");
-    logout_session_timeout();
-    check_access_token();
-    redirect_if_login_status_false();
     if(is_get_method()) {
+        include_once("include/head.meta.php");
+        include_once("include/left_menu.php");
         $allow_read = $allow_update = $allow_delete = $allow_insert = false; 
         if(check_permission_crud("category_manage.php","read")) {
           $allow_read = true;
@@ -18,8 +17,7 @@
           $allow_insert = true;
         }
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
-        include_once("include/head.meta.php");
-        include_once("include/left_menu.php");
+        
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
@@ -98,7 +96,7 @@
                         $_SESSION['category_manage_tab'] = isset($_SESSION['category_manage_tab']) ? $_SESSION['category_manage_tab'] : [];
                         $_SESSION['category_tab_id'] = isset($_SESSION['category_tab_id']) ? $_SESSION['category_tab_id'] : 0;
                       ?>
-                      <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
+                      <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php')" class="tab tab-1">Tất cả</button></li>
 
                       <?php
                         $ik = 0;
@@ -224,32 +222,28 @@
                           </thead>
                           <?php
                             $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
-                            $get = $_GET;
-                            unset($get['page']);
-                            $str_get = http_build_query($get);
-                            $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                            $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
                             $limit = $_SESSION['paging'];
                             $start_page = $limit * ($page - 1);
                             $sql_get_total = "select count(*) as 'countt' from product_type $where";
                             $total = fetch(sql_query($sql_get_total))['countt'];
                             $cnt = 0;
                             $sql_get_product_type = "select * from product_type $where limit $start_page,$limit";
-                            log_v($sql_get_product_type);
                             $product_types = fetch_all(sql_query($sql_get_product_type));
                           ?>
-                          <tbody dt-parent-id="<?=$parent_id ? $parent_id : NULL;?>" dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-product-type">
+                          <tbody dt-parent-id="<?=$parent_id ? $parent_id : NULL;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-product-type">
                           <?php foreach($product_types as $product_type) {?>
                             <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
                               <td>
                                 <input style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
                               </td>
-                              <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
+                              <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
                                 <?=$total - ($start_page + $cnt);?>
                             </td>
                               <?php
                                 if($upt_more != 1){
                               ?>
-                              <td class="danh-muc" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=$product_type["name"];?></td>
+                              <td class="danh-muc" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=$product_type["name"];?></td>
                               <?php
                                 } else {
                               ?>
@@ -258,7 +252,7 @@
                                 }
                               ?>
                               
-                              <td class="ngay-tao" onclick="loadDataInTab('category_manage.php?parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
+                              <td class="ngay-tao" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
                               <td>
                                 <div class="custom-control custom-switch">
                                   <input type="checkbox" onchange="toggleActiveCategory()" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
@@ -679,7 +673,6 @@
         id: $('input[name=id]').val(),
         name:$('input[name=ten_loai_san_pham]').val(),
         status: $('#btn-luu-loai-san-pham').attr("data-status"),
-        number: $('input[name=number]').val(),
       },
       success:function(res){
         console.log(res);
@@ -711,33 +704,15 @@
     });
   }
 </script>
-<script>
-  $('#select-type2').select2();
-  $(function() {
-    $('#pagination').pagination({
-      items: <?=$total;?>,
-      itemsOnPage: <?=$limit;?>,
-      currentPage: <?=$page;?>,
-      hrefTextPrefix: "<?='?page='; ?>",
-      hrefTextSuffix: "<?='&' . $str_get;?>",
-      prevText: "<",
-      nextText: ">",
-      onPageClick: function(pageNumber,event){
-        event.preventDefault();
-        loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-      },
-      cssStyle: 'light-theme'
-    });
-  });
-</script>
 <!--js section end-->
 <?php
+    include_once("include/pagination.php");
     include_once("include/footer.php"); 
 ?>
 <?php
     } else if (is_post_method()) {
-      $number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+      $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : null;
       $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
       $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
       $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
@@ -753,10 +728,13 @@
             $sql_get_active = "select is_active from product_type where id='$parent_id'";
             $row = fetch(sql_query($sql_get_active));
             $is_active = $row['is_active'] ? $row['is_active'] : 0;
-            ajax_db_insert_id('product_type',['name'=>$name,'parent_id' => $parent_id,'is_active'=>$is_active],['id' => $id,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
+            $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
+            sql_query($sql,[$name,$parent_id,$is_active]);
           } else {
-              ajax_db_insert_id('product_type',['name'=>$name,'is_active'=>1],['id' => $id,'name'=>$name,'created_at'=>date('d-m-Y H:i:s',time())]);
+            $sql = "Insert into product_type(name,is_active) values(?,?)";
+            sql_query($sql,[$name,1]);
           }
+          echo_json(["msg" => "ok"]);
       } else if($status == "active") {
         exec_active_all(NULL,$id);
         echo_json(['msg' => 'active','success' => 'Bạn đã kích hoạt danh mục thành công']);
@@ -766,15 +744,16 @@
       } else if($status == "upt_more") {
         $pt_id = isset($_REQUEST["pt_id"]) ? $_REQUEST["pt_id"] : null;
         $pt_name = isset($_REQUEST["pt_name"]) ? $_REQUEST["pt_name"] : null;
-        $sql = "Update product_type set name='$pt_name' where id = '$pt_id'";
-        sql_query($sql);
+        $sql = "Update product_type set name = ? where id = ?";
+        sql_query($sql,[$pt_name,$pt_id]);
         echo_json(["msg" => "ok"]);
       } else if($status == "del_more") {
         $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
+        
         $rows = explode(",",$rows);
         foreach($rows as $row) {
-          $sql = "Update product_type set is_delete = 1 where id = '$row'";
-          sql_query($sql);
+          $sql = "Update product_type set is_delete = 1 where id = ?";
+          sql_query($sql,[$row]);
         }
         echo_json(["msg" => "ok"]);
       } else if($status == "ins_more") {
@@ -786,8 +765,8 @@
         if(!$parent_id || $parent_id == ""){
           $parent_id = null;
         }
-        db_insert_id('product_type',['name'=>$name2,'parent_id' => $parent_id,"is_active" => $is_active]);
-        //sql_query($sql);
+        $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
+        sql_query($sql,[$name2,$parent_id,$is_active]);
         echo_json(["msg" => "ok"]);
       } else if($status == "ins_all") {
         $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
@@ -800,7 +779,8 @@
             $parent_id = null;
           }
           foreach(explode(",",$rows) as $row) {
-            db_insert_id('product_type',['name'=>$row,'parent_id' => $parent_id,"is_active" => $is_active]);
+            $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
+            sql_query($sql,[$row,$parent_id,$is_active]);
           }
         }
         echo_json(["msg" => "ok"]);
@@ -810,7 +790,8 @@
           //print_r($json);
           $rows = (array)json_decode($json);
           foreach($rows as $key => $value) {
-            db_update_by_id('product_type',['name'=>$value],[$key]);
+            $sql_update = "Update product_type set name = ? where id = ?";
+            sql_query($sql_update,[$value,$key]);
           }
           echo_json(["msg" => "ok"]);
         }

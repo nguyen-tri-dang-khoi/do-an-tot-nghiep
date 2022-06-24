@@ -449,19 +449,16 @@
                                     </tr>
                                     </thead>
                                     <?php
-                                    $get = $_GET;
-                                    unset($get['page']);
-                                    $str_get = http_build_query($get);
                                     // query
                                     $cnt = 0;
-                                    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                     $limit = $_SESSION['paging'];
                                     $start_page = $limit * ($page - 1);
                                     $sql_get_total = "select count(*) as 'countt' from coupon $where";
                                     $total = fetch(sql_query($sql_get_total))['countt'];
                                     $sql_get_product = "select * from coupon n $where limit $start_page,$limit";
                                     ?>
-                                    <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
+                                    <tbody dt-parent-id  dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
                                     <?php
                                     $rows = fetch_all(sql_query($sql_get_product));
                                     foreach($rows as $row) {
@@ -1058,6 +1055,7 @@
     }
     
 </script>
+
 <script>
     function toggleActiveCoupon(id,status) {
         let evt = $(event.currentTarget);
@@ -1218,7 +1216,7 @@
         })
     }
     function openModalUpdate(){
-        let id = $(e.currentTarget).attr('data-id');
+        let id = $(event.currentTarget).attr('data-id');
         $('#form-khuyen-mai').load("ajax_coupon_manage.php?status=Update&id=" + id,() => {
             $('#modal-xl').modal({backdrop: 'static', keyboard: false});
             $(".is-date-coupon-start").datepicker({
@@ -1281,11 +1279,6 @@
                                 },
                             }
                         });
-                    } else {
-                        $.alert({
-                            title: "Thông báo",
-                            content: data.error
-                        });
                     }
                     $('#modal-xl').modal('hide');
                 },
@@ -1323,6 +1316,7 @@
                     "coupon_date_end": coupon_date_end
                 },
                 success:function(data){
+                    console.log(data);
                     data = JSON.parse(data);
                     if(data.msg == "ok") {
                         $.alert({
@@ -1333,11 +1327,6 @@
                                     loadDataComplete();
                                 },
                             }
-                        });
-                    } else {
-                        $.alert({
-                            title: "Thông báo",
-                            content: data.error
                         });
                     }
                     $('#modal-xl').modal('hide');
@@ -1377,17 +1366,8 @@
                                 $.alert({
                                     title: "Thông báo",
                                     content: data.success,
-                                    buttons: {
-                                        "Ok": function(){
-                                            loadDataComplete();
-                                        },
-                                    }
                                 });
-                            } else {
-                                $.alert({
-                                    title: "Thông báo",
-                                    content: data.error,
-                                });
+                                loadDataComplete();
                             }
                         },
                         error:function(data) {
@@ -1430,28 +1410,11 @@
         });
     });
 </script>
-<script>
-   $(function() {
-    $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-        prevText: "<",
-        nextText: ">",
-		onPageClick: function(pageNumber,event){
-            event.preventDefault();
-            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-        },
-        cssStyle: 'light-theme'
-    });
-  });
-</script>
 <!--js section end-->
 
 <?php
-        include_once("include/footer.php"); 
+    include_once("include/pagination.php");
+    include_once("include/footer.php"); 
 ?>
 <?php
     } else if (is_post_method()) {

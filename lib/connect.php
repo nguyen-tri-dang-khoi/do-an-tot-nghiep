@@ -31,4 +31,8 @@
     function log_a($array){
         echo "<script>". "console.log(JSON.parse(`". json_encode($array) ."`));</script>";
     }
+    function echo_json($arr){
+        echo json_encode($arr);
+        exit();
+    }
 ?>

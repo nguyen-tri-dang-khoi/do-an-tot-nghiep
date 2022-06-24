@@ -1,3 +1,14 @@
+<?php
+    logout_session_timeout();
+    check_access_token();
+    if(strpos(get_url_current_page(),"login.php")){
+        redirect_if_login_success();
+
+    } else {
+        redirect_if_login_status_false();
+
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,14 +38,6 @@
             height: 30px;
             width: 30px;
         }
-        /*th, td { white-space: nowrap; }*/
-        div.dataTables_wrapper {
-            width: 100%;
-            margin: 0 auto;
-        }
-        /*.selected {
-            background-color: #fbebfaf7 !important;
-        }*/
         .bg-color-selected {
             background-color: #fbebfaf7 !important;
         }
@@ -50,8 +53,6 @@
         }
         .kh-inp-ctrl {
             border-radius: 0.25rem;
-            /*border: none !important;*/
-            /*box-shadow: 0px 0px 5px 1px #86808882 !important;*/
             padding: 4px !important;
             padding-left: 10px !important;
             border: 1px solid rgb(158 158 158 / 74%);
@@ -66,9 +67,6 @@
             background-color: #fff;
             border-color: #3594fb !important;
         }
-        /*ul:focus,div.note-editable.card-block:focus {
-            border: solid #3594fb 1px !important;
-        }*/
         .card-header::after{
             display:none;
         }

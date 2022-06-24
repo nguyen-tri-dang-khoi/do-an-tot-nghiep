@@ -34,17 +34,20 @@
 		$_SESSION['timestamp'] = isset($_SESSION['timestamp']) ? $_SESSION['timestamp'] : time();
 		$result = (time() - $_SESSION['timestamp']) / 60;
         //log_v($result);
-		if($result > 100) {
+		if($result > 100){
             if($type == 'admin|officer') {
                 $_SESSION["isLoggedIn"] = false;
+                if(isset($_COOKIE['access_token'])){
+                    setcookie('access_token','',time() - 3600,"/","",false,false);
+                }
             } else if($type == 'shipper') {
                 $_SESSION["isShipperLoggedIn"] = false;
+                if(isset($_COOKIE['shipper_access_token'])){
+                    setcookie('shipper_access_token','',time() - 3600,"/","",false,false);
+                }
             }
 			unset($_SESSION["timestamp"]);
-            if(isset($_COOKIE['access_token'])){
-                setcookie('access_token','',time() - 3600,"/","",false,false);
-            }
-			redirect_if_login_status_false();
+            redirect_if_login_status_false();
 			exit();
 		}
 	}
@@ -65,9 +68,9 @@
         }
     }
     //f_w
-    function redirect_if_login_success($uri_login_success_redirect = "index.php",$type = 'admin|officer') {
+    function redirect_if_login_success($uri_login_success_redirect = "information.php",$type = 'admin|officer') {
         if($type == 'admin|officer') {
-            if(isset($_SESSION["isLoggedIn"]) && $_SESSION['isLoggedIn']) {
+            if(isset($_SESSION["isLoggedIn"]) && $_SESSION['isLoggedIn'] !== false) {
                 if(isset($_SESSION["redirect"])) {
                     header("location: " . $_SESSION['redirect']);
                     unset($_SESSION["redirect"]);

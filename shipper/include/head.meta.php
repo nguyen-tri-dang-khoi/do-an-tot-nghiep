@@ -1,3 +1,12 @@
+<?php
+logout_session_timeout('shipper');
+check_shipper_access_token();
+if(strpos(get_url_current_page(),"login.php")){
+    redirect_if_login_success("index.php","shipper");
+} else {
+    redirect_if_login_status_false();
+
+}?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

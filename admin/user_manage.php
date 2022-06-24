@@ -1,8 +1,5 @@
 <?php
     include_once("../lib/database.php");
-    logout_session_timeout();
-    check_access_token();
-    redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for user
         $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_role = $allow_lock = $allow_unlock = false; 
@@ -84,31 +81,21 @@
                 $where .= " and ($wh_child)";
             }
         }
-        if($birthday_min && $birthday_max) {
-            if($birthday_min != "" && $birthday_max != "") {
-                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
-                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
-                $where .= " and (birthday >= '$birthday_min 00:00:00' and birthday <= '$birthday_max 23:59:59')";
-            } else if($birthday_min == "" && $birthday_max != ""){
-                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
-                $where .= " and (birthday >= '$birthday_min 00:00:00')";
-            } else if($birthday_min != "" && $birthday_max == ""){
-                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
-                $where .= " and (birthday <= '$birthday_max 23:59:59')";
-            }
+        if($birthday_min){
+            $birthday_min = Date("Y-m-d",strtotime($birthday_min));
+            $where .= " and (birthday >= '$birthday_min 00:00:00')";
         }
-        if($date_min && $date_max) {
-            if($date_min != "" && $date_max != "") {
-                $date_min = Date("Y-m-d",strtotime($date_min));
-                $date_max = Date("Y-m-d",strtotime($date_max));
-                $where .= " and (created_at >= '$date_min 00:00:00' and created_at <= '$date_max 23:59:59')";
-            } else if($date_min != "" && $date_max == "") {
-                $date_min = Date("Y-m-d",strtotime($date_min));
-                $where .= " and (created_at >= '$date_min 00:00:00')";
-            } else if($date_min == "" && $date_max != "") {
-                $date_max = Date("Y-m-d",strtotime($date_max));
-                $where .= " and (created_at <= '$date_max 23:59:59')";
-            }
+        if($birthday_max){
+            $birthday_max = Date("Y-m-d",strtotime($birthday_max));
+            $where .= " and (birthday <= '$birthday_max 23:59:59')";
+        }
+        if($date_min){
+            $date_min = Date("Y-m-d",strtotime($date_min));
+            $where .= " and (created_at >= '$date_min 00:00:00')";
+        }
+        if($date_max){
+            $date_max = Date("Y-m-d",strtotime($date_max));
+            $where .= " and (created_at <= '$date_max 23:59:59')";
         }
         if($str) {
             $where .= " and user.id in ($str)";
@@ -322,18 +309,13 @@
                                     </div>
                                 </div>
                                 <?php
-                                    // set get
-                                    $get = $_GET;
-                                    unset($get['page']);
-                                    $str_get = http_build_query($get);
                                     // query
-                                    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                     $limit = $_SESSION['paging'];
                                     $start_page = $limit * ($page - 1);
                                     $sql_get_total = "select count(*) as 'countt' from user $where";
-                                    $total = fetch_row($sql_get_total)['countt'];
+                                    $total = fetch(sql_query($sql_get_total))['countt'];
                                     $sql_get_user = "select * from user $where limit $start_page,$limit";
-                                    
                                     $cnt=0;
                                     $rows = fetch_all(sql_query($sql_get_user));
                                 ?>
@@ -356,7 +338,7 @@
                                                 <th class="w-200">Thao tác</th>
                                             </tr>
                                         </thead>
-                                        <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-user" id="m-user-body">
+                                        <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-user" id="m-user-body">
                                             <?php foreach($rows as $row) { ?>
                                                 <?php $cnt1 = $cnt + 1;?>
                                                 <tr id="<?=$row["id"];?>">
@@ -1193,187 +1175,6 @@
       }
       
     }
-    /*function insRow(){
-        num_of_row_insert = $('input[name="count3"]').val();
-        if(num_of_row_insert == "") {
-            $.alert({
-                title: "Thông báo",
-                content: "Vui lòng không để trống số dòng cần thêm",
-            })
-            return;
-        } 
-        for(i = 0 ; i < num_of_row_insert ; i++) {
-            let page = $('[data-plus]').attr('data-plus');
-            let html = "";
-            let count2 = parseInt(page / 7) + 1;
-            html = `
-                <tr data-row-id='${parseInt(page) + 1}'>
-                    <td>${parseInt(page) + 1}</td>
-                    <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-                    <td>
-                        <select class='form-control'>
-                            <option value=''>Chọn chức vụ</option>
-                            <option value='officer'>Nhân viên văn phòng</option>
-                            <option value='shipper'>Nhân viên giao hàng</option>
-                        </select>
-                        <p class='text-danger'></p>
-                    </td>
-                    <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-                </tr>
-                `;
-            if(page % 7 != 0) {
-                $('.t-bd').css({"display":"none"});
-                $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-                $(html).appendTo(`.t-bd-${count2}`);
-            } else {
-                $('.t-bd').css({"display":"none"});
-                html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-                $(html).appendTo('#form-insert table');
-            }
-            if(page == 0) {
-                let html2 = `<div id="paging" style="justify-content:center;" class="row">
-                    <nav id="pagination2">
-                    </nav>
-                </div>`;
-                $(html2).appendTo('#form-insert');
-            }
-            $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-            $('input[name="count2"]').val(parseInt(page) + 1);
-            $('#pagination2').pagination({
-                items: parseInt(page) + 1,
-                itemsOnPage: 7,
-                currentPage: count2,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                showRow(pageNumber,false);
-                },
-                cssStyle: 'light-theme',
-            });
-            showPicker();
-        }
-    }*/
-    /*function showRow(page,apply_dom = true){
-      let count = $('[data-plus]').attr('data-plus');
-      limit = 7;
-      if(apply_dom) {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-insert table').remove();
-        $('#form-insert #paging').remove();
-        let html = `
-        <table class='table table-bordered' style="height:auto;">
-          <thead>
-            <tr>
-                <th class='w-150'>Số thứ tự</th>
-                <th>Tên đầy đủ</th>
-                <th>Email</th>
-                <th>Số điện thoại</th>
-                <th>Số cmnd</th>
-                <th>Địa chỉ</th>
-                <th>Ngày sinh</th>
-                <th>Chức vụ</th>
-                <th>Thao tác</th>
-            </tr>
-          </thead>
-        `;
-        count2 = parseInt(count / 7);
-        g = 1;
-        for(i = 0 ; i < count2 ; i++) {
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(j = 0 ; j < 7 ; j++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                    <td>${parseInt(g)}</td>
-                    <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-                    <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' data-date="" name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-                    <td>
-                        <select class='form-control'>
-                            <option value=''>Chọn chức vụ</option>
-                            <option value='0'>Nhân viên văn phòng</option>
-                            <option value='-1'>Nhân viên giao hàng</option>
-                        </select>
-                        <p class='text-danger'></p>
-                    </td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        if(count % 7 != 0) {
-          count3 = count % 7;
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                <td>${parseInt(g)}</td>
-                <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
-                <td>
-                    <select class='form-control'>
-                        <option value=''>Chọn chức vụ</option>
-                        <option value='officer'>Nhân viên văn phòng</option>
-                        <option value='shipper'>Nhân viên giao hàng</option>
-                    </select>
-                    <p class='text-danger'></p>
-                </td>
-                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        html += `
-          </table>
-        `;
-        html += `
-          <div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-          </div>
-        `;
-        $(html).appendTo('#form-insert');
-        apply_dom = false;
-        $('.t-bd-1').css({"display":"contents"});
-        console.log(html);
-      } else {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('.t-bd').css({"display":"none"});
-        $('.t-bd-' + page).css({"display":"contents"});
-      }
-      $('#pagination2').pagination({
-        items: count,
-        itemsOnPage: limit,
-        currentPage: page,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      showPicker();
-      $('#modal-xl3').on('hidden.bs.modal', function (e) {
-        $('#form-insert table tbody').remove();
-        $('#form-insert #paging').remove();
-        $('input[name="count2"]').val("");
-      })
-    } */
     function uptAll(){
         let test = true;
         let formData = new FormData();
@@ -1838,27 +1639,9 @@
         
     }
 </script>
-<script>
-   $(function() {
-    $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-        prevText: "<",
-        nextText: ">",
-		onPageClick: function(pageNumber,event){
-            event.preventDefault();
-            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-        },
-        cssStyle: 'light-theme'
-    });
-  });
-</script>
-
 <!--js section end-->
 <?php
+    include_once("include/pagination.php");
     include_once("include/footer.php");
 ?>
 <?php
@@ -1894,7 +1677,7 @@
             }
             if($_FILES['img_name']['name'] != "") {
                $sql_get_old_file = "select img_name from user where id = '$id'";
-               $old_file = fetch_row($sql_get_old_file)['img_name'];
+               $old_file = fetch(sql_query($sql_get_old_file))['img_name'];
                if(file_exists($old_file)) {
                    unlink($old_file);
                    chmod($dir, 0777);

@@ -54,7 +54,7 @@
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='#'>" . $result["name"] . "<span class='expand'>»</span></a>";
-            $menu .= "<ul class='child'>" . generate_multilevel_menus($connection,$result["id"]) . "</ul>";
+            $menu .= "<ul class='child'>" . generate_multilevel_menus_3($connection,$result["id"]) . "</ul>";
             $menu .= "</li>";
         }
         return $menu;
@@ -63,11 +63,11 @@
         $sql = "";
         $__arr = [];
         $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-        $id = fetch_row($sql_get_product_type,[$id]);
+        $id = fetch(sql_query($sql_get_product_type,[$id]));
         while($id["countt"] > 0) {
             array_unshift($__arr,"<li class='breadcrumb-item'>".$id["name"]."</li>");
             $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+            $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
             
         }
         $menu = "<ol style='margin-bottom: 25px;padding: 9px 10px;' tabindex='1' class='breadcrumb'>" . implode("",$__arr) . "</ol>";
@@ -78,14 +78,14 @@
         $__arr = [];
         $parent_id="";
         $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-        $id = fetch_row($sql_get_product_type,[$id]);
+        $id = fetch(sql_query($sql_get_product_type,[$id]));
         $count=0;
         while($id["countt"] > 0) {
             $parent_id = $id['id'];
             $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
             array_unshift($__arr,"<li class='breadcrumb-item breadcrumb-item-aaa'><a style='cursor:pointer;color: #9c27b0;' onclick=" . '"' ."loadDataInTab('category_manage.php?parent_id=$parent_id&tab_unique=$tab_unique')" . '">'.$id["name"]."</a></li>");   
             $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+            $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
             $count++;
         }
         $menu = implode("",$__arr);
@@ -96,7 +96,7 @@
         $__arr = [];
         $parent_id="";
         $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-        $id = fetch_row($sql_get_product_type,[$id]);
+        $id = fetch(sql_query($sql_get_product_type,[$id]));
         $count=0;
         while($id["countt"] > 0) {
             $parent_id = $id['id'];
@@ -106,7 +106,7 @@
                 array_unshift($__arr,$id["name"] . " / ");
             }
             $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+            $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
             $count++;
         }
         $menu = implode("",$__arr);
@@ -132,11 +132,11 @@
     function find_branch_by_root($id){
         $branch = "";
         $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
-        $id = fetch_row($sql,[$id]);
+        $id = fetch(sql_query($sql,[$id]));
         while($id['countt'] > 0) {
             $branch = $id['id'];
             $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
-            $id = fetch_row($sql,[$id['id']]);
+            $id = fetch(sql_query($sql,[$id['id']]));
         }
         return $branch;
     }
@@ -145,11 +145,11 @@
         $sql = "";
         $__arr = [];
         $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-        $id = fetch_row($sql_get_product_type,[$id]);
+        $id = fetch(sql_query($sql_get_product_type,[$id]));
         while($id["countt"] > 0) {
             $root_id = $id['id'];
             $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-            $id = fetch_row($sql_get_product_type,[$id['parent_id']]);
+            $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
         }
         return $root_id;
     }

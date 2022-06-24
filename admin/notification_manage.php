@@ -31,7 +31,7 @@
       $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
       $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
       $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-      $where = "where 1=1 ";
+      $where = "where 1=1 and is_delete = 1 ";
       $order_by = "Order by n.id desc";
       $wh_child = [];
       $arr_search = [];
@@ -55,38 +55,29 @@
             $where .= " and ($wh_child)";
          }
       }
-      if($date_min && $date_max) {
-         if($date_min != "" && $date_max != "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (n.created_at >= '$date_min 00:00:00' and n.created_at <= '$date_max 23:59:59')";
-         } else if($date_min != "" && $date_max == "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $where .= " and (n.created_at >= '$date_min 00:00:00')";
-         } else if($date_min == "" && $date_max != "") {
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (n.created_at <= '$date_max 23:59:59')";
-         }
+      
+      if($date_min) {
+         $date_min = Date("Y-m-d",strtotime($date_min));
+         $where .= " and (n.created_at >= '$date_min 00:00:00')";
       }
-      if($view_min && $view_max) {
-         if($view_min != "" && $view_max != "") {
-            $view_min = str_replace(".","",$view_min);
-            $view_max = str_replace(".","",$view_max);
-            $where .= " and (n.views >= '$view_min' and n.views <= '$view_max')";
-         } else if($view_min == "" && $view_max != ""){
-            $view_max = str_replace(".","",$view_max);
-            $where .= " and (n.views <= '$view_max')";
-         } else if($view_min != "" && $view_max == ""){
-            $view_min = str_replace(".","",$view_min);
-            $where .= " and (n.views >= '$view_min')";
-         }
-         if($str) {
-            $where .= " and n.id in ($str)";
-         }
-         if($orderByColumn && $orderStatus) {
-            $order_by = "ORDER BY $orderByColumn $orderStatus";
-         }
-         
+      if($date_max) {
+         $date_max = Date("Y-m-d",strtotime($date_max));
+         $where .= " and (n.created_at <= '$date_max 23:59:59')";
+      }
+
+      if($view_min) {
+         $view_min = str_replace(".","",$view_min);
+         $where .= " and (n.views >= '$view_min')";
+      }
+      if($view_max) {
+         $view_max = str_replace(".","",$view_max);
+         $where .= " and (n.views <= '$view_max')";
+      }
+      if($str) {
+         $where .= " and n.id in ($str)";
+      }
+      if($orderByColumn && $orderStatus) {
+         $order_by = "ORDER BY $orderByColumn $orderStatus";
       }
       $where .= " $order_by";
 ?>
@@ -97,7 +88,7 @@
       float:left;
    }
    .sort-asc,.sort-desc {
-    display: none;
+      display: none;
   }
 </style>
 <div class="container-wrapper" style="margin-left:250px;">
@@ -179,8 +170,8 @@
                                        </select>
                                     </div>
                                     <div id="s-cols" class="k-select-opt ml-10 col-2 s-all2" style="<?=$keyword && $keyword != [""] ? "display:flex;flex-direction:column": "display:none;";?>">
-                                       <span class="k-select-opt-remove"></span>
-                                       <span class="k-select-opt-ins"></span>
+                                       <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
+                                       <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
                                        <div class="ele-cols d-flex f-column">
                                           <select name="search_option" class="form-control mb-10">
                                              <option value="">Chọn cột tìm kiếm</option>
@@ -208,8 +199,7 @@
                                        ?>
                                     </div>
                                     <div id="s-date2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($date_min || $date_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                       <span class="k-select-opt-remove"></span>
-                                       <span class="k-select-opt-ins"></span>
+                                       <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
                                        <div class="ele-date2">
                                           <div class="" style="display:flex;">
                                              <input type="text" name="date_min" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_min ? Date("d-m-Y",strtotime($date_min)) : '';?>">
@@ -220,8 +210,7 @@
                                        </div>
                                     </div>
                                     <div id="s-view2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($view_min || $view_max) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                       <span class="k-select-opt-remove"></span>
-                                       <span class="k-select-opt-ins"></span>
+                                       <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
                                        <div class="ele-count2">
                                           <div class="" style="display:flex;">
                                              <input type="text" name="view_min" placeholder="Lượt xem 1" class="form-control" value="<?=$view_min ? number_format($view_min,0,".",".") : '';?>" onpaste="pasteAutoFormat(event)" onkeypress="allow_zero_to_nine(event)" onkeyup="allow_zero_to_nine(event)">
@@ -305,7 +294,7 @@
                                  $str_get = http_build_query($get);
                                  // query
                                  $cnt = 0;
-                                 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                 $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                  $limit = $_SESSION['paging'];
                                  $start_page = $limit * ($page - 1);
                                  $sql_get_total = "select count(*) as 'countt' from notification n $where";
@@ -511,38 +500,14 @@
       }
       $("select[name='search_option'] > option[value='']").prop('selected',true);
    }
-   $('.k-select-opt-remove').click(function(){
+   function selectOptionRemove(){
       $(event.currentTarget).siblings('.ele-select').remove()
       $(event.currentTarget).siblings("div").find("input").val("");
       $(event.currentTarget).closest('div').css({"display":"none"});
-   });
-   $('.k-select-opt-ins').click(function(){
+   }
+   function selectOptionInsert(){
       let file_html = "";
-      if($(event.currentTarget).closest('#s-view2').length) {
-         file_html = `
-            <div class="ele-select ele-count2 mt-10">
-               <div class="" style="display:flex;">
-                  <input type="text" name="view_min[]" placeholder="Lượt xem 1" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <div class="ml-10" style="display:flex;">
-                  <input type="text" name="view_max[]" placeholder="Lượt xem 2" class="form-control" value="" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)">
-               </div>
-               <span onclick="select_remove_child('.ele-count2')" class="kh-select-child-remove"></span>
-            </div>
-         `
-      } else if($(event.currentTarget).closest('#s-date2').length) {
-         file_html = `
-         <div class="ele-select ele-date2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_min[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_max[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-cols').length) {
+      if($(event.currentTarget).closest('#s-cols').length) {
          file_html = `
          <div class="ele-select ele-cols mt-10">
             <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
@@ -567,7 +532,7 @@
             }
          });
       } 
-   });
+   }
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
@@ -592,9 +557,6 @@
          test = false;
       }
       return test;
-   }
-   function validateModal(){
-      
    }
    function readURL2(input){
       if (input.files && input.files[0]) {
@@ -1038,24 +1000,6 @@
    }
 </script>
 <script>
-  $(function() {
-    $('#pagination').pagination({
-      items: <?=$total;?>,
-      itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-      prevText: "<",
-      nextText: ">",
-		onPageClick: function(pageNumber,event){
-        event.preventDefault();
-        loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-      },
-      cssStyle: 'light-theme'
-    });
-  });
-</script>
-<script>
    $(function(){
       $('.breadcrumb-item').click(function(){
          $('.kh-submenu').toggleClass('.kh-submenu-active');
@@ -1064,6 +1008,7 @@
 </script>
 <!--js section end-->
 <?php
+   include_once("include/pagination.php");
    include_once("include/footer.php");
 ?>
 <?php
@@ -1079,7 +1024,6 @@
       if($status == 'Delete') {
          $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
-         //ajax_db_update_by_id('notification',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
          $sql_del = "Update notification set is_delete = 1 where id = '$id'";
          sql_query($sql_del);
          echo_json(["id" => $id,"success" => $success,"error" => $error]);
@@ -1092,7 +1036,6 @@
          } else {
             $sql_insert = "Insert into notification(title,content) values('$title','$content')";
             sql_query($sql_insert);
-            //$insert = db_insert_id('notification',['title'=>$title,'content'=>$content,"created_at"=>date('Y-m-d H-i-s',time()),'img_name'=>null]);
          }
       } else if($status == "Update") {
          $image = null;
@@ -1118,11 +1061,9 @@
          if($image) {
             $sql_update = "Update notification set title = '$title',content = '$content',img_name='$image' where id = '$id'";
             sql_query($sql_update);
-            //db_update_by_id('notification',['title'=>$title,'content'=>$content,'img_name'=>$image],[$id]);
          } else {
             $sql_update = "Update notification set title = '$title',content = '$content' where id = '$id'";
             sql_query($sql_update);
-            //db_update_by_id('notification',['title'=>$title,'content'=>$content],[$id]);
          }
          $success = "Update dữ liệu thành công.";
          $sql_get_file_name = "select img_name from notification where id = '$id'";

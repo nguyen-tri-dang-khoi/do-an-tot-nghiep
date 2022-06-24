@@ -98,7 +98,7 @@ var html_config = {
                 <td>
                 <div style="display:flex;flex-direction:column;outline:none !important;">
                     <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;" id="menu">
-                        <li onmouseover='load_menu()' class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                        <li onmouseover="load_menu()" class="parent" style="border: 1px solid #dce1e5;position:relative;">
                             <a href="#">Chọn danh mục</a>
                             <ul class="child aaab">
                             </ul>
@@ -416,7 +416,7 @@ var html_config = {
     },
 };
 window.addEventListener('popstate', () => {
-    loadDataInTab(document.location,false);
+    window.location.href = document.location;
 });
 function loadDataInTab(url,pushState = true){
     $(".img-load").show();
@@ -428,18 +428,21 @@ function loadDataInTab(url,pushState = true){
         $('.ok-game-start').load(`${url} #load-all`,() => {
           $('#select-type2').select2();
           $('#pagination').pagination({
-              items: $('[dt-items]').attr('dt-items'),
-              itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
-              currentPage: $('[dt-page]').attr('dt-page'),
-              hrefTextPrefix: "?page=",
-              hrefTextSuffix: `&`+ $('[dt-url]').attr('dt-url'),
-              prevText: "<",
-              nextText: ">",
-              onPageClick: function(pageNumber,event){
-                event.preventDefault();
-                loadDataInTab(window.location.protocol + window.location.pathname + `?page=${pageNumber}&` +  $('[dt-url]').attr('dt-url'));
-              },
-              cssStyle: 'light-theme'
+                items: $('[dt-items]').attr('dt-items'),
+                itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
+                currentPage: $('[dt-page]').attr('dt-page'),
+                hrefTextPrefix: "",
+                hrefTextSuffix: "",
+                prevText: "<",
+                nextText: ">",
+                onPageClick: function(pageNumber,event){
+                    event.preventDefault();
+                    let url = new URLSearchParams(window.location.search);
+                    if(url.has('page')) url.delete('page');
+                    url.set('page',pageNumber);
+                    loadDataInTab(`${file_name_config}.php?${url.toString()}`);
+                },
+                cssStyle: 'light-theme'
           });
           $("#is-load").show();
           $(".img-load").hide();
@@ -447,50 +450,69 @@ function loadDataInTab(url,pushState = true){
           showPicker();
           $('[class*=select-type]').select2();
         })
-    },500);
+    },100);
 }
 function loadDataComplete(status = ""){
     let parameters = new URLSearchParams(location.search);
     let page = parameters.get('page');
     let tab_unique = parameters.get('tab_unique');
+    if(tab_unique == null) tab_unique = '';
     let parent_id = parameters.get('parent_id');
     let location_ok = window.location.href;
-    if($('input[name=check_all]').is(':checked')) {
-        if(page == 1 || page == null) {
-            page = parseInt(page) + 1;
-        } else if(page > 1){
+    let tbody_read = html_config[file_name_config]['load']['tbody_read'];
+    if(status == "page") {
+        if(page > 1){
             page = page - 1;
+        } else {
+            page = 1;
         }
         location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
-    } 
-    if(status == "Insert") {
+    }
+    
+    if($('input[name=check_all]').is(':checked') && status != "page") {
+        if(page > 1){
+            page = page - 1;
+        } else {
+            page = 1;
+        }
+        location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
+    }
+    else if(status == "Insert") {
         if(parent_id != null) {
             location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}&parent_id=${parent_id}`;
         } else {
             location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}`;
         }
-        
     }
     $(`.table-game-start`).load(`${location_ok} #table-${file_name_config}`,() => {
-        $('#select-type2').select2();
-        $('#pagination').pagination({
-            items: $('[dt-items]').attr('dt-items'),
-            itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
-            currentPage: $('[dt-page]').attr('dt-page'),
-            hrefTextPrefix: "?page=",
-            hrefTextSuffix: `&`+ $('[dt-url]').attr('dt-url'),
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-                event.preventDefault();
-                loadDataInTab(window.location.protocol + window.location.pathname + `?page=${pageNumber}&` +  $('[dt-url]').attr('dt-url'));
-            },
-            cssStyle: 'light-theme'
-        });
-        setSortTable(file_name_config);
-        showPicker();
-        $('[class*=select-type]').select2();
-        window.history.pushState('ok', 'ok', `${location_ok}`);
+        console.log($(`#table-${file_name_config} tbody tr`).length);
+        if($(`#table-${file_name_config} tbody tr`).length == 0){
+            loadDataComplete("page");
+        } else {    
+            $('#select-type2').select2();
+            $('#pagination').pagination({
+                items: $('[dt-items]').attr('dt-items'),
+                itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
+                currentPage: $('[dt-page]').attr('dt-page'),
+                hrefTextPrefix: "?page=",
+                hrefTextSuffix: `&`+ $('[dt-url]').attr('dt-url'),
+                prevText: "<",
+                nextText: ">",
+                onPageClick: function(pageNumber,event){
+                    event.preventDefault();
+                    let url = new URLSearchParams(window.location.search);
+                    if(url.has('page')) url.delete('page');
+                    url.set('page',pageNumber);
+                    loadDataInTab(`${file_name_config}.php?${url.toString()}`);
+                },
+                cssStyle: 'light-theme'
+            });
+            setSortTable(file_name_config);
+            showPicker();
+            $('[class*=select-type]').select2();
+            window.history.pushState('ok', 'ok', `${location_ok}`);
+        }
+        
     })
 }
 function searchTabLoad(form_id){
@@ -1219,14 +1241,15 @@ function delMore(){
                     rows: arr_del.join(","),
                   },
                   success: function(data){
-                      data = JSON.parse(data);
-                      if(data.msg == "ok"){
+
+                    data = JSON.parse(data);
+                    if(data.msg == "ok"){
                         $.alert({
                             title: "Thông báo",
                             content: "Bạn đã xoá dữ liệu thành công",
                         });
                         loadDataComplete();
-                      }
+                    }
                   },error: function(data){
                       console.log("Error:" + data);
                   }

@@ -1,10 +1,9 @@
 <?php
    include_once("../lib/database.php");
-   logout_session_timeout();
-   check_access_token();
-   redirect_if_login_status_false();
    if(is_get_method()) {
-      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
+      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false;
+      include_once("include/head.meta.php");
+      include_once("include/left_menu.php"); 
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
       }
@@ -20,8 +19,6 @@
       if(check_permission_crud("product_manage.php","check_product")) {
          $allow_check_product = true;
       }
-      include_once("include/head.meta.php");
-      include_once("include/left_menu.php");
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
       $price_min = isset($_REQUEST['price_min']) ? $_REQUEST['price_min'] : null;
       $price_max = isset($_REQUEST['price_max']) ? $_REQUEST['price_max'] : null;
@@ -39,10 +36,6 @@
       $where = "where 1=1 and pi.is_delete = 0 ";
       $wh_child = [];
       $arr_search = [];
-      //log_a($count_min);
-      //log_a($count_max);
-      $arr_2 = [$count_min,$count_max];
-      log_a($arr_2);
       if($keyword && is_array($keyword)) {
          $wh_child = [];
          if($search_option == "all") {
@@ -94,50 +87,41 @@
             $where .= " and ($wh_child)";
          }
       }
-      if($price_min && $price_max) {
-         if($price_min != "" && $price_max != "") {
-            $price_min = str_replace(".","",$price_min);
-            $price_max = str_replace(".","",$price_max);
-            $where .= " and (pi.price >= '$price_min' and pi.price <= '$price_max')";
-         } else if($price_min == "" && $price_max != ""){
-            $price_max = str_replace(".","",$price_max);
-            $where .= " and (pi.price <= '$price_max')";
-         } else if($price_min != "" && $price_max == ""){
-            $price_min = str_replace(".","",$price_min);
-            $where .= " and (pi.price >= '$price_min')";
-         }
+
+      if($price_min) {
+         $price_min = str_replace(".","",$price_min);
+         $where .= " and (pi.price >= '$price_min')";
       }
-      if($count_min && $count_max) {
-         if($count_min != "" && $count_max != "") {
-            $count_min = str_replace(".","",$count_min);
-            $count_max = str_replace(".","",$count_max);
-            $where .= " and (pi.count >= '$count_min' and pi.count <= '$count_max')";
-         } else if($count_min == "" && $count_max != ""){
-            $count_max = str_replace(".","",$count_max);
-            $where .= " and (pi.count <= '$count_max')";
-         } else if($count_min != "" && $count_max == ""){
-            $count_min = str_replace(".","",$count_min);
-            $where .= " and (pi.count >= '$count_min')";
-         }
+      if($price_max) {
+         $price_max = str_replace(".","",$price_max);
+         $where .= " and (pi.price <= '$price_max')";
       }
-      if($date_min && $date_max) {
-         if($date_min != "" && $date_max != "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (pi.created_at >= '$date_min 00:00:00' and pi.created_at <= '$date_max 23:59:59')";
-         } else if($date_min != "" && $date_max == "") {
-            $date_min = Date("Y-m-d",strtotime($date_min));
-            $where .= " and (pi.created_at >= '$date_min 00:00:00')";
-         } else if($date_min == "" && $date_max != "") {
-            $date_max = Date("Y-m-d",strtotime($date_max));
-            $where .= " and (pi.created_at <= '$date_max 23:59:59')";
-         }
+
+      if($count_min) {
+         $count_min = str_replace(".","",$count_min);
+         $where .= " and (pi.count >= '$count_min')";
+      }
+      if($count_max) {
+         $count_max = str_replace(".","",$count_max);
+         $where .= " and (pi.count <= '$count_max')";
+      }
+
+      if($date_min) {
+         $date_min = Date("Y-m-d",strtotime($date_min));
+         $where .= " and (pi.created_at >= '$date_min 00:00:00')";
+      }
+      if($date_max) {
+         $date_max = Date("Y-m-d",strtotime($date_max));
+         $where .= " and (pi.created_at <= '$date_max 00:00:00')";
+      }
+      if($str) {
+         $where .= " and pi.id in ($str)";
       }
       if($orderStatus && $orderByColumn) {
          $order_by = "ORDER BY $orderByColumn $orderStatus";
       }
       $where .= " $order_by";
-      log_v($where);
+      //log_v($where);
 ?>
 <!--html & css section start-->
 <link rel="stylesheet" href="css/summernote.min.css">
@@ -363,10 +347,10 @@
                                           <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
                                           <div class="ele-price2">
                                              <div class="" style="display:flex;">
-                                                <input type="text" name="price_min" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value="<?=$price_min ? number_format($price_min,0,".",".") : null;?>">
+                                                <input type="text" name="price_min" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 1" class="form-control" value="<?=$price_min ? number_format($price_min,0,".",".") : '';?>">
                                              </div>
                                              <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="price_max" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="<?=$price_min ? number_format($price_min,0,".",".") : null;?>" >
+                                                <input type="text" name="price_max" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Giá 2" class="form-control" value="<?=$price_max ? number_format($price_max,0,".",".") : '';?>" >
                                              </div>
                                           </div>
                                        </div>
@@ -512,22 +496,17 @@
                                  </tr>
                               </thead>
                               <?php
-                                 $get = $_GET;
-                                 unset($get['page']);
-                                 $str_get = http_build_query($get);
-                                 if($str) {
-                                    $where .= " and pi.id in ($str)";
-                                 }
+                                 
                                  $cnt = 0;
-                                 $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                 $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
                                  $limit = $_SESSION['paging'];
                                  $start_page = $limit * ($page - 1);
                                  $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                                 $total = fetch_row($sql_get_total)['countt'];
+                                 $total = fetch(sql_query($sql_get_total))['countt'];
                                  $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
                                  $rows = fetch_all(sql_query(($sql_get_product)));
                               ?>
-                              <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-san-pham" class="list-product">
+                              <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-san-pham" class="list-product">
                               <?php
                                  foreach($rows as $row) {
                               ?>
@@ -1591,6 +1570,7 @@
    }
    function load_menu(){
       let html =`<?php echo show_menu_3();?>`;
+      console.log(html);
       $('.aaab').empty();
       $(html).appendTo('.aaab');
       $(event.currentTarget).removeAttr('onmouseover');
@@ -1623,24 +1603,6 @@
    });
 </script>
 <script>
-  $(function() {
-    $('#pagination').pagination({
-      items: <?=$total;?>,
-      itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-      prevText: "<",
-      nextText: ">",
-		onPageClick: function(pageNumber,event){
-         event.preventDefault();
-         loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-      },
-      cssStyle: 'light-theme'
-    });
-  });
-</script>
-<script>
    $(function(){
       $('.breadcrumb-item').click(function(){
          $('.kh-submenu').toggleClass('.kh-submenu-active');
@@ -1649,13 +1611,14 @@
 </script>
 <!--js section end-->
 <?php
-      include_once("include/footer.php");
+   include_once("include/pagination.php");
+   include_once("include/footer.php");
 ?>
 <?php
    } else if (is_post_method()) {
       function getFileUpload($img_order,$id){
          $sql = "select img_id from product_image where product_info_id = '$id' and img_order = '$img_order' limit 1";
-         $file_old_name = fetch_row($sql)['img_id'];
+         $file_old_name = fetch(sql_query($sql))['img_id'];
          return $file_old_name;
       }
       $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
@@ -1676,10 +1639,12 @@
       if($status == 'Delete') {
          $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
-         ajax_db_update_by_id('product_info',['is_delete' => 1],[$id],["id" => $id,"success" => $success],['error' => $error]);
+         $sql_del = "Update product_info set is_delete = 1 where id = ?";
+         sql_query($sql_del,[$id]);
+         echo_json(["msg" => "ok","success" => $success]);
       } else if($status == "Insert") {
          $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
-         $row = fetch_row($sql_check_exist,[$id]);
+         $row = fetch(sql_query($sql_check_exist,[$id]));
          $sql_is_active = "select is_active from product_type where id = '$category_id'";
          $res33 = fetch(sql_query($sql_is_active));
          $is_active = $res33['is_active'];
@@ -1752,7 +1717,7 @@
          //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$id,$image);
          if($_FILES['img_sanpham_file']['name'] != "") {
             $sql_get_old_file = "select img_name from product_info where id = '$id'";
-            $old_file = fetch_row($sql_get_old_file)['img_name'];
+            $old_file = fetch(sql_query($sql_get_old_file))['img_name'];
             if(file_exists($old_file)){
                unlink($old_file);
             }
@@ -1829,13 +1794,15 @@
             }
          }
          if($image) {
-            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>$image],[$id]);
+            $sql_update = "Update product_info set name = ?,user_id = ?,product_type_id = ?,description = ?,count = ?,price = ?,img_name = ? where id = ?";
+            sql_query($sql_update,[$name,$user_id,$category_id,$description,$count,$price,$image,$id]);
          } else {
-            db_update_by_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price],[$id]);
+            $sql_update = "Update product_info set name = ?,user_id = ?,product_type_id = ?,description = ?,count = ?,price = ? where id = ?";
+            sql_query($sql_update,[$name,$user_id,$category_id,$description,$count,$price,$id]);
          }
          $success = "Sửa dữ liệu thành công.";
          $sql_get_file_name = "select img_name from product_info where id = ?";
-         $image = fetch_row($sql_get_file_name,[$id]);
+         $image = fetch(sql_query($sql_get_file_name,[$id]));
          if($image) {
             $image = $image['img_name'];
          }

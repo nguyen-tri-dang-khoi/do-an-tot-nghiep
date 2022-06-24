@@ -579,7 +579,7 @@
                                 $str_get = http_build_query($get);
                                 // query
                                 $cnt = 0;
-                                $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                 $limit = $_SESSION['paging'];
                                 $start_page = $limit * ($page - 1);
                                 $sql_get_total = "select count(*) as 'countt' from product_type_discount $where";

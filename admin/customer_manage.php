@@ -1,8 +1,5 @@
 <?php
     include_once("../lib/database_v2.php");
-    logout_session_timeout();
-    check_access_token();
-    redirect_if_login_status_false();
     if(is_get_method()) {
         // permission crud for customer
         $allow_read = $allow_lock = $allow_unlock = false; 
@@ -72,38 +69,28 @@
                 $where .= " and ($wh_child)";
             }
         }
-        if($birthday_min && $birthday_max) {
-            if($birthday_min != "" && $birthday_max != "") {
-                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
-                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
-                $where .= " and (birthday >= '$birthday_min 00:00:00' and birthday <= '$birthday_max 23:59:59')";
-            } else if($birthday_min == "" && $birthday_max != ""){
-                $birthday_min = Date("Y-m-d",strtotime($birthday_min));
-                $where .= " and (birthday >= '$birthday_min 00:00:00')";
-            } else if($birthday_min != "" && $birthday_max == ""){
-                $birthday_max = Date("Y-m-d",strtotime($birthday_max));
-                $where .= " and (birthday <= '$birthday_max 23:59:59')";
-            }
+        if($birthday_min){
+            $birthday_min = Date("Y-m-d",strtotime($birthday_min));
+            $where .= " and (birthday >= '$birthday_min 00:00:00')";
         }
-        if($date_min && $date_max) {
-            if($date_min != "" && $date_max != "") {
-                $date_min = Date("Y-m-d",strtotime($date_min));
-                $date_max = Date("Y-m-d",strtotime($date_max));
-                $where .= " and (created_at >= '$date_min 00:00:00' and created_at <= '$date_max 23:59:59')";
-            } else if($date_min != "" && $date_max == "") {
-                $date_min = Date("Y-m-d",strtotime($date_min));
-                $where .= " and (created_at >= '$date_min 00:00:00')";
-            } else if($date_min == "" && $date_max != "") {
-                $date_max = Date("Y-m-d",strtotime($date_max));
-                $where .= " and (created_at <= '$date_max 23:59:59')";
-            }
+        if($birthday_max){
+            $birthday_max = Date("Y-m-d",strtotime($birthday_max));
+            $where .= " and (birthday <= '$birthday_max 23:59:59')";
+        }
+        if($date_min){
+            $date_min = Date("Y-m-d",strtotime($date_min));
+            $where .= " and (created_at >= '$date_min 00:00:00')";
+        }
+        if($date_max){
+            $date_max = Date("Y-m-d",strtotime($date_max));
+            $where .= " and (created_at <= '$date_max 23:59:59')";
         }
         if($orderByColumn && $orderStatus) {
             $order_by = "ORDER BY $orderByColumn $orderStatus";
            
         }
         $where .= " $order_by";
-        log_v($where);
+        //log_v($where);
 ?>
 <!--html & css section start-->
 
@@ -268,12 +255,8 @@
                                     </div>
                                 </div>
                                 <?php
-                                    // set get
-                                    $get = $_GET;
-                                    unset($get['page']);
-                                    $str_get = http_build_query($get);
                                     // query
-                                    $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                     $limit = $_SESSION['paging'];
                                     $start_page = $limit * ($page - 1);
                                     $sql_get_total = "select count(*) as 'countt' from customer $where";
@@ -299,7 +282,7 @@
                                                 <th class="w-200">Thao tác</th>
                                             </tr>
                                         </thead>
-                                        <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-customer">
+                                        <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-customer">
                                         <?php foreach($rows as $row) { ?>
                                             <tr id="<?=$row["id"]?>">
                                                 <td>
@@ -555,27 +538,10 @@
         }
     }
 </script>
-<script>
-  $(function() {
-    $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-        prevText: "<",
-        nextText: ">",
-		onPageClick: function(pageNumber,event){
-            event.preventDefault();
-            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-        },
-        cssStyle: 'light-theme'
-    });
-  });
-</script>
 <!--js section end-->
 <?php
-        include_once("include/footer.php");
+    include_once("include/pagination.php");
+    include_once("include/footer.php");
 ?>
 
 <?php

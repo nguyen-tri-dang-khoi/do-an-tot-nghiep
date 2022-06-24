@@ -41,7 +41,7 @@
                                 if($allow_insert) {
                             ?>
                             <div class="card-tools">
-                                <button onclick="processModalInsert()" id="btn-add-delivery_fee" class="dt-button button-blue">Thêm phí vận chuyển</button>
+                                <button onclick="openModalInsert()" id="btn-add-delivery_fee" class="dt-button button-blue">Thêm phí vận chuyển</button>
                             </div>
                             <?php } ?>
                         </div>
@@ -176,14 +176,11 @@
                                     </div>
                                                 
                                     <?php
-                                        $get = $_GET;
-                                        unset($get['page']);
-                                        $str_get = http_build_query($get);
-                                        $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
+                                        $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                         $limit = $_SESSION['paging'];
                                         $start_page = $limit * ($page - 1);
                                         $sql_get_total = "select count(*) as 'countt' from delivery_fee df inner join provinces pr on df.province_id = pr.id inner join districts di on df.district_id = di.id inner join wards wa on df.ward_id = wa.id $where";
-                                        $total = fetch_row($sql_get_total)['countt'];
+                                        $total = fetch(sql_query($sql_get_total))['countt'];
                                         $sql_get_delivery_fee = "select df.id as 'df_id',df.fee as 'df_fee',df.created_at as 'df_created_at',pr.full_name as 'pr_full_name',di.full_name as 'di_full_name',wa.full_name as 'wa_full_name' from delivery_fee df inner join provinces pr on df.province_id = pr.id inner join districts di on df.district_id = di.id inner join wards wa on df.ward_id = wa.id $where limit $start_page,$limit";
                                         $cnt = 0;
                                         $rows = fetch_all(sql_query($sql_get_delivery_fee));
@@ -204,7 +201,7 @@
                                                     <th class="w-200">Thao tác</th>
                                                 </tr>
                                             </thead>
-                                            <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-delivery-fee">
+                                            <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-delivery-fee">
                                                 <?php foreach($rows as $row) { ?>
                                                     <?php $cnt1 = $cnt + 1;?>
                                                     <tr id="<?=$row["df_id"];?>">
@@ -360,8 +357,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
-<!--js section start-->
-
 <script>
     setSortTable();
     function loadDistricts(){
@@ -459,22 +454,17 @@
                 url:window.location.href,
                 type: "POST",
                 cache:false,
-                dataType:"json",
                 contentType: false,
                 processData: false,
                 data: formData,
                 success:function(data){
+                    data = JSON.parse(data);
                     if(data.msg == "ok") {
                         $.alert({
                             title: "Thông báo",
                             content: data.success,
                         });
                         loadDataComplete();
-                    } else {
-                        $.alert({
-                            title: "Thông báo",
-                            content: data.error
-                        });
                     }
                     $('#modal-xl').modal('hide');
                 },
@@ -482,7 +472,6 @@
                     console.log("Error:",data);
                 }
             });
-            
         }
     }
     function processModalUpdate(){
@@ -500,11 +489,11 @@
                     url:window.location.href,
                     type: "POST",
                     cache:false,
-                    dataType:"json",
                     contentType: false,
                     processData: false,
                     data: formData,
                     success:function(data){
+                        //console.log(data);
                         data = JSON.parse(data);
                         if(data.msg == "ok") {
                             $.alert({
@@ -512,11 +501,6 @@
                                 content: data.success,
                             });
                             loadDataComplete();
-                        } else {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.error
-                            });
                         }
                         $('#modal-xl').modal('hide');
                     },
@@ -557,11 +541,6 @@
                                     content: data.success,
                                 });
                                 loadDataComplete();
-                            } else {
-                                $.alert({
-                                    title: "Thông báo",
-                                    content: data.error,
-                                });
                             }
                         },
                         error:function(data) {
@@ -575,26 +554,9 @@
         });
     }
 </script>
-<script>
-   $(function() {
-    $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-        prevText: "<",
-        nextText: ">",
-		onPageClick: function(pageNumber,event){
-            event.preventDefault();
-            loadDataInTab('<?=get_url_current_page();?>' + "?page=" + pageNumber);
-        },
-        cssStyle: 'light-theme'
-    });
-  });
-</script>
 <!--js section end-->
 <?php
+    include_once("include/pagination.php");
     include_once("include/footer.php"); 
 ?>
 <?php
@@ -619,9 +581,7 @@
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
         } else if($status == "saveTabFilter") {
             $_SESSION['delivery_fee_tab_id'] = isset($_SESSION['delivery_fee_tab_id']) ? $_SESSION['delivery_fee_tab_id'] + 1 : 1;
-
             $tab_name = isset($_SESSION['delivery_fee_tab_id']) ? "tab_" . $_SESSION['delivery_fee_tab_id'] : null;
-
             $tab_urlencode = isset($_REQUEST['tab_urlencode']) ? $_REQUEST['tab_urlencode'] : null;
             $tab_unique = uniqid("tab_");
             $_SESSION['delivery_fee_manage_tab'] = isset($_SESSION['delivery_fee_manage_tab']) ? $_SESSION['delivery_fee_manage_tab'] : [];
