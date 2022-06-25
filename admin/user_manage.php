@@ -272,7 +272,7 @@
                                         <?php
                                             if($allow_update) {
                                         ?>
-                                        <button tabindex="-1" onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                        <button tabindex="-1" onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
                                         <?php } ?>
                                         <?php
                                             if($allow_read) {
@@ -349,7 +349,7 @@
                                                     <td class="ten-day-du">
                                                         <?php
                                                             if($upt_more == 1) {
-                                                                echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_fullname' value='$row[full_name]'><span class='text-danger'></span>";
+                                                                echo "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='upt_fullname' value='$row[full_name]'><span class='text-danger'></span>";
                                                             } else {
                                                                 if($row['is_lock'] == 1){
                                                                     echo '<i class="fas fa-lock mr-1"></i>';
@@ -358,17 +358,17 @@
                                                             }
                                                         ?>
                                                     </td>
-                                                    <td class="email"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
-                                                    <td class="so-dien-thoai"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
-                                                    <td class="so-cmnd"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='u_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
-                                                    <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='u_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
+                                                    <td class="email"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='upt_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
+                                                    <td class="so-dien-thoai"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='upt_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
+                                                    <td class="so-cmnd"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='upt_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
+                                                    <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='upt_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
                                                     <td class="ngay-sinh">
                                                         <?php 
                                                             if($upt_more == 1) {
                                                                 if(strlen($row["birthday"]) > 0) {
-                                                                    echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'><span class='text-danger'></span>";
+                                                                    echo "<input tabindex='$cnt1' data-date2='" . Date("Y-m-d",strtotime($row["birthday"])) .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='upt_birthday' readonly value='" . Date("d-m-Y",strtotime($row["birthday"])) . "'><span class='text-danger'></span>";
                                                                 } else {
-                                                                    echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='u_birthday' readonly value=''><span class='text-danger'></span>";
+                                                                    echo "<input tabindex='$cnt1' data-date2='" . "" .  "' style='cursor:pointer;' class='kh-datepicker2 kh-inp-ctrl' type='text' name='upt_birthday' readonly value=''><span class='text-danger'></span>";
                                                                 }
                                                             } else {
                                                                 if(strlen($row["birthday"]) > 0) {
@@ -419,6 +419,13 @@
                                                     $cnt++;
                                                 } 
                                             ?>
+                                            <?php
+                                                if(count($rows) == 0) {
+                                            ?>
+                                            <tr>
+                                                <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                                            </tr>
+                                            <?php } ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -571,10 +578,10 @@
                         <div class="d-flex f-column form-group">
                             <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                             <div class="file file-csv mr-10">
-                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2'])">
+                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['upt_fullname2','upt_email2','upt_phone2','upt_cmnd2','upt_address2','upt_birthday2'])">
                             </div>
                             <div class="file file-excel mr-10">
-                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['u_fullname2','u_email2','u_phone2','u_cmnd2','u_address2','u_birthday2'])">
+                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['upt_fullname2','upt_email2','upt_phone2','upt_cmnd2','upt_address2','upt_birthday2'])">
                             </div>
                             <div class="d-empty">
                                 <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
@@ -609,11 +616,9 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
-    setSortTable();
+    <?=$upt_more != 1 ? "setSortTable();" : null;?>
 </script>
 <!--searching filter-->
 <script>
@@ -983,153 +988,60 @@
       $('#form-insert #paging').remove();
       $('[data-plus]').attr('data-plus',0);
     })
-    function insMore2(){
-        let test = true;
-        let this2 = $(event.currentTarget).closest('tr');
-        let u_fullname2 = $(event.currentTarget).closest('tr').find('td input[name="u_fullname2"]').val();
-        let u_email2 = $(event.currentTarget).closest('tr').find('td input[name="u_email2"]').val();
-        let u_phone2 = $(event.currentTarget).closest('tr').find('td input[name="u_phone2"]').val();
-        let u_cmnd2 = $(event.currentTarget).closest('tr').find('td input[name="u_cmnd2"]').val();
-        let u_address2 = $(event.currentTarget).closest('tr').find('td textarea[name="u_address2"]').val();
-        let u_birthday2 = $(event.currentTarget).closest('tr').find('td input[name="u_birthday2"]').attr('data-date');
-        if(u_fullname2 == "") {
-            this2.find('td input[name="u_fullname2"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="u_fullname2"]').siblings("p.text-danger").text("");
-        }
-
-        if(u_email2 == "") {
-            this2.find('td input[name="u_email2"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="u_email2"]').siblings("p.text-danger").text("");
-        }
-
-        if(u_phone2 == "") {
-            test = false;
-            this2.find('td input[name="u_phone2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="u_phone2"]').siblings("p.text-danger").text("");
-        }
-
-        if(u_cmnd2 == "") {
-            test = false;
-            this2.find('td input[name="u_cmnd2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="u_cmnd2"]').siblings("p.text-danger").text("");
-        }
-
-        if(u_address2 == "") {
-            test = false;
-            this2.find('td textarea[name="u_address2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td textarea[name="u_address2"]').siblings("p.text-danger").text("");
-        }
-
-        if(u_birthday2 == "") {
-            test = false;
-            this2.find('td input[name="u_birthday2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="u_birthday2"]').siblings("p.text-danger").text("");
-        }
-        if(test) {
-            let formData = new FormData();
-            formData.append("u_fullname2",u_fullname2);
-            formData.append("u_email2",u_email2);
-            formData.append("u_phone2",u_phone2);
-            formData.append("u_cmnd2",u_cmnd2);
-            formData.append("u_address2",u_address2);
-            formData.append("u_birthday2",u_birthday2);
-            formData.append("status","ins_more");
-            let this2 = $(event.currentTarget);
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data:formData,
-                success: function(data){
-                    console.log(data);
-                    data = JSON.parse(data);
-                    if(data.msg == "ok") {
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã thêm dữ liệu thành công",
-                            buttons: {
-                                "Ok": function(){
-                                    this2.text("Đã thêm");
-                                    this2.prop("disabled",true);
-                                    this2.css({
-                                        "border": "1px solid #cac0c0",
-                                        "color": "#cac0c0",
-                                        "pointer-events": "none",
-                                    });
-                                }
-                            }
-                        });
-                    }
-                },error: function(data){
-                    console.log("Error: " + data);
-                }
-            })
-        }
-    }
     function insAll(){
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="u_fullname2"]').length;
-      $('td input[name="u_fullname2"]').each(function(){
+      let count = $('td input[name="upt_fullname2"]').length;
+      $('td input[name="upt_fullname2"]').each(function(){
         if($(this).val() != ""){
-          formData.append("u_fullname2[]",$(this).val());
+          formData.append("upt_fullname2[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="u_email2"]').each(function(){
+      $('td input[name="upt_email2"]').each(function(){
         if($(this).val() != ""){
-          formData.append("u_email2[]",$(this).val());
+          formData.append("upt_email2[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="u_phone2"]').each(function(){
+      $('td input[name="upt_phone2"]').each(function(){
         if($(this).val() != "") {
-          formData.append("u_phone2[]",$(this).val());
+          formData.append("upt_phone2[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="u_cmnd2"]').each(function(){
+      $('td input[name="upt_cmnd2"]').each(function(){
         if($(this).val() != "") {
-          formData.append("u_cmnd2[]",$(this).val());
+          formData.append("upt_cmnd2[]",$(this).val());
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td textarea[name="u_address2"]').each(function(){
+      $('td textarea[name="upt_address2"]').each(function(){
         if($(this).val() != "") {
-          formData.append("u_address2[]",$(this).val());
+          formData.append("upt_address2[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;  
         }
       });
-      $('td input[name="u_birthday2"]').each(function(){
+      $('td input[name="upt_birthday2"]').each(function(){
         if($(this).val() != "") {
           let date2 = $(this).val().split(/\/|\-/);
           date2 = date2[2] + "-" + date2[1] + "-" + date2[0];
-          formData.append("u_birthday2[]",date2);
+          formData.append("upt_birthday2[]",date2);
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
@@ -1189,9 +1101,9 @@
         for(i = 0 ; i < _data.length ; i++) {
             formData.append("user_id[]",_data[i].DT_RowId);
         }
-        $('tr.selected input[name="u_fullname"]').each(function(){
+        $('tr.selected input[name="upt_fullname"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_fullname2[]",$(this).val());
+                formData.append("upt_fullname2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1199,9 +1111,9 @@
             }
             
         });
-        $('tr.selected input[name="u_email"]').each(function(){
+        $('tr.selected input[name="upt_email"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_email2[]",$(this).val());
+                formData.append("upt_email2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1209,9 +1121,9 @@
             }
             
         });
-        $('tr.selected input[name="u_phone"]').each(function(){
+        $('tr.selected input[name="upt_phone"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_phone2[]",$(this).val());
+                formData.append("upt_phone2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1219,9 +1131,9 @@
             }
             
         });
-        $('tr.selected input[name="u_cmnd"]').each(function(){
+        $('tr.selected input[name="upt_cmnd"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_cmnd2[]",$(this).val());
+                formData.append("upt_cmnd2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1229,9 +1141,9 @@
             }
             
         });
-        $('tr.selected textarea[name="u_address"]').each(function(){
+        $('tr.selected textarea[name="upt_address"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_address2[]",$(this).val());
+                formData.append("upt_address2[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1239,9 +1151,9 @@
             }
             
         });
-        $('tr.selected input[name="u_birthday"]').each(function(){
+        $('tr.selected input[name="upt_birthday"]').each(function(){
             if($(this).val() != "") {
-                formData.append("u_birthday2[]",$(this).attr('data-date2'));
+                formData.append("upt_birthday2[]",$(this).attr('data-date2'));
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1281,15 +1193,11 @@
         
     }
     function unlockMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        if(_data.length > 0) {
+        let all_checkbox = getIdCheckbox();
+        if(all_checkbox['count'] > 0) {
             $.confirm({
                 title: "Thông báo",
-                content: "Bạn có chắc chắn muốn mở khoá " + _data.length + " tài khoản nhân viên này",
+                content: "Bạn có chắc chắn muốn mở khoá " + all_checkbox['count'] + " tài khoản nhân viên này",
                 buttons: {
                     "Có": function(){
                         $.ajax({
@@ -1297,7 +1205,7 @@
                             type: "POST",
                             data: {
                                 status: "unlock_more",
-                                rows: arr_del.join(","),
+                                rows: all_checkbox['result'],
                             },
                             success: function(data){
                                 data = JSON.parse(data);
@@ -1307,7 +1215,7 @@
                                         content: "Bạn đã mở khoá tài khoản nhân viên thành công",
                                         buttons: {
                                             "Ok": function(){
-                                                location.href="user_manage.php";
+                                                loadDataComplete()
                                             }
                                         }
                                     });
@@ -1329,15 +1237,11 @@
         }
     }
     function lockMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        if(_data.length > 0) {
+        let all_checkbox = getIdCheckbox();
+        if(all_checkbox['count'] > 0) {
             $.confirm({
                 title: "Thông báo",
-                content: "Bạn có chắc chắn muốn khoá " + _data.length + " tài khoản nhân viên này",
+                content: "Bạn có chắc chắn muốn khoá " + all_checkbox['count'] + " tài khoản nhân viên này",
                 buttons: {
                     "Có": function(){
                         $.ajax({
@@ -1345,7 +1249,7 @@
                             type: "POST",
                             data: {
                                 status: "lock_more",
-                                rows: arr_del.join(","),
+                                rows: all_checkbox['result'],
                             },
                             success: function(data){
                                 data = JSON.parse(data);
@@ -1492,7 +1396,6 @@
                 status: "del_role",
                 user_id: user_id,
                 menu_id: menu_id,
-                
             },
             success:function(data){
                 console.log(data);
@@ -1509,18 +1412,12 @@
         })
     }
     function roleMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        let str_arr_upt = arr_del.join(",");
         $.ajax({
             url: window.location.href,
             type: "POST",
             data: {
                 status: "role_load",
-                roles: str_arr_upt,
+                roles: getIdCheckbox()['result'],
             },
             success: function(data){
                 console.log(data);
@@ -1544,99 +1441,6 @@
                 console.log("Error:" + data);
             }
         });
-    }
-    function uptMore(){
-        let arr_del = [];
-        let _data = dt_user.rows(".selected").select().data();
-        for(i = 0 ; i < _data.length ; i++) {
-            arr_del.push(_data[i].DT_RowId);
-        }
-        let str_arr_upt = arr_del.join(",");
-        location.href="user_manage.php?upt_more=1&str=" + str_arr_upt;
-    }
-    function uptMore2(){
-        let test = true;
-        let name = $(event.currentTarget).closest("tr").find("td input[name='u_fullname']").val();
-        let email = $(event.currentTarget).closest("tr").find("td input[name='u_email']").val();
-        let phone = $(event.currentTarget).closest("tr").find("td input[name='u_phone']").val();
-        let address = $(event.currentTarget).closest("tr").find("td textarea[name='u_address']").val();
-        let cmnd = $(event.currentTarget).closest("tr").find("td input[name='u_cmnd']").val();
-        let birthday = $(event.currentTarget).closest("tr").find("td input[name='u_birthday']").attr('data-date2');
-        let id = $(event.currentTarget).attr('data-id');
-        let this2 = $(event.currentTarget).closest("tr");
-        if(name == "") {
-            test = false;
-            this2.find("td input[name='u_fullname']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_fullname']").siblings("span.text-danger").text("");
-        }
-        if(email == "") {
-            test = false;
-            this2.find("td input[name='u_email']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_email']").siblings("span.text-danger").text("");
-        }
-        if(phone == "") {
-            test = false;
-            this2.find("td input[name='u_phone']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_phone']").siblings("span.text-danger").text("");
-        }
-        if(address == "") {
-            test = false;
-            this2.find("td textarea[name='u_address']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td textarea[name='u_address']").siblings("span.text-danger").text("");
-        }
-        if(cmnd == "") {
-            test = false;
-            this2.find("td input[name='u_cmnd']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_cmnd']").siblings("span.text-danger").text("");
-        }
-        if(birthday == "") {
-            test = false;
-            this2.find("td input[name='u_birthday']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='u_birthday']").siblings("span.text-danger").text("");
-        }
-        console.log(name);
-        this2 = $(event.currentTarget);
-        if(test) {
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                data: {
-                    status: "upt_more",
-                    u_fullname: name,
-                    u_email: email,
-                    u_phone: phone,
-                    u_address: address,
-                    u_cmnd: cmnd,
-                    u_id: id,
-                    u_birthday: birthday,
-                },success: function(data){
-                    data = JSON.parse(data);
-                    if(data.msg == "ok"){
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã sửa dữ liệu thành công",
-                            buttons: {
-                                "Ok" : function(){
-                                    let num_of_upt = this2.attr('dt-count');
-                                    num_of_upt++;
-                                    this2.attr('dt-count',num_of_upt);
-                                    this2.text(`Sửa (${num_of_upt})`);
-                                }
-                            }
-                        });
-                    }
-                },error:function(data){
-                    console.log("Error: " + data);
-                }
-            });
-        }
-        
     }
 </script>
 <!--js section end-->
@@ -1726,15 +1530,15 @@
             }
             echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "upt_more") {
-            $u_id = isset($_REQUEST["u_id"]) ? $_REQUEST["u_id"] : null;
-            $u_fullname = isset($_REQUEST["u_fullname"]) ? $_REQUEST["u_fullname"] : null;
-            $u_email = isset($_REQUEST["u_email"]) ? $_REQUEST["u_email"] : null;
-            $u_phone = isset($_REQUEST["u_phone"]) ? $_REQUEST["u_phone"] : null;
-            $u_cmnd = isset($_REQUEST["u_cmnd"]) ? $_REQUEST["u_cmnd"] : null;
-            $u_address = isset($_REQUEST["u_address"]) ? $_REQUEST["u_address"] : null;
-            $u_birthday = isset($_REQUEST["u_birthday"]) ? $_REQUEST["u_birthday"] : null;
-            $u_type = isset($_REQUEST["u_type"]) ? $_REQUEST["u_type"] : null;
-            $sql = "Update user set full_name='$u_fullname',email='$u_email',phone='$u_phone',cmnd='$u_cmnd',address='$u_address',birthday='$u_birthday',type='$u_type' where id='$u_id'";
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_fullname = isset($_REQUEST["upt_fullname"]) ? $_REQUEST["upt_fullname"] : null;
+            $upt_email = isset($_REQUEST["upt_email"]) ? $_REQUEST["upt_email"] : null;
+            $upt_phone = isset($_REQUEST["upt_phone"]) ? $_REQUEST["upt_phone"] : null;
+            $upt_cmnd = isset($_REQUEST["upt_cmnd"]) ? $_REQUEST["upt_cmnd"] : null;
+            $upt_address = isset($_REQUEST["upt_address"]) ? $_REQUEST["upt_address"] : null;
+            $upt_birthday = isset($_REQUEST["upt_birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_birthday"])) : null;
+            $upt_type = isset($_REQUEST["upt_type"]) ? $_REQUEST["upt_type"] : null;
+            $sql = "Update user set full_name='$upt_fullname',email='$upt_email',phone='$upt_phone',cmnd='$upt_cmnd',address='$upt_address',birthday='$upt_birthday',type='$upt_type' where id='$upt_id'";
             sql_query($sql);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_more") {
@@ -1805,28 +1609,28 @@
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_more") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $u_fullname2 = isset($_REQUEST["u_fullname2"]) ? $_REQUEST["u_fullname2"] : null;
-            $u_email2 = isset($_REQUEST["u_email2"]) ? $_REQUEST["u_email2"] : null;
-            $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
-            $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
-            $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? Date('Y-m-d',strtotime($_REQUEST["u_birthday2"])) : null;
-            $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$u_fullname2','$u_email2','$u_phone2','$u_cmnd2','$u_address2','$u_birthday2')";
+            $ins_fullname = isset($_REQUEST["ins_fullname"]) ? $_REQUEST["ins_fullname"] : null;
+            $ins_email = isset($_REQUEST["ins_email"]) ? $_REQUEST["ins_email"] : null;
+            $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
+            $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
+            $ins_cmnd = isset($_REQUEST["ins_cmnd"]) ? $_REQUEST["ins_cmnd"] : null;
+            $ins_birthday = isset($_REQUEST["ins_birthday"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_birthday"])) : null;
+            $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$ins_fullname','$ins_email','$ins_phone','$ins_cmnd','$ins_address','$ins_birthday')";
             sql_query($sql);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $u_fullname2 = isset($_REQUEST["u_fullname2"]) ? $_REQUEST["u_fullname2"] : null;
-            $u_email2 = isset($_REQUEST["u_email2"]) ? $_REQUEST["u_email2"] : null;
-            $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
-            $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
-            $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
-            $u_type2 = isset($_REQUEST["u_type2"]) ? $_REQUEST["u_type2"] : null;
+            $ins_fullname = isset($_REQUEST["ins_fullname"]) ? $_REQUEST["ins_fullname"] : null;
+            $ins_email = isset($_REQUEST["ins_email"]) ? $_REQUEST["ins_email"] : null;
+            $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
+            $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
+            $ins_cmnd = isset($_REQUEST["ins_cmnd"]) ? $_REQUEST["ins_cmnd"] : null;
+            $ins_birthday = isset($_REQUEST["ins_birthday"]) ? $_REQUEST["ins_birthday"]  : null;
+            $ins_type = isset($_REQUEST["ins_type"]) ? $_REQUEST["ins_type"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;
-                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values('$u_fullname2[$i]','$u_type2[$i]','$u_email2[$i]','$u_phone2[$i]','$u_cmnd2[$i]','$u_address2[$i]','$birth')";
+                    $birth = $ins_birthday[$i] ? Date('Y-m-d',strtotime($ins_birthday[$i])) : null;
+                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values('$ins_fullname[$i]','$ins_type[$i]','$ins_email[$i]','$ins_phone[$i]','$ins_cmnd[$i]','$ins_address[$i]','$birth')";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);
@@ -1834,17 +1638,17 @@
         } else if($status == "upt_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
             $user_id = isset($_REQUEST["user_id"]) ? $_REQUEST["user_id"] : null;
-            $u_fullname2 = isset($_REQUEST["u_fullname2"]) ? $_REQUEST["u_fullname2"] : null;
-            $u_email2 = isset($_REQUEST["u_email2"]) ? $_REQUEST["u_email2"] : null;
-            $u_phone2 = isset($_REQUEST["u_phone2"]) ? $_REQUEST["u_phone2"] : null;
-            $u_address2 = isset($_REQUEST["u_address2"]) ? $_REQUEST["u_address2"] : null;
-            $u_cmnd2 = isset($_REQUEST["u_cmnd2"]) ? $_REQUEST["u_cmnd2"] : null;
-            $u_birthday2 = isset($_REQUEST["u_birthday2"]) ? $_REQUEST["u_birthday2"]  : null;
-            $u_type2 = isset($_REQUEST["u_type2"]) ? $_REQUEST["u_type2"] : null;
+            $upt_fullname2 = isset($_REQUEST["upt_fullname2"]) ? $_REQUEST["upt_fullname2"] : null;
+            $upt_email2 = isset($_REQUEST["upt_email2"]) ? $_REQUEST["upt_email2"] : null;
+            $upt_phone2 = isset($_REQUEST["upt_phone2"]) ? $_REQUEST["upt_phone2"] : null;
+            $upt_address2 = isset($_REQUEST["upt_address2"]) ? $_REQUEST["upt_address2"] : null;
+            $upt_cmnd2 = isset($_REQUEST["upt_cmnd2"]) ? $_REQUEST["upt_cmnd2"] : null;
+            $upt_birthday2 = isset($_REQUEST["upt_birthday2"]) ? $_REQUEST["upt_birthday2"]  : null;
+            $upt_type2 = isset($_REQUEST["upt_type2"]) ? $_REQUEST["upt_type2"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
-                    $birth = $u_birthday2[$i] ? Date('Y-m-d',strtotime($u_birthday2[$i])) : null;                 
-                    $sql = "Update user set full_name='$u_fullname2[$i]',type = '$u_type2[$i]',email='$u_email2[$i]',phone='$u_phone2[$i]',cmnd='$u_cmnd2[$i]',address='$u_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
+                    $birth = $upt_birthday2[$i] ? Date('Y-m-d',strtotime($upt_birthday2[$i])) : null;                 
+                    $sql = "Update user set full_name='$upt_fullname2[$i]',type = '$upt_type2[$i]',email='$upt_email2[$i]',phone='$upt_phone2[$i]',cmnd='$upt_cmnd2[$i]',address='$upt_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
                     sql_query($sql);
                 }
                 echo_json(["msg" => "ok"]);

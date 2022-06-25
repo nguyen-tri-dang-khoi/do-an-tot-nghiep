@@ -38,11 +38,13 @@ var html_config = {
             `,
             "tbody":
             `
-                <td><input class='kh-inp-ctrl' name='name2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_name' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick="insMore2('category_manage')" class='dt-button button-blue'>Thêm</button></td>
             `,
             "ins_more":{
-                "name2":"Tên danh mục không được để trống",
+                "ins_name":{
+                    'not_null':"Tên danh mục không được để trống",
+                }
             },
             "ins_all":{
 
@@ -50,9 +52,11 @@ var html_config = {
         },
         "upt_fast":{
             'upt_more':{
-                'pt_name':'Tên danh mục không được để trống'
+                'upt_name':{
+                    'not_null':'Tên danh mục không được để trống',
+                }
             },
-            'upt_more_id':'pt_id',
+            'upt_more_id':'upt_id',
             'upt_all':'.list-product',
         },
         "read_fast":{
@@ -86,6 +90,7 @@ var html_config = {
                         <th>Tên sp</th>
                         <th class="w-300">Danh mục</th>
                         <th>Số lượng</th>
+                        <th>Giá gốc</th>
                         <th>Đơn giá</th>
                         <th>Mô tả sp</th>
                         <th>Ảnh đại diện</th>
@@ -94,32 +99,56 @@ var html_config = {
                     </thead> 
             `,
             "tbody":`
-                <td><input class='kh-inp-ctrl' name='name_p2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_name' type='text' value=''><p class='text-danger'></p></td>
                 <td>
-                <div style="display:flex;flex-direction:column;outline:none !important;">
-                    <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;" id="menu">
-                        <li onmouseover="load_menu()" class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                            <a href="#">Chọn danh mục</a>
-                            <ul class="child aaab">
-                            </ul>
-                            <input type="hidden" name="category_id">
-                        </li>
-                    </ul>
-                    <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
-                    <p class='text-danger'></p>
-                </div>
+                    <div style="display:flex;flex-direction:column;outline:none !important;">
+                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;" id="menu">
+                            <li onmouseover="load_menu()" class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                                <a href="javascript:void(0)">Chọn danh mục</a>
+                                <ul class="child aaab">
+                                </ul>
+                                <input type="hidden" name="product_type_id">
+                            </li>
+                        </ul>
+                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
+                        <p class='text-danger'></p>
+                    </div>
                 </td>  
-                <td><input class='kh-inp-ctrl' name='count_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='price_p2' type='text'  onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='desc_p2' value=''></textarea><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_count' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_cost' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_price' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' name='ins_desc' value=''></textarea><p class='text-danger'></p></td>
                 <td>
                 <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
-                    <input class="nl-form-control" name="img2[]" type="file" onchange="readURL(this,'1')">
+                    <input class="nl-form-control" name="ins_img" type="file" onchange="readURL(this,'1')">
                 </div>
                 <p class='text-danger'></p>
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
+            "ins_more":{
+                'ins_name':{
+                    'not_null':'Tên sản phẩm không được để trống',
+                },
+                'product_type_id':{
+                    'not_null':'Tên danh mục không được để trống',
+                },
+                'ins_count':{
+                    'not_null':'Số lượng sản phẩm không được để trống',
+                },
+                'ins_cost':{
+                    'not_null':'Giá gốc không được để trống',
+                },
+                'ins_price':{
+                    'not_null':'Đơn giá không được để trống',
+                },
+                'ins_img':{
+                    'not_null':'Ảnh đại diện không được để trống',
+                },
+                'ins_desc':{
+                    'not_null':'Mô tả sản phẩm không được để trống',
+                }
+            }
         },"read_fast":{
             'modal_read':'#form-product',
             'modal_xl':'#modal-xl',
@@ -127,7 +156,22 @@ var html_config = {
             'link_read':'ajax_product_info',
         },
         "upt_fast":{
-            'tbody_read':'.list-product',
+            'upt_more':{
+                'upt_name':{
+                    'not_null':'Tên sản phẩm không được để trống',
+                },
+                'upt_count':{
+                    'not_null':'Số lượng sản phẩm không được để trống',
+                },
+                'upt_cost':{
+                    'not_null':'Giá gốc không được để trống',
+                },
+                'upt_price':{
+                    'not_null':'Đơn giá không được để trống',
+                },
+            },
+            'upt_more_id':'upt_id',
+            'upt_all':'.list-product',
         },
         "del_fast":{
             'tbody_read':'.list-product',
@@ -139,6 +183,7 @@ var html_config = {
                 '.ten-san-pham':'.th-ten-san-pham|string',
                 '.so-thu-tu':'.th-so-thu-tu|number',
                 '.so-luong':'.th-so-luong|number',
+                '.gia-goc':'.th-gia-goc|number',
                 '.don-gia':'.th-don-gia|number',
                 '.ngay-dang':'.th-ngay-dang|date',
             }
@@ -222,16 +267,25 @@ var html_config = {
                     </thead>
             `,
             "tbody":`
-                <td><input class='kh-inp-ctrl' name='n_title2' type='text' value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='n_content2' value=''></textarea><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_title' type='text' value=''><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' name='ins_content' value=''></textarea><p class='text-danger'></p></td>
                 <td>
                 <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                    <input class="nl-form-control" name="img3[]" type="file" onchange="readURL(this)">
+                    <input class="nl-form-control" name="ins_img" type="file" onchange="readURL(this)">
                 </div>
                 <p class='text-danger'></p>
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
+        },
+        "upt_fast":{
+            'upt_more':{
+                'upt_title':{
+                    'not_null':'Tiêu đề bảng tin không được để trống',
+                },
+            },
+            'upt_more_id':'upt_id',
+            'upt_all':'.list-product',
         },
         "read_fast":{
             'modal_read':'#form-bang-tin',
@@ -274,14 +328,14 @@ var html_config = {
                 </thead>
             `,
             "tbody":`
-                <td><input class='kh-inp-ctrl' name='u_fullname2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_email2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_phone2' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='u_cmnd2' type='text' value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='u_address2' value=''></textarea><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' data-date='' name='u_birthday2' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_fullname' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_email' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_phone' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_cmnd' type='text' value=''><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' name='ins_address' value=''></textarea><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_birthday' type='text' value=''><p class='text-danger'></p></td>
                 <td>
-                    <select class='form-control'>
+                    <select name="ins_type" class='form-control'>
                         <option value=''>Chọn chức vụ</option>
                         <option value='officer'>Nhân viên văn phòng</option>
                         <option value='shipper'>Nhân viên giao hàng</option>
@@ -290,6 +344,53 @@ var html_config = {
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
+            "ins_more":{
+                'ins_fullname':{
+                    "not_null":"Tên đầy đủ không được để trống",
+                },
+                'ins_email':{
+                    "not_null":"Email không được để trống",
+                },
+                'ins_phone':{
+                    "not_null":"Số điện thoại không được để trống",
+                },
+                'ins_cmnd':{
+                    "not_null":"Số chứng minh nhân dân không được để trống",
+                },
+                'ins_address':{
+                    "not_null":"Địa chỉ không được để trống",
+                },
+                'ins_birthday':{
+                    "not_null":"Ngày sinh không được để trống",
+                },
+                'ins_type':{
+                    "not_null":"Chức vụ không được để trống",
+                },
+            }
+        },
+        "upt_fast":{
+            'upt_more':{
+                'upt_fullname':{
+                    "not_null":"Tên đầy đủ không được để trống",
+                },
+                'upt_email':{
+                    "not_null":"Email không được để trống",
+                },
+                'upt_phone':{
+                    "not_null":"Số điện thoại không được để trống",
+                },
+                'upt_cmnd':{
+                    "not_null":"Số chứng minh nhân dân không được để trống",
+                },
+                'upt_address':{
+                    "not_null":"Địa chỉ không được để trống",
+                },
+                'upt_birthday':{
+                    "not_null":"Ngày sinh không được để trống",
+                },
+            },
+            'upt_more_id':'upt_id',
+            'upt_all':'.list-product',
         },
         "read_fast":{
             'modal_read':'#manage_user',
@@ -483,6 +584,7 @@ function loadDataComplete(status = ""){
         } else {
             location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}`;
         }
+        
     }
     $(`.table-game-start`).load(`${location_ok} #table-${file_name_config}`,() => {
         console.log($(`#table-${file_name_config} tbody tr`).length);
@@ -680,6 +782,17 @@ function shiftCheckedRange(parent){
     }
     console.log(($('input[name*="check_id"]:checked')).length);
 }
+function getIdCheckbox(){
+    let arr_id = [];
+    let tbody_read = html_config[file_name_config]['load']['tbody_read'];
+    $(`${tbody_read} td input[name*="check_id"]:checked`).each(function(){
+      arr_id.push($(this).val());
+    });
+    return {
+        "result": arr_id.join(","),
+        "count" : arr_id.length,
+    };
+}
 // table sorting
 function setSortTable(){
     let thead_read = html_config[file_name_config]['sort_table']['thead_read'];
@@ -866,6 +979,36 @@ function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
     }
     $("input[name='read_excel']").val("");
 }
+//validate input
+function compare(variable_number, value, sign){
+    let test = "";
+    let message = "Ok";
+    switch(sign) {
+        case ">": test = variable_number > value;message = `Giá trị bạn nhập phải lớn hơn ${value}`;break;
+        case ">=": test = variable_number >= value;message = `Giá trị bạn nhập phải lớn hơn hoặc bằng ${value}`;break;
+        case "<": test = variable_number < value;message = `Giá trị bạn nhập phải nhỏ hơn hoặc bằng ${value}`;break;
+        case "<=": test = variable_number <= value;message = `Giá trị bạn nhập phải bé hơn hoặc bằng ${value}`;break;
+        case "==": test = variable_number == value;message = `Giá trị bạn nhập phải bằng ${value}`;break;
+    }
+    return {
+        "msg":test,
+        "error":message
+    };
+}
+function isOk(variable,sign) {
+    let test = "";
+    let message = "Ok";
+    switch(sign) {
+        case "number":test = isNaN(variable.replace(/\./g,""));message="Vui lòng nhập dữ liệu kiểu số";break;
+        case "date": test = /^(\d{1,2})\-(\d{1,2})\-(\d{4})$/.test(variable);message="Vui lòng nhập dữ liệu theo định dạng dd-mm-yyyy";break;
+        case "string": test = variable.length < 250;message="Số lượng ký tự phải nhỏ hơn hoặc bằng 250";break;
+        case "content": test = variable.length < 100000;message="Số lượng ký tự phải nhỏ hơn hoặc bằng 100.000";break;
+    }
+    return {
+        "msg":test,
+        "error":message
+    };
+}
 
 // crud
 function insMore(number = 2){
@@ -873,63 +1016,65 @@ function insMore(number = 2){
 }
 function insMore2(){
     let ins_more =  html_config[file_name_config]['ins_fast']['ins_more'];
-    let obj_ins_more = {
-        'status':'ins_more',
-    };
+    let target2 = $(event.currentTarget).closest('tr');
+    let formData = new FormData();
+    formData.append('status','ins_more');
     if(file_name_config == "category_manage") {
-        obj_ins_more['parent_id'] = $('[dt-parent-id]').attr('dt-parent-id');
-        if(obj_ins_more['parent_id'] == "") {
-            obj_ins_more['parent_id'] = null;
-        }
+        formData.append('parent_id',$('[dt-parent-id]').attr('dt-parent-id'));
     }
     let test = true;
     Object.keys(ins_more).forEach(function(ele){
-        obj_ins_more[ele] = $(event.currentTarget).closest('tr').find(`td [name="${ele}"]`).val();
-        if(obj_ins_more[ele].trim() == "") {
-            $(event.currentTarget).closest('tr').find(`td [name="${ele}"]`).next().text(ins_more[ele]);
-            test = false;
-            return test;
+        if(target2.find(`td [name="${ele}"]`).attr('type').indexOf('file') > -1) {
+            formData.append(`${ele}`,target2.find(`td [name="${ele}"]`)[0].files[0]);
+        } else {
+            formData.append(`${ele}`,target2.find(`td [name="${ele}"]`).val());
+        }
+        if(ins_more[ele]['not_null'] !== undefined){
+            if(formData.get(`${ele}`) == "") {
+                target2.find(`td [name="${ele}"]`).next().text(ins_more[ele]['not_null']);
+                test = false;
+                return test;
+            }
         }
     });
     if(test) {
         let this2 = $(event.currentTarget);
         $.ajax({
-        url: window.location.href,
-        type: "POST",
-        data: obj_ins_more,
-        success: function(data){
-            console.log(data);
-            data = JSON.parse(data);
-            if(data.msg == "ok") {
-            $.alert({
-                title: "Thông báo",
-                content: "Bạn đã thêm dữ liệu thành công",
-                buttons: {
-                "Ok": function(){
-                    this2.text("Đã thêm");
-                    this2.prop("disabled",true);
-                    this2.css({
-                    "border": "1px solid #cac0c0",
-                    "color": "#cac0c0",
-                    "pointer-events": "none",
-                    });
+            url: window.location.href,
+            type: "POST",
+            cache:false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data){
+                console.log(data);
+                data = JSON.parse(data);
+                if(data.msg == "ok") {
+                    $.alert({
+                        title: "Thông báo",
+                        content: "Bạn đã thêm dữ liệu thành công",
+                        buttons: {
+                            "Ok": function(){
+                                this2.text("Đã thêm");
+                                this2.prop("disabled",true);
+                                this2.css({
+                                    "border": "1px solid #cac0c0",
+                                    "color": "#cac0c0",
+                                    "pointer-events": "none",
+                                });
+                            }
+                        }
+                    })
+                    loadDataComplete("Insert");
                 }
-                }
-            })
+            },error: function(data){
+                console.log("Error: " + data);
             }
-        },error: function(data){
-            console.log("Error: " + data);
-        }
         })
     }  
 }
 function uptMore(parent_id = "",tab_unique=""){
-    let arr_del = [];
-    let tbody_read = html_config[file_name_config]['load']['tbody_read'];
-    $(`${tbody_read} td input[name*="check_id"]:checked`).each(function(){
-      arr_del.push($(this).val());
-    });
-    let str_arr_upt = arr_del.join(",");
+    let str_arr_upt = getIdCheckbox()['result'];
     if(parent_id != "") {
         loadDataInTab(`${file_name_config}.php?upt_more=1&parent_id=${parent_id}&str=${str_arr_upt}&tab_unique=${tab_unique}`);
     } else {
@@ -939,17 +1084,24 @@ function uptMore(parent_id = "",tab_unique=""){
 function uptMore2(){
     let upt_more =  html_config[file_name_config]['upt_fast']['upt_more'];
     let upt_more_id = html_config[file_name_config]['upt_fast']['upt_more_id'];
-    let obj_upt_more = {
-        status:'upt_more',
-    };
-    obj_upt_more[upt_more_id] = $(event.currentTarget).attr('data-id');
+    let target2 = $(event.currentTarget).closest('tr');
+    let formData = new FormData();
+    formData.append('status','upt_more');
+    formData.append(`${upt_more_id}`,$(event.currentTarget).attr('data-id'));
     let test = true;
     Object.keys(upt_more).forEach(function(ele){
-        obj_upt_more[ele] = $(event.currentTarget).closest('tr').find(`td [name="${ele}"]`).val();
-        if(obj_upt_more[ele].trim() == "") {
-            $(event.currentTarget).closest('tr').find(`td [name="${ele}"]`).next().text(upt_more[ele]);
-            test = false;
-            return test;
+        if(target2.find(`td [name="${ele}"]`).attr('type').indexOf('file') > -1) {
+            formData.append(`${ele}`,target2.find(`td [name="${ele}"]`)[0].files[0]);
+        } else {
+            formData.append(`${ele}`,target2.find(`td [name="${ele}"]`).val());
+        }
+        if(upt_more[ele]['not_null'] !== undefined){
+            if(formData.get(`${ele}`) == "") {
+                console.log("aaa");
+                target2.find(`td [name="${ele}"]`).next().text(upt_more[ele]['not_null']);
+                test = false;
+                return test;
+            }
         }
     });
     if(test) {
@@ -957,20 +1109,24 @@ function uptMore2(){
       $.ajax({
         url: window.location.href,
         type: "POST",
-        data: obj_upt_more
-        ,success: function(data){
-          data = JSON.parse(data);
-          if(data.msg == "ok"){
-            $.alert({
-              title: "Thông báo",
-              content: "Bạn đã sửa dữ liệu thành công",
-              buttons: {
-                "Ok": function(){
-                    this2.closest('tr').find('.text-danger').text("");
+        cache:false,
+        contentType: false,
+        processData: false,
+        data: formData,
+        success: function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok"){
+                $.alert({
+                title: "Thông báo",
+                content: "Bạn đã sửa dữ liệu thành công",
+                buttons: {
+                    "Ok": function(){
+                        this2.closest('tr').find('.text-danger').text("");
+                    }
                 }
-              }
-            });
-          }
+                });
+            }
         },error:function(data){
             console.log("Error: " + data);
         }
@@ -1082,14 +1238,13 @@ function insRow(){
         let page = $('[data-plus]').attr('data-plus');
         let html = "";
         let count2 = parseInt(page / 7) + 1;
-        //count_row_z_index--;
         html = `
             <tr data-row-id='${parseInt(page) + 1}'>
             <td>${parseInt(page) + 1}</td>
             ${html_config[file_name_config]['ins_fast']['tbody']}
             </tr>
         `;
-        console.log(html_config[file_name_config]['ins_fast']);
+        //console.log(html_config[file_name_config]['ins_fast']);
         if(page % 7 != 0) {
             $('.t-bd').css({"display":"none"});
             $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
@@ -1221,16 +1376,11 @@ function readMore(){
     });
 }
 function delMore(){
-    let arr_del = [];
-    let tbody_read = html_config[file_name_config]['del_fast']['tbody_read'];
-    let count4 = $(`${tbody_read} td input[name*="check_id"]:checked`).length;
-    $(`${tbody_read} td input[name*="check_id"]:checked`).each(function(){
-      arr_del.push($(this).val());
-    });
-    if(count4 > 0) {
+    let all_checkbox = getIdCheckbox();
+    if(all_checkbox['count'] > 0) {
       $.confirm({
           title: "Thông báo",
-          content: "Bạn có chắc chắn muốn xoá " + count4 + " dòng này",
+          content: "Bạn có chắc chắn muốn xoá " + all_checkbox['count'] + " dòng này",
           buttons: {
             "Có": function(){
                 $.ajax({
@@ -1238,10 +1388,9 @@ function delMore(){
                   type: "POST",
                   data: {
                     status: "del_more",
-                    rows: arr_del.join(","),
+                    rows: all_checkbox['result'],
                   },
                   success: function(data){
-
                     data = JSON.parse(data);
                     if(data.msg == "ok"){
                         $.alert({
@@ -1265,6 +1414,31 @@ function delMore(){
           content: "Bạn chưa chọn dòng cần xoá",
       });
     }
+}
+function toggleStatus(id,status,product_type_id = ""){
+    let target = $(event.currentTarget);
+    $.ajax({
+        url:window.location.href,
+        type:"POST",
+        data: {
+            id:id,
+            status:status,
+            product_type_id: product_type_id,
+        },success:function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "Active") {
+                toastr["success"](data.success);
+                target.attr('onchange',`toggleStatus('${id}','Deactive','${product_type_id}')`);
+            } else if(data.msg == "Deactive") {
+                toastr["success"](data.success);
+                target.attr('onchange',`toggleStatus('${id}','Active','${product_type_id}')`);
+            } else if(data.msg == "not_ok") {
+                toastr["success"](data.error);
+                target.prop('checked',false);
+            }
+        }
+    })
 }
 // modal
 $("#modal-xl2").on("hidden.bs.modal",function(){

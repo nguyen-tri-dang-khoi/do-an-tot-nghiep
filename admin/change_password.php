@@ -123,15 +123,14 @@
         $old_pass = isset($_REQUEST["old_pass"]) ? $_REQUEST["old_pass"] : null;
         $new_pass = isset($_REQUEST["new_pass"]) ? $_REQUEST["new_pass"] : null;
         $session_id = $_SESSION["id"];
-        $sql = "select password from user where id = '$session_id' limit 1";
-        $row = fetch(sql_query($sql));
+        $sql = "select password from user where id = ? limit 1";
+        $row = fetch(sql_query($sql,[$session_id]));
         if($old_pass && $new_pass && $session_id) {
           if(password_verify($old_pass,$row["password"])){
             $success = "Bạn đã đổi mật khẩu thành công.";
             $new_pass = password_hash($new_pass,PASSWORD_DEFAULT);
-            //ajax_db_update_by_id('user',['password'=>$new_pass],[$session_id]);
-            $sql_update = "Update user set password = '$new_pass' where id = '$session_id'";
-            sql_query($sql_update);
+            $sql_update = "Update user set password = ? where id = ?";
+            sql_query($sql_update,[$new_pass,$session_id]);
             echo_json(["msg"=>"not_ok","success"=>$success]);
             exit();
           } else {

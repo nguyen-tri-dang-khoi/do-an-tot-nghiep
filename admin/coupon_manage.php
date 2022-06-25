@@ -524,6 +524,13 @@
                                     $cnt++;
                                     }
                                     ?>
+                                    <?php
+                                        if(count($rows) == 0) {
+                                    ?>
+                                    <tr>
+                                        <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                                    </tr>
+                                    <?php } ?>
                                     </tbody>
                                     <tfoot>
                                         <tr>
@@ -643,12 +650,10 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <!--js section start-->
 <script>
-    setSortTable();
+    <?=$upt_more != 1 ? "setSortTable();" : null;?>
     function uptMore2(){
         let test = true;
         let c_code = $(event.currentTarget).closest("tr").find("td input[name='c_code']").val();

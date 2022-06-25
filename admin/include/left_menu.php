@@ -34,7 +34,7 @@
   <!-- Left navbar links -->
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a tabindex="-1" class="nav-link" onclick="hidden_menu()" href="#" role="button"><i class="fas fa-bars"></i></a>
+      <a tabindex="-1" class="nav-link" onclick="hidden_menu()" href="javascript:void(0)" role="button"><i class="fas fa-bars"></i></a>
     </li>
   </ul>
   <ul class="navbar-nav ml-auto">

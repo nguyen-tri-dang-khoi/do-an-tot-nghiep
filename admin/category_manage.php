@@ -41,24 +41,23 @@
           } 
         }
         $where .= " $order_by";
-        // code to be executed get method
 ?>
 <!--html & css section start-->
 <style>
   .breadcrumb-item+.breadcrumb-item::before {
-    display: inline-block;
-    padding-right: 0.7rem;
-    color: #9c27b0;
-    content: "\203A\203A";
-    font-weight:bold;
+      display: inline-block;
+      padding-right: 0.7rem;
+      color: #9c27b0;
+      content: "\203A\203A";
+      font-weight:bold;
    }
    .breadcrumb-item-aaa:last-child a{
-    text-decoration: underline;
-    color:#9c27b0 !important;
-    border-radius:5px;
+      text-decoration: underline;
+      color:#9c27b0 !important;
+      border-radius:5px;
    }
   .sort-asc,.sort-desc {
-    display: none;
+      display: none;
   }
 </style>
 <link rel="stylesheet" href="css/toastr.min.css">
@@ -211,7 +210,7 @@
                           <thead>
                             <tr style="cursor:pointer;">
                               <th style="width:20px !important;">
-                                  <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                  <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all"  onchange="checkedAll()" <?=$upt_more == 1 ? "checked" : "";?>>
                               </th>
                               <th class="th-so-thu-tu w-150">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                               <th class="th-danh-muc">Tên danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -233,9 +232,9 @@
                           ?>
                           <tbody dt-parent-id="<?=$parent_id ? $parent_id : NULL;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-product-type">
                           <?php foreach($product_types as $product_type) {?>
-                            <tr class="parent-type" style="cursor:pointer;" id="<?=$product_type["id"];?>">
+                            <tr class="parent-type <?=$upt_more == 1 ? "selected" : "";?>" style="cursor:pointer;" id="<?=$product_type["id"];?>">
                               <td>
-                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
+                                <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
                               </td>
                               <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
                                 <?=$total - ($start_page + $cnt);?>
@@ -247,7 +246,7 @@
                               <?php
                                 } else {
                               ?>
-                              <td class="danh-muc"><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="pt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
+                              <td class="danh-muc"><input tabindex="<?=$cnt+1;?>" class='kh-inp-ctrl' type="text" name="upt_name" value="<?=$product_type['name'];?>"><span class="text-danger"></span></td>
                               <?php
                                 }
                               ?>
@@ -255,7 +254,7 @@
                               <td class="ngay-tao" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')"><?=Date("d-m-Y",strtotime($product_type["created_at"]));?></td>
                               <td>
                                 <div class="custom-control custom-switch">
-                                  <input type="checkbox" onchange="toggleActiveCategory()" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
+                                  <input type="checkbox" onchange="toggleStatus('<?=$product_type['id'];?>','<?= $product_type['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$product_type['id'];?>" <?= $product_type['is_active'] == 1 ? "checked" : "";?>>
                                   <label class="custom-control-label" for="customSwitches<?=$product_type['id'];?>"></label>
                                 </div>
                               </td>
@@ -298,9 +297,16 @@
                               } 
                             ?>
                           </tbody>
+                          <?php
+                            if(count($product_types) == 0) {
+                          ?>
+                          <tr>
+                            <td style="text-align:center;font-size:17px;" colspan="6">Không có dữ liệu</td>
+                          </tr>
+                          <?php } ?>
                           <tfoot>
                             <tr>
-                              <th><input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()"></th>
+                              <th><input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()"></th>
                               <th>Số thứ tự</th>
                               <th>Tên danh mục</th>
                               <th>Ngày thêm</th>
@@ -376,10 +382,10 @@
               <div class="d-flex f-column form-group">
                 <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                   <div class="file file-csv mr-10">
-                    <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên danh mục'],['name2'])">
+                    <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên danh mục'],['ins_name'])">
                   </div>
                   <div class="file file-excel mr-10">
-                    <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên danh mục'],['name2'])">
+                    <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên danh mục'],['ins_name'])">
                   </div>
                   <div class="d-empty">
                     <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
@@ -421,111 +427,71 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
+
 <script src="js/khoi_all.js"></script>
 <script>
-  setSortTable();
-  function toggleActiveCategory(){
-    //event.preventDefault();
-    let id = $(event.currentTarget).closest("tr").attr("id");
-    let status = !$(event.currentTarget).is(":checked") ? "deactive" : "active";
-    let target = $(event.currentTarget);
-    $.ajax({
-      url:window.location.href,
-      type:"POST",
-      data: {
-        
-        id:id,
-        status:status,
-      },success:function(data){
-        console.log(data);
-        data = JSON.parse(data);
-        if(data.msg == "active") {
-          toastr["success"](data.success);
-          target.prop("checked",true);
-        } else if(data.msg == "not_ok"){
-          toastr["error"](data.error);
-          target.prop("checked",false);
-        } else if(data.msg == "deactive") {
-          toastr["success"](data.success);
-          target.prop("checked",false);
-        } 
-      }
-    })
-  }
-  function createDataUptAll(){
-    let test = true;
-    let arr_id = [];
-    let arr_pt_name = [];
-    let count = $('.list-product-type td input[name*="check_id"]:checked').length;
-    $('.list-product-type td input[name*="check_id"]:checked').each(function(){
-      arr_id.push($(this).val());
-    });
-    if(count == 0) {
-      $.alert({
-        title: "Thông báo",
-        content: "Bạn cần chọn dòng để sửa",
-      })
-      return false;
-    }
-    $("tr.selected input[name='pt_name']").each(function(){
-      if($(this).val() != "") {
-        arr_pt_name.push($(this).val());
-        $(this).siblings("span.text-danger").text("");
-      } else {
-        $(this).siblings("span.text-danger").text("Không được để trống");
-        test = false;
-      }
-    });
-    if(!test) return;
-    let result = {};
-    arr_id.forEach((id,i) => result[id] = arr_pt_name[i]);
-    console.log(result);
-    return JSON.stringify(result);
-  }
+  <?=$upt_more != 1 ? 'setSortTable();' : null;?>
+  $('#select-type2').select2();
   function uptAll(){
-    let json = createDataUptAll();
-    if(json == false) {
-      return;
-    }
-    $.ajax({
-      url: window.location.href,
-      type: "POST",
-      data: {
-        "status": "upt_all",
-        "json": json,
-      },
-      success: function(data){
-        console.log(data);
-        data = JSON.parse(data);
-        if(data.msg == "ok") {
-          $.alert({
-            title: "Thông báo",
-            content: "Bạn đã sửa thành công",
-          })
-        }
-      },
-      error: function(data){
-        console.log("Error: " + data);
+    let all_checkbox = getIdCheckbox();
+    let list_checkbox = all_checkbox['result'].split(",");
+    let formData = new FormData();
+    formData.append('status','upt_all');
+    $('tr.selected td input[name="upt_name"]').each(function(){
+      if($(this).val() != ""){
+        formData.append('upt_name[]',$(this).val());
+      } else {  
+        $(this).siblings('span.text-danger').text("Danh mục sản phẩm không để trống");
       }
     })
+    for(i = 0 ; i < list_checkbox.length ; i++){
+      formData.append('upt_id[]',list_checkbox[i]);
+    }
+    if(all_checkbox['count'] > 0) {
+      $.ajax({
+        url: window.location.href,
+        type: "POST",
+        cache:false,
+        contentType: false,
+        processData: false,
+        data: formData,
+        success: function(data){
+          console.log(data);
+          data = JSON.parse(data);
+          if(data.msg == "ok") {
+            $.alert({
+              title: "Thông báo",
+              content: "Bạn đã sửa dữ liệu thành công",
+            })
+          }
+        },
+        error: function(data){
+          console.log("Error: " + data);
+        }
+      })
+    } else {
+      $.alert({
+        title:"Thông báo",
+        content:"Bạn chưa chọn dòng cần sửa."
+      });
+    }
   }
   function insAll(){
     let test = true;
     let arr_ins_all = [];
-    let count = $("td input[name='name2']").length;
-    $("td input[name='name2']").each(function(){
-      let temp = $(this).val();
-      if(temp != "" && temp != null) {
-        arr_ins_all.push(temp);
-        $(this).siblings("p.text-danger").text("");
+    let formData = new FormData();
+    let len = $('[data-plus]').attr('data-plus');
+    formData.append('status','ins_all');
+    formData.append('len',len);
+    $("td input[name='ins_name']").each(function(){
+      if($(this).val() != ""){
+        formData.append('ins_name[]',$(this).val());
       } else {
-        $(this).siblings("p.text-danger").text("Không được để trống");
+        $(this).siblings('p.text-danger').text("Vui lòng không để trống tên danh mục");
         test = false;
       }
     });
-    if(count == 0) {
+    if(len == 0) {
       $.alert({
         title:"Thông báo",
         content:"Vui lòng tạo input"
@@ -535,16 +501,16 @@
     if(test) {
       $.confirm({
         title: "Thông báo",
-        content: `Bạn có chắc chắn muốn thêm ${count} dòng này ?`,
+        content: `Bạn có chắc chắn muốn thêm ${len} dòng này ?`,
         buttons: {
           "Có": function(){
             $.ajax({
               url: window.location.href,
               type: "POST",
-              data: {
-                status: "ins_all",
-                rows: arr_ins_all.join(","),
-              },
+              cache:false,
+              contentType: false,
+              processData: false,
+              data: formData,
               success: function(data) {
                 console.log(data);
                 data = JSON.parse(data);
@@ -553,14 +519,8 @@
                     title: "Thông báo",
                     content: "Bạn đã thêm dữ liệu thành công",
                   });
-                  $("#form-insert table tbody").remove();
-                  $("input[name='count2']").val("");
-                  $("input[name='count3']").val("");
-                  $("input[name='count2']").attr("data-plus",0);
-                  $("input[name='count3']").attr("data-plus",0);
-                  $('#form-insert #paging').remove();
-                  $('#modal-xl2').modal('hide');
                   loadDataComplete('Insert');
+                  $('#modal-xl2').modal('hide');
                 }
               },
               error: function(data){
@@ -578,7 +538,6 @@
   }
   function openModalInsert(){
     let parameters = new URLSearchParams(location.search);
-    //console.log(location.search);
     let parent_id = parameters.get('parent_id');
     console.log(parent_id);
     $('#form-loai-san-pham').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
@@ -722,7 +681,9 @@
         exec_del_pi_when_del_pt(NULL,$id);
         echo_json(['msg' => 'ok','success' => $success]);
       } else if($status == "Update") {
-          ajax_db_update_by_id('product_type', ['name' => $name],[$id],["id" => $id,"name"=>$name]);
+        $sql_upt = "Update product_type set name = ? where id = ?";
+        sql_query($sql_upt,[$name,$id]);
+        echo_json(["msg" => "ok"]);
       } else if($status == "Insert") {
           if($parent_id) {
             $sql_get_active = "select is_active from product_type where id='$parent_id'";
@@ -735,29 +696,27 @@
             sql_query($sql,[$name,1]);
           }
           echo_json(["msg" => "ok"]);
-      } else if($status == "active") {
+      } else if($status == "Active") {
         exec_active_all(NULL,$id);
-        echo_json(['msg' => 'active','success' => 'Bạn đã kích hoạt danh mục thành công']);
-      } else if($status == "deactive") {
+        echo_json(['msg' => 'Active','success' => 'Bạn đã kích hoạt danh mục thành công']);
+      } else if($status == "Deactive") {
         exec_deactive_all(NULL,$id);
-        echo_json(['msg' => 'deactive','success' => 'Bạn đã huỷ kích hoạt danh mục thành công']);
+        echo_json(['msg' => 'Deactive','success' => 'Bạn đã huỷ kích hoạt danh mục thành công']);
       } else if($status == "upt_more") {
-        $pt_id = isset($_REQUEST["pt_id"]) ? $_REQUEST["pt_id"] : null;
-        $pt_name = isset($_REQUEST["pt_name"]) ? $_REQUEST["pt_name"] : null;
+        $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+        $upt_name = isset($_REQUEST["upt_name"]) ? $_REQUEST["upt_name"] : null;
         $sql = "Update product_type set name = ? where id = ?";
-        sql_query($sql,[$pt_name,$pt_id]);
+        sql_query($sql,[$upt_name,$upt_id]);
         echo_json(["msg" => "ok"]);
       } else if($status == "del_more") {
         $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
-        
         $rows = explode(",",$rows);
         foreach($rows as $row) {
-          $sql = "Update product_type set is_delete = 1 where id = ?";
-          sql_query($sql,[$row]);
+          exec_del_pi_when_del_pt(NULL,$row);
         }
         echo_json(["msg" => "ok"]);
       } else if($status == "ins_more") {
-        $name2 = isset($_REQUEST["name2"]) ? $_REQUEST["name2"] : null;
+        $ins_name = isset($_REQUEST["ins_name"]) ? $_REQUEST["ins_name"] : null;
         $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
         $sql_get_active = "select is_active from product_type where id='$parent_id'";
         $row = fetch(sql_query($sql_get_active));
@@ -766,32 +725,33 @@
           $parent_id = null;
         }
         $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
-        sql_query($sql,[$name2,$parent_id,$is_active]);
+        sql_query($sql,[$ins_name,$parent_id,$is_active]);
         echo_json(["msg" => "ok"]);
       } else if($status == "ins_all") {
-        $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
+        $ins_name = isset($_REQUEST["ins_name"]) ? $_REQUEST["ins_name"] : null;
+        $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
         $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
         $sql_get_active = "select is_active from product_type where id='$parent_id'";
         $row = fetch(sql_query($sql_get_active));
         $is_active = $row['is_active'] ? $row['is_active'] : 0;
-        if($rows) {
+        if($ins_name) {
           if(!$parent_id || $parent_id == ""){
             $parent_id = null;
           }
-          foreach(explode(",",$rows) as $row) {
+          for($i = 0 ; $i < $len ; $i++) {
             $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
-            sql_query($sql,[$row,$parent_id,$is_active]);
+            sql_query($sql,[$ins_name[$i],$parent_id,$is_active]);
           }
         }
         echo_json(["msg" => "ok"]);
       } else if($status == "upt_all") {
-        $json = isset($_REQUEST["json"]) ? $_REQUEST["json"] : null;
-        if($json) {
-          //print_r($json);
-          $rows = (array)json_decode($json);
-          foreach($rows as $key => $value) {
+        $upt_name = isset($_REQUEST["upt_name"]) ? $_REQUEST["upt_name"] : null;
+        $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+        $len = count($upt_id);
+        if($upt_id) {
+          for($i = 0 ; $i < $len ; $i++){
             $sql_update = "Update product_type set name = ? where id = ?";
-            sql_query($sql_update,[$value,$key]);
+            sql_query($sql_update,[$upt_name[$i],$upt_id[$i]]);
           }
           echo_json(["msg" => "ok"]);
         }

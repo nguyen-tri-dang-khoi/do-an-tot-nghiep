@@ -374,6 +374,13 @@
                             $i++;
                           }
                         ?>
+                        <?php
+                            if(count($rows) == 0) {
+                        ?>
+                        <tr>
+                            <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                        </tr>
+                        <?php } ?>
                         </tbody>
                         <tfoot>
                           <tr>

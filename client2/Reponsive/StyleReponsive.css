@@ -1,0 +1,50 @@
+@media (max-width: 1199.98px) {
+    /*  (min-width: 225px) and */
+    header .headerTop .headerTop__infoCompany {
+        text-align: center;
+        justify-content: center;
+        margin: 0;
+    }
+}
+
+@media (max-width: 575.98px) {
+    header .headerTop .headerTop__infoCompany p {
+        font-size: small;
+    }
+}
+
+@media (min-width: 1400px) {
+    .headerTop__infoCompany p {
+        max-width: 1399px;
+    }
+    .headerMain div {
+        max-width: 1399px;
+    }
+    .headerTop div {
+        max-width: 1399px;
+    }
+    .headerBottom div {
+        max-width: 1399px;
+    }
+    .content__carousel div {
+        max-width: 1399px;
+    }
+    .block--home div {
+        max-width: 1399px;
+    }
+}
+
+@media (max-width: 1025px) {
+    header .headerMain .headerMain__formSearch .formSearch--select {
+        display: none;
+    }
+    header .formSearch--keyWord input {
+        width: 90%;
+    }
+    .headerBottom .navbar-expand-lg .navbar-toggler {
+        display: block;
+    }
+    .collapge {
+        display: none;
+    }
+}

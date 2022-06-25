@@ -31,7 +31,7 @@
       $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
       $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
       $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-      $where = "where 1=1 and is_delete = 1 ";
+      $where = "where 1=1 and is_delete = 0";
       $order_by = "Order by n.id desc";
       $wh_child = [];
       $arr_search = [];
@@ -279,13 +279,13 @@
                               <thead>
                                  <tr style="cursor:pointer;">
                                     <th style="width:20px !important;">
-                                       <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                       <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()" <?=$upt_more == 1 ? "checked" : "";?>>
                                     </th>
                                     <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                     <th class="th-tieu-de">Tiêu đề <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                     <th class="w-150 th-luot-xem">Lượt xem <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                     <th class="w-150 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-300">Thao tác</th>
+                                    <th class="w-200">Thao tác</th>
                                  </tr>
                               </thead>
                               <?php
@@ -308,18 +308,10 @@
                               ?>
                                  <tr id="<?=$row["id"];?>">
                                     <td>
-                                       <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                       <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>" <?=$upt_more == 1 ? "checked" : "";?>>
                                     </td>
                                     <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
-                                    <td class="tieu-de"><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='n_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
-                                    <?php
-                                       if($upt_more == 1) {
-                                    ?>
-                                       <td><?= "<textarea class='t-summernote' name='n_content'>" . $row['content'] . "</textarea><span class='text-danger'></span>";?></td>
-                                    <?php
-                                       }
-                                    ?>
-                                    
+                                    <td class="tieu-de"><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='upt_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
                                     <td class="luot-xem"><?=$row['views']?></td>
                                     <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
                                     <td>
@@ -366,11 +358,18 @@
                                  $cnt++;
                               }
                               ?>
+                              <?php
+                                 if(count($rows) == 0) {
+                              ?>
+                              <tr>
+                                 <td style="text-align:center;font-size:17px;" colspan="6">Không có dữ liệu</td>
+                              </tr>
+                              <?php } ?>
                               </tbody>
                               <tfoot>
                                  <tr>
                                     <th style="width:20px !important;">
-                                       <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                       <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()" <?=$upt_more == 1 ? "checked" : "";?>>
                                     </th>
                                     <th>Số thứ tự</th>
                                     <th>Tiêu đề</th>
@@ -481,12 +480,10 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <!--searching filter-->
 <script>
-   setSortTable();
+   <?=$upt_more != 1 ? "setSortTable();" : null;?>
    function choose_type_search(){
       let _option = $("select[name='search_option'] > option:selected").val();
       if(_option.indexOf("2") > -1) {
@@ -581,7 +578,7 @@
          }
          reader.readAsDataURL(input.files[0]);
       }
-	 };
+	}
    function openModalRead(){
       let id = $(event.currentTarget).attr('data-id');
       let target = $(event.currentTarget);
@@ -629,7 +626,6 @@
       let number = 1;
       formData.append('id',$('input[name=id]').val());
       formData.append('title',$('input[name=title]').val());
-      formData.append('number',$('input[name=number]').val());
       formData.append('content',$('#summernote').summernote('code'));
       formData.append('status',$('#btn-luu-bang-tin').attr('data-status').trim());
       let file = $('input[name=img_bangtin_file]')[0].files;
@@ -649,9 +645,6 @@
             success:function(res_json){
                // console.log(res_json);
                if(res_json.msg == 'ok'){
-                  arr_input_file = new Map();
-                  arr_list_file_del = [];
-                  $("input[name='list_file_del']").val("");
                   let status = $('#btn-luu-bang-tin').attr('data-status').trim();
                   let msg ="";
                   if(status == "Insert"){
@@ -659,24 +652,16 @@
                      $.alert({
                         title: "Thông báo",
                         content: msg,
-                        buttons: {
-                           Ok : function(){
-                              location.href="notification_manage.php";
-                           }
-                        }
                      });
+                     loadDataComplete('Insert');
                   } else if(status == "Update") {
                      console.log(res_json);
                      msg = "Sửa dữ liệu thành công.";
                      $.alert({
                         title: "Thông báo",
                         content: msg,
-                        buttons: {
-                           Ok : function(){
-                              location.reload();
-                           }
-                        }
                      });
+                     loadDataComplete();
                   }
                   $('#form-bang-tin').trigger('reset');
                   $("#msg_style").removeAttr('style');
@@ -698,7 +683,6 @@
    function processDelete(){
       let id = $(event.currentTarget).attr('data-id');
       let target = $(event.currentTarget);
-      target.closest("tr").addClass("bg-color-selected");
       $.confirm({
          title: 'Thông báo',
          content: 'Bạn có chắc chắn muốn xoá bảng tin này ?',
@@ -722,7 +706,7 @@
                            title: "Thông báo",
                            content: res_json.success
                         });
-                        dt_n.row(click_number).remove().draw();
+                        loadDataComplete("Delete");
                      } else {
                         $.alert({
                            title: "Thông báo",
@@ -796,12 +780,8 @@
                   $.alert({
                      title: "Thông báo",
                      content: "Bạn đã thêm dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           location.reload();
-                        }
-                     }
                   });
+                  loadDataComplete("Insert");
                }
             },
             error: function(data){
@@ -947,7 +927,7 @@
       }
       
    }
-   function uptMore2(){
+   /*function uptMore2(){
       let test = true;
       let title = $(event.currentTarget).closest("tr").find("td input[name='n_title']").val();
       let content = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
@@ -997,7 +977,7 @@
       });
       }
       
-   }
+   }*/
 </script>
 <script>
    $(function(){
@@ -1024,8 +1004,8 @@
       if($status == 'Delete') {
          $success = "Bạn đã xoá dữ liệu thành công";
          $error = "Network has problem. Please try again.";
-         $sql_del = "Update notification set is_delete = 1 where id = '$id'";
-         sql_query($sql_del);
+         $sql_del = "Update notification set is_delete = 1 where id = ?";
+         sql_query($sql_del,[$id]);
          echo_json(["id" => $id,"success" => $success,"error" => $error]);
       } else if($status == "Insert") {
          $sql_check_exist = "select count(*) as 'countt' from notification where id = '$id'";
@@ -1034,8 +1014,29 @@
             $error = "Tiêu đề bảng tin này đã tồn tại.";
             echo_json(['msg' => 'not_ok', 'error' => $error]);
          } else {
-            $sql_insert = "Insert into notification(title,content) values('$title','$content')";
-            sql_query($sql_insert);
+            $sql_insert = "Insert into notification(title,content,img_name) values(?,?,?)";
+            sql_query($sql_insert,[$title,$content,1]);
+            $insert = ins_id();
+            $dir = "upload/notify";
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            $dir = "upload/notify/" . $insert;
+            if(!file_exists($dir)) {
+               mkdir($dir, 0777); 
+               chmod($dir, 0777);
+            }
+            if($_FILES['img_bangtin_file']['name'] != "") {
+               $ext = strtolower(pathinfo($_FILES['img_bangtin_file']['name'],PATHINFO_EXTENSION));
+               $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+               $file_name = str_replace("_","",$file_name);
+               $path = $dir . "/" . $file_name ;
+               move_uploaded_file($_FILES['img_bangtin_file']['tmp_name'],$path);
+               $sql_update = "update notification set img_name = ? where id = ?";
+               sql_query($sql_update,[$path,$insert]);
+            }
+            echo_json(["msg" => "ok"]);
          }
       } else if($status == "Update") {
          $image = null;
@@ -1055,8 +1056,8 @@
             $file_name = str_replace("_","",$file_name);
             $path = $dir . "/" . $file_name ;
             move_uploaded_file($_FILES['img_bangtin_file']['tmp_name'],$path);
-            $sql_update = "Update notification set img_name='$path' where id = '$id'";
-            sql_query($sql_update);
+            $sql_update = "Update notification set img_name = ? where id = ?";
+            sql_query($sql_update,[$path,$id]);
          }
          if($image) {
             $sql_update = "Update notification set title = '$title',content = '$content',img_name='$image' where id = '$id'";
@@ -1073,11 +1074,10 @@
          }
          echo_json(["msg" => "ok",'success' => $success,"id" => $id,"title"=>$title,"content"=>$content]);
       } else if($status == "upt_more") {
-         $n_id = isset($_REQUEST["n_id"]) ? $_REQUEST["n_id"] : null;
-         $n_title = isset($_REQUEST["n_title"]) ? $_REQUEST["n_title"] : null;
-         $n_content = isset($_REQUEST["n_content"]) ? $_REQUEST["n_content"] : null;
-         $sql = "Update notification set title='$n_title',content='$n_content' where id='$n_id'";
-         sql_query($sql);
+         $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+         $upt_title = isset($_REQUEST["upt_title"]) ? $_REQUEST["upt_title"] : null;
+         $sql = "Update notification set title = ? where id = ?";
+         sql_query($sql,[$upt_title,$upt_id]);
          echo_json(["msg" => "ok"]);
       } else if($status == "del_more") {
          $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
@@ -1088,41 +1088,41 @@
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "ins_more") {
-         $n_title2 = isset($_REQUEST["n_title2"]) ? $_REQUEST["n_title2"] : null;
-         $n_content2 = isset($_REQUEST["n_content2"]) ? $_REQUEST["n_content2"] : null;
-         $img3 = isset($_FILES["img3"]) ? $_FILES["img3"] : null;
-         $dir = "upload/product/";
-         $sql = "Insert into notification(title,content,img_name) values('$n_title2','$n_content2','1')";
-         sql_query($sql);
+         $ins_title = isset($_REQUEST["ins_title"]) ? $_REQUEST["ins_title"] : null;
+         $ins_content = isset($_REQUEST["ins_content"]) ? $_REQUEST["ins_content"] : null;
+         $ins_img = isset($_REQUEST["ins_img"]) ? $_REQUEST["ins_img"] : null;
+         $dir = "upload/notify/";
+         $sql = "Insert into notification(title,content,img_name) values(?,?,?)";
+         sql_query($sql,[$ins_title,$ins_content,1]);
          $insert = ins_id();
          if(!file_exists($dir)) {
             mkdir($dir, 0777); 
             chmod($dir, 0777);
          }
-         $dir = "upload/product/" . $insert;
+         $dir = "upload/notify/" . $insert;
          if(!file_exists($dir)) {
             mkdir($dir, 0777); 
             chmod($dir, 0777);
          }
-         if($_FILES['img3']['name'] != "") {
-            $ext = strtolower(pathinfo($_FILES['img3']['name'],PATHINFO_EXTENSION));
+         if($_FILES['ins_img']['name'] != "") {
+            $ext = strtolower(pathinfo($_FILES['ins_img']['name'],PATHINFO_EXTENSION));
             $file_name = md5(rand(1,999999999)). $id . "." . $ext;
             $file_name = str_replace("_","",$file_name);
             $path = $dir . "/" . $file_name ;
-            move_uploaded_file($_FILES['img3']['tmp_name'],$path);
-            $sql_update = "update notification set img_name='$path' where id = '$insert'";
-            sql_query($sql_update);
+            move_uploaded_file($_FILES['ins_img']['tmp_name'],$path);
+            $sql_update = "update notification set img_name = ? where id = ?";
+            sql_query($sql_update,[$path,$insert]);
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "ins_all") {
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-         $n_title2 = isset($_REQUEST["n_title2"]) ? $_REQUEST["n_title2"] : null;
-         $n_content2 = isset($_REQUEST["n_content2"]) ? $_REQUEST["n_content2"] : null;
-         $img3 = isset($_FILES["img3"]) ? $_FILES["img3"] : null;
+         $ins_title = isset($_REQUEST["ins_title"]) ? $_REQUEST["ins_title"] : null;
+         $ins_content = isset($_REQUEST["ins_content"]) ? $_REQUEST["ins_content"] : null;
+         $ins_img = isset($_FILES["ins_img"]) ? $_FILES["ins_img"] : null;
          $dir = "upload/notify/";
          for($i = 0 ; $i < $len ; $i++) {
-            $sql = "Insert into notification(title,content,img_name) values('$n_title2[$i]','$n_content2[$i]','1')";
-            sql_query($sql);
+            $sql = "Insert into notification(title,content,img_name) values(?,?,?)";
+            sql_query($sql,[$ins_title[$i],$ins_content[$i],1]);
             $insert = ins_id();
             if(!file_exists($dir)) {
                mkdir($dir, 0777); 
@@ -1133,26 +1133,25 @@
                mkdir($dir, 0777); 
                chmod($dir, 0777);
             }
-            if($_FILES['img3']['name'][$i] != "") {
-               $ext = strtolower(pathinfo($_FILES['img3']['name'][$i],PATHINFO_EXTENSION));
+            if($_FILES['ins_img']['name'][$i] != "") {
+               $ext = strtolower(pathinfo($_FILES['ins_img']['name'][$i],PATHINFO_EXTENSION));
                $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
                $file_name = str_replace("_","",$file_name);
                $path = $dir . "/" . $file_name ;
-               move_uploaded_file($_FILES['img3']['tmp_name'][$i],$path);
-               $sql_update = "update notification set img_name='$path' where id = '$insert'";
-               sql_query($sql_update);
+               move_uploaded_file($_FILES['ins_img']['tmp_name'][$i],$path);
+               $sql_update = "update notification set img_name = ? where id = ?";
+               sql_query($sql_update,[$path,$insert]);
             }
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "upt_all") {
-         $n_id = isset($_REQUEST["n_id"]) ? $_REQUEST["n_id"] : null;
-         $n_title = isset($_REQUEST["n_title"]) ? $_REQUEST["n_title"] : null;
-         $n_content = isset($_REQUEST["n_content"]) ? $_REQUEST["n_content"] : null;
+         $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+         $upt_title = isset($_REQUEST["upt_title"]) ? $_REQUEST["upt_title"] : null;
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
          if($len && is_numeric($len)) {
             for($i = 0 ; $i < $len ; $i++){
-               $sql = "Update notification set title='$n_title[$i]',content='$n_content[$i]' where id='$n_id[$i]'";
-               sql_query($sql);
+               $sql = "Update notification set title = ? where id = ?";
+               sql_query($sql,[$upt_title[$i],$upt_id[$i]]);
             }
             echo_json(["msg" => "ok"]);
          }

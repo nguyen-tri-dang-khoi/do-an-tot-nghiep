@@ -36,7 +36,7 @@
         $stmt = $connection->prepare($sql);
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='#'>" . $result["name"] . "<span class='expand'>»</span></a>";
+            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='javascript:void(0)'>" . $result["name"] . "<span class='expand'>»</span></a>";
             $menu .= "<ul class='child'>" . generate_multilevel_menus($connection,$result["id"]) . "</ul>";
             $menu .= "</li>";
         }
@@ -53,7 +53,7 @@
         $stmt = $connection->prepare($sql);
         $stmt->execute();
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='#'>" . $result["name"] . "<span class='expand'>»</span></a>";
+            $menu .= "<li onclick='show_menu_root()' class='parent' data-id='" ."{$result["id"]}".  "'><a href='javascript:void(0)'>" . $result["name"] . "<span class='expand'>»</span></a>";
             $menu .= "<ul class='child'>" . generate_multilevel_menus_3($connection,$result["id"]) . "</ul>";
             $menu .= "</li>";
         }

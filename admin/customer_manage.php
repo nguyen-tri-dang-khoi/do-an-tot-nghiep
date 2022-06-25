@@ -310,6 +310,13 @@
                                                     $cnt++;
                                                 } 
                                             ?>
+                                        <?php
+                                            if(count($rows) == 0) {
+                                        ?>
+                                        <tr>
+                                            <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                                        </tr>
+                                        <?php } ?>
                                         </tbody>
                                         <tfoot>
                                             <tr>
@@ -367,7 +374,6 @@
     include_once("include/dt_script.php");
 ?>
 <!--searching filter-->
-<script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
     setSortTable();

@@ -1,9 +1,9 @@
 <?php
    include_once("../lib/database.php");
    if(is_get_method()) {
-      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false;
       include_once("include/head.meta.php");
       include_once("include/left_menu.php"); 
+      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false;
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
       }
@@ -479,118 +479,130 @@
                               </div>
                            </div>
                            <div class="table-game-start">
-                           <table id="table-product_manage" class="table table-bordered table-striped">
-                              <thead>
-                                 <tr style="cursor:pointer;">
-                                    <th style="width:20px !important;">
-                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                    </th>
-                                    <th class="w-100 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="th-ten-san-pham">Tên sản phẩm <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-120 th-so-luong">Số lượng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-150 th-don-gia">Đơn giá <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-200 th-danh-muc">Danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-100">Tình trạng</th>
-                                    <th class="w-150 th-ngay-dang">Ngày đăng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                    <th class="w-200">Thao tác</th>
-                                 </tr>
-                              </thead>
-                              <?php
-                                 
-                                 $cnt = 0;
-                                 $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
-                                 $limit = $_SESSION['paging'];
-                                 $start_page = $limit * ($page - 1);
-                                 $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
-                                 $total = fetch(sql_query($sql_get_total))['countt'];
-                                 $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                                 $rows = fetch_all(sql_query(($sql_get_product)));
-                              ?>
-                              <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-san-pham" class="list-product">
-                              <?php
-                                 foreach($rows as $row) {
-                              ?>
-                                    <tr id="<?=$row["id"];?>">
-                                       <td>
-                                          <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product')" type="checkbox" name="check_id<?=$row["id"];?>">
-                                       </td>
-                                       <td class="so-thu-tu w-150"><?=$total - ($start_page + $cnt);?></td>
-                                       <td class="ten-san-pham">
-                                          <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='pi_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
-                                       </td>
-                                       <td class="so-luong">
-                                          <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
-                                       </td>
-                                       <td class="don-gia">
-                                          <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='pi_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
-                                       </td>
-                                       <td class="danh-muc"><?=$row['pt_name']?></td>
-                                       <td>
-                                          <div class="custom-control custom-switch">
-                                             <input type="checkbox" onchange="toggleActiveProduct('<?=$row['pt_id']?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                             <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                          </div>  
-                                       </td>
-                                       <td class="ngay-dang"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                       <td>
-                                          <?php
-                                             if($upt_more != 1) {
-                                          ?>
-                                          <?php
-                                             if($allow_read){
-                                          ?>
-                                          <button onclick="readModal()" class="btn-xem-san-pham dt-button button-grey"
-                                          data-id="<?=$row["id"];?>" >
-                                          Xem
-                                          </button>
-                                          <?php } ?>
-                                          <?php
-                                             if($allow_update) {
-                                          ?>
-                                          <button onclick="openModalUpdate()" class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
-                                          data-id="<?=$row["id"];?>" >
-                                          Sửa
-                                          </button>
-                                          <?php } ?>
-                                          <?php
-                                             if($allow_delete) {
-                                          ?>
-                                          <button onclick="processDelete()" class="btn-xoa-san-pham dt-button button-red" data-id="<?=$row["id"];?>">
-                                          Xoá
-                                          </button>
-                                          <?php } ?>
-                                          <?php
-                                             } else {
-                                          ?>
-                                             <button dt-count="0" onclick="uptMore2()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["id"];?>">
-                                          Sửa
-                                          </button>
-                                          <?php 
-                                             } 
-                                          ?>
-                                       </td>
+                              <table id="table-product_manage" class="table table-bordered table-striped">
+                                 <thead>
+                                    <tr style="cursor:pointer;">
+                                       <th style="width:20px !important;">
+                                          <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                       </th>
+                                       <th class="w-100 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="th-ten-san-pham">Tên sản phẩm <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="w-120 th-so-luong">Số lượng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="w-150 th-gia-goc">Giá gốc <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="w-150 th-don-gia">Đơn giá <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       
+                                       <th class="w-200 th-danh-muc">Danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="w-100">Tình trạng</th>
+                                       <th class="w-150 th-ngay-dang">Ngày đăng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                       <th class="w-200">Thao tác</th>
                                     </tr>
+                                 </thead>
                                  <?php
-                                    $cnt++;
-                                 }
+                                    $cnt = 0;
+                                    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
+                                    $limit = $_SESSION['paging'];
+                                    $start_page = $limit * ($page - 1);
+                                    $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
+                                    $total = fetch(sql_query($sql_get_total))['countt'];
+                                    $sql_get_product = "select pi.id as 'pi_id',pi.is_active as 'pi_is_active', pi.name as 'pi_name',pi.product_type_id as 'pi_product_type_id',pi.price,pi.cost,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
+                                    $rows = fetch_all(sql_query(($sql_get_product)));
                                  ?>
-                              </tbody>
-                              <tfoot>
+                                 <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-san-pham" class="list-product">
+                                 <?php
+                                    foreach($rows as $row) {
+                                 ?>
+                                       <tr class="<?=$upt_more == 1 ? "selected" : "";?>" id="<?=$row["pi_id"];?>">
+                                          <td>
+                                             <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["pi_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product')" type="checkbox" name="check_id<?=$row["pi_id"];?>">
+                                          </td>
+                                          <td class="so-thu-tu w-150"><?=$total - ($start_page + $cnt);?></td>
+                                          <td class="ten-san-pham">
+                                             <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='upt_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
+                                          </td>
+                                          <td class="so-luong">
+                                             <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='upt_count' style='' value='" . number_format($row['count'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['count'],0,'','.');?>
+                                          </td>
+                                          <td class="gia-goc">
+                                             <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='upt_cost' style='' value='" . number_format($row['cost'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['cost'],0,'','.') . "đ";?>
+                                          </td>
+                                          <td class="don-gia">
+                                             <?=($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' name='upt_price' style='' value='" . number_format($row['price'],0,'','.') . "'><span class='text-danger'></span>" : number_format($row['price'],0,'','.') . "đ";?>
+                                          </td>
+                                          <td class="danh-muc"><?=$row['pt_name']?></td>
+                                          <td>
+                                             <div class="custom-control custom-switch">
+                                                <input type="checkbox" onchange="toggleStatus('<?=$row['pi_id']?>','<?= $row['pi_is_active'] == 1 ? 'Deactive' : 'Active';?>','<?=$row['pi_product_type_id']?>')" class="custom-control-input" id="customSwitches<?=$row['pi_id'];?>" <?= $row['pi_is_active'] == 1 ? "checked" : "";?>>
+                                                <label class="custom-control-label" for="customSwitches<?=$row['pi_id'];?>"></label>
+                                             </div>  
+                                          </td>
+                                          <td class="ngay-dang"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                                          <td>
+                                             <?php
+                                                if($upt_more != 1) {
+                                             ?>
+                                             <?php
+                                                if($allow_read){
+                                             ?>
+                                             <button onclick="readModal()" class="btn-xem-san-pham dt-button button-grey"
+                                             data-id="<?=$row["pi_id"];?>" >
+                                             Xem
+                                             </button>
+                                             <?php } ?>
+                                             <?php
+                                                if($allow_update) {
+                                             ?>
+                                             <button onclick="openModalUpdate()" class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
+                                             data-id="<?=$row["pi_id"];?>" >
+                                             Sửa
+                                             </button>
+                                             <?php } ?>
+                                             <?php
+                                                if($allow_delete) {
+                                             ?>
+                                             <button onclick="processDelete()" class="btn-xoa-san-pham dt-button button-red" data-id="<?=$row["pi_id"];?>">
+                                             Xoá
+                                             </button>
+                                             <?php } ?>
+                                             <?php
+                                                } else {
+                                             ?>
+                                                <button dt-count="0" onclick="uptMore2()" class="btn-upt-more-1 dt-button button-green" data-id="<?=$row["pi_id"];?>">
+                                             Sửa
+                                             </button>
+                                             <?php 
+                                                } 
+                                             ?>
+                                          </td>
+                                       </tr>
+                                    <?php
+                                       $cnt++;
+                                    }
+                                    ?>
+                                 </tbody>
+                                 <?php
+                                    if(count($rows) == 0) {
+                                 ?>
                                  <tr>
-                                    <th style="width:20px !important;">
-                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                    </th>
-                                    <th>Số thứ tự</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Số lượng</th>
-                                    <th>Đơn giá</th>
-                                    <th>Danh mục</th>
-                                    <th>Tình trạng</th>
-                                    <th>Ngày đăng</th>
-                                    <th>Thao tác</th>
+                                    <td style="text-align:center;font-size:17px;" colspan="10">Không có dữ liệu</td>
                                  </tr>
-                              </tfoot>
-                           </table>
+                                 <?php } ?>
+                                 <tfoot>
+                                    <tr>
+                                       <th style="width:20px !important;">
+                                       <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                       </th>
+                                       <th>Số thứ tự</th>
+                                       <th>Tên sản phẩm</th>
+                                       <th>Số lượng</th>
+                                       <th>Giá gốc</th>
+                                       <th>Đơn giá</th>
+                                       <th>Danh mục</th>
+                                       <th>Tình trạng</th>
+                                       <th>Ngày đăng</th>
+                                       <th>Thao tác</th>
+                                    </tr>
+                                 </tfoot>
+                              </table>
                            </div>
                            <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
                                  
@@ -672,6 +684,7 @@
                   <th>Tên sp</th>
                   <th class="w-300">Danh mục</th>
                   <th>Số lượng</th>
+                  <th>Giá gốc</th>
                   <th>Đơn giá</th>
                   <th>Mô tả sp</th>
                   <th>Ảnh đại diện</th>
@@ -694,8 +707,6 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="js/toastr.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
    $('.select-type2').select2();
@@ -957,9 +968,10 @@
    function validate(){
       let test = true
       let name = $('input[name=ten_san_pham]').val();
-      let category = $('input[name="category_id"]').val();
+      let product_type_id = $('input[name="product_type_id"]').val();
       let count = $('input[name=so_luong]').val();
       let price = $('input[name=don_gia]').val();
+      let cost = $('input[name=gia_goc]').val();
       let description = $('#summernote').summernote('code');
       if(name.trim() == "") {
          $('input[name=ten_san_pham]').focus();
@@ -975,7 +987,14 @@
             content: "Số lượng không được để trống"
          });
          test = false;
-      } else if(category.trim() == "") {
+      } else if(cost.trim() == "") {
+         $('#menu').focus();
+         $.alert({
+            title: "Thông báo",
+            content: "Giá gốc sản phẩm không được để trống"
+         });
+         test = false;
+      } else if(product_type_id.trim() == "") {
          $('#menu').focus();
          $.alert({
             title: "Thông báo",
@@ -1017,7 +1036,7 @@
                   console.log(name);
                   //console.log(id);
                   $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                     $("input[name='category_id']").val(id);
+                     $("input[name='product_type_id']").val(id);
                      $("input[name='category_name']").val(name);
                      $("#breadcrumb-menu").empty();
                      $("#breadcrumb-menu").append(data);
@@ -1054,7 +1073,7 @@
                   name = name.substr(0,name.length - 1);
                   console.log(name);
                   $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                     $("input[name='category_id']").val(id);
+                     $("input[name='product_type_id']").val(id);
                      $("input[name='category_name']").val(name);
                      $("#breadcrumb-menu").empty();
                      $("#breadcrumb-menu").append(data);
@@ -1089,7 +1108,8 @@
       formData.append('count',$('input[name=so_luong]').val());
       formData.append('number',$('input[name=number]').val());
       formData.append('price',$('input[name=don_gia]').val());
-      formData.append('category_id',$("input[name='category_id']").val());
+      formData.append('cost',$('input[name=gia_goc]').val());
+      formData.append('product_type_id',$("input[name='product_type_id']").val());
       formData.append('category_name',$("input[name='category_name']").val());
       formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
       if(status == "Insert"){
@@ -1204,15 +1224,15 @@
    }
 </script>
 <script>
-   setSortTable();
+   <?=$upt_more != 1 ? "setSortTable();" : null;?>
    function insAll(){
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="name_p2"]').length;
-      $('td input[name="name_p2"]').each(function(){
+      let count = $('td input[name="ins_name"]').length;
+      $('td input[name="ins_name"]').each(function(){
          if($(this).val() != "") {
-            formData.append("name_p2[]",$(this).val());
+            formData.append("ins_name[]",$(this).val());
             $(this).siblings("p").text("");
 
          } else {
@@ -1220,45 +1240,54 @@
             test = false;
          }
       });
-      $('td input[name="price_p2"]').each(function(){
+      $('td input[name="ins_price"]').each(function(){
          if($(this).val() != "") {
-            formData.append("price_p2[]",$(this).val());
+            formData.append("ins_price[]",$(this).val());
             $(this).siblings("p").text("");
          } else {
             $(this).siblings("p").text("Không được để trống");
             test = false;
          }
       });
-      $('td textarea[name="desc_p2"]').each(function(){
+      $('td textarea[name="ins_desc"]').each(function(){
          if($(this).val() != "") {
-            formData.append("desc_p2[]",$(this).val());
+            formData.append("ins_desc[]",$(this).val());
             $(this).siblings("p").text("");
          } else {
             $(this).siblings("p").text("Không được để trống");
             test = false;
          }
       });
-      $('td input[name="count_p2"]').each(function(){
+      $('td input[name="ins_count"]').each(function(){
          if($(this).val() != "") {
-            formData.append("count_p2[]",$(this).val());
+            formData.append("ins_count[]",$(this).val());
             $(this).siblings("p").text("");
          } else {
             $(this).siblings("p").text("Không được để trống");
             test = false;
          }
       });
-      $('td input[name="category_id"]').each(function(){
+      $('td input[name="ins_cost"]').each(function(){
          if($(this).val() != "") {
-            formData.append("type_p2[]",$(this).val());
+            formData.append("ins_cost[]",$(this).val());
+            $(this).siblings("p").text("");
+         } else {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;
+         }
+      });
+      $('td input[name="product_type_id"]').each(function(){
+         if($(this).val() != "") {
+            formData.append("product_type_id[]",$(this).val());
             $(this).closest('td').find("p").text("");
          } else {
             $(this).closest('td').find("p").text("Phải chọn danh mục");
             test = false;
          }
       });
-      $('td input[name="img2[]"]').each(function(){
+      $('td input[name="ins_img"]').each(function(){
          if($(this).val() != "") {
-            formData.append("img2[]",$(this)[0].files[0]);
+            formData.append("ins_img[]",$(this)[0].files[0]);
             $(this).closest('td').find("p").text("");
          } else {
             $(this).closest('td').find("p").text("Ko để trống ảnh");
@@ -1300,6 +1329,7 @@
                                  }
                               }
                            });
+                           $('#modal-xl2').modal('hide');
                         }
                      },
                      error: function(data){
@@ -1317,20 +1347,20 @@
    function uptAll(){
       let test = true;
       let formData = new FormData();
-      let _data = dt_pi.rows(".selected").select().data();
-      if(_data.length == 0) {
+      let all_checkbox = getIdCheckbox()['result'].split(",");
+      if(all_checkbox.length == 0) {
          $.alert({
             title:"Thông báo",
             content:"Vui lòng chọn dòng cần lưu",
          });
          return;
       }
-      for(i = 0 ; i < _data.length ; i++) {
-         formData.append("pi_id[]",_data[i].DT_RowId);
+      for(i = 0 ; i < all_checkbox.length ; i++) {
+         formData.append("upt_id[]",all_checkbox[i]);
       }
-      $('tr.selected input[name="pi_name"]').each(function(){
+      $('tr.selected input[name="upt_name"]').each(function(){
          if($(this).val() != "") {
-            formData.append("pi_name[]",$(this).val());
+            formData.append("upt_name[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
          } else {
             $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1338,9 +1368,9 @@
          }
          
       });
-      $('tr.selected input[name="pi_count"]').each(function(){
+      $('tr.selected input[name="upt_count"]').each(function(){
          if($(this).val() != "") {
-            formData.append("pi_count[]",$(this).val());
+            formData.append("upt_count[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
          } else {
             $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1348,19 +1378,18 @@
          }
          
       });
-      $('tr.selected input[name="pi_price"]').each(function(){
+      $('tr.selected input[name="upt_cost"]').each(function(){
          if($(this).val() != "") {
-            formData.append("pi_price[]",$(this).val());
+            formData.append("upt_cost[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
          } else {
             $(this).siblings("span.text-danger").text("Không được để trống");
             test = false;
          }
-         
       });
-      $("tr.selected .t-summernote").each(function(){
+      $('tr.selected input[name="upt_price"]').each(function(){
          if($(this).val() != "") {
-            formData.append("pi_desc[]",$(this).summernote('code'));
+            formData.append("upt_price[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
          } else {
             $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1368,7 +1397,7 @@
          }
       });
       formData.append("status","upt_all");
-      formData.append("len",_data.length);
+      formData.append("len",all_checkbox.length);
       if(test) {
          $.ajax({
             url: window.location.href,
@@ -1386,7 +1415,8 @@
                      content: "Bạn đã sửa dữ liệu thành công",
                      buttons: {
                         "Ok": function(){
-                           location.reload();
+                           loadDataComplete();
+                           $('.section-save').hide();
                         }
                      }
                   });
@@ -1398,175 +1428,6 @@
          })
       }
      
-   }
-   function uptMore2(){
-      let test = true;
-      let this2 = $(event.currentTarget).closest("tr");
-      let name = $(event.currentTarget).closest("tr").find("td input[name='pi_name']").val();
-      let count = $(event.currentTarget).closest("tr").find("td input[name='pi_count']").val();
-      let price = $(event.currentTarget).closest("tr").find("td input[name='pi_price']").val();
-      let description = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
-      let id = $(event.currentTarget).attr('data-id');
-
-      // validate 
-      if(name == "") {
-         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td input[name="pi_name"]').siblings("span.text-danger").text("");
-      }
-      //
-      if(price == "") {
-         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td input[name="pi_price"]').siblings("span.text-danger").text("");
-      }
-      //
-      if(count == "") {
-         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.find('td input[name="pi_count"]').siblings("span.text-danger").text("");
-      } 
-      //
-      if(description == "") {
-         this2.find("td .t-summernote").siblings("span.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.find("td .t-summernote").siblings("span.text-danger").text("");
-      } 
-      this2 = $(event.currentTarget);
-      if(test) {
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: {
-               status: "upt_more",
-               pi_name: name,
-               pi_count: count,
-               pi_price: price,
-               pi_description: description,
-               pi_id: id,
-            },success: function(data){
-               data = JSON.parse(data);
-               if(data.msg == "ok"){
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã sửa dữ liệu thành công",
-                     buttons: {
-                        "Ok" : function(){
-                           let num_of_upt = this2.attr('dt-count');
-                           num_of_upt++;
-                           this2.attr('dt-count',num_of_upt);
-                           this2.text(`Sửa (${num_of_upt})`);
-                        }
-                     }
-                  });
-               }
-            },error:function(data){
-               console.log("Error: " + data);
-            }
-         });
-      }
-   }
-   function insMore2(){
-      let test = true;
-      let this2 = $(event.currentTarget);
-      let name_p2 = $(event.currentTarget).closest('tr').find('td input[name="name_p2"]').val();
-      let price_p2 = $(event.currentTarget).closest('tr').find('td input[name="price_p2"]').val();
-      let count_p2 = $(event.currentTarget).closest('tr').find('td input[name="count_p2"]').val();
-      let desc_p2 = $(event.currentTarget).closest('tr').find('td textarea[name="desc_p2"]').val();
-      let type_p2 = $(event.currentTarget).closest('tr').find('td input[name="category_id"]').val();
-      let file = $(event.currentTarget).closest('tr').find('input[name="img2[]"]')[0].files;
-      console.log(file);
-      // validate 
-      if(name_p2 == "") {
-         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="name_p2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(price_p2 == "") {
-         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="price_p2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(count_p2 == "") {
-         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.closest('tr').find('td input[name="count_p2"]').siblings("p.text-danger").text("");
-      } 
-      //
-      if(desc_p2 == "") {
-         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else  {
-         this2.closest('tr').find('td textarea[name="desc_p2"]').siblings("p.text-danger").text("");
-      } 
-      //
-      if(type_p2 == "") {
-         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("Phải chọn danh mục");
-         test = false;
-      } else {
-         this2.closest('tr').find("td input[name='category_id']").closest("ul.ul_menu").siblings("p.text-danger").text("");
-      }
-      //
-      if(file.length == 0) {
-         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("Ko để trống ảnh");
-         test = false;
-      } else {
-         this2.closest('tr').find('td input[name="img2[]"]').parent().siblings("p.text-danger").text("");
-      }
-      //
-      console.log(test);
-      if(test) {
-         let formData = new FormData();
-         formData.append("name_p2",name_p2);
-         formData.append("price_p2",price_p2);
-         formData.append("count_p2",count_p2);
-         formData.append("type_p2",type_p2);
-         formData.append("desc_p2",desc_p2);
-         formData.append("status","ins_more");
-         if(file.length > 0) {
-            formData.append('file_p2',file[0]); 
-         }
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            cache: false,
-            contentType: false,
-            processData: false,
-            data:formData,
-            success: function(data){
-               console.log(data);
-               data = JSON.parse(data);
-               if(data.msg == "ok") {
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã thêm dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           this2.text("Đã thêm");
-                           this2.prop("disabled",true);
-                           this2.css({
-                              "border": "1px solid #cac0c0",
-                              "color": "#cac0c0",
-                              "pointer-events": "none",
-                           });
-                        }
-                     }
-                  });
-               }
-            },error: function(data){
-               console.log("Error: " + data);
-            }
-         })
-      }
    }
    function load_menu(){
       let html =`<?php echo show_menu_3();?>`;
@@ -1584,7 +1445,7 @@
          let target = $(event.currentTarget)
          console.log(name);
          $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-            target.closest('.ul_menu').find("input[name='category_id']").val(id);
+            target.closest('.ul_menu').find("input[name='product_type_id']").val(id);
             target.closest('.ul_menu').next().empty();
             target.closest('.ul_menu').next().append(data);
          });
@@ -1627,9 +1488,10 @@
       $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
       $count = isset($_REQUEST["count"]) ? str_replace(".","",$_REQUEST["count"]) : null;
       $description = isset($_REQUEST["description"]) ? $_REQUEST["description"] : null;
-      $category_id = isset($_REQUEST["category_id"]) ? $_REQUEST["category_id"] : null;
+      $product_type_id = isset($_REQUEST["product_type_id"]) ? $_REQUEST["product_type_id"] : null;
       $category_name = isset($_REQUEST["category_name"]) ? $_REQUEST["category_name"] : null;
       $price = isset($_REQUEST["price"]) ? str_replace(".","",$_REQUEST["price"]) : null;
+      $cost = isset($_REQUEST["cost"]) ? str_replace(".","",$_REQUEST["cost"]) : null;
       $list_file_del = isset($_REQUEST["list_file_del"]) ? $_REQUEST["list_file_del"] : null;
       if($list_file_del){
          $list_file_del = explode(",",$list_file_del);
@@ -1643,16 +1505,19 @@
          sql_query($sql_del,[$id]);
          echo_json(["msg" => "ok","success" => $success]);
       } else if($status == "Insert") {
+         /*
+         $sql_is_active = "select is_active from product_type where id = '$product_type_id'";
+         $res33 = fetch(sql_query($sql_is_active));*/
          $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
          $row = fetch(sql_query($sql_check_exist,[$id]));
-         $sql_is_active = "select is_active from product_type where id = '$category_id'";
-         $res33 = fetch(sql_query($sql_is_active));
-         $is_active = $res33['is_active'];
+         //$is_active = $res33['is_active'];
          if($row['countt'] > 0) {
             $error = "Tên sản phẩm này đã tồn tại.";
             echo_json(['msg' => 'not_ok', 'error' => $error]);
          } else {
-            $insert = db_insert_id('product_info',['name'=>$name,'user_id'=>$user_id,'product_type_id'=>$category_id,'description'=>$description,'count'=>$count,'price'=>$price,'img_name'=>null,'is_active' => $is_active]);
+            $sql_ins = "Insert into product_info(product_type_id,user_id,name,description,count,cost,price,img_name,is_active) values(?,?,?,?,?,?,?,?,?)";
+            sql_query($sql_ins,[$product_type_id,$user_id,$name,$description,$count,$cost,$price,null,0]);
+            $insert = ins_id();
             if($insert > 0) {
                $image = null;
                //
@@ -1795,10 +1660,10 @@
          }
          if($image) {
             $sql_update = "Update product_info set name = ?,user_id = ?,product_type_id = ?,description = ?,count = ?,price = ?,img_name = ? where id = ?";
-            sql_query($sql_update,[$name,$user_id,$category_id,$description,$count,$price,$image,$id]);
+            sql_query($sql_update,[$name,$user_id,$product_type_id,$description,$count,$price,$image,$id]);
          } else {
             $sql_update = "Update product_info set name = ?,user_id = ?,product_type_id = ?,description = ?,count = ?,price = ? where id = ?";
-            sql_query($sql_update,[$name,$user_id,$category_id,$description,$count,$price,$id]);
+            sql_query($sql_update,[$name,$user_id,$product_type_id,$description,$count,$price,$id]);
          }
          $success = "Sửa dữ liệu thành công.";
          $sql_get_file_name = "select img_name from product_info where id = ?";
@@ -1807,22 +1672,21 @@
             $image = $image['img_name'];
          }
          echo_json(["msg" => "ok",'success' => $success]);
-      } else if($status == "active") {
-         $sql = "select is_active from product_type where id = '$category_id' limit 1";
+      } else if($status == "Active") {
+         $sql = "select is_active from product_type where id = '$product_type_id' limit 1";
          $res22 = fetch(sql_query($sql));
          if($res22['is_active'] == 0) { // danh muc cha cua san pham chua active
             echo_json(["msg" => "not_ok","error" => "Danh mục của sản phẩm này chưa được kích hoạt"]);
          } else {
             $sql_upt_is_active = "Update product_info set is_active = 1 where id = '$id'";
             sql_query($sql_upt_is_active);
-            echo_json(["msg" => "active","success" => "Bạn đã kích hoạt sản phẩm này thành công"]);
+            echo_json(["msg" => "Active","success" => "Bạn đã kích hoạt sản phẩm này thành công"]);
          }
-      } else if($status == "deactive") {
+      } else if($status == "Deactive") {
          $sql_upt_is_active = "Update product_info set is_active = 0 where id = '$id'";
          sql_query($sql_upt_is_active);
-         echo_json(["msg" => "deactive","success" => "Bạn đã huỷ kích hoạt sản phẩm này thành công"]);
-      } 
-      else if($status == "del_more") {
+         echo_json(["msg" => "Deactive","success" => "Bạn đã huỷ kích hoạt sản phẩm này thành công"]);
+      } else if($status == "del_more") {
          $rows = isset($_REQUEST["rows"]) ? $_REQUEST["rows"] : null;
          $rows_arr = explode(",",$rows);
          foreach($rows_arr as $row) {
@@ -1831,25 +1695,27 @@
          }
          echo_json(["msg" => "ok"]);
       } else if($status == "upt_more") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? str_replace(".","",$_REQUEST["pi_count"]) : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? str_replace(".","",$_REQUEST["pi_price"]) : null;
-         $pi_description = isset($_REQUEST["pi_description"]) ? $_REQUEST["pi_description"] : null;
-         $sql = "Update product_info set name='$pi_name',count='$pi_count',price='$pi_price',description='$pi_description' where id='$pi_id'";
-         sql_query($sql);
+         $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+         $upt_name = isset($_REQUEST["upt_name"]) ? $_REQUEST["upt_name"] : null;
+         $upt_cost = isset($_REQUEST["upt_cost"]) ? str_replace(".","",$_REQUEST["upt_cost"]) : null;
+         $upt_count = isset($_REQUEST["upt_count"]) ? str_replace(".","",$_REQUEST["upt_count"]) : null;
+         $upt_price = isset($_REQUEST["upt_price"]) ? str_replace(".","",$_REQUEST["upt_price"]) : null;
+         $sql = "Update product_info set name = ?,count = ?,cost = ?,price = ? where id = ?";
+         sql_query($sql,[$upt_name,$upt_count,$upt_cost,$upt_price,$upt_id]);
          echo_json(["msg" => "ok"]);
       } else if($status == "ins_more") {
          $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
          if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? str_replace(".","",$_REQUEST["count_p2"]) : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? str_replace(".","",$_REQUEST["price_p2"]) : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
+            $ins_name = isset($_REQUEST["ins_name"]) ? $_REQUEST["ins_name"] : null;
+            $ins_count = isset($_REQUEST["ins_count"]) ? str_replace(".","",$_REQUEST["ins_count"]) : null;
+            $ins_cost = isset($_REQUEST["ins_cost"]) ? str_replace(".","",$_REQUEST["ins_cost"]) : null;
+            $ins_price = isset($_REQUEST["ins_price"]) ? str_replace(".","",$_REQUEST["ins_price"]) : null;
+            $ins_desc = isset($_REQUEST["ins_desc"]) ? $_REQUEST["ins_desc"] : null;
+            $ins_img = isset($_REQUEST["ins_img"]) ? $_REQUEST["ins_img"] : null;
+            $product_type_id = isset($_REQUEST["product_type_id"]) ? $_REQUEST["product_type_id"] : null;
             $dir = "upload/product/";
-            $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price) values('$type_p2','$user_id','$name_p2','1','$desc_p2','$count_p2','$price_p2')";
-            sql_query($sql);
+            $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,cost,price) values(?,?,?,?,?,?,?,?)";
+            sql_query($sql,[$product_type_id,$user_id,$ins_name,1,$ins_desc,$ins_count,$ins_cost,$ins_price]);
             $insert = ins_id();
             if(!file_exists($dir)) {
                mkdir($dir, 0777); 
@@ -1860,38 +1726,35 @@
                mkdir($dir, 0777); 
                chmod($dir, 0777);
             }
-            if($_FILES['file_p2']['name'] != "") {
-               $ext = strtolower(pathinfo($_FILES['file_p2']['name'],PATHINFO_EXTENSION));
+            if($_FILES['ins_img']['name'] != "") {
+               $ext = strtolower(pathinfo($_FILES['ins_img']['name'],PATHINFO_EXTENSION));
                $file_name = md5(rand(1,999999999)). $id . "." . $ext;
                $file_name = str_replace("_","",$file_name);
                $path = $dir . "/" . $file_name ;
-               move_uploaded_file($_FILES['file_p2']['tmp_name'],$path);
-               $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-               sql_query($sql_update);
+               move_uploaded_file($_FILES['ins_img']['tmp_name'],$path);
+               $sql_update = "update product_info set img_name = ? where id = ?";
+               sql_query($sql_update,[$path,$insert]);
             }
             echo_json(["msg" => "ok"]);
          }
       } else if($status == "ins_all") {
          $user_id = isset($_SESSION["id"]) ? $_SESSION["id"] : null;
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-         
          if($user_id) {
-            $name_p2 = isset($_REQUEST["name_p2"]) ? $_REQUEST["name_p2"] : null;
-            $count_p2 = isset($_REQUEST["count_p2"]) ? $_REQUEST["count_p2"] : null;
-            $price_p2 = isset($_REQUEST["price_p2"]) ? $_REQUEST["price_p2"] : null;
-            $desc_p2 = isset($_REQUEST["desc_p2"]) ? $_REQUEST["desc_p2"] : null;
-            $type_p2 = isset($_REQUEST["type_p2"]) ? $_REQUEST["type_p2"] : null;
-            $file_p2 = isset($_FILES["file_p2"]) ? $_FILES["file_p2"] : null;
+            $ins_name = isset($_REQUEST["ins_name"]) ? $_REQUEST["ins_name"] : null;
+            $ins_count = isset($_REQUEST["ins_count"]) ? $_REQUEST["ins_count"] : null;
+            $ins_cost = isset($_REQUEST["ins_cost"]) ? $_REQUEST["ins_cost"] : null;
+            $ins_price = isset($_REQUEST["ins_price"]) ? $_REQUEST["ins_price"] : null;
+            $ins_desc = isset($_REQUEST["ins_desc"]) ? $_REQUEST["ins_desc"] : null;
+            $product_type_id = isset($_REQUEST["product_type_id"]) ? $_REQUEST["product_type_id"] : null;
+            $ins_img = isset($_REQUEST["ins_img"]) ? $_REQUEST["ins_img"] : null;
             for($i = 0 ; $i < $len ; $i++) {
-               $sql_is_active = "select is_active from product_type where id = '$type_p2[$i]'";
-               $res44 = fetch(sql_query($sql_is_active));
-               $is_active = $res44['is_active'];
-               $count_p22 = str_replace(".","",$count_p2[$i]);
-               $price_p22 = str_replace(".","",$price_p2[$i]);
+               $ins_count2 = str_replace(".","",$ins_count[$i]);
+               $ins_cost2 = str_replace(".","",$ins_cost[$i]);
+               $ins_price2 = str_replace(".","",$ins_price[$i]);
                $dir = "upload/product/";
-               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,price,is_active) values('$type_p2[$i]','$user_id','$name_p2[$i]','1','$desc_p2[$i]','$count_p22','$price_p22','$is_active')";
-               //print_r($sql);
-               sql_query($sql);
+               $sql = "Insert into product_info(product_type_id,user_id,name,img_name,description,count,cost,price,is_active) values(?,?,?,?,?,?,?,?,?)";
+               sql_query($sql,[$product_type_id[$i],$user_id,$ins_name[$i],1,$ins_desc[$i],$ins_count2,$ins_cost2,$ins_price2,0]);
                $insert = ins_id();
                if(!file_exists($dir)) {
                   mkdir($dir, 0777); 
@@ -1902,41 +1765,35 @@
                   mkdir($dir, 0777); 
                   chmod($dir, 0777);
                }
-               if($_FILES['img2']['name'][$i] != "") {
-                  $ext = strtolower(pathinfo($_FILES['img2']['name'][$i],PATHINFO_EXTENSION));
+               if($_FILES['ins_img']['name'][$i] != "") {
+                  $ext = strtolower(pathinfo($_FILES['ins_img']['name'][$i],PATHINFO_EXTENSION));
                   $file_name = md5(rand(1,999999999)). $insert . "." . $ext;
                   $file_name = str_replace("_","",$file_name);
                   $path = $dir . "/" . $file_name ;
-                  move_uploaded_file($_FILES['img2']['tmp_name'][$i],$path);
-                  $sql_update = "update product_info set img_name='$path' where id = '$insert'";
-                  sql_query($sql_update);
+                  move_uploaded_file($_FILES['ins_img']['tmp_name'][$i],$path);
+                  $sql_update = "update product_info set img_name = ? where id = ?";
+                  sql_query($sql_update,[$path,$insert]);
                }
             }
             echo_json(["msg" => "ok"]);
          }
       } else if($status == "upt_all") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         $pi_name = isset($_REQUEST["pi_name"]) ? $_REQUEST["pi_name"] : null;
-         $pi_count = isset($_REQUEST["pi_count"]) ? $_REQUEST["pi_count"] : null;
-         $pi_price = isset($_REQUEST["pi_price"]) ? $_REQUEST["pi_price"] : null;
-         $pi_desc = isset($_REQUEST["pi_desc"]) ? $_REQUEST["pi_desc"] : null;
+         $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+         $upt_name = isset($_REQUEST["upt_name"]) ? $_REQUEST["upt_name"] : null;
+         $upt_count = isset($_REQUEST["upt_count"]) ? $_REQUEST["upt_count"] : null;
+         $upt_cost = isset($_REQUEST["upt_cost"]) ? $_REQUEST["upt_cost"] : null;
+         $upt_price = isset($_REQUEST["upt_price"]) ? $_REQUEST["upt_price"] : null;
          $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
          if($len && is_numeric($len)) {
             for($i = 0 ; $i < $len ; $i++){
-               $pi_count2 = str_replace(".","",$pi_count[$i]);
-               $pi_price2 = str_replace(".","",$pi_price[$i]);
-               $sql = "Update product_info set name='$pi_name[$i]',count='$pi_count2',price='$pi_price2',description='$pi_desc[$i]' where id='$pi_id[$i]'";
-               sql_query($sql);
+               $upt_count2 = str_replace(".","",$upt_count[$i]);
+               $upt_cost2 = str_replace(".","",$upt_cost[$i]);
+               $upt_price2 = str_replace(".","",$upt_price[$i]);
+               $sql = "Update product_info set name = ?,count = ?,cost = ?,price = ? where id = ?";
+               sql_query($sql,[$upt_name[$i],$upt_count2,$upt_cost2,$upt_price2,$upt_id[$i]]);
             }
             echo_json(["msg" => "ok"]);
          }
-      } else if($status == "check_all") {
-         $pi_id = isset($_REQUEST["pi_id"]) ? $_REQUEST["pi_id"] : null;
-         foreach($pi_id as $id) {
-            $sql = "update product_info set is_active='1' where id = '$id'";
-            sql_query($sql);
-         }
-         echo_json(["msg" => "ok"]);
       } else if($status == "saveTabFilter") {
          $_SESSION['product_tab_id'] = isset($_SESSION['product_tab_id']) ? $_SESSION['product_tab_id'] + 1 : 1;
          $tab_name = isset($_SESSION['product_tab_id']) ? "tab_" . $_SESSION['product_tab_id'] : null;

@@ -6,7 +6,7 @@
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     
     if($id && $status == "Update") {
-        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.count,pi.cost,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_all));
 ?>
 <form id="form-san-pham" method="post" enctype='multipart/form-data'> 
@@ -36,13 +36,13 @@
                     <?=generate_breadcrumb_menus($result['pi_type_id']);?>
                 </nav>
             </div>
-            <input type="hidden" name="category_id" value="<?=$result['pi_type_id'];?>">
+            <input type="hidden" name="product_type_id" value="<?=$result['pi_type_id'];?>">
             <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
         </div>
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="don_gia">Giá gốc</label>
-                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
+                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc" value="<?=number_format($result['cost'],0,'','.')?>">
                 <div id="price_err" class="text-danger"></div>
             </div>
             <div class="col-md-3 form-group">
@@ -164,7 +164,7 @@
                 <nav id="breadcrumb-menu" class="col-md-6" aria-label="breadcrumb"></nav>
             </div>
             
-            <input type="hidden" name="category_id" value="">
+            <input type="hidden" name="product_type_id" value="">
             <input type="hidden" name="category_name" value="">
         </div>
         <div class="row">

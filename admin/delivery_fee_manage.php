@@ -239,6 +239,13 @@
                                                         $cnt++;
                                                     } 
                                                 ?>
+                                                <?php
+                                                if(count($rows) == 0) {
+                                                ?>
+                                                <tr>
+                                                    <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                                                </tr>
+                                                <?php } ?>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -354,8 +361,6 @@
 <?php
     include_once("include/dt_script.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
     setSortTable();
@@ -464,7 +469,7 @@
                             title: "Thông báo",
                             content: data.success,
                         });
-                        loadDataComplete();
+                        loadDataComplete("Insert");
                     }
                     $('#modal-xl').modal('hide');
                 },
@@ -568,16 +573,16 @@
         $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
         $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
         if($status == "Insert") {
-            $sql_insert = "Insert into delivery_fee(province_id,district_id,ward_id,fee) values('$province_id','$district_id','$ward_id','$fee')";
-            sql_query($sql_insert);
+            $sql_insert = "Insert into delivery_fee(province_id,district_id,ward_id,fee) values(?,?,?,?)";
+            sql_query($sql_insert,[$province_id,$district_id,$ward_id,$fee]);
             echo_json(["msg" => "ok","success" => "Bạn đã thêm dữ liệu thành công"]);
         } else if($status == "Update") {
-            $sql_update =  "Update delivery_fee set province_id = '$province_id',district_id = '$district_id',ward_id = '$ward_id',fee = '$fee' where id = '$id'";
-            sql_query($sql_update);
+            $sql_update =  "Update delivery_fee set province_id = ?,district_id = ?,ward_id = ?,fee = ? where id = ?";
+            sql_query($sql_update,[$province_id,$district_id,$ward_id,$fee,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã sửa dữ liệu thành công"]);
         } else if($status == "Delete") {
-            $sql_del =  "Update delivery_fee set is_delete = 1 where id = '$id'";
-            sql_query($sql_del);
+            $sql_del =  "Update delivery_fee set is_delete = ? where id = ?";
+            sql_query($sql_del,[1,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
         } else if($status == "saveTabFilter") {
             $_SESSION['delivery_fee_tab_id'] = isset($_SESSION['delivery_fee_tab_id']) ? $_SESSION['delivery_fee_tab_id'] + 1 : 1;

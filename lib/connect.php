@@ -3,7 +3,9 @@
     session_start();
     // database connect setting
     $link = db_connect();
-    
+    define("NOTIFY_IMG","upload/notify");
+    define("USER_IMG","upload/user");
+    define("PRODUCT_IMG","upload/product");
     function db_connect() {         
         $host = 'localhost';
         $dbname = 'shop_cua_hang_may_tinh'; //id16910140_do_an_tot_nghiep

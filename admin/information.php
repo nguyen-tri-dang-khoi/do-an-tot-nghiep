@@ -449,7 +449,9 @@
               $sql_update_verify_phone = "Update user set phone_verify_otp = NULL,phone_verify_at = NULL where id = '$session_id'";
               sql_query($sql_update_verify_phone);
             }
-            ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
+            $sql_upt = "Update user set full_name = ?,email = ?,birthday = ?,phone = ?,address = ? where id = ?";
+            sql_query($sql_upt,[$full_name,$email,$birthday,$phone,$address,$session_id]);
+            echo_json(["msg" => "ok","success" => $success]);
             $_SESSION["img_name"] = $path;
           } else {
             // Báo lỗi admin nhập sai mật khẩu xác thực
