@@ -363,7 +363,7 @@
 ?>
 <script src="js/khoi_all.js"></script>
 <script>
-    setSortTable();
+    <?=$upt_more != 1 ? "setSortTable();" : null;?> 
     function loadDistricts(){
         let province_id = $("select[name='province_id'] > option:selected").val();
         $(".select-districts").load("ajax_delivery_fee_manage.php?status=load_districts&province_id=" + province_id ,() => {

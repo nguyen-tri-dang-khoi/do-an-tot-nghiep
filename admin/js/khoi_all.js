@@ -502,7 +502,7 @@ var html_config = {
                         <p class='text-danger'></p>
                     </div>
                 </td>
-                <td><textarea type="textarea" name="ins_discount_content" class="kh-inp-ctrl"></textarea></td>
+                <td><textarea type="textarea" name="ins_discount_content" class="kh-inp-ctrl"></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_date_start' type='text'><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_date_end' type='text'><p class='text-danger'></p></td>
@@ -821,7 +821,6 @@ function focusInputTabName(evt) {
 }
 function changeTabName(evt) {
     let new_tab_name = $(evt).val();
-    //console.log(new_tab_name);
     let index = $(event.currentTarget).closest('.li-tab').attr('data-index');
     if(new_tab_name == "") {
         toastr["error"]("Vui lòng không để trống tên tab");
@@ -839,7 +838,7 @@ function changeTabName(evt) {
                 data = JSON.parse(data);
                 if(data.msg == "ok") {
                     $(evt).siblings('span').show();
-                    $(evt).replaceWith(`<button onclick="location.href='${data.tab_urlencode}'" class="tab">${new_tab_name}</button>`);
+                    $(evt).replaceWith(`<button onclick="loadDataInTab('${data.tab_urlencode}')" class="tab">${new_tab_name}</button>`);
                 }
             }
         })
@@ -874,7 +873,6 @@ function shiftCheckedRange(parent){
         $(event.currentTarget).closest('tr').toggleClass('selected');
         is_checked = $(event.currentTarget).prop("checked");
         }
-        // set property for checkbox
         if(begin_shift_click != "" && end_shift_click != "") {
         if(end_shift_click > begin_shift_click) {
             for(let i = parseInt(begin_shift_click) ; i < parseInt(end_shift_click) + 1 ; i++) {
@@ -1163,12 +1161,12 @@ function insMore2(){
             formData.append(`${ele}`,target2.find(`td [name="${ele}"]`).val());
         }
         if(ins_more[ele]['not_null'] !== undefined){
-            console.log(formData.get(`${ele}`));
-            console.log(`${ele}`);
             if(target2.find(`td [name="${ele}"]`).val() == "") {
                 target2.find(`td [name="${ele}"]`).closest('td').find('.text-danger').text(ins_more[ele]['not_null']);
                 test = false;
                 return test;
+            } else {
+                target2.find(`td [name="${ele}"]`).closest('td').find('.text-danger').text("");
             }
         }
     });

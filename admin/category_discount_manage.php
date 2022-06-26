@@ -25,7 +25,7 @@
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         //
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $order_by = "";
+        $order_by = "Order by id desc";
         $where = "where 1=1 and is_delete = 0 ";
         $wh_child = [];
         $arr_search = [];
@@ -453,7 +453,7 @@
                                         </td>
                                         <td>
                                             <div class="custom-control custom-switch">
-                                                <input type="checkbox" onchange="toggleActive('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                                <input type="checkbox" onchange="toggleStatus('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
                                                 <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
                                             </div>  
                                         </td>
@@ -616,69 +616,6 @@ include_once("include/bottom.meta.php");
 </script>
 <!--js section start-->
 <script>
-    /*function uptMore2(){
-        let test = true;
-        let ptd_discount_percent = $(event.currentTarget).closest("tr").find("td input[name='ptd_discount_percent']").val();
-        let ptd_date_start = $(event.currentTarget).closest("tr").find("td input[name='ptd_date_start']").val();
-        let ptd_date_end = $(event.currentTarget).closest("tr").find("td input[name='ptd_date_end']").val();
-        let ptd_id = $(event.currentTarget).attr('data-id');
-        let this2 = $(event.currentTarget).closest("tr");
-        if(ptd_discount_percent == "") {
-            test = false;
-            this2.find("td input[name='ptd_discount_percent']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='ptd_discount_percent']").siblings("span.text-danger").text("");
-        }
-        if(ptd_date_start == "") {
-            test = false;
-            this2.find("td input[name='ptd_date_start']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='ptd_date_start']").siblings("span.text-danger").text("");
-        }
-        if(ptd_date_end == "") {
-            test = false;
-            this2.find("td input[name='ptd_date_end']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='ptd_date_end']").siblings("span.text-danger").text("");
-        }
-
-        if(ptd_id == "") {
-            test = false;
-        }
-        console.log(name);
-        this2 = $(event.currentTarget);
-        if(test) {
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                data: {
-                    status: "upt_more",
-                    ptd_discount_percent: ptd_discount_percent,
-                    ptd_date_start: ptd_date_start,
-                    ptd_date_end: ptd_date_end,
-                    ptd_id : ptd_id,
-                },success: function(data){
-                    data = JSON.parse(data);
-                    if(data.msg == "ok"){
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã sửa dữ liệu thành công",
-                            buttons: {
-                                "Ok" : function(){
-                                    let num_of_upt = this2.attr('dt-count');
-                                    num_of_upt++;
-                                    this2.attr('dt-count',num_of_upt);
-                                    this2.text(`Sửa (${num_of_upt})`);
-                                }
-                            }
-                        });
-                    }
-                },error:function(data){
-                    console.log("Error: " + data);
-                }
-            });
-        }
-    }*/
     function uptAll(){
         let test = true;
         let all_checkbox = getIdCheckbox();
@@ -762,82 +699,6 @@ include_once("include/bottom.meta.php");
         }
         
     }
-    // thêm nhanh
-    /*function insMore2(){
-        let test = true;
-        let this2 = $(event.currentTarget).closest('tr');
-        let product_type_id = $(event.currentTarget).closest('tr').find('td input[name="product_type_id"]').val();
-        let ptd_discount_percent2 = $(event.currentTarget).closest('tr').find('td input[name="ptd_discount_percent2"]').val();
-        let ptd_date_start2 = $(event.currentTarget).closest('tr').find('td input[name="ptd_date_start2"]').val();
-        let ptd_date_end2 = $(event.currentTarget).closest('tr').find('td input[name="ptd_date_end2"]').val();
-        if(product_type_id == "") {
-            this2.find('td input[name="product_type_id"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="product_type_id"]').siblings("p.text-danger").text("");
-        }
-
-        if(ptd_discount_percent2 == "") {
-            this2.find('td input[name="ptd_discount_percent2"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="ptd_discount_percent2"]').siblings("p.text-danger").text("");
-        }
-
-        if(ptd_date_start2 == "") {
-            test = false;
-            this2.find('td input[name="ptd_date_start2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="ptd_date_start2"]').siblings("p.text-danger").text("");
-        }
-
-        if(ptd_date_end2 == "") {
-            test = false;
-            this2.find('td input[name="ptd_date_end2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="ptd_date_end2"]').siblings("p.text-danger").text("");
-        }
-        if(test) {
-            let formData = new FormData();
-            formData.append("product_type_id",product_type_id);
-            formData.append("ptd_discount_percent2",ptd_discount_percent2);
-            formData.append("ptd_date_start2",ptd_date_start2);
-            formData.append("ptd_date_end2",ptd_date_end2);
-            formData.append("status","ins_more");
-            let this2 = $(event.currentTarget);
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data:formData,
-                success: function(data){
-                    console.log(data);
-                    data = JSON.parse(data);
-                    if(data.msg == "ok") {
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã thêm dữ liệu thành công",
-                            buttons: {
-                                "Ok": function(){
-                                    this2.text("Đã thêm");
-                                    this2.prop("disabled",true);
-                                    this2.css({
-                                        "border": "1px solid #cac0c0",
-                                        "color": "#cac0c0",
-                                        "pointer-events": "none",
-                                    });
-                                }
-                            }
-                        });
-                    }
-                },error: function(data){
-                    console.log("Error: " + data);
-                }
-            })
-        }
-    }*/
     function insAll(){
       let test = true;
       let formData = new FormData();
@@ -846,9 +707,9 @@ include_once("include/bottom.meta.php");
       $('td input[name="product_type_id"]').each(function(){
         if($(this).val() != ""){
           formData.append("product_type_id[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
+          $(this).closest('td').find("p.text-danger").text("");
         } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
+          $(this).closest('td').find("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
@@ -864,9 +725,9 @@ include_once("include/bottom.meta.php");
       $('td textarea[name="ins_discount_content"]').each(function(){
         if($(this).val() != ""){
           formData.append("ins_discount_content[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
+          $(this).closest('td').find("p.text-danger").text("");
         } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
+          $(this).closest('td').find("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
@@ -946,31 +807,8 @@ include_once("include/bottom.meta.php");
          });
       }
     }
-    
 </script>
 <script>
-    function toggleActive(id,status) {
-        let evt = $(event.currentTarget);
-        $.ajax({
-            url:window.location.href,
-            type:"POST",
-            data:{
-                id: id,
-                status: status 
-            },
-            success:function(data){
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                    toastr["success"](data.success);
-                    if(status == "Active") {
-                        evt.attr('onchange',`toggleActive(${id},"Deactive")`);
-                    } else if(status == "Deactive") {
-                        evt.attr('onchange',`toggleActive(${id},"Active")`);
-                    }
-                }
-            }
-        })
-    }
     $(document).ready(function (e) {
         $('.select-type2').select2();
     });
@@ -1267,24 +1105,6 @@ include_once("include/bottom.meta.php");
         });
     }
 </script>
-<script>
-    $(document).ready(function(){
-        // validate
-        const validate = () => {
-            
-        };
-        // show image
-        const readURL = (input) => {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    $('#display-image').attr('src', e.target.result);
-                }
-                reader.readAsDataURL(input.files[0]);
-            }
-        };
-    });
-</script>
 <!--js section end-->
 <?php
         include_once("include/footer.php"); 
@@ -1323,13 +1143,13 @@ include_once("include/bottom.meta.php");
             sql_query($sql_del,[1,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
         } else if($status == "Active") {
-            $sql_active_product_type_discount = "Update product_type_discount set is_active = 1 where id = $id";
-            sql_query($sql_active_product_type_discount);
-            echo_json(["msg" => "ok","success" => "Bạn đã kích hoạt ngành hàng khuyến mãi thành công"]);
+            $sql_active_product_type_discount = "Update product_type_discount set is_active = 1 where id = ?";
+            sql_query($sql_active_product_type_discount,[$id]);
+            echo_json(["msg" => "Active","success" => "Bạn đã kích hoạt ngành hàng khuyến mãi thành công"]);
         } else if($status == "Deactive") {
-            $sql_deactive_product_type_discount = "Update product_type_discount set is_active = 0 where id = $id";
-            sql_query($sql_deactive_product_type_discount);
-            echo_json(["msg" => "ok","success" => "Bạn đã huỷ kích hoạt ngành hàng khuyến mãi thành công"]);
+            $sql_deactive_product_type_discount = "Update product_type_discount set is_active = 0 where id = ?";
+            sql_query($sql_deactive_product_type_discount,[$id]);
+            echo_json(["msg" => "Deactive","success" => "Bạn đã huỷ kích hoạt ngành hàng khuyến mãi thành công"]);
         } else if($status == "del_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $sql_del_more = "Update product_type_discount set is_delete = 1 where id in ($rows)";

@@ -311,7 +311,7 @@
                                         <thead>
                                             <tr style="cursor:pointer;">
                                                 <th style="width:20px !important;">
-                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" onchange="checkedAll()">
                                                 </th>
                                                 <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-150 th-ma-khuyen-mai">Mã khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -369,7 +369,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="custom-control custom-switch">
-                                                        <input type="checkbox" onchange="toggleActiveCoupon('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                                        <input type="checkbox" onchange="toggleStatus('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
                                                         <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
                                                     </div>  
                                                 </td>
@@ -627,7 +627,6 @@
                     }
                     $('.section-save').hide();
                     loadDataComplete();
-
                 },
                 error: function(data){
                     console.log("Error: " + data);
@@ -759,28 +758,6 @@
 </script>
 
 <script>
-    function toggleActiveCoupon(id,status) {
-        let evt = $(event.currentTarget);
-        $.ajax({
-            url:window.location.href,
-            type:"POST",
-            data:{
-                id: id,
-                status: status 
-            },
-            success:function(data){
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                    toastr["success"](data.success);
-                    if(status == "Active") {
-                        evt.attr('onchange',`toggleActiveCoupon(${id},"Deactive")`);
-                    } else if(status == "Deactive") {
-                        evt.attr('onchange',`toggleActiveCoupon(${id},"Active")`);
-                    }
-                }
-            }
-        })
-    }
     $(document).ready(function (e) {
         $('.select-type2').select2();
     });
@@ -1146,11 +1123,11 @@
         } else if($status == "Active") {
             $sql_active_coupon = "Update coupon set is_active = 1 where id = $id";
             sql_query($sql_active_coupon);
-            echo_json(["msg" => "ok","success" => "Bạn đã kích hoạt mã khuyến mãi thành công"]);
+            echo_json(["msg" => "Active","success" => "Bạn đã kích hoạt mã khuyến mãi thành công"]);
         } else if($status == "Deactive") {
             $sql_deactive_coupon = "Update coupon set is_active = 0 where id = $id";
             sql_query($sql_deactive_coupon);
-            echo_json(["msg" => "ok","success" => "Bạn đã huỷ kích hoạt mã khuyến mãi thành công"]);
+            echo_json(["msg" => "Deactive","success" => "Bạn đã huỷ kích hoạt mã khuyến mãi thành công"]);
         } else if($status == "del_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $sql_del_more = "Update coupon set is_delete = 1 where id in ($rows)";

@@ -275,9 +275,7 @@
                               ?>
                                  <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
                                     <button onclick="loadDataInTab('<?=$_SESSION['product_manage_tab'][$ik]['tab_urlencode'];?>')" class="tab"><?=$tab['tab_name'];?></button>
-                                    
                                     <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                                    
                                  </li>
                               <?php
                                     $ik++;
@@ -422,7 +420,6 @@
                                           }
                                           ?>
                                        </div>
-                                       <input type="hidden" name="is_search" value="true">
                                        <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                                     </div>
                                     <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
@@ -490,7 +487,6 @@
                                        <th class="w-120 th-so-luong">Số lượng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                        <th class="w-150 th-gia-goc">Giá gốc <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                        <th class="w-150 th-don-gia">Đơn giá <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                       
                                        <th class="w-200 th-danh-muc">Danh mục <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                        <th class="w-100">Tình trạng</th>
                                        <th class="w-150 th-ngay-dang">Ngày đăng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -1505,12 +1501,8 @@
          sql_query($sql_del,[$id]);
          echo_json(["msg" => "ok","success" => $success]);
       } else if($status == "Insert") {
-         /*
-         $sql_is_active = "select is_active from product_type where id = '$product_type_id'";
-         $res33 = fetch(sql_query($sql_is_active));*/
          $sql_check_exist = "select count(*) as 'countt' from product_info where id = ?";
          $row = fetch(sql_query($sql_check_exist,[$id]));
-         //$is_active = $res33['is_active'];
          if($row['countt'] > 0) {
             $error = "Tên sản phẩm này đã tồn tại.";
             echo_json(['msg' => 'not_ok', 'error' => $error]);

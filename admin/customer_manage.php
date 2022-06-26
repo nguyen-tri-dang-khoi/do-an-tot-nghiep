@@ -557,16 +557,16 @@
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update customer set is_lock = 1 where id = '$row'";
-                sql_query($sql);
+                $sql = "Update customer set is_lock = 1 where id = ?";
+                sql_query($sql,[$row]);
             }
             echo_json(["msg" => "ok"]);
         } else if($status == "unlock_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update customer set is_lock = 0 where id = '$row'";
-                sql_query($sql);
+                $sql = "Update customer set is_lock = 0 where id = ?";
+                sql_query($sql,[$row]);
             }
             echo_json(["msg" => "ok"]);
         } else if($status == "saveTabFilter") {
