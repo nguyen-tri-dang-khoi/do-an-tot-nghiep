@@ -17,7 +17,6 @@
           $allow_insert = true;
         }
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
-        
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
@@ -343,8 +342,8 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div id="form-product-type" class="modal-body">
-        <form id="form-loai-san-pham" action="" method="post">
+      <div class="modal-body">
+        <form id="form-product-type" action="" method="post">
 
         </form>
       </div>
@@ -540,21 +539,21 @@
     let parameters = new URLSearchParams(location.search);
     let parent_id = parameters.get('parent_id');
     console.log(parent_id);
-    $('#form-loai-san-pham').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
+    $('#form-product-type').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
       $('#modal-xl').modal({backdrop: 'static', keyboard: false});
     });
   }
   function readModal(){
     let id = $(event.currentTarget).attr('data-id');
     $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-    $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Read",() => {
+    $('#form-product-type').load("ajax_category_manage.php?id=" + id + "&status=Read",() => {
       $('#modal-xl').modal({backdrop: 'static', keyboard: false});
     });
   }
   function openModalUpdate(){
     let id = $(event.currentTarget).attr('data-id');
     $(event.currentTarget).closest("tr").addClass("bg-color-selected");
-    $('#form-loai-san-pham').load("ajax_category_manage.php?id=" + id + "&status=Update",() => {
+    $('#form-product-type').load("ajax_category_manage.php?id=" + id + "&status=Update",() => {
         $('#modal-xl').modal({backdrop: 'static', keyboard: false});
     });
   }
@@ -616,51 +615,62 @@
     })
   }
   function processModalInsertUpdate(){
-    event.preventDefault();
-    if(!$('input[name=ten_loai_san_pham]').val()) {
+    $('#form-product-type').validate({
+      rules:{
+        'ten_loai_san_pham':'required'
+      },
+      messages:{
+        'ten_loai_san_pham':"Vui lòng không để trống"
+      },
+      submitHandler:function(form){
+        event.preventDefault();
+        $.ajax({
+          url:window.location.href,
+          type:"POST",
+          cache:false,
+          data:{
+            id: $('input[name=id]').val(),
+            name:$('input[name=ten_loai_san_pham]').val(),
+            status: $('#btn-luu-loai-san-pham').attr("data-status"),
+          },
+          success:function(res){
+            console.log(res);
+            let res_json = JSON.parse(res);
+            $('#form-product-type').trigger('reset');
+            $('#modal-xl').modal('hide');
+            if(res_json.msg == "ok"){
+              let status = $('#btn-luu-loai-san-pham').attr("data-status");
+              if(status == "Insert"){
+                $.alert({
+                  title: "Thông báo",
+                  content: "Thêm danh mục thành công",
+                });
+                loadDataComplete('Insert');
+              } else if(status == "Update") {
+                $.alert({
+                  title: "Thông báo",
+                  content: "Sửa danh mục thành công",
+                });
+                loadDataComplete();
+              }
+            } else {
+              $.alert({
+                title: "Thông báo",
+                content: res_json.error,
+              });
+            }
+          }
+        })
+      }
+    });
+    /*if(!$('input[name=ten_loai_san_pham]').val()) {
       $.alert({
         title: "Thông báo",
         content: "Vui lòng không để trống tên danh mục"
       });
       return;
     }
-    $.ajax({
-      url:window.location.href,
-      type:"POST",
-      cache:false,
-      data:{
-        id: $('input[name=id]').val(),
-        name:$('input[name=ten_loai_san_pham]').val(),
-        status: $('#btn-luu-loai-san-pham').attr("data-status"),
-      },
-      success:function(res){
-        console.log(res);
-        let res_json = JSON.parse(res);
-        $('#form-loai-san-pham').trigger('reset');
-        $('#modal-xl').modal('hide');
-        if(res_json.msg == "ok"){
-          let status = $('#btn-luu-loai-san-pham').attr("data-status");
-          if(status == "Insert"){
-            $.alert({
-              title: "Thông báo",
-              content: "Thêm danh mục thành công",
-            });
-            loadDataComplete('Insert');
-          } else if(status == "Update") {
-            $.alert({
-              title: "Thông báo",
-              content: "Sửa danh mục thành công",
-            });
-            loadDataComplete();
-          }
-        } else {
-          $.alert({
-            title: "Thông báo",
-            content: res_json.error,
-          });
-        }
-      }
-    });
+    ;*/
   }
 </script>
 <!--js section end-->

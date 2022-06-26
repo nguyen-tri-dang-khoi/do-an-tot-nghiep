@@ -51,7 +51,7 @@
     </div>
 </div>
 <div class="card-footer">
-    <button id="btn-update" type="button" class="dt-button button-purple">Sửa</button>
+    <button onclick="processModalUpdate()" id="btn-update" type="button" class="dt-button button-purple">Sửa</button>
     <input type="hidden" name="id" value="<?=$result['id'];?>">      
 </div>
 <?php
@@ -101,7 +101,7 @@
     </div>
 </div>
 <div class="card-footer">
-    <button id="btn-insert" type="button" class="dt-button button-purple">Thêm</button>    
+    <button onclick="processModalInsert()" id="btn-insert" type="button" class="dt-button button-purple">Thêm</button>    
 </div>
 <?php } if($id && $status == "Read") {?>
     <?php

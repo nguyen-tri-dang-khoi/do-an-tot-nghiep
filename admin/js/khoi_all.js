@@ -117,7 +117,7 @@ var html_config = {
                 <td><input class='kh-inp-ctrl' name='ins_count' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_cost' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_price' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='ins_desc' value=''></textarea><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' type="textarea" name='ins_desc' value=''></textarea><p class='text-danger'></p></td>
                 <td>
                 <div data-id="1" class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url();">
                     <input class="nl-form-control" name="ins_img" type="file" onchange="readURL(this,'1')">
@@ -200,6 +200,7 @@ var html_config = {
                     <tr>
                         <th>Số thứ tự</th>
                         <th>Mã khuyến mãi</th>
+                        <th>Nội dung khuyến mãi</th>
                         <th>Khuyến mãi (%)</th>
                         <th>Giá trị tối thiểu</th>
                         <th>Giá trị tối đa</th>
@@ -210,20 +211,61 @@ var html_config = {
                     </thead>
             `,
             "tbody":`
-                <td><input class='kh-inp-ctrl' name='c_code2' type='text' value='' placeholder='Nhập mã khuyến mãi...'><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='c_discount_percent2' type='text' value='' placeholder='Nhập phần trăm khuyến mãi...'><p class='text-danger'></p></td>
-                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='c_if_subtotal_min2' type='text' value='' placeholder="Nhập số tiền tối thiểu..."><p class='text-danger'></p></td>
-                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='c_if_subtotal_max2' type='text' value='' placeholder="Nhập số tiền tối đa..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='c_date_start2' type='text' value='' placeholder="Nhập thời gian bắt đầu..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='c_date_end2' type='text' value='' placeholder="Nhập thời gian kết thúc..."><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_code' type='text' value='' ><p class='text-danger'></p></td>
+                <td><textarea type='textarea' class='kh-inp-ctrl' name='ins_content' type='text' value=''></textarea><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' value='' ><p class='text-danger'></p></td>
+                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_min' type='text' value=''><p class='text-danger'></p></td>
+                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_max' type='text' value='' ><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' value=''><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' value='' ><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
+            'ins_more':{
+                'ins_code':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_discount_percent':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_content':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_if_subtotal_min':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_if_subtotal_max':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_date_start':{
+                    'not_null':'Không được để trống',
+                },
+                'ins_date_end':{
+                    'not_null':'Không được để trống',
+                }
+            }
         },
         "upt_fast":{
             'upt_more':{
-                'pt_name':'Tên danh mục không được để trống'
+                'upt_code':{
+                    'not_null':'Không được để trống',
+                },
+                'upt_discount_percent':{
+                    'not_null':'Không được để trống',
+                },
+                'upt_if_subtotal_min':{
+                    'not_null':'Không được để trống',
+                },
+                'upt_if_subtotal_max':{
+                    'not_null':'Không được để trống',
+                },
+                'upt_date_start':{
+                    'not_null':'Không được để trống',
+                },
+                'upt_date_end':{
+                    'not_null':'Không được để trống',
+                }
             },
-            'upt_more_id':'pt_id',
+            'upt_more_id':'upt_id',
             'upt_all':'.list-coupon',
         },
         "read_fast":{
@@ -268,15 +310,26 @@ var html_config = {
             `,
             "tbody":`
                 <td><input class='kh-inp-ctrl' name='ins_title' type='text' value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='ins_content' value=''></textarea><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' name='ins_content' type="textarea" value=''></textarea><p class='text-danger'></p></td>
                 <td>
-                <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                    <input class="nl-form-control" name="ins_img" type="file" onchange="readURL(this)">
-                </div>
-                <p class='text-danger'></p>
+                    <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+                        <input class="nl-form-control" name="ins_img" type="file" onchange="readURL(this,'1')">
+                    </div>
+                    <p class='text-danger'></p>
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
+            "ins_more":{
+                'ins_title':{
+                    'not_null':'Tiêu đề bảng tin không được để trống',
+                },
+                'ins_content':{
+                    'not_null':'Nội dung bảng tin không được để trống',
+                },
+                'ins_img':{
+                    'not_null':'Ảnh đại diện bảng tin không được để trống',
+                },
+            }
         },
         "upt_fast":{
             'upt_more':{
@@ -332,10 +385,10 @@ var html_config = {
                 <td><input class='kh-inp-ctrl' name='ins_email' type='text' value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_phone' type='text' value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_cmnd' type='text' value=''><p class='text-danger'></p></td>
-                <td><textarea class='kh-inp-ctrl' name='ins_address' value=''></textarea><p class='text-danger'></p></td>
+                <td><textarea class='kh-inp-ctrl' type="textarea" name='ins_address' value=''></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_birthday' type='text' value=''><p class='text-danger'></p></td>
                 <td>
-                    <select name="ins_type" class='form-control'>
+                    <select type='select' name="ins_type" class='form-control'>
                         <option value=''>Chọn chức vụ</option>
                         <option value='officer'>Nhân viên văn phòng</option>
                         <option value='shipper'>Nhân viên giao hàng</option>
@@ -420,8 +473,73 @@ var html_config = {
             'tbody_read':'.list-category-discount',
         },
         "ins_fast":{
-            "thead":``,
-            "tbody":``,
+            "thead":`
+                <table class='table table-bordered' style="height:auto;">
+                <thead>
+                <tr>
+                    <th>Số thứ tự</th>
+                    <th>Danh mục khuyến mãi</th>
+                    <th>Nội dung khuyến mãi</th>
+                    <th>Khuyến mãi (%)</th>
+                    <th>Ngày bắt đầu</th>
+                    <th>Ngày hết hạn</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+            `,
+            "tbody":`
+                <td>
+                    <div style="display:flex;flex-direction:column;outline:none !important;">
+                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;" id="menu">
+                            <li onmouseover="load_menu()" class="parent" style="border: 1px solid #dce1e5;position:relative;">
+                                <a href="javascript:void(0)">Chọn danh mục</a>
+                                <ul class="child aaab">
+                                </ul>
+                                <input type="hidden" name="product_type_id">
+                            </li>
+                        </ul>
+                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
+                        <p class='text-danger'></p>
+                    </div>
+                </td>
+                <td><textarea type="textarea" name="ins_discount_content" class="kh-inp-ctrl"></textarea></td>
+                <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text'><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text'><p class='text-danger'></p></td>
+                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
+            `,
+            "ins_more":{
+                "product_type_id":{
+                    "not_null":"Không được để trống",
+                },
+                'ins_discount_content':{
+                    "not_null":"Không được để trống",
+                },
+                'ins_discount_percent':{
+                    "not_null":"Không được để trống",
+                },
+                'ins_date_start':{
+                    "not_null":"Không được để trống",
+                },
+                'ins_date_end':{
+                    "not_null":"Không được để trống",
+                }
+            }
+        },
+        "upt_fast":{
+            'upt_more':{
+                'upt_discount_percent':{
+                    "not_null":"Không được để trống",
+                },
+                'upt_date_start':{
+                    "not_null":"Không được để trống",
+                },
+                'upt_date_end':{
+                    "not_null":"Không được để trống",
+                }
+            },
+            'upt_more_id':'upt_id',
+            'upt_all':'.list-product',
         },
         "read_fast":{
             'modal_read':'#form-danh-muc-khuyen-mai',
@@ -527,8 +645,8 @@ function loadDataInTab(url,pushState = true){
     }
     setTimeout(() => {
         $('.ok-game-start').load(`${url} #load-all`,() => {
-          $('#select-type2').select2();
-          $('#pagination').pagination({
+            $('#select-type2').select2();
+            $('#pagination').pagination({
                 items: $('[dt-items]').attr('dt-items'),
                 itemsOnPage:  $('[dt-limit]').attr('dt-limit'),
                 currentPage: $('[dt-page]').attr('dt-page'),
@@ -544,12 +662,17 @@ function loadDataInTab(url,pushState = true){
                     loadDataInTab(`${file_name_config}.php?${url.toString()}`);
                 },
                 cssStyle: 'light-theme'
-          });
-          $("#is-load").show();
-          $(".img-load").hide();
-          setSortTable(file_name_config);
-          showPicker();
-          $('[class*=select-type]').select2();
+            });
+            $("#is-load").show();
+            $(".img-load").hide();
+            let parameters = new URLSearchParams(window.location.search);
+            if(parameters.get('upt_more') == 1) {
+                removeSortTable();
+            } else {
+                setSortTable();
+            }   
+            showPicker();
+            $('[class*=select-type]').select2();
         })
     },100);
 }
@@ -801,6 +924,13 @@ function setSortTable(){
         $(ele_[0]).attr('onclick',`sortTable(this,'${ele_[1]}','${ele}','asc')`);
     });
 }
+function removeSortTable(){
+    let thead_read = html_config[file_name_config]['sort_table']['thead_read'];
+    Object.keys(thead_read).forEach(function(ele){
+        ele_ = thead_read[ele].split('|');
+        $(ele_[0]).removeAttr('onclick');
+    });
+}
 function sortTable(event,type,class_td,asc_desc = "asc"){
     let tbody_read = html_config[file_name_config]['sort_table']['tbody_read'];
     console.log(tbody_read);
@@ -1026,12 +1156,17 @@ function insMore2(){
     Object.keys(ins_more).forEach(function(ele){
         if(target2.find(`td [name="${ele}"]`).attr('type').indexOf('file') > -1) {
             formData.append(`${ele}`,target2.find(`td [name="${ele}"]`)[0].files[0]);
+        } else if(target2.find(`td [name="${ele}"]`).attr('type').indexOf('select') > -1){
+            console.log(target2.find(`td [name="${ele}"] option:selected`).val());
+            formData.append(`${ele}`,target2.find(`td [name="${ele}"] option:selected`).val());
         } else {
             formData.append(`${ele}`,target2.find(`td [name="${ele}"]`).val());
         }
         if(ins_more[ele]['not_null'] !== undefined){
-            if(formData.get(`${ele}`) == "") {
-                target2.find(`td [name="${ele}"]`).next().text(ins_more[ele]['not_null']);
+            console.log(formData.get(`${ele}`));
+            console.log(`${ele}`);
+            if(target2.find(`td [name="${ele}"]`).val() == "") {
+                target2.find(`td [name="${ele}"]`).closest('td').find('.text-danger').text(ins_more[ele]['not_null']);
                 test = false;
                 return test;
             }
@@ -1080,6 +1215,7 @@ function uptMore(parent_id = "",tab_unique=""){
     } else {
         loadDataInTab(`${file_name_config}.php?upt_more=1&str=${str_arr_upt}&tab_unique=${tab_unique}`);
     }
+    
 }
 function uptMore2(){
     let upt_more =  html_config[file_name_config]['upt_fast']['upt_more'];
@@ -1441,7 +1577,7 @@ function toggleStatus(id,status,product_type_id = ""){
     })
 }
 // modal
-$("#modal-xl2").on("hidden.bs.modal",function(){
+$("#modal-xl2,#modal-xl3").on("hidden.bs.modal",function(){
     $("#form-insert table tbody").remove();
     $("input[name='count2']").val("");
     $("input[name='count3']").val("");

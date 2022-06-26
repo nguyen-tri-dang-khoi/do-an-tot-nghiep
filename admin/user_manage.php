@@ -36,7 +36,6 @@
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
-        $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $where = "where 1=1 and is_delete = 0";
         $order_by = "Order by user.id desc";
         $wh_child = [];
@@ -323,9 +322,9 @@
                                 <div class="table-responsive table-game-start">
                                     <table id="table-user_manage" class="table table-bordered table-striped ">
                                         <thead>
-                                            <tr style="cursor:pointer;">
+                                            <tr  style="cursor:pointer;">
                                                 <th style="width:20px !important;">
-                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                    <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                                 </th>
                                                 <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="th-ten-day-du">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -341,9 +340,9 @@
                                         <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-user" id="m-user-body">
                                             <?php foreach($rows as $row) { ?>
                                                 <?php $cnt1 = $cnt + 1;?>
-                                                <tr id="<?=$row["id"];?>">
+                                                <tr class='<?=$upt_more == 1 ? "selected":"";?>' id="<?=$row["id"];?>">
                                                     <td>
-                                                        <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                        <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>">
                                                     </td>
                                                     <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                                     <td class="ten-day-du">
@@ -399,7 +398,7 @@
                                                         <?php
                                                             if($allow_delete) {
                                                         ?>
-                                                        <button onclick="processDelete" class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
+                                                        <button onclick="processDelete()" class="btn-delete-row dt-button button-red" data-id="<?=$row["id"];?>">Xoá
                                                         </button>
                                                         <?php } ?>
                                                         <?php
@@ -430,7 +429,7 @@
                                         <tfoot>
                                             <tr>
                                                 <th style="width:20px !important;">
-                                                    <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                    <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                                 </th>
                                                 <th>Số thứ tự</th>
                                                 <th>Tên đầy đủ</th>
@@ -916,7 +915,7 @@
         }
     }
     function processDelete(){
-        let id = $(e.currentTarget).attr('data-id');
+        let id = $(event.currentTarget).attr('data-id');
         let target = $(event.currentTarget);
         target.closest("tr").addClass("bg-color-selected");
         $.confirm({
@@ -929,7 +928,6 @@
                         type:"POST",
                         cache:false,
                         data: {
-                            
                             id: id,
                             status: "Delete",
                         },
@@ -939,12 +937,8 @@
                                 $.alert({
                                     title: "Thông báo",
                                     content: data.success,
-                                    buttons: {
-                                        "Ok": function(){
-                                            loadDataComplete();
-                                        },
-                                    }
                                 });
+                                loadDataComplete('Delete');
                             } else {
                                 $.alert({
                                     title: "Thông báo",
@@ -992,59 +986,66 @@
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="upt_fullname2"]').length;
-      $('td input[name="upt_fullname2"]').each(function(){
+      let count = $('td input[name="ins_fullname"]').length;
+      $('td input[name="ins_fullname"]').each(function(){
         if($(this).val() != ""){
-          formData.append("upt_fullname2[]",$(this).val());
+          formData.append("ins_fullname[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="upt_email2"]').each(function(){
+      $('td input[name="ins_email"]').each(function(){
         if($(this).val() != ""){
-          formData.append("upt_email2[]",$(this).val());
+          formData.append("ins_email[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="upt_phone2"]').each(function(){
+      $('td input[name="ins_phone"]').each(function(){
         if($(this).val() != "") {
-          formData.append("upt_phone2[]",$(this).val());
+          formData.append("ins_phone[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="upt_cmnd2"]').each(function(){
+      $('td input[name="ins_cmnd"]').each(function(){
         if($(this).val() != "") {
-          formData.append("upt_cmnd2[]",$(this).val());
+          formData.append("ins_cmnd[]",$(this).val());
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td textarea[name="upt_address2"]').each(function(){
+      $('td textarea[name="ins_address"]').each(function(){
         if($(this).val() != "") {
-          formData.append("upt_address2[]",$(this).val());
+          formData.append("ins_address[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;  
         }
       });
-      $('td input[name="upt_birthday2"]').each(function(){
+      $('td input[name="ins_birthday"]').each(function(){
         if($(this).val() != "") {
-          let date2 = $(this).val().split(/\/|\-/);
-          date2 = date2[2] + "-" + date2[1] + "-" + date2[0];
-          formData.append("upt_birthday2[]",date2);
+          formData.append("ins_birthday[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td select[name="ins_type"]').each(function(){
+        if($(this).find('option:selected').val() != "") {
+          formData.append("ins_type[]",$(this).val());
+          $(this).parent().find("p.text-danger").text("");
+        } else {
+          $(this).parent().find("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
@@ -1072,12 +1073,9 @@
                     $.alert({
                         title: "Thông báo",
                         content: "Bạn đã thêm dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
                     });
+                    $('#modal-xl3').modal('hide');
+                    loadDataComplete('Insert');
                 }
             },
             error: function(data){
@@ -1089,31 +1087,31 @@
     }
     function uptAll(){
         let test = true;
+        let all_checkbox = getIdCheckbox();
+        let list_checkbox = all_checkbox['result'].split(",");
         let formData = new FormData();
-        let _data = dt_user.rows(".selected").select().data();
-        if(_data.length == 0) {
+        if(list_checkbox.length == 0) {
             $.alert({
                 title:"Thông báo",
                 content:"Vui lòng chọn dòng cần lưu",
             });
             return;
         }
-        for(i = 0 ; i < _data.length ; i++) {
-            formData.append("user_id[]",_data[i].DT_RowId);
+        for(i = 0 ; i < list_checkbox.length ; i++) {
+            formData.append("upt_id[]",list_checkbox[i]);
         }
         $('tr.selected input[name="upt_fullname"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_fullname2[]",$(this).val());
+                formData.append("upt_fullname[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
                 test = false;
             }
-            
         });
         $('tr.selected input[name="upt_email"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_email2[]",$(this).val());
+                formData.append("upt_email[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1123,7 +1121,7 @@
         });
         $('tr.selected input[name="upt_phone"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_phone2[]",$(this).val());
+                formData.append("upt_phone[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1133,7 +1131,7 @@
         });
         $('tr.selected input[name="upt_cmnd"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_cmnd2[]",$(this).val());
+                formData.append("upt_cmnd[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1143,17 +1141,16 @@
         });
         $('tr.selected textarea[name="upt_address"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_address2[]",$(this).val());
+                formData.append("upt_address[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
                 test = false;
             }
-            
         });
         $('tr.selected input[name="upt_birthday"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_birthday2[]",$(this).attr('data-date2'));
+                formData.append("upt_birthday[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1162,7 +1159,7 @@
         });
         if(test) {
             formData.append("status","upt_all");
-            formData.append("len",_data.length);
+            formData.append("len",list_checkbox.length);
             $.ajax({
                 url: window.location.href,
                 type: "POST",
@@ -1174,15 +1171,12 @@
                     console.log(data);
                     data = JSON.parse(data);
                     if(data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã sửa dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
-                    });
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã sửa dữ liệu thành công",
+                        });
+                        loadDataComplete();
+                        $('.section-save').hide();
                     }
                 },
                 error: function(data){
@@ -1213,12 +1207,8 @@
                                     $.alert({
                                         title: "Thông báo",
                                         content: "Bạn đã mở khoá tài khoản nhân viên thành công",
-                                        buttons: {
-                                            "Ok": function(){
-                                                loadDataComplete()
-                                            }
-                                        }
                                     });
+                                    loadDataComplete()
                                 }
                             },error: function(data){
                                 console.log("Error:" + data);
@@ -1257,12 +1247,8 @@
                                     $.alert({
                                         title: "Thông báo",
                                         content: "Bạn đã khoá tài khoản nhân viên thành công",
-                                        buttons: {
-                                            "Ok": function(){
-                                                location.href="user_manage.php";
-                                            }
-                                        }
                                     });
+                                    loadDataComplete();
                                 }
                             },error: function(data){
                                 console.log("Error:" + data);
@@ -1457,15 +1443,15 @@
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
         $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
-        $birthday = isset($_REQUEST["birthday"]) ? $_REQUEST["birthday"] : null;
+        $birthday = isset($_REQUEST["birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["birthday"])) : null;
         $type = isset($_REQUEST["type"]) ? $_REQUEST["type"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null ;
         if($status == "Delete") {
             $success = "Bạn đã xoá dữ liệu thành công";
             $error = "Đã có lỗi xảy ra. Vui lòng reload lại trang";
-            $sql = "Update user set is_delete = 1 where id = '$id'";
-            sql_query($sql);
+            $sql = "Update user set is_delete = ? where id = ?";
+            sql_query($sql,[1,$id]);
             echo_json(['msg' => 'ok',"success" => $success]);
         } else if($status == "Update") {
             $success = "Bạn đã sửa dữ liệu thành công";
@@ -1491,17 +1477,17 @@
                $file_name = str_replace("_","",$file_name);
                $path = $dir . "/" . $file_name ;
                move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
-               $sql_update = "update user set img_name='$path' where id = '$id'";
-               sql_query($sql_update);
+               $sql_update = "update user set img_name = ? where id = ?";
+               sql_query($sql_update,[$path,$id]);
             }
-            $sql = "Update user set full_name = '$full_name',type = '$type',email = '$email',phone = '$phone',cmnd = '$cmnd',address = '$address',birthday = '$birthday' where id = '$id'";
-            sql_query($sql);
+            $sql = "Update user set full_name = ?,type = ?,email = ?,phone = ?,cmnd = ?,address = ?,birthday = ? where id = ?";
+            sql_query($sql,[$full_name,$type,$email,$phone,$cmnd,$address,$birthday,$id]);
             echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "Insert") {
             $success = "Bạn đã thêm dữ liệu thành công";
             $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
-            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday,password) values('$full_name','$type','$email','$phone','$cmnd','$address','$birthday','$password')";
-            sql_query($sql);
+            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday,password) values(?,?,?,?,?,?,?,?)";
+            sql_query($sql,[$full_name,$type,$email,$phone,$cmnd,$address,$birthday,$password]);
             $insert = ins_id();
             if($insert > 0) {
                 $success = "Cập nhật dữ liệu thành công";
@@ -1523,8 +1509,8 @@
                     $file_name = str_replace("_","",$file_name);
                     $path = $dir . "/" . $file_name ;
                     move_uploaded_file($_FILES['img_name']['tmp_name'],$path);
-                    $sql_update = "update user set img_name='$path' where id = '$insert'";
-                    sql_query($sql_update);
+                    $sql_update = "update user set img_name = ? where id = ?";
+                    sql_query($sql_update,[$path,$insert]);
                 }
                 $__arr['id'] = $insert;
             }
@@ -1537,16 +1523,15 @@
             $upt_cmnd = isset($_REQUEST["upt_cmnd"]) ? $_REQUEST["upt_cmnd"] : null;
             $upt_address = isset($_REQUEST["upt_address"]) ? $_REQUEST["upt_address"] : null;
             $upt_birthday = isset($_REQUEST["upt_birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_birthday"])) : null;
-            $upt_type = isset($_REQUEST["upt_type"]) ? $_REQUEST["upt_type"] : null;
-            $sql = "Update user set full_name='$upt_fullname',email='$upt_email',phone='$upt_phone',cmnd='$upt_cmnd',address='$upt_address',birthday='$upt_birthday',type='$upt_type' where id='$upt_id'";
-            sql_query($sql);
+            $sql = "Update user set full_name = ?,email = ?,phone = ?,cmnd = ?,address = ?,birthday = ? where id = ?";
+            sql_query($sql,[$upt_fullname,$upt_email,$upt_phone,$upt_cmnd,$upt_address,$upt_birthday,$upt_id]);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update user set is_delete = 1 where id = '$row'";
-                sql_query($sql);
+                $sql = "Update user set is_delete = ? where id = ?";
+                sql_query($sql,[1,$row]);
             }
             echo_json(["msg" => "ok"]);
         } else if($status == "role_load") {
@@ -1565,8 +1550,7 @@
                     "full_name" => $res['full_name'],
                 ]);
             }
-            echo json_encode(["msg" => "ok","result" => $result2]);    
-            exit();
+            echo_json(["msg" => "ok","result" => $result2]);    
         } else if($status == "ins_role") {
             $user_id = isset($_REQUEST["user_id"]) ? $_REQUEST["user_id"] : null;
             $menu = isset($_REQUEST["menu"]) ? $_REQUEST["menu"] : null;
@@ -1575,15 +1559,15 @@
             if(fetch(sql_query($sql_check))['cnt'] > 0) {
                 echo_json(["msg" => "not_ok","error" => "Chức năng này đã được thêm"]);
             }
-            $sql = "Insert into user_role(user_id,menu_id,permission) values('$user_id','$menu','$role')";
-            sql_query($sql);
+            $sql = "Insert into user_role(user_id,menu_id,permission) values(?,?,?)";
+            sql_query($sql,[$user_id,$menu,$role]);
             echo_json(["msg" => "ok"]);
         } else if($status == "upt_role") {
             $user_id = isset($_REQUEST["user_id"]) ? $_REQUEST["user_id"] : null;
             $menu = isset($_REQUEST["menu_id"]) ? $_REQUEST["menu_id"] : null;
             $role = isset($_REQUEST["role"]) ? $_REQUEST["role"] : null;
-            $sql = "Update user_role set permission='$role' where user_id='$user_id' and menu_id='$menu'";
-            sql_query($sql);
+            $sql = "Update user_role set permission = ? where user_id = ? and menu_id = ?";
+            sql_query($sql,[$role,$user_id,$menu]);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_role") {
             $user_id = isset($_REQUEST["user_id"]) ? $_REQUEST["user_id"] : null;
@@ -1595,28 +1579,29 @@
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update user set is_lock = 1 where id = '$row'";
-                sql_query($sql);
+                $sql = "Update user set is_lock = ? where id = ?";
+                sql_query($sql,[1,$row]);
             }
             echo_json(["msg" => "ok"]);
         } else if($status == "unlock_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update user set is_lock = 0 where id = '$row'";
-                sql_query($sql);
+                $sql = "Update user set is_lock = ? where id = ?";
+                sql_query($sql,[0,$row]);
             }
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_more") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
             $ins_fullname = isset($_REQUEST["ins_fullname"]) ? $_REQUEST["ins_fullname"] : null;
+            $ins_type = isset($_REQUEST["ins_type"]) ? $_REQUEST["ins_type"] : null;
             $ins_email = isset($_REQUEST["ins_email"]) ? $_REQUEST["ins_email"] : null;
             $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
             $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
             $ins_cmnd = isset($_REQUEST["ins_cmnd"]) ? $_REQUEST["ins_cmnd"] : null;
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_birthday"])) : null;
-            $sql = "Insert into user(full_name,email,phone,cmnd,address,birthday) values('$ins_fullname','$ins_email','$ins_phone','$ins_cmnd','$ins_address','$ins_birthday')";
-            sql_query($sql);
+            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values(?,?,?,?,?,?,?)";
+            sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_cmnd,$ins_address,$ins_birthday]);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
@@ -1630,26 +1615,25 @@
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $ins_birthday[$i] ? Date('Y-m-d',strtotime($ins_birthday[$i])) : null;
-                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values('$ins_fullname[$i]','$ins_type[$i]','$ins_email[$i]','$ins_phone[$i]','$ins_cmnd[$i]','$ins_address[$i]','$birth')";
-                    sql_query($sql);
+                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values(?,?,?,?,?,?,?)";
+                    sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_cmnd[$i],$ins_address[$i],$birth]);
                 }
                 echo_json(["msg" => "ok"]);
             }
         } else if($status == "upt_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $user_id = isset($_REQUEST["user_id"]) ? $_REQUEST["user_id"] : null;
-            $upt_fullname2 = isset($_REQUEST["upt_fullname2"]) ? $_REQUEST["upt_fullname2"] : null;
-            $upt_email2 = isset($_REQUEST["upt_email2"]) ? $_REQUEST["upt_email2"] : null;
-            $upt_phone2 = isset($_REQUEST["upt_phone2"]) ? $_REQUEST["upt_phone2"] : null;
-            $upt_address2 = isset($_REQUEST["upt_address2"]) ? $_REQUEST["upt_address2"] : null;
-            $upt_cmnd2 = isset($_REQUEST["upt_cmnd2"]) ? $_REQUEST["upt_cmnd2"] : null;
-            $upt_birthday2 = isset($_REQUEST["upt_birthday2"]) ? $_REQUEST["upt_birthday2"]  : null;
-            $upt_type2 = isset($_REQUEST["upt_type2"]) ? $_REQUEST["upt_type2"] : null;
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_fullname = isset($_REQUEST["upt_fullname"]) ? $_REQUEST["upt_fullname"] : null;
+            $upt_email = isset($_REQUEST["upt_email"]) ? $_REQUEST["upt_email"] : null;
+            $upt_phone = isset($_REQUEST["upt_phone"]) ? $_REQUEST["upt_phone"] : null;
+            $upt_address = isset($_REQUEST["upt_address"]) ? $_REQUEST["upt_address"] : null;
+            $upt_cmnd = isset($_REQUEST["upt_cmnd"]) ? $_REQUEST["upt_cmnd"] : null;
+            $upt_birthday = isset($_REQUEST["upt_birthday"]) ? $_REQUEST["upt_birthday"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
-                    $birth = $upt_birthday2[$i] ? Date('Y-m-d',strtotime($upt_birthday2[$i])) : null;                 
-                    $sql = "Update user set full_name='$upt_fullname2[$i]',type = '$upt_type2[$i]',email='$upt_email2[$i]',phone='$upt_phone2[$i]',cmnd='$upt_cmnd2[$i]',address='$upt_address2[$i]',birthday='$birth' where id = '$user_id[$i]'";
-                    sql_query($sql);
+                    $birth = $upt_birthday[$i] ? Date('Y-m-d',strtotime($upt_birthday[$i])) : null;                 
+                    $sql = "Update user set full_name=?,email=?,phone=?,cmnd=?,address=?,birthday=? where id = ?";
+                    sql_query($sql,[$upt_fullname[$i],$upt_email[$i],$upt_phone[$i],$upt_cmnd[$i],$upt_address[$i],$birth,$upt_id[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }

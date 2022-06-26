@@ -289,10 +289,6 @@
                                  </tr>
                               </thead>
                               <?php
-                                 $get = $_GET;
-                                 unset($get['page']);
-                                 $str_get = http_build_query($get);
-                                 // query
                                  $cnt = 0;
                                  $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                  $limit = $_SESSION['paging'];
@@ -301,12 +297,12 @@
                                  $total = fetch(sql_query($sql_get_total))['countt'];
                                  $sql_get_product = "select * from notification n $where limit $start_page,$limit";
                               ?>
-                              <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-bang-tin" class="list-notification">
+                              <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" id="list-bang-tin" class="list-notification">
                               <?php
                               $rows = fetch_all(sql_query($sql_get_product));
                               foreach($rows as $row) {
                               ?>
-                                 <tr id="<?=$row["id"];?>">
+                                 <tr class="<?=$upt_more == 1 ? "selected" : "";?>" id="<?=$row["id"];?>">
                                     <td>
                                        <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>" <?=$upt_more == 1 ? "checked" : "";?>>
                                     </td>
@@ -728,28 +724,28 @@
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="n_title2"]').length;
-      $('td input[name="n_title2"]').each(function(){
+      let count = $('td input[name="ins_title"]').length;
+      $('td input[name="ins_title"]').each(function(){
          if($(this).val() != "") {
-            formData.append("n_title2[]",$(this).val());
+            formData.append("ins_title[]",$(this).val());
             $(this).siblings("p.text-danger").text("");
          } else {
             $(this).siblings("p.text-danger").text("Không được để trống");
             test = false;
          }
       });
-      $('td textarea[name="n_content2"]').each(function(){
+      $('td textarea[name="ins_content"]').each(function(){
          if($(this).val() != "") { 
-            formData.append("n_content2[]",$(this).val());
+            formData.append("ins_content[]",$(this).val());
             $(this).siblings("p.text-danger").text("");
          } else {
             $(this).siblings("p.text-danger").text("Không được để trống");
             test = false;
          }
       });
-      $('td input[name="img3[]"]').each(function(){
+      $('td input[name="ins_img"]').each(function(){
          if($(this).val() != "") {
-            formData.append("img3[]",$(this)[0].files[0]);
+            formData.append("ins_img[]",$(this)[0].files[0]);
             $(this).parent().siblings("p.text-danger").text("");
          } else {
             $(this).parent().siblings("p.text-danger").text("Phải upload hình");
@@ -782,6 +778,7 @@
                      content: "Bạn đã thêm dữ liệu thành công",
                   });
                   loadDataComplete("Insert");
+                  $('#modal-xl2').modal('hide');
                }
             },
             error: function(data){
@@ -791,104 +788,24 @@
       }
       
    }
-   function insMore2(){
-      let test = true;
-      let this2 = $(event.currentTarget).closest('tr');
-      let n_title2 = $(event.currentTarget).closest('tr').find('td input[name="n_title2"]').val();
-      let n_content2 = $(event.currentTarget).closest('tr').find('td textarea[name="n_content2"]').val();
-      let img3 = $(event.currentTarget).closest('tr').find('input[name="img3[]"]')[0].files;
-      //
-      if(n_title2 == "") {
-         this2.find('td input[name="n_title2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td input[name="n_title2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(n_content2 == "") {
-         this2.find('td textarea[name="n_content2"]').siblings("p.text-danger").text("Không được để trống");
-         test = false;
-      } else {
-         this2.find('td textarea[name="n_content2"]').siblings("p.text-danger").text("");
-      }
-      //
-      if(this2.find('td input[name="img3[]"]').val() == "") {
-         this2.find('td input[name="img3[]"]').parent().siblings("p.text-danger").text("Phải upload hình");
-         test = false;
-      } else {
-         this2.find('td input[name="img3[]"]').parent().siblings("p.text-danger").text("");
-      }
-      //
-      if(test) {
-         let formData = new FormData();
-         formData.append("n_title2",n_title2);
-         formData.append("n_content2",n_content2);
-         formData.append("img3",img3);
-         formData.append("status","ins_more");
-         if(img3.length > 0) {
-            formData.append('img3',img3[0]); 
-         }
-         let this2 = $(event.currentTarget);
-         $.ajax({
-            url: window.location.href,
-            type: "POST",
-            cache: false,
-            contentType: false,
-            processData: false,
-            data:formData,
-            success: function(data){
-               console.log(data);
-               data = JSON.parse(data);
-               if(data.msg == "ok") {
-                  $.alert({
-                     title: "Thông báo",
-                     content: "Bạn đã thêm dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           this2.text("Đã thêm");
-                           this2.prop("disabled",true);
-                           this2.css({
-                              "border": "1px solid #cac0c0",
-                              "color": "#cac0c0",
-                              "pointer-events": "none",
-                           });
-                        }
-                     }
-                  });
-               }
-            },error: function(data){
-               console.log("Error: " + data);
-            }
-         })
-      }
-      
-   }
    function uptAll(){
+      let all_checkbox = getIdCheckbox();
       let test = true;
+      let list_checkbox = all_checkbox['result'].split(",");
       let formData = new FormData();
-      let _data = dt_n.rows(".selected").select().data();
-      if(_data.length == 0) {
+      if(list_checkbox.length == 0) {
          $.alert({
             title:"Thông báo",
             content:"Vui lòng chọn dòng cần lưu",
          });
          return;
       }
-      for(i = 0 ; i < _data.length ; i++) {
-         formData.append("n_id[]",_data[i].DT_RowId);
+      for(i = 0 ; i < list_checkbox.length ; i++) {
+         formData.append("upt_id[]",list_checkbox[i]);
       }
-      $('tr.selected input[name="n_title"]').each(function(){
+      $('tr.selected input[name="upt_title"]').each(function(){
          if($(this).val() != "") {
-            formData.append("n_title[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('tr.selected textarea[name="n_content"]').each(function(){
-         if($(this).summernote('code') != "") {
-            formData.append("n_content[]",$(this).summernote('code'));
+            formData.append("upt_title[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
          } else {
             $(this).siblings("span.text-danger").text("Không được để trống");
@@ -897,7 +814,7 @@
       });
       if(test) {
          formData.append("status","upt_all");
-         formData.append("len",_data.length);
+         formData.append("len",list_checkbox.length);
          $.ajax({
             url: window.location.href,
             type: "POST",
@@ -912,12 +829,9 @@
                   $.alert({
                      title: "Thông báo",
                      content: "Bạn đã sửa dữ liệu thành công",
-                     buttons: {
-                        "Ok": function(){
-                           location.reload();
-                        }
-                     }
                   });
+                  loadDataComplete();
+                  $('.section-save').hide();
                }
             },
             error: function(data){
@@ -927,57 +841,6 @@
       }
       
    }
-   /*function uptMore2(){
-      let test = true;
-      let title = $(event.currentTarget).closest("tr").find("td input[name='n_title']").val();
-      let content = $(event.currentTarget).closest("tr").find("td .t-summernote").summernote('code');
-      let id = $(event.currentTarget).attr('data-id');
-      let this2 = $(event.currentTarget);
-      if(title == "") {
-         test = false;
-         this2.find("td input[name='n_title']").siblings("span.text-danger").text("Không được để trống");
-      } else {
-         this2.find("td input[name='n_title']").siblings("span.text-danger").text("");
-      }
-
-      if(content == "") {
-      test = false;
-      this2.find("td input[name='n_title']").siblings("span.text-danger").text("Không được để trống");
-      } else {
-      this2.find("td input[name='n_title']").siblings("span.text-danger").text("");
-      }
-      if(test) {
-      $.ajax({
-         url: window.location.href,
-         type: "POST",
-         data: {
-            status: "upt_more",
-            n_title: title,
-            n_content: content,
-            n_id: id,
-         },success: function(data){
-               data = JSON.parse(data);
-               if(data.msg == "ok"){
-               $.alert({
-                  title: "Thông báo",
-                  content: "Bạn đã sửa dữ liệu thành công",
-                  buttons: {
-                     "Ok" : function(){
-                        let num_of_upt = this2.attr('dt-count');
-                        num_of_upt++;
-                        this2.attr('dt-count',num_of_upt);
-                        this2.text(`Sửa (${num_of_upt})`);
-                     }
-                  }
-               });
-               }
-         },error:function(data){
-               console.log("Error: " + data);
-         }
-      });
-      }
-      
-   }*/
 </script>
 <script>
    $(function(){

@@ -742,3 +742,7 @@ li.nav-item {
 li.li-tab:last-child > button.tab {
   border-right:1px solid #ddd;
 }*/
+form .error {
+  color:red !important;
+  font-weight: normal !important;
+}

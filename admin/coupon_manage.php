@@ -4,33 +4,16 @@
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
         $allow_read = $allow_update = $allow_delete = $allow_insert = true;
-        //
         $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
-        //
-        $is_active = isset($_REQUEST['is_active']) ? $_REQUEST['is_active'] : null;
-        //
-        $subtotal_min_1 = isset($_REQUEST['subtotal_min_1']) ? $_REQUEST['subtotal_min_1'] : null;
-        $subtotal_min_2 = isset($_REQUEST['subtotal_min_2']) ? $_REQUEST['subtotal_min_2'] : null;
-        //
-        $subtotal_max_1 = isset($_REQUEST['subtotal_max_1']) ? $_REQUEST['subtotal_max_1'] : null;
-        $subtotal_max_2 = isset($_REQUEST['subtotal_max_2']) ? $_REQUEST['subtotal_max_2'] : null;
-        //
+        $is_active = isset($_REQUEST['is_active']) ? $_REQUEST['is_active'] : "00";
+        $subtotal_min = isset($_REQUEST['subtotal_min']) ? $_REQUEST['subtotal_min'] : null;
+        $subtotal_max = isset($_REQUEST['subtotal_max']) ? $_REQUEST['subtotal_max'] : null;
         $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
-        //
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
-        //
-        $date_start_1 = isset($_REQUEST['date_start_1']) ? $_REQUEST['date_start_1'] : null;
-        $date_start_2 = isset($_REQUEST['date_start_2']) ? $_REQUEST['date_start_2'] : null;
-        //
-        $date_end_1 = isset($_REQUEST['date_end_1']) ? $_REQUEST['date_end_1'] : null;
-        $date_end_2 = isset($_REQUEST['date_end_2']) ? $_REQUEST['date_end_2'] : null;
-        //
-        $date_created_at_1 = isset($_REQUEST['date_created_at_1']) ? $_REQUEST['date_created_at_1'] : null;
-        $date_created_at_2 = isset($_REQUEST['date_created_at_2']) ? $_REQUEST['date_created_at_2'] : null;
-        //
+        $date_start = isset($_REQUEST['date_start']) ? $_REQUEST['date_start'] : null;
+        $date_end = isset($_REQUEST['date_end']) ? $_REQUEST['date_end'] : null;
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
-        //
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $order_by = "ORDER BY id desc";
         $where = "where 1=1 and is_delete = 0 ";
@@ -103,77 +86,32 @@
             }
         }
         // số tiền tối thiểu
-        if($subtotal_min_1 && $subtotal_min_2) {
-            if($subtotal_min_1 != "" && $subtotal_min_2 != "") {
-                $subtotal_min_1 = str_replace(".","",$subtotal_min_1);
-                $subtotal_min_2 = str_replace(".","",$subtotal_min_2);
-                $where .= " and (coupon_if_subtotal_min >= '$subtotal_min_1' and coupon_if_subtotal_min <= '$subtotal_min_2')";
-            } else if($subtotal_min_1 == "" && $subtotal_min_2 != ""){
-                $subtotal_min_2 = str_replace(".","",$subtotal_min_2);
-                $where .= " and (coupon_if_subtotal_min <= '$subtotal_min_2')";
-            } else if($subtotal_min_1 != "" && $subtotal_min_2 == ""){
-                $subtotal_min_1 = str_replace(".","",$subtotal_min_1);
-                $where .= " and (coupon_if_subtotal_min >= '$p_min')";
-            }
+        if($subtotal_min) {
+            $subtotal_min = str_replace(".","",$subtotal_min);
+            $where .= " and (coupon_if_subtotal_min >= $subtotal_min)";
         }
         // số tiền tối đa
-        if($subtotal_max_1 && $subtotal_max_2) {
-            if($subtotal_max_1 != "" && $subtotal_max_2 != "") {
-                $subtotal_max_1 = str_replace(".","",$subtotal_max_1);
-                $subtotal_max_2 = str_replace(".","",$subtotal_max_2);
-                $where .= " and (coupon_if_subtotal_max >= '$subtotal_max_1' and coupon_if_subtotal_max <= '$subtotal_max_2')";
-            } else if($subtotal_max_1 == "" && $subtotal_max_2 != ""){
-                $subtotal_max_2 = str_replace(".","",$subtotal_max_2);
-                $where .= " and (coupon_if_subtotal_max <= '$subtotal_max_2')";
-            } else if($subtotal_max_1 != "" && $subtotal_max_2 == ""){
-                $subtotal_max_1 = str_replace(".","",$subtotal_max_1);
-                $where .= " and (coupon_if_subtotal_max >= '$p_max')";
-            }
+        if($subtotal_max) {
+            $subtotal_max = str_replace(".","",$subtotal_max);
+            $where .= " and (coupon_if_subtotal_max <= $subtotal_max)";
         }
         // thời gian bắt đầu
-        if($date_start_1 && $date_start_2) {
-            if($date_start_1 != "" && $date_start_2 != "") {
-                $date_start_1 = Date("Y-m-d",strtotime($date_start_1));
-                $date_start_2 = Date("Y-m-d",strtotime($date_start_2));
-                $where .= " and (coupon_date_start >= '$date_start_1 00:00:00' and coupon_date_start <= '$date_start_2 23:59:59')";
-            } else if($date_start_1 != "" && $date_start_2 == "") {
-                $date_start_1 = Date("Y-m-d",strtotime($date_start_1));
-                $where .= " and (coupon_date_start >= '$date_start_1 00:00:00')";
-            } else if($date_start_1 == "" && $date_start_2 != "") {
-                $date_start_2 = Date("Y-m-d",strtotime($date_start_2));
-                $where .= " and (dcoupon_ate_start <= '$date_start_2 23:59:59')";
-            }
+        if($date_start) {
+            $date_start = Date("Y-m-d",strtotime($date_start));
+            $where .= " and (coupon_date_start >= '$date_start 00:00:00')";
         }
         // thời gian kết thúc
-        if($date_end_1 && $date_end_2) {
-            if($date_end_1 != "" && $date_end_2 != "") {
-                $date_end_1 = Date("Y-m-d",strtotime($date_end_1));
-                $date_end_2 = Date("Y-m-d",strtotime($date_end_2));
-                $where .= " and (coupon_date_end >= '$date_end_1 00:00:00' and coupon_date_end <= '$date_end_2 23:59:59')";
-            } else if($date_end_1 != "" && $date_end_2 == "") {
-                $date_end_1 = Date("Y-m-d",strtotime($date_end_1));
-                $where .= " and (coupon_date_end >= '$date_end_1 00:00:00')";
-            } else if($date_end_1 == "" && $date_end_2 != "") {
-                $date_end_2 = Date("Y-m-d",strtotime($date_end_2));
-                $where .= " and (coupon_date_end <= '$date_end_2 23:59:59')";
-            }
-        }
-        // ngày tạo
-        if($date_created_at_1 && $date_created_at_2) {
-            if($date_created_at_1 != "" && $date_created_at_2 != "") {
-                $date_created_at_1 = Date("Y-m-d",strtotime($date_created_at_1));
-                $date_created_at_2 = Date("Y-m-d",strtotime($date_created_at_2));
-                $where .= " and (created_at >= '$date_created_at_1 00:00:00' and created_at <= '$date_created_at_2 23:59:59')";
-            } else if($date_created_at_1 != "" && $date_created_at_2 == "") {
-                $date_created_at_1 = Date("Y-m-d",strtotime($date_created_at_1));
-                $where .= " and (created_at >= '$date_created_at_1 00:00:00')";
-            } else if($date_created_at_1 == "" && $date_created_at_2 != "") {
-                $date_created_at_2 = Date("Y-m-d",strtotime($date_created_at_2));
-                $where .= " and (created_at <= '$date_created_at_2 23:59:59')";
-            }
+        if($date_end) {
+            $date_end = Date("Y-m-d",strtotime($date_end));
+            $where .= " and (coupon_date_end <= '$date_end 23:59:59')";
         }
         if($is_active) {
-            $where .= " and is_active='$is_active'";
+            if($is_active == "Active") {
+                $where .= " and is_active=1";
+            } else if($is_active == "Deactive"){
+                $where .= " and is_active=0";
+            }
+            
         }
         if($orderStatus && $orderByColumn) {
             $order_by = "ORDER BY $orderByColumn $orderStatus";
@@ -185,11 +123,6 @@
 <!--html & css section start-->
 <link rel="stylesheet" href="css/toastr.min.css">
 <style>
-    [class^=ele-] {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-    }
     .sort-asc,.sort-desc {
     display: none;
   }
@@ -226,7 +159,6 @@
                                     <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('coupon_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
                                     <?php
                                         $ik = 0;
-                                        $is_active = false;
                                         if(count($_SESSION['coupon_manage_tab']) > 0) {
                                             foreach($_SESSION['coupon_manage_tab'] as $tab) {
                                             if($tab['tab_unique'] == $tab_unique) {
@@ -255,126 +187,71 @@
                             </div>
                             <div id="is-load">
                                 <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                                    <form style="" id="form-filter" autocomplete="off" action="coupon_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
+                                    <form id="form-filter" action="coupon_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
                                         <div class="d-flex a-start">
-                                            <div class="" style="margin-top:5px;">
-                                                <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                                    <option value="">Bộ lọc tìm kiếm</option>
-                                                    <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                                    <option value="subtotal_min2" <?=$search_option == 'subtotal_min2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối thiểu</option>
-                                                    <option value="subtotal_max2" <?=$search_option == 'subtotal_max2' ? 'selected="selected"' : '' ?>>Khoảng số tiền tối đa</option>
-                                                    <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
-                                                    <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
-                                                    <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
-                                                    <option value="is_active2" <?=$search_option == 'is_active2' ? 'selected="selected"' : '' ?>>Tình trạng</option>
-                                                    <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                                </select>
-                                            </div>
-                                            <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
-                                            <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                                        </div>
-                                        <div class="d-flex a-start mt-10">
-                                            <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
-                                            <div class="ele-cols d-flex f-column">
-                                                <select name="search_option" class="form-control mb-10">
-                                                    <option value="">Chọn cột tìm kiếm</option>
-                                                    <option value="coupon_code" <?=$search_option == 'coupon_code' ? 'selected="selected"' : '' ?>>Mã khuyến mãi</option>
-                                                    <option value="coupon_if_subtotal_min" <?=$search_option == 'coupon_if_subtotal_min' ? 'selected="selected"' : '' ?>>Số tiền tối thiểu</option>
-                                                    <option value="coupon_if_subtotal_max" <?=$search_option == 'coupon_if_subtotal_max' ? 'selected="selected"' : '' ?>>Số tiền tối đa</option>
-                                                    <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
-                                                    <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
-                                                    <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
-                                                    <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                                </select>
-                                                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-                                            </div>
-                                            <?php
-                                            if(is_array($keyword)) {
-                                                foreach($keyword as $key) {
-                                            ?>
-                                                <?php
-                                                if($key != "") {
-                                                ?>
-                                                    <div class="ele-select ele-cols mt-10">
-                                                        <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
-                                                        <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                            <div class="d-flex a-start mt-10">
+                                                <div id="s-cols" class="k-select-opt col-2 s-all2" style="display:flex;flex-direction: column;">
+                                                    <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
+                                                    <div class="ele-cols d-flex f-column">
+                                                        <select name="search_option" class="form-control mb-10">
+                                                            <option value="">Chọn cột tìm kiếm</option>
+                                                            <option value="coupon_code" <?=$search_option == 'coupon_code' ? 'selected="selected"' : '' ?>>Mã khuyến mãi</option>
+                                                            <option value="coupon_if_subtotal_min" <?=$search_option == 'coupon_if_subtotal_min' ? 'selected="selected"' : '' ?>>Số tiền tối thiểu</option>
+                                                            <option value="coupon_if_subtotal_max" <?=$search_option == 'coupon_if_subtotal_max' ? 'selected="selected"' : '' ?>>Số tiền tối đa</option>
+                                                            <option value="date_start" <?=$search_option == 'date_start' ? 'selected="selected"' : '' ?>>Ngày bắt đầu</option>
+                                                            <option value="date_end" <?=$search_option == 'date_end' ? 'selected="selected"' : '' ?>>Ngày kết thúc</option>
+                                                            <option value="created_at" <?=$search_option == 'created_at' ? 'selected="selected"' : '' ?>>Ngày tạo</option>
+                                                            <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
+                                                        </select>
+                                                        <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
                                                     </div>
                                                 <?php
+                                                if(is_array($keyword)) {
+                                                    foreach($keyword as $key) {
+                                                ?>
+                                                    <?php
+                                                    if($key != "") {
+                                                    ?>
+                                                        <div class="ele-select ele-cols mt-10">
+                                                            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="<?=$key;?>">
+                                                            <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
+                                                        </div>
+                                                    <?php
+                                                    }
+                                                    ?>
+                                                <?php   
+                                                    }
                                                 }
                                                 ?>
-                                            <?php   
-                                                }
-                                            }
-                                            ?>
+                                                </div>
+                                                <div id="s-subtotal_min2" class="k-select-opt ml-20 col-4 s-all2" style="display:flex;">
+                                                    <div class="col-6" style="padding:0px 5px;">
+                                                        <input type="text" name="subtotal_min" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" placeholder="Giá trị tối thiểu" value="<?=$subtotal_min ? number_format($subtotal_min,0,".",".") : '';?>">
+                                                    </div>
+                                                    <div class="col-6" style="padding:0px 5px;">
+                                                        <input type="text" name="subtotal_max_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)"placeholder="Giá trị tối đa" class="form-control"  value="<?=$subtotal_max ? number_format($subtotal_max,0,".",".") : '';?>">
+                                                    </div>
+                                                </div>
+                                                <div id="s-date_start2" class="k-select-opt ml-15 col-4 s-all2" style="display:flex">
+                                                    <div class="col-6" style="padding:0px 5px;">
+                                                        <input type="text" name="date_start" placeholder="Ngày bắt đầu" class="kh-datepicker2 form-control" value="<?=$date_start ? Date("d-m-Y",strtotime($date_start)) : ''?>">
+                                                    </div>
+                                                    <div class="col-6" style="padding:0px 5px;">
+                                                        <input type="text" name="date_end" placeholder="Ngày kết thúc" class="kh-datepicker2 form-control" value="<?=$date_end ? Date("d-m-Y",strtotime($date_end)) : ''?>">
+                                                    </div>
+                                                </div>
+                                                <div id="s-publish2" class="k-select-opt ml-10 col-2 s-all2" style="display:block;">
+                                                    <select name="is_active" class="form-control">
+                                                        <option value="">Tình trạng kích hoạt</option>
+                                                        <option value="Active" <?=$is_active == 'Active' ? "selected='selected'" : "";?>>Đã kích hoạt</option>
+                                                        <option value="Deactive" <?=$is_active == 'Deactive' ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
+                                                    </select>
+                                                </div>
+                                                <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
+                                                <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                                             </div>
-                                            <div id="s-subtotal_min2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_min_1 || $subtotal_min_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                                <div class="ele-subtotal_min2">
-                                                    <div class="" style="display:flex;">
-                                                        <input type="text" name="subtotal_min_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_1 ? number_format($subtotal_min_1,0,".",".") : '';?>">
-                                                    </div>
-                                                    <div class="ml-10" style="display:flex;">
-                                                        <input type="text" name="subtotal_min_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class="form-control" value="<?=$subtotal_min_2 ? number_format($subtotal_min_2,0,".",".") : '';?>">
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            <div id="s-subtotal_max2" class="k-select-opt ml-10 col-2 s-all2" style="<?=($subtotal_max_1 || $subtotal_max_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                                <div class="ele-subtotal_max2">
-                                                    <div class="" style="display:flex;">
-                                                        <input type="text" name="subtotal_max_1" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
-                                                    </div>
-                                                    <div class="ml-10" style="display:flex;">
-                                                        <input type="text" name="subtotal_max_2" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="" class="form-control"  value="<?=$subtotal_max_1 ? number_format($subtotal_max_1,0,".",".") : '';?>">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 || $date_start_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                                <div class="ele-date2">
-                                                    <div class="" style="display:flex;">
-                                                        <input type="text" name="date_start_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_start_1 ? Date("d-m-Y",strtotime($date_start_1)) : ''?>">
-                                                    </div>
-                                                    <div class="ml-10" style="display:flex;">
-                                                        <input type="text" name="date_start_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_start_2 ? Date("d-m-Y",strtotime($date_start_2)) : ''?>">
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 || $date_end_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                                <div class="ele-date2">
-                                                    <div class="" style="display:flex;">
-                                                        <input type="text" name="date_end_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_end_1 ? Date("d-m-Y",strtotime($date_end_1)) : ''?>">
-                                                    </div>
-                                                    <div class="ml-10" style="display:flex;">
-                                                        <input type="text" name="date_end_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_end_2 ? Date("d-m-Y",strtotime($date_end_2)) : ''?>">
-                                                    </div>
-                                                </div>
-                                                </div>
-                                            <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_created_at_1 || $date_created_at_2) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                                <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                                <div class="ele-date2">
-                                                    <div class="" style="display:flex;">
-                                                        <input type="text" name="date_created_at_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_created_at_1 ? Date("d-m-Y",strtotime($date_created_at_1)) : ''?>">
-                                                    </div>
-                                                    <div class="ml-10" style="display:flex;">
-                                                        <input type="text" name="date_created_at_2" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_created_at_2 ? Date("d-m-Y",strtotime($date_created_at_2)) : ''?>">
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            
                                         </div>
-                                        <div class="d-flex a-start" style="">
-                                            <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
-                                            <span onclick="selectOptionRemove()" class="k-select-opt-remove"></span>
-                                            <select name="is_active" class="form-control">
-                                                <option value="">Tình trạng kích hoạt</option>
-                                                <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
-                                                <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
-                                            </select>
-                                            </div>
-                                        </div> 
                                         <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
                                             <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
                                             <!--<label for="">Sắp xếp:</label>-->
@@ -430,126 +307,126 @@
                                     </div>
                                 </div>
                                 <div class="table-game-start">
-                                <table id="table-coupon_manage" class="table table-bordered table-striped">
-                                    <thead>
-                                    <tr style="cursor:pointer;">
-                                            <th style="width:20px !important;">
-                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                            </th>
-                                            <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-ma-khuyen-mai">Mã khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-khuyen-mai">Khuyến mãi (%) <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-gia-tri-toi-thieu">Giá trị tối thiểu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-gia-tri-toi-da">Giá trị tối đa <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-ngay-bat-dau">Ngày bắt đầu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-150 th-ngay-het-han">Ngày hết hạn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-100">Tình trạng</th>
-                                            <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                            <th class="w-200">Thao tác</th>
-                                    </tr>
-                                    </thead>
-                                    <?php
-                                    // query
-                                    $cnt = 0;
-                                    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
-                                    $limit = $_SESSION['paging'];
-                                    $start_page = $limit * ($page - 1);
-                                    $sql_get_total = "select count(*) as 'countt' from coupon $where";
-                                    $total = fetch(sql_query($sql_get_total))['countt'];
-                                    $sql_get_product = "select * from coupon n $where limit $start_page,$limit";
-                                    ?>
-                                    <tbody dt-parent-id  dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
-                                    <?php
-                                    $rows = fetch_all(sql_query($sql_get_product));
-                                    foreach($rows as $row) {
-                                    ?>
-                                        <tr id="<?=$row["id"];?>">
-                                            <td>
-                                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-coupon')" type="checkbox" name="check_id<?=$row["id"];?>">
-                                            </td>
-                                            <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
-                                            <td class="ma-khuyen-mai"><?=$upt_more == 1 ? "<input name='c_code' class='form-control' type='text' value='" . $row['coupon_code'] . "'>" : $row['coupon_code'];?></td>
-                                            <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='c_discount_percent' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'>" : $row['coupon_discount_percent'];?></td>
-                                            <td class="gia-tri-toi-thieu"><?=$upt_more == 1 ? "<input name='c_if_subtotal_min' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" . number_format($row['coupon_if_subtotal_min'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_min'],0,".",".");?></td>
-                                            <td class="gia-tri-toi-da"><?=$upt_more == 1 ? "<input name='c_if_subtotal_max' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" .number_format($row['coupon_if_subtotal_max'],0,".",".")."'>" : number_format($row['coupon_if_subtotal_max'],0,".",".");?></td>
-                                            <td class="ngay-bat-dau">
-                                                <?php
+                                    <table id="table-coupon_manage" class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr style="cursor:pointer;">
+                                                <th style="width:20px !important;">
+                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-ma-khuyen-mai">Mã khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-khuyen-mai">Khuyến mãi (%) <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-gia-tri-toi-thieu">Giá trị tối thiểu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-gia-tri-toi-da">Giá trị tối đa <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-ngay-bat-dau">Ngày bắt đầu <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-150 th-ngay-het-han">Ngày hết hạn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-100">Tình trạng</th>
+                                                <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-200">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <?php
+                                        // query
+                                        $cnt = 0;
+                                        $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
+                                        $limit = $_SESSION['paging'];
+                                        $start_page = $limit * ($page - 1);
+                                        $sql_get_total = "select count(*) as 'countt' from coupon $where";
+                                        $total = fetch(sql_query($sql_get_total))['countt'];
+                                        $sql_get_product = "select * from coupon n $where limit $start_page,$limit";
+                                        ?>
+                                        <tbody dt-parent-id  dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-coupon" id="list-khuyen-mai">
+                                        <?php
+                                        $rows = fetch_all(sql_query($sql_get_product));
+                                        foreach($rows as $row) {
+                                        ?>
+                                            <tr class='<?=$upt_more == 1 ? "selected" : "";?>' id="<?=$row["id"];?>">
+                                                <td>
+                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-coupon')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                </td>
+                                                <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
+                                                <td class="ma-khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_code' class='form-control' type='text' value='" . $row['coupon_code'] . "'><span class='text-danger'></span>" : $row['coupon_code'];?></td>
+                                                <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_discount_percent' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'><span class='text-danger'></span>" : $row['coupon_discount_percent'];?></td>
+                                                <td class="gia-tri-toi-thieu"><?=$upt_more == 1 ? "<input name='upt_if_subtotal_min' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" . number_format($row['coupon_if_subtotal_min'],0,".",".")."'><span class='text-danger'></span>" : number_format($row['coupon_if_subtotal_min'],0,".",".");?></td>
+                                                <td class="gia-tri-toi-da"><?=$upt_more == 1 ? "<input name='upt_if_subtotal_max' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" .number_format($row['coupon_if_subtotal_max'],0,".",".")."'><span class='text-danger'></span>" : number_format($row['coupon_if_subtotal_max'],0,".",".");?></td>
+                                                <td class="ngay-bat-dau">
+                                                    <?php
+                                                        if($upt_more == 1) {
+                                                    ?>
+                                                    <?=$row['coupon_date_start'] ? "<input name='upt_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'><span class='text-danger'></span>" : "";?> 
+                                                    <?php } else { ?>
+                                                    <?=$row['coupon_date_start'] ? Date("d-m-Y",strtotime($row['coupon_date_start'])) : "";?>
+                                                    <?php }?>
+                                                </td>
+                                                <td class="ngay-het-han">
+                                                    <?php
+                                                        if($upt_more == 1) {
+                                                    ?>
+                                                    <?=$row['coupon_date_end'] ? "<input name='upt_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'><span class='text-danger'></span>" : "";?> 
+                                                    <?php } else {?>
+                                                    <?=$row['coupon_date_end'] ? Date("d-m-Y",strtotime($row['coupon_date_end'])) : "";?>
+                                                    <?php } ?>
+                                                </td>
+                                                <td>
+                                                    <div class="custom-control custom-switch">
+                                                        <input type="checkbox" onchange="toggleActiveCoupon('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
+                                                        <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
+                                                    </div>  
+                                                </td>
+                                                <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
+                                                <td>
+                                                    <?php
                                                     if($upt_more == 1) {
-                                                ?>
-                                                <?=$row['coupon_date_start'] ? "<input name='c_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'>" : "";?> 
-                                                <?php } else { ?>
-                                                <?=$row['coupon_date_start'] ? Date("d-m-Y",strtotime($row['coupon_date_start'])) : "";?>
-                                                <?php }?>
-                                            </td>
-                                            <td class="ngay-het-han">
-                                                <?php
-                                                    if($upt_more == 1) {
-                                                ?>
-                                                <?=$row['coupon_date_end'] ? "<input name='c_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'>" : "";?> 
-                                                <?php } else {?>
-                                                <?=$row['coupon_date_end'] ? Date("d-m-Y",strtotime($row['coupon_date_end'])) : "";?>
-                                                <?php } ?>
-                                            </td>
-                                            <td>
-                                                <div class="custom-control custom-switch">
-                                                    <input type="checkbox" onchange="toggleActiveCoupon('<?=$row['id']?>','<?= $row['is_active'] == 1 ? 'Deactive' : 'Active';?>')" class="custom-control-input" id="customSwitches<?=$row['id'];?>" <?= $row['is_active'] == 1 ? "checked" : "";?>>
-                                                    <label class="custom-control-label" for="customSwitches<?=$row['id'];?>"></label>
-                                                </div>  
-                                            </td>
-                                            <td class="ngay-tao"><?=$row['created_at'] ? Date("d-m-Y",strtotime($row['created_at'])) : "";?></td>
-                                            <td>
-                                                <?php
-                                                if($upt_more == 1) {
-                                                ?>
-                                                    <button onclick="uptMore2()" dt-count="0" class=" dt-button button-green"
-                                                    data-id="<?=$row["id"];?>" >
-                                                    Sửa
-                                                    </button>
-                                                <?php } else {?>
-                                                    <button onclick="openModalRead()" class="btn-xem-khuyen-mai dt-button button-grey"
-                                                    data-id="<?=$row["id"];?>">
-                                                    Xem
-                                                    </button>
-                                                    <button onclick="openModalUpdate()" class="btn-sua-khuyen-mai dt-button button-green"
-                                                    data-id="<?=$row["id"];?>" >
-                                                    Sửa
-                                                    </button>
-                                                    <button onclick="processDelete()" class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
-                                                    Xoá
-                                                    </button>
-                                                <?php }?>
-                                            </td>
-                                        </tr>
-                                    <?php
-                                    $cnt++;
-                                    }
-                                    ?>
-                                    <?php
-                                        if(count($rows) == 0) {
-                                    ?>
-                                    <tr>
-                                        <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
-                                    </tr>
-                                    <?php } ?>
-                                    </tbody>
-                                    <tfoot>
+                                                    ?>
+                                                        <button onclick="uptMore2()" dt-count="0" class=" dt-button button-green"
+                                                        data-id="<?=$row["id"];?>" >
+                                                        Sửa
+                                                        </button>
+                                                    <?php } else {?>
+                                                        <button onclick="openModalRead()" class="btn-xem-khuyen-mai dt-button button-grey"
+                                                        data-id="<?=$row["id"];?>">
+                                                        Xem
+                                                        </button>
+                                                        <button onclick="openModalUpdate()" class="btn-sua-khuyen-mai dt-button button-green"
+                                                        data-id="<?=$row["id"];?>" >
+                                                        Sửa
+                                                        </button>
+                                                        <button onclick="processDelete()" class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
+                                                        Xoá
+                                                        </button>
+                                                    <?php }?>
+                                                </td>
+                                            </tr>
+                                        <?php
+                                        $cnt++;
+                                        }
+                                        ?>
+                                        <?php
+                                            if(count($rows) == 0) {
+                                        ?>
                                         <tr>
-                                            <th style="width:20px !important;">
-                                                <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
-                                            </th>
-                                            <th>Số thứ tự</th>
-                                            <th>Mã khuyến mãi</th>
-                                            <th>Khuyến mãi (%)</th>
-                                            <th>Giá trị tối thiểu</th>
-                                            <th>Giá trị tối đa</th>
-                                            <th>Ngày bắt đầu</th>
-                                            <th>Ngày hết hạn</th>
-                                            <th>Tình trạng</th>
-                                            <th>Ngày tạo</th>
-                                            <th>Thao tác</th>
+                                            <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
                                         </tr>
-                                    </tfoot>
-                                </table>
+                                        <?php } ?>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th style="width:20px !important;">
+                                                    <inpu <?=$upt_more == 1 ? "checked" : "";?>t style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                </th>
+                                                <th>Số thứ tự</th>
+                                                <th>Mã khuyến mãi</th>
+                                                <th>Khuyến mãi (%)</th>
+                                                <th>Giá trị tối thiểu</th>
+                                                <th>Giá trị tối đa</th>
+                                                <th>Ngày bắt đầu</th>
+                                                <th>Ngày hết hạn</th>
+                                                <th>Tình trạng</th>
+                                                <th>Ngày tạo</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
                                 <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
                                 
@@ -629,6 +506,7 @@
                   <tr>
                     <th>Số thứ tự</th>
                     <th>Mã khuyến mãi</th>
+                    <th>Nội dung khuyến mãi</th>
                     <th>Khuyến mãi (%)</th>
                     <th>Giá trị tối thiểu</th>
                     <th>Giá trị tối đa</th>
@@ -654,110 +532,24 @@
 <!--js section start-->
 <script>
     <?=$upt_more != 1 ? "setSortTable();" : null;?>
-    function uptMore2(){
-        let test = true;
-        let c_code = $(event.currentTarget).closest("tr").find("td input[name='c_code']").val();
-        let c_discount_percent = $(event.currentTarget).closest("tr").find("td input[name='c_discount_percent']").val();
-        let c_if_subtotal_min = $(event.currentTarget).closest("tr").find("td input[name='c_if_subtotal_min']").val();
-        let c_if_subtotal_max = $(event.currentTarget).closest("tr").find("td input[name='c_if_subtotal_max']").val();
-        let c_date_start = $(event.currentTarget).closest("tr").find("td input[name='c_date_start']").val();
-        let c_date_end = $(event.currentTarget).closest("tr").find("td input[name='c_date_end']").val();
-        let c_id = $(event.currentTarget).attr('data-id');
-        let this2 = $(event.currentTarget).closest("tr");
-        if(c_code == "") {
-            test = false;
-            this2.find("td input[name='c_code']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='c_code']").siblings("span.text-danger").text("");
-        }
-        if(c_discount_percent == "") {
-            test = false;
-            this2.find("td input[name='c_discount_percent']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='c_discount_percent']").siblings("span.text-danger").text("");
-        }
-        if(c_if_subtotal_min == "") {
-            test = false;
-            this2.find("td input[name='c_if_subtotal_min']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='c_if_subtotal_min']").siblings("span.text-danger").text("");
-        }
-        if(c_if_subtotal_max == "") {
-            test = false;
-            this2.find("td textarea[name='c_if_subtotal_max']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td textarea[name='c_if_subtotal_max']").siblings("span.text-danger").text("");
-        }
-        if(c_date_start == "") {
-            test = false;
-            this2.find("td input[name='c_date_start']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='c_date_start']").siblings("span.text-danger").text("");
-        }
-        if(c_date_end == "") {
-            test = false;
-            this2.find("td input[name='c_date_end']").siblings("span.text-danger").text("Không được để trống");
-        } else {
-            this2.find("td input[name='c_date_end']").siblings("span.text-danger").text("");
-        }
-
-        if(c_id == "") {
-            test = false;
-        }
-        console.log(name);
-        this2 = $(event.currentTarget);
-        if(test) {
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                data: {
-                    status: "upt_more",
-                    c_code: c_code,
-                    c_discount_percent: c_discount_percent,
-                    c_if_subtotal_min: c_if_subtotal_min,
-                    c_if_subtotal_max: c_if_subtotal_max,
-                    c_date_start: c_date_start,
-                    c_date_end: c_date_end,
-                    c_id : c_id,
-                },success: function(data){
-                    data = JSON.parse(data);
-                    if(data.msg == "ok"){
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã sửa dữ liệu thành công",
-                            buttons: {
-                                "Ok" : function(){
-                                    let num_of_upt = this2.attr('dt-count');
-                                    num_of_upt++;
-                                    this2.attr('dt-count',num_of_upt);
-                                    this2.text(`Sửa (${num_of_upt})`);
-                                }
-                            }
-                        });
-                    }
-                },error:function(data){
-                    console.log("Error: " + data);
-                }
-            });
-        }
-    }
     function uptAll(){
         let test = true;
+        let all_checkbox = getIdCheckbox();
+        let list_checkbox = all_checkbox['result'].split(",");
         let formData = new FormData();
-        let _data = dt_coupon.rows(".selected").select().data();
-        if(_data.length == 0) {
+        if(list_checkbox.length == 0) {
             $.alert({
                 title:"Thông báo",
                 content:"Vui lòng chọn dòng cần lưu",
             });
             return;
         }
-        for(i = 0 ; i < _data.length ; i++) {
-            formData.append("c_id[]",_data[i].DT_RowId);
+        for(i = 0 ; i < list_checkbox.length ; i++) {
+            formData.append("upt_id[]",list_checkbox[i]);
         }
-        $('tr.selected input[name="c_code"]').each(function(){
+        $('tr.selected input[name="upt_code"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_code[]",$(this).val());
+                formData.append("upt_code[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -765,9 +557,9 @@
             }
             
         });
-        $('tr.selected input[name="c_discount_percent"]').each(function(){
+        $('tr.selected input[name="upt_discount_percent"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_discount_percent[]",$(this).val());
+                formData.append("upt_discount_percent[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -775,9 +567,9 @@
             }
             
         });
-        $('tr.selected input[name="c_if_subtotal_min"]').each(function(){
+        $('tr.selected input[name="upt_if_subtotal_min"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_if_subtotal_min[]",$(this).val());
+                formData.append("upt_if_subtotal_min[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -785,9 +577,9 @@
             }
             
         });
-        $('tr.selected input[name="c_if_subtotal_max"]').each(function(){
+        $('tr.selected input[name="upt_if_subtotal_max"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_if_subtotal_max[]",$(this).val());
+                formData.append("upt_if_subtotal_max[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -795,9 +587,9 @@
             }
             
         });
-        $('tr.selected input[name="c_date_start"]').each(function(){
+        $('tr.selected input[name="upt_date_start"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_date_start[]",c_date_start);
+                formData.append("upt_date_start[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -805,9 +597,9 @@
             }
             
         });
-        $('tr.selected input[name="c_date_end"]').each(function(){
+        $('tr.selected input[name="upt_date_end"]').each(function(){
             if($(this).val() != "") {
-                formData.append("c_date_end[]",c_date_end);
+                formData.append("upt_date_end[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -816,7 +608,7 @@
         });
         if(test) {
             formData.append("status","upt_all");
-            formData.append("len",_data.length);
+            formData.append("len",list_checkbox.length);
             $.ajax({
                 url: window.location.href,
                 type: "POST",
@@ -828,16 +620,14 @@
                     console.log(data);
                     data = JSON.parse(data);
                     if(data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã sửa dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
-                    });
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã sửa dữ liệu thành công",
+                        });
                     }
+                    $('.section-save').hide();
+                    loadDataComplete();
+
                 },
                 error: function(data){
                     console.log("Error: " + data);
@@ -847,156 +637,67 @@
         
     }
     // thêm nhanh
-    
-    function insMore2(){
-        let test = true;
-        let this2 = $(event.currentTarget).closest('tr');
-        let c_code2 = $(event.currentTarget).closest('tr').find('td input[name="c_code2"]').val();
-        let c_discount_percent2 = $(event.currentTarget).closest('tr').find('td input[name="c_discount_percent2"]').val();
-        let c_if_subtotal_min2 = $(event.currentTarget).closest('tr').find('td input[name="c_if_subtotal_min2"]').val();
-        let c_if_subtotal_max2 = $(event.currentTarget).closest('tr').find('td input[name="c_if_subtotal_max2"]').val();
-        let c_date_start2 = $(event.currentTarget).closest('tr').find('td input[name="c_date_start2"]').attr('data-date');
-        let c_date_end2 = $(event.currentTarget).closest('tr').find('td input[name="c_date_end2"]').attr('data-date');
-        if(c_code2 == "") {
-            this2.find('td input[name="c_code2"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="c_code2"]').siblings("p.text-danger").text("");
-        }
-
-        if(c_discount_percent2 == "") {
-            this2.find('td input[name="c_discount_percent2"]').siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            this2.find('td input[name="c_discount_percent2"]').siblings("p.text-danger").text("");
-        }
-
-        if(c_if_subtotal_min2 == "") {
-            test = false;
-            this2.find('td input[name="c_if_subtotal_min2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="c_if_subtotal_min2"]').siblings("p.text-danger").text("");
-        }
-
-        if(c_if_subtotal_max2 == "") {
-            test = false;
-            this2.find('td input[name="c_if_subtotal_max2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="c_if_subtotal_max2"]').siblings("p.text-danger").text("");
-        }
-
-        if(c_date_start2 == "") {
-            test = false;
-            this2.find('td input[name="c_date_start2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="c_date_start2"]').siblings("p.text-danger").text("");
-        }
-
-        if(c_date_end2 == "") {
-            test = false;
-            this2.find('td input[name="c_date_end2"]').siblings("p.text-danger").text("Không được để trống");
-        } else {
-            this2.find('td input[name="c_date_end2"]').siblings("p.text-danger").text("");
-        }
-        if(test) {
-            let formData = new FormData();
-            formData.append("c_code2",c_code2);
-            formData.append("c_discount_percent2",c_discount_percent2);
-            formData.append("c_if_subtotal_min2",c_if_subtotal_min2);
-            formData.append("c_if_subtotal_max2",c_if_subtotal_max2);
-            formData.append("c_date_start2",c_date_start2);
-            formData.append("c_date_end2",c_date_end2);
-            formData.append("status","ins_more");
-            let this2 = $(event.currentTarget);
-            $.ajax({
-                url: window.location.href,
-                type: "POST",
-                cache: false,
-                contentType: false,
-                processData: false,
-                data:formData,
-                success: function(data){
-                    console.log(data);
-                    data = JSON.parse(data);
-                    if(data.msg == "ok") {
-                        $.alert({
-                            title: "Thông báo",
-                            content: "Bạn đã thêm dữ liệu thành công",
-                            buttons: {
-                                "Ok": function(){
-                                    this2.text("Đã thêm");
-                                    this2.prop("disabled",true);
-                                    this2.css({
-                                        "border": "1px solid #cac0c0",
-                                        "color": "#cac0c0",
-                                        "pointer-events": "none",
-                                    });
-                                }
-                            }
-                        });
-                    }
-                },error: function(data){
-                    console.log("Error: " + data);
-                }
-            })
-        }
-    }
     function insAll(){
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="c_code2"]').length;
-      $('td input[name="c_code2"]').each(function(){
+      let count = $('td input[name="ins_code"]').length;
+      $('td input[name="ins_code"]').each(function(){
         if($(this).val() != ""){
-          formData.append("c_code2[]",$(this).val());
+          formData.append("ins_code[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="c_discount_percent2"]').each(function(){
+      $('td input[name="ins_discount_percent"]').each(function(){
         if($(this).val() != ""){
-          formData.append("c_discount_percent2[]",$(this).val());
+          formData.append("ins_discount_percent[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="c_if_subtotal_min2"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("c_if_subtotal_min2[]",$(this).val());
+      $('td textarea[name="ins_content"]').each(function(){
+        if($(this).val() != ""){
+          formData.append("ins_discount_content[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="c_if_subtotal_max2"]').each(function(){
+      $('td input[name="ins_if_subtotal_min"]').each(function(){
         if($(this).val() != "") {
-          formData.append("c_if_subtotal_max2[]",$(this).val());
+          formData.append("ins_if_subtotal_min[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="c_date_start2"]').each(function(){
+      $('td input[name="ins_if_subtotal_max"]').each(function(){
         if($(this).val() != "") {
-          let date2 = $(this).val().split(/\/|\-/);
-          date2 = date2[2] + "-" + date2[1] + "-" + date2[0];
-          formData.append("c_date_start2[]",date2);
+          formData.append("ins_if_subtotal_max[]",$(this).val());
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="ins_date_start"]').each(function(){
+        if($(this).val() != "") {
+          formData.append("ins_date_start[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;  
         }
       });
-      $('td input[name="c_date_end2"]').each(function(){
+      $('td input[name="ins_date_end"]').each(function(){
         if($(this).val() != "") {
-          let date2 = $(this).val().split(/\/|\-/);
-          date2 = date2[2] + "-" + date2[1] + "-" + date2[0];
-          formData.append("c_date_end2[]",date2);
+          formData.append("ins_date_end[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
@@ -1027,12 +728,8 @@
                     $.alert({
                         title: "Thông báo",
                         content: "Bạn đã thêm dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
                     });
+                    loadDataComplete('Insert');
                 }
             },
             error: function(data){
@@ -1256,7 +953,6 @@
         let coupon_if_subtotal_max = $("input[name='coupon_if_subtotal_max']").val();
         let coupon_date_start = $("input[name='coupon_date_start']").val();
         let coupon_date_end = $("input[name='coupon_date_end']").val();
-        let id = $("input[name='id']").val();
         $('.coupon-validate').text("");
         if(validate()) {
             $.ajax({
@@ -1278,12 +974,8 @@
                         $.alert({
                             title: "Thông báo",
                             content: data.success,
-                            buttons: {
-                                "Ok": function(){
-                                    loadDataComplete();
-                                },
-                            }
                         });
+                        loadDataComplete('Insert');
                     }
                     $('#modal-xl').modal('hide');
                 },
@@ -1327,12 +1019,8 @@
                         $.alert({
                             title: "Thông báo",
                             content: data.success,
-                            buttons: {
-                                "Ok": function(){
-                                    loadDataComplete();
-                                },
-                            }
                         });
+                        loadDataComplete();
                     }
                     $('#modal-xl').modal('hide');
                 },
@@ -1372,7 +1060,7 @@
                                     title: "Thông báo",
                                     content: data.success,
                                 });
-                                loadDataComplete();
+                                loadDataComplete('Delete');
                             }
                         },
                         error:function(data) {
@@ -1439,8 +1127,8 @@
             if($count['cnt'] > 0) {
                 echo_json(["msg" => "not_ok","error" => "Mã khuyến mãi đã tồn tại"]);    
             }
-            $sql_ins = "Insert into coupon(coupon_code,coupon_content,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values ('$coupon_code','$coupon_content','$coupon_discount_percent','$coupon_if_subtotal_min','$coupon_if_subtotal_max','$coupon_date_start','$coupon_date_end')";
-            sql_query($sql_ins);
+            $sql_ins = "Insert into coupon(coupon_code,coupon_content,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values (?,?,?,?,?,?,?)";
+            sql_query($sql_ins,[$coupon_code,$coupon_content,$coupon_discount_percent,$coupon_if_subtotal_min,$coupon_if_subtotal_max,$coupon_date_start,$coupon_date_end]);
             echo_json(["msg" => "ok","success" => "Bạn đã thêm dữ liệu thành công"]);
         } else if($status == "Update") {
             $sql_check_duplicate_coupon_code = "select count(*) as 'cnt' from coupon where coupon_code = '$coupon_code'";
@@ -1448,12 +1136,12 @@
             if($count['cnt'] > 1) {
                 echo_json(["msg" => "not_ok","error" => "Mã khuyến mãi đã tồn tại"]);    
             }
-            $sql_upt = "Update coupon set coupon_code = '$coupon_code',coupon_content = '$coupon_content',coupon_discount_percent = '$coupon_discount_percent',coupon_if_subtotal_min = '$coupon_if_subtotal_min',coupon_if_subtotal_max = '$coupon_if_subtotal_max',coupon_date_start = '$coupon_date_start',coupon_date_end = '$coupon_date_end' where id = '$id'";
-            sql_query($sql_upt);
+            $sql_upt = "Update coupon set coupon_code = ?,coupon_content = ?,coupon_discount_percent = ?,coupon_if_subtotal_min = ?,coupon_if_subtotal_max = ?,coupon_date_start = ?,coupon_date_end = ? where id = ?";
+            sql_query($sql_upt,[$coupon_code,$coupon_content,$coupon_discount_percent,$coupon_if_subtotal_min,$coupon_if_subtotal_max,$coupon_date_start,$coupon_date_end,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã sửa dữ liệu thành công"]);
         } else if($status == "Delete") {
-            $sql_del = "Update coupon set is_delete = 1 where id = '$id'";
-            sql_query($sql_del);
+            $sql_del = "Update coupon set is_delete = ? where id = ?";
+            sql_query($sql_del,[1,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
         } else if($status == "Active") {
             $sql_active_coupon = "Update coupon set is_active = 1 where id = $id";
@@ -1469,65 +1157,66 @@
             sql_query($sql_del_more);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_more") {
-            $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $c_code2 = isset($_REQUEST["c_code2"]) ? $_REQUEST["c_code2"] : null;
-            $c_discount_percent2 = isset($_REQUEST["c_discount_percent2"]) ? $_REQUEST["c_discount_percent2"] : null;
-            $c_if_subtotal_min2 = isset($_REQUEST["c_if_subtotal_min2"]) ? str_replace(".","",$_REQUEST["c_if_subtotal_min2"]): null;
-            $c_if_subtotal_max2 = isset($_REQUEST["c_if_subtotal_max2"]) ? str_replace(".","",$_REQUEST["c_if_subtotal_max2"]): null;
-            $c_date_start2 = isset($_REQUEST["c_date_start2"]) ? $_REQUEST["c_date_start2"] : null;
-            $c_date_end2 = isset($_REQUEST["c_date_end2"]) ? Date('Y-m-d',strtotime($_REQUEST["c_date_end2"])) : null;
-            $sql = "Insert into coupon(coupon_code,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values('$c_code2','$c_discount_percent2','$c_if_subtotal_min2','$c_if_subtotal_max2','$c_date_start2','$c_date_end2')";
-            sql_query($sql);
+            $ins_code = isset($_REQUEST["ins_code"]) ? $_REQUEST["ins_code"] : null;
+            $ins_discount_percent = isset($_REQUEST["ins_discount_percent"]) ? $_REQUEST["ins_discount_percent"] : null;
+            $ins_content = isset($_REQUEST["ins_content"]) ? $_REQUEST["ins_content"] : null;
+            $ins_if_subtotal_min = isset($_REQUEST["ins_if_subtotal_min"]) ? str_replace(".","",$_REQUEST["ins_if_subtotal_min"]): null;
+            $ins_if_subtotal_max = isset($_REQUEST["ins_if_subtotal_max"]) ? str_replace(".","",$_REQUEST["ins_if_subtotal_max"]): null;
+            $ins_date_start = isset($_REQUEST["ins_date_start"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_date_start"])) : null;
+            $ins_date_end = isset($_REQUEST["ins_date_end"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_date_end"])) : null;
+            $sql = "Insert into coupon(coupon_code,coupon_content,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values(?,?,?,?,?,?,?)";
+            sql_query($sql,[$ins_code,$ins_content,$ins_discount_percent,$ins_if_subtotal_min,$ins_if_subtotal_max,$ins_date_start,$ins_date_end]);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $c_code2 = isset($_REQUEST["c_code2"]) ? $_REQUEST["c_code2"] : null;
-            $c_discount_percent2 = isset($_REQUEST["c_discount_percent2"]) ? $_REQUEST["c_discount_percent2"] : null;
-            $c_if_subtotal_min2 = isset($_REQUEST["c_if_subtotal_min2"]) ? $_REQUEST["c_if_subtotal_min2"] : null;
-            $c_if_subtotal_max2 = isset($_REQUEST["c_if_subtotal_max2"]) ? $_REQUEST["c_if_subtotal_max2"] : null;
-            $c_date_start2 = isset($_REQUEST["c_date_start2"]) ? $_REQUEST["c_date_start2"] : null;
-            $c_date_end2 = isset($_REQUEST["c_date_end2"]) ? $_REQUEST["c_date_end2"]  : null;
+            $ins_code = isset($_REQUEST["ins_code"]) ? $_REQUEST["ins_code"] : null;
+            $ins_discount_percent = isset($_REQUEST["ins_discount_percent"]) ? $_REQUEST["ins_discount_percent"] : null;
+            $ins_content = isset($_REQUEST["ins_content"]) ? $_REQUEST["ins_content"] : null;
+            $ins_if_subtotal_min = isset($_REQUEST["ins_if_subtotal_min"]) ? $_REQUEST["ins_if_subtotal_min"] : null;
+            $ins_if_subtotal_max = isset($_REQUEST["ins_if_subtotal_max"]) ? $_REQUEST["ins_if_subtotal_max"] : null;
+            $ins_date_start = isset($_REQUEST["ins_date_start"]) ? $_REQUEST["ins_date_start"] : null;
+            $ins_date_end = isset($_REQUEST["ins_date_end"]) ? $_REQUEST["ins_date_end"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $c_if_subtotal_min = str_replace(".","",$c_if_subtotal_min2[$i]);
-                    $c_if_subtotal_max = str_replace(".","",$c_if_subtotal_max2[$i]);
-                    $c_date_start2[$i] = Date("Y-m-d",strotime($c_date_start2[$i]));
-                    $c_date_end2[$i] = Date("Y-m-d",strotime($c_date_end2[$i]));
-                    $sql = "Insert into coupon(coupon_code,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values('$c_code2[$i]','$c_discount_percent2[$i]','$c_if_subtotal_min','$c_if_subtotal_max','$c_date_start2[$i]','$c_date_end2[$i]')";
-                    sql_query($sql);
+                    $ins_if_subtotal_min[$i] = str_replace(".","",$ins_if_subtotal_min[$i]);
+                    $ins_if_subtotal_max[$i] = str_replace(".","",$ins_if_subtotal_max[$i]);
+                    $ins_date_start[$i] = Date("Y-m-d",strtotime($ins_date_start[$i]));
+                    $ins_date_end[$i] = Date("Y-m-d",strtotime($ins_date_end[$i]));
+                    $sql = "Insert into coupon(coupon_code,coupon_content,coupon_discount_percent,coupon_if_subtotal_min,coupon_if_subtotal_max,coupon_date_start,coupon_date_end) values(?,?,?,?,?,?,?)";
+                    sql_query($sql,[$ins_code[$i],$ins_content[$i],$ins_discount_percent[$i],$ins_if_subtotal_min[$i],$ins_if_subtotal_max[$i],$ins_date_start[$i],$ins_date_end[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }
         } else if($status == "upt_more") {
-            $c_id = isset($_REQUEST["c_id"]) ? $_REQUEST["c_id"] : null;
-            $c_code = isset($_REQUEST["c_code"]) ? $_REQUEST["c_code"] : null;
-            $c_discount_percent = isset($_REQUEST["c_discount_percent"]) ? $_REQUEST["c_discount_percent"] : null;
-            $c_if_subtotal_min = isset($_REQUEST["c_if_subtotal_min"]) ? $_REQUEST["c_if_subtotal_min"] : null;
-            $c_if_subtotal_max = isset($_REQUEST["c_if_subtotal_max"]) ? $_REQUEST["c_if_subtotal_max"] : null;
-            $c_date_start = isset($_REQUEST["c_date_start"]) ? Date("Y-m-d",strtotime($_REQUEST["c_date_start"])) : null;
-            $c_date_end = isset($_REQUEST["c_date_end"]) ? Date("Y-m-d",strtotime($_REQUEST["c_date_end"])) : null;
-            $c_if_subtotal_min = str_replace(".","",$c_if_subtotal_min);
-            $c_if_subtotal_max = str_replace(".","",$c_if_subtotal_max);
-            $sql = "Update coupon set coupon_code='$c_code',coupon_discount_percent='$c_discount_percent',coupon_if_subtotal_min='$c_if_subtotal_min',coupon_if_subtotal_max='$c_if_subtotal_max',coupon_date_start='$c_date_start',coupon_date_end='$c_date_end' where id='$c_id'";
-            sql_query($sql);
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_code = isset($_REQUEST["upt_code"]) ? $_REQUEST["upt_code"] : null;
+            $upt_discount_percent = isset($_REQUEST["upt_discount_percent"]) ? $_REQUEST["upt_discount_percent"] : null;
+            $upt_if_subtotal_min = isset($_REQUEST["upt_if_subtotal_min"]) ? $_REQUEST["upt_if_subtotal_min"] : null;
+            $upt_if_subtotal_max = isset($_REQUEST["upt_if_subtotal_max"]) ? $_REQUEST["upt_if_subtotal_max"] : null;
+            $upt_date_start = isset($_REQUEST["upt_date_start"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_date_start"])) : null;
+            $upt_date_end = isset($_REQUEST["upt_date_end"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_date_end"])) : null;
+            $upt_if_subtotal_min = str_replace(".","",$upt_if_subtotal_min);
+            $upt_if_subtotal_max = str_replace(".","",$upt_if_subtotal_max);
+            $sql = "Update coupon set coupon_code=?,coupon_discount_percent=?,coupon_if_subtotal_min=?,coupon_if_subtotal_max=?,coupon_date_start=?,coupon_date_end=? where id=?";
+            sql_query($sql,[$upt_code,$upt_discount_percent,$upt_if_subtotal_min,$upt_if_subtotal_max,$upt_date_start,$upt_date_end,$upt_id]);
             echo_json(["msg" => "ok"]);
         } else if($status == "upt_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $c_id = isset($_REQUEST["c_id"]) ? $_REQUEST["c_id"] : null;
-            $c_code = isset($_REQUEST["c_code"]) ? $_REQUEST["c_code"] : null;
-            $c_discount_percent = isset($_REQUEST["c_discount_percent"]) ? $_REQUEST["c_discount_percent"] : null;
-            $c_if_subtotal_min = isset($_REQUEST["c_if_subtotal_min"]) ? $_REQUEST["c_if_subtotal_min"] : null;
-            $c_if_subtotal_max = isset($_REQUEST["c_if_subtotal_max"]) ? $_REQUEST["c_if_subtotal_max"] : null;
-            $c_date_start = isset($_REQUEST["c_date_start"]) ? $_REQUEST["c_date_start"] : null;
-            $c_date_end = isset($_REQUEST["c_date_end"]) ? $_REQUEST["c_date_end"]  : null;
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_code = isset($_REQUEST["upt_code"]) ? $_REQUEST["upt_code"] : null;
+            $upt_discount_percent = isset($_REQUEST["upt_discount_percent"]) ? $_REQUEST["upt_discount_percent"] : null;
+            $upt_if_subtotal_min = isset($_REQUEST["upt_if_subtotal_min"]) ? $_REQUEST["upt_if_subtotal_min"] : null;
+            $upt_if_subtotal_max = isset($_REQUEST["upt_if_subtotal_max"]) ? $_REQUEST["upt_if_subtotal_max"] : null;
+            $upt_date_start = isset($_REQUEST["upt_date_start"]) ? $_REQUEST["upt_date_start"] : null;
+            $upt_date_end = isset($_REQUEST["upt_date_end"]) ? $_REQUEST["upt_date_end"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $c_if_subtotal_min[$i] = str_replace(".","",$c_if_subtotal_min[$i]);
-                    $c_if_subtotal_max[$i] = str_replace(".","",$c_if_subtotal_max[$i]);
-                    $c_date_start[$i] = Date("Y-m-d",strotime($c_date_start[$i]));
-                    $c_date_end[$i] = Date("Y-m-d",strotime($c_date_end[$i]));
-                    $sql = "Update coupon set coupon_code='$c_code[$i]',coupon_discount_percent='$c_discount_percent[$i]',coupon_if_subtotal_min='$c_if_subtotal_min[$i]',coupon_if_subtotal_max='$c_if_subtotal_max[$i]',coupon_date_start='$c_date_start[$i]',coupon_date_end='$c_date_end[$i]' where id = '$c_id[$i]'";
-                    sql_query($sql);
+                    $upt_if_subtotal_min[$i] = str_replace(".","",$upt_if_subtotal_min[$i]);
+                    $upt_if_subtotal_max[$i] = str_replace(".","",$upt_if_subtotal_max[$i]);
+                    $upt_date_start[$i] = Date("Y-m-d",strtotime($upt_date_start[$i]));
+                    $upt_date_end[$i] = Date("Y-m-d",strtotime($upt_date_end[$i]));
+                    $sql = "Update coupon set coupon_code=?,coupon_discount_percent=?,coupon_if_subtotal_min=?,coupon_if_subtotal_max=?,coupon_date_start=?,coupon_date_end=? where id = ?";
+                    sql_query($sql,[$upt_code[$i],$upt_discount_percent[$i],$upt_if_subtotal_min[$i],$upt_if_subtotal_max[$i],$upt_date_start[$i],$upt_date_end[$i],$upt_id[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }

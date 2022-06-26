@@ -17,14 +17,9 @@
         //
         $product_type_id = isset($_REQUEST['product_type_id']) ? $_REQUEST['product_type_id'] : null;
         //
-        $date_start_1 = isset($_REQUEST['date_start_1']) ? $_REQUEST['date_start_1'] : null;
-        $date_start_2 = isset($_REQUEST['date_start_2']) ? $_REQUEST['date_start_2'] : null;
+        $date_start = isset($_REQUEST['date_start']) ? $_REQUEST['date_start'] : null;
         //
-        $date_end_1 = isset($_REQUEST['date_end_1']) ? $_REQUEST['date_end_1'] : null;
-        $date_end_2 = isset($_REQUEST['date_end_2']) ? $_REQUEST['date_end_2'] : null;
-        //
-        $date_created_at_1 = isset($_REQUEST['date_created_at_1']) ? $_REQUEST['date_created_at_1'] : null;
-        $date_created_at_2 = isset($_REQUEST['date_created_at_2']) ? $_REQUEST['date_created_at_2'] : null;
+        $date_end = isset($_REQUEST['date_end']) ? $_REQUEST['date_end'] : null;
         //
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
@@ -100,76 +95,30 @@
                 $where .= " and ($wh_child)";
             }
         }
+        if($product_type_id) {
+            $where .= " and product_type_id = '$product_type_id'";
+        }
         // thời gian bắt đầu
-        if($date_start_1 && is_array($date_start_1) && $date_start_2 && is_array($date_start_2)) {
-            $wh_child = [];
-            foreach(array_combine($date_start_1,$date_start_2) as $d_start_1 => $d_start_2) {
-                if($d_start_1 != "" && $d_start_2 != "") {
-                    $d_start_1 = Date("Y-m-d",strtotime($d_start_1));
-                    $d_start_2 = Date("Y-m-d",strtotime($d_start_2));
-                    array_push($wh_child,"(date_start >= '$d_start_1 00:00:00' and date_start <= '$d_start_2 23:59:59')");
-                } else if($d_start_1 != "" && $d_start_2 == "") {
-                    $d_start_1 = Date("Y-m-d",strtotime($d_start_1));
-                    array_push($wh_child,"(date_start >= '$d_start_1 00:00:00')");
-                } else if($d_start_1 == "" && $d_start_2 != "") {
-                    $d_start_2 = Date("Y-m-d",strtotime($d_start_2));
-                    array_push($wh_child,"(date_start <= '$d_start_2 23:59:59')");
-                }
-            }
-            $wh_child = implode(" or ",$wh_child);
-            if($wh_child != "") {
-                $where .= " and ($wh_child)";
-            }
+        if($date_start) {
+            $date_start = Date("Y-m-d",strtotime($date_start));
+            $where .= " and (date_start >= '$date_start 00:00:00')";
         }
         // thời gian kết thúc
-        if($date_end_1 && is_array($date_end_1) && $date_end_2 && is_array($date_end_2)) {
-            $wh_child = [];
-            foreach(array_combine($date_end_1,$date_end_1) as $d_end_1 => $d_end_2) {
-                if($d_end_1 != "" && $d_end_2 != "") {
-                    $d_end_1 = Date("Y-m-d",strtotime($d_end_1));
-                    $d_end_2 = Date("Y-m-d",strtotime($d_end_2));
-                    array_push($wh_child,"(date_end >= '$d_end_1 00:00:00' and date_end <= '$d_end_2 23:59:59')");
-                } else if($d_end_1 != "" && $d_end_2 == "") {
-                    $d_end_1 = Date("Y-m-d",strtotime($d_end_1));
-                    array_push($wh_child,"(date_end >= '$d_end_1 00:00:00')");
-                } else if($d_end_1 == "" && $d_end_2 != "") {
-                    $d_end_2 = Date("Y-m-d",strtotime($d_end_2));
-                    array_push($wh_child,"(date_end <= '$d_end_2 23:59:59')");
-                }
-            }
-            $wh_child = implode(" or ",$wh_child);
-            if($wh_child != "") {
-                $where .= " and ($wh_child)";
-            }
-        }
-        // ngày tạo
-        if($date_created_at_1 && is_array($date_created_at_1) && $date_created_at_2 && is_array($date_created_at_2)) {
-            $wh_child = [];
-            foreach(array_combine($date_created_at_1,$date_created_at_2) as $d_created_at_1 => $d_created_at_2) {
-                if($d_created_at_1 != "" && $d_created_at_2 != "") {
-                    $d_created_at_1 = Date("Y-m-d",strtotime($d_created_at_1));
-                    $d_created_at_2 = Date("Y-m-d",strtotime($d_created_at_2));
-                    array_push($wh_child,"(created_at >= '$d_created_at_1 00:00:00' and created_at <= '$d_created_at_2 23:59:59')");
-                } else if($d_created_at_1 != "" && $d_created_at_2 == "") {
-                    $d_created_at_1 = Date("Y-m-d",strtotime($d_created_at_1));
-                    array_push($wh_child,"(created_at >= '$d_created_at_1 00:00:00')");
-                } else if($d_created_at_1 == "" && $d_created_at_2 != "") {
-                    $d_created_at_2 = Date("Y-m-d",strtotime($d_created_at_2));
-                    array_push($wh_child,"(created_at <= '$d_created_at_2 23:59:59')");
-                }
-            }
-            $wh_child = implode(" or ",$wh_child);
-            if($wh_child != "") {
-                $where .= " and ($wh_child)";
-            }
+        if($date_end) {
+            $date_end = Date("Y-m-d",strtotime($date_end));
+            $where .= " and (date_end >= '$date_end 23:59:59')";
         }
         if($is_active) {
-            $where .= " and is_active='$is_active'";
+            if($is_active == "Active") {
+                $where .= " and is_active = 1";
+            } else if($is_active == "Deactive"){
+                $where .= " and is_active = 0";
+            }
         }
         if($orderStatus && $orderByColumn) {
-            $order_by .= "ORDER BY $orderByColumn $orderStatus";
-            $where .= " $order_by";
+            $order_by = "ORDER BY $orderByColumn $orderStatus";
         }
+        $where .= " $order_by";
 ?>
 <link rel="stylesheet" href="css/toastr.min.css">
 <!--html & css section start-->
@@ -287,16 +236,16 @@
                      <h3 class="card-title">Quản lý danh mục khuyến mãi</h3>
                      <div class="card-tools">
                         <div class="input-group">
-                        <div class="input-group-append">
-                           <button id="btn-them-khuyen-mai" class="dt-button button-blue">
-                              Tạo danh mục khuyến mãi
-                           </button>
-                        </div>
+                            <div class="input-group-append">
+                                <button onclick="openModalInsert()" id="btn-them-khuyen-mai" class="dt-button button-blue">
+                                    Tạo danh mục khuyến mãi
+                                </button>
+                            </div>
                         </div>
                      </div>
                   </div>
                   <!-- /.card-header -->
-                  <div class="card-body">
+                  <div class="card-body ok-game-start">
                     <div id="load-all">
                         <link rel="stylesheet" href="css/tab.css">             
                         <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-center j-between">
@@ -306,10 +255,9 @@
                                     $_SESSION['category_discount_manage_tab'] = isset($_SESSION['category_discount_manage_tab']) ? $_SESSION['category_discount_manage_tab'] : [];
                                     $_SESSION['category_discount_tab_id'] = isset($_SESSION['category_discount_tab_id']) ? $_SESSION['category_discount_tab_id'] : 0;
                                 ?>
-                                <!--<li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_discount_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>-->
+                                <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_discount_manage.php?tab_unique=all')" class="tab tab-1">Tất cả</button></li>
                                 <?php
                                     $ik = 0;
-                                    $is_active = false;
                                     if(count($_SESSION['category_discount_manage_tab']) > 0) {
                                         foreach($_SESSION['category_discount_manage_tab'] as $tab) {
                                         if($tab['tab_unique'] == $tab_unique) {
@@ -337,26 +285,10 @@
                         </div>
                         <div id="is-load">
                             <div class="col-12" style="padding-right:0px;padding-left:0px;">
-                                <form style="" autocomplete="off" action="category_discount_manage.php" method="get">
-                                    <div class="d-flex a-start">
-                                        <div class="" style="margin-top:5px;">
-                                            <select onchange="choose_type_search()" class="form-control" name="search_option">
-                                                <option value="">Bộ lọc tìm kiếm</option>
-                                                <option value="keyword" <?=$search_option == 'keyword' ? 'selected="selected"' : '' ?>>Từ khoá</option>
-                                                <option value="product_type_id2" <?=$search_option == 'product_type_id2' ? 'selected="selected"' : '' ?>>Danh mục sản phẩm</option>
-                                                <option value="date_start2" <?=$search_option == 'date_start2' ? 'selected="selected"' : '' ?>>Phạm vi ngày bắt đầu</option>
-                                                <option value="date_end2" <?=$search_option == 'date_end2' ? 'selected="selected"' : '' ?>>Phạm vi ngày kết thúc</option>
-                                                <option value="date_created_at2" <?=$search_option == 'date_created_at2' ? 'selected="selected"' : '' ?>>Phạm vi ngày tạo</option>
-                                                <option value="all2" <?=$search_option == 'all2' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                            </select>
-                                        </div>
-                                        <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
-                                        <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                                    </div>
+                                <form id="form-filter" autocomplete="off" action="category_discount_manage.php" method="get" onsubmit="searchTabLoad('#form-filter')">
                                     <div class="d-flex a-start mt-10">
-                                        <div id="s-cols" class="k-select-opt s-all2" style="width:15%;<?=$keyword && $keyword != [""] ? "display:flex;flex-direction: column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
+                                        <div id="s-cols" class="k-select-opt s-all2 col-2" style="display:flex;flex-direction: column;">
+                                        <span onclick="selectOptionInsert()" class="k-select-opt-ins"></span>
                                         <div class="ele-cols d-flex f-column">
                                             <select name="search_option" class="form-control mb-10">
                                                 <option value="">Chọn cột tìm kiếm</option>
@@ -387,124 +319,24 @@
                                         }
                                         ?>
                                         </div>
-                                        <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-date2">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+                                        <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="display:flex;">
+                                            <div class="col-6" style="display:flex;padding:0px 5px;">
+                                                <input type="text" name="date_start" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
                                             </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
+                                            <div class="col-6" style="display:flex;padding:0px 5px;">
+                                                <input type="text" name="date_end" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
                                             </div>
                                         </div>
-                                        <?php
-                                            if(is_array($date_start_1) && is_array($date_start_2)) {
-                                                foreach(array_combine($date_start_1,$date_start_2) as $d_start_1 => $d_start_2){
-                                        ?>
-                                        <?php
-                                            if($d_start_1 != "" || $d_start_2 != "") {
-                                        ?>
-                                        <div class="ele-select ele-date2 mt-10">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_start_1 ? Date("d-m-Y",strtotime($d_start_1)) : "";?>">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_start_2 ? Date("d-m-Y",strtotime($d_start_2)) : "";?>">
-                                            </div>
-                                            <span onclick="select_remove_child('.ele-date2')" class="kh-select-child-remove"></span>
+                                        <div id="s-publish2" class="k-select-opt col-2 s-all2 ml-15">
+                                            <select name="is_active" class="form-control">
+                                                <option value="">Tình trạng kích hoạt</option>
+                                                <option value="Active" <?=$is_active == "Active" ? "selected='selected'" : "";?>>Đã kích hoạt</option>
+                                                <option value="Deactive" <?=$is_active == "Deactive" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
+                                            </select>
                                         </div>
-                                        <?php
-                                        }
-                                        ?>
-                                        <?php 
-                                                }
-                                            }
-                                        ?>
-                                        </div>
-                                        <div id="s-date_end2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_end_1 && $date_end_1 != [""] || $date_end_2 && $date_end_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-date2">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                        </div>
-                                        <?php
-                                            if(is_array($date_end_1) && is_array($date_end_2)) {
-                                                foreach(array_combine($date_end_1,$date_end_2) as $d_end_1 => $d_end_2){
-                                        ?>
-                                        <?php
-                                            if($d_end_1 != "" || $d_end_2 != "") {
-                                        ?>
-                                        <div class="ele-select ele-date_end2 mt-10">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_end_1 ? Date("d-m-Y",strtotime($d_end_1)) : "";?>">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_end_2 ? Date("d-m-Y",strtotime($d_end_2)) : "";?>">
-                                            </div>
-                                            <span onclick="select_remove_child('.ele-date_end2')" class="kh-select-child-remove"></span>
-                                        </div>
-                                        <?php
-                                        }
-                                        ?>
-                                        <?php 
-                                                }
-                                            }
-                                        ?>
-                                        </div>
-                                        <div id="s-date_created_at2" class="k-select-opt ml-15 col-2 s-all2" style="<?=($date_start_1 && $date_start_1 != [""] || $date_start_2 && $date_start_2 != [""]) ? "display:flex;flex-direction:column;": "display:none;";?>">
-                                        <span class="k-select-opt-remove"></span>
-                                        <span class="k-select-opt-ins"></span>
-                                        <div class="ele-date2">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-                                            </div>
-                                        </div>
-                                        <?php
-                                            if(is_array($date_start_1) && is_array($date_start_2)) {
-                                                foreach(array_combine($date_start_1,$date_start_2) as $d_min_1 => $d_min_2){
-                                        ?>
-                                        <?php
-                                            if($d_min_1 != "" || $d_min_2 != "") {
-                                        ?>
-                                        <div class="ele-select date_created_at2 mt-10">
-                                            <div class="" style="display:flex;">
-                                                <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$d_min_1 ? Date("d-m-Y",strtotime($d_min_1)) : "";?>">
-                                            </div>
-                                            <div class="ml-10" style="display:flex;">
-                                                <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$d_min_2 ? Date("d-m-Y",strtotime($d_min_2)) : "";?>">
-                                            </div>
-                                            <span onclick="select_remove_child('.date_created_at2')" class="kh-select-child-remove"></span>
-                                        </div>
-                                        <?php
-                                        }
-                                        ?>
-                                        <?php 
-                                                }
-                                            }
-                                        ?>
-                                        </div>
-                                        <input type="hidden" name="is_search" value="true">
-                                        
+                                        <button type="submit" class="btn btn-default ml-10"><i class="fas fa-search"></i></button>
+                                        <input type="hidden" name="tab_unique" value="<?=$tab_unique?>">
                                     </div>
-                                    <div class="d-flex a-start" style="">
-                                        <div id="s-publish2" class="k-select-opt col-2 s-all2" style="<?=$is_active != "" ? "display:block;": "display:none;";?>margin-top:10px;">
-                                        <span class="k-select-opt-remove"></span>
-                                        <select name="is_active" class="form-control">
-                                            <option value="">Tình trạng kích hoạt</option>
-                                            <option value="1" <?=$is_active == 1 ? "selected='selected'" : "";?>>Đã kích hoạt</option>
-                                            <option value="00" <?=$is_active == "00" ? "selected='selected'" : "";?>>Chưa kích hoạt</option>
-                                        </select>
-                                        </div>
-                                    </div> 
                                     <div class="d-flex a-start" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
                                         <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
                                         <!--<label for="">Sắp xếp:</label>-->
@@ -521,6 +353,7 @@
                                             <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
                                             <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
                                         </select>
+                                        
                                         <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
                                         </div>     
                                     </div>   
@@ -536,7 +369,7 @@
                                     <?php
                                         if($allow_update) {
                                     ?>
-                                    <button onclick="uptMore()" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
+                                    <button onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
                                     <?php } ?>
                                     <?php
                                         if($allow_read) {
@@ -557,11 +390,12 @@
                                     <?php } ?>
                                 </div>
                             </div>
-                            <table id="m-danh-muc-khuyen-mai" class="table table-bordered table-striped">
+                            <div class="table-game-start">
+                            <table id="table-category_discount_manage" class="table table-bordered table-striped">
                                 <thead>
                                     <tr style="cursor:pointer;">
                                         <th style="width:20px !important;">
-                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                            <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                         </th>
                                         <th class="th-so-thu-tu w-120">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                         <th class="th-danh-muc-khuyen-mai w-300">Danh mục khuyến mãi <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -574,9 +408,6 @@
                                     </tr>
                                 </thead>
                                 <?php
-                                $get = $_GET;
-                                unset($get['page']);
-                                $str_get = http_build_query($get);
                                 // query
                                 $cnt = 0;
                                 $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
@@ -586,14 +417,14 @@
                                 $total = fetch(sql_query($sql_get_total))['countt'];
                                 $sql_get_product = "select * from product_type_discount n $where limit $start_page,$limit";
                                 ?>
-                                <tbody dt-parent-id dt-url="<?=$str_get;?>" dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-category-discount" id="list-khuyen-mai">
+                                <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-category-discount" id="list-khuyen-mai">
                                 <?php
                                 $rows = fetch_all(sql_query($sql_get_product));
                                 foreach($rows as $row) {
                                 ?>
-                                    <tr id="<?=$row["id"];?>">
+                                    <tr class='<?=$upt_more == 1 ? "selected" : "";?>' id="<?=$row["id"];?>">
                                         <td>
-                                            <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-category-discount')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                            <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-category-discount')" type="checkbox" name="check_id<?=$row["id"];?>">
                                         </td>
                                         <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                         <td class="danh-muc-khuyen-mai">
@@ -601,12 +432,12 @@
                                                 <?=generate_breadcrumb_menus($row['product_type_id']);?>
                                             </nav>
                                         </td>
-                                        <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='ptd_discount_percent' class='form-control' type='text' value='" .$row['discount_percent']."'>" : $row['discount_percent'];?></td>
+                                        <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_discount_percent' class='form-control' type='text' value='" .$row['discount_percent']."'>" : $row['discount_percent'];?></td>
                                         <td class="ngay-bat-dau">
                                             <?php
                                                 if($upt_more == 1) {
                                             ?>
-                                            <?=$row['date_start'] ? "<input name='ptd_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_start'])) ."'>" : "";?> 
+                                            <?=$row['date_start'] ? "<input name='upt_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_start'])) ."'>" : "";?> 
                                             <?php } else { ?>
                                             <?=$row['date_start'] ? Date("d-m-Y",strtotime($row['date_start'])) : "";?>
                                             <?php }?>
@@ -615,7 +446,7 @@
                                             <?php
                                                 if($upt_more == 1) {
                                             ?>
-                                            <?=$row['date_end'] ? "<input name='ptd_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_end'])) ."'>" : "";?> 
+                                            <?=$row['date_end'] ? "<input name='upt_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['date_end'])) ."'>" : "";?> 
                                             <?php } else {?>
                                             <?=$row['date_end'] ? Date("d-m-Y",strtotime($row['date_end'])) : "";?>
                                             <?php } ?>
@@ -636,15 +467,15 @@
                                                 Sửa
                                                 </button>
                                             <?php } else {?>
-                                                <button class="btn-xem-khuyen-mai dt-button button-grey"
+                                                <button onclick="openModalRead()" class="btn-xem-khuyen-mai dt-button button-grey"
                                                 data-id="<?=$row["id"];?>">
                                                 Xem
                                                 </button>
-                                                <button class="btn-sua-khuyen-mai dt-button button-green"
+                                                <button onclick="openModalUpdate()" class="btn-sua-khuyen-mai dt-button button-green"
                                                 data-id="<?=$row["id"];?>" >
                                                 Sửa
                                                 </button>
-                                                <button class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
+                                                <button onclick="processDelete()" class="btn-xoa-khuyen-mai dt-button button-red" data-id="<?=$row["id"];?>">
                                                 Xoá
                                                 </button>
                                             <?php }?>
@@ -654,11 +485,18 @@
                                     $cnt++;
                                 }
                                 ?>
+                                <?php
+                                    if(count($rows) == 0) {
+                                 ?>
+                                 <tr>
+                                    <td style="text-align:center;font-size:17px;" colspan="10">Không có dữ liệu</td>
+                                 </tr>
+                                 <?php } ?>
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th style="width:20px !important;">
-                                            <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                            <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                         </th>
                                         <th>Số thứ tự</th>
                                         <th>Danh mục khuyến mãi</th>
@@ -671,6 +509,7 @@
                                     </tr>
                                 </tfoot>
                             </table>
+                            </div>
                             <ul id="pagination" style="justify-content:center;display:flex;" class="pagination">
                                 
                             </ul>
@@ -709,7 +548,7 @@
         </button>
       </div>
       <div class="modal-body">
-         <div id="form-danh-muc-khuyen-mai2" class="modal-body">
+         <div id="form-insert" class="modal-body">
             <div class="row j-between a-center">
                <div style="margin-left: 7px;" class="form-group">
                     <label for="">Nhập số dòng: </label>
@@ -748,6 +587,7 @@
                   <tr>
                     <th>Số thứ tự</th>
                     <th>Danh mục khuyến mãi</th>
+                    <th>Nội dung khuyến mãi</th>
                     <th>Khuyến mãi (%)</th>
                     <th>Ngày bắt đầu</th>
                     <th>Ngày hết hạn</th>
@@ -762,24 +602,21 @@
 </div>
 <!--html & css section end-->
 <?php
-        include_once("include/bottom.meta.php");
+include_once("include/bottom.meta.php");
 ?>
-
-<!--js section start-->
 <?php
     include_once("include/dt_script.php");
+    include_once("include/pagination.php");
 ?>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
-<script src="js/toastr.min.js"></script>
+<!--js section start-->
 <script src="js/khoi_all.js"></script>
-
 <!--js section end-->
 <script>
-    setSortTable();    
+    <?=$upt_more != 1 ? "setSortTable();" : null;?> 
 </script>
 <!--js section start-->
 <script>
-    function uptMore2(){
+    /*function uptMore2(){
         let test = true;
         let ptd_discount_percent = $(event.currentTarget).closest("tr").find("td input[name='ptd_discount_percent']").val();
         let ptd_date_start = $(event.currentTarget).closest("tr").find("td input[name='ptd_date_start']").val();
@@ -841,24 +678,25 @@
                 }
             });
         }
-    }
+    }*/
     function uptAll(){
         let test = true;
+        let all_checkbox = getIdCheckbox();
+        let list_checkbox = all_checkbox['result'].split(",");
         let formData = new FormData();
-        let _data = dt_ptd.rows(".selected").select().data();
-        if(_data.length == 0) {
+        if(list_checkbox.length == 0) {
             $.alert({
                 title:"Thông báo",
                 content:"Vui lòng chọn dòng cần lưu",
             });
             return;
         }
-        for(i = 0 ; i < _data.length ; i++) {
-            formData.append("ptd_id[]",_data[i].DT_RowId);
+        for(i = 0 ; i < list_checkbox.length ; i++) {
+            formData.append("upt_id[]",list_checkbox[i]);
         }
-        $('tr.selected input[name="ptd_product_type_id"]').each(function(){
+        $('tr.selected input[name="product_type_id"]').each(function(){
             if($(this).val() != "") {
-                formData.append("ptd_product_type_id[]",$(this).val());
+                formData.append("product_type_id[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -866,9 +704,9 @@
             }
             
         });
-        $('tr.selected input[name="ptd_discount_percent"]').each(function(){
+        $('tr.selected input[name="upt_discount_percent"]').each(function(){
             if($(this).val() != "") {
-                formData.append("ptd_discount_percent[]",$(this).val());
+                formData.append("upt_discount_percent[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -876,11 +714,9 @@
             }
             
         });
-        $('tr.selected input[name="ptd_date_start"]').each(function(){
+        $('tr.selected input[name="upt_date_start"]').each(function(){
             if($(this).val() != "") {
-                let ptd_date_start = $(this).val().split("-");
-                ptd_date_start = ptd_date_start[2] + "-" + ptd_date_start[1] + "-" + ptd_date_start[0];
-                formData.append("ptd_date_start[]",ptd_date_start);
+                formData.append("upt_date_start[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -888,11 +724,9 @@
             }
             
         });
-        $('tr.selected input[name="ptd_date_end"]').each(function(){
+        $('tr.selected input[name="upt_date_end"]').each(function(){
             if($(this).val() != "") {
-                let ptd_date_end = $(this).val().split("-");
-                ptd_date_end = ptd_date_end[2] + "-" + ptd_date_end[1] + "-" + ptd_date_end[0];
-                formData.append("ptd_date_end[]",ptd_date_end);
+                formData.append("upt_date_end[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -901,7 +735,7 @@
         });
         if(test) {
             formData.append("status","upt_all");
-            formData.append("len",_data.length);
+            formData.append("len",list_checkbox.length);
             $.ajax({
                 url: window.location.href,
                 type: "POST",
@@ -913,15 +747,12 @@
                     console.log(data);
                     data = JSON.parse(data);
                     if(data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã sửa dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
-                    });
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã sửa dữ liệu thành công",
+                        });
+                        $('.section-save').hide();
+                        loadDataComplete();
                     }
                 },
                 error: function(data){
@@ -932,22 +763,7 @@
         
     }
     // thêm nhanh
-    function showPicker(){
-        $('input[name^="ptd_date"]').datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            onSelect: function(dateText,inst) {
-                console.log(dateText.split("-"));
-                dateText = dateText.split("-");
-                $(this).attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-            }
-        });
-    }
-    function insMore(){
-        $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
-    }
-    function insMore2(){
+    /*function insMore2(){
         let test = true;
         let this2 = $(event.currentTarget).closest('tr');
         let product_type_id = $(event.currentTarget).closest('tr').find('td input[name="product_type_id"]').val();
@@ -1021,115 +837,7 @@
                 }
             })
         }
-    }
-    function insRow(){
-        num_of_row_insert = $('input[name="count3"]').val();
-        if(num_of_row_insert == "") {
-            $.alert({
-                title: "Thông báo",
-                content: "Vui lòng không để trống số dòng cần thêm",
-            })
-            return;
-        } 
-        for(i = 0 ; i < num_of_row_insert ; i++) {
-            let page = $('[data-plus]').attr('data-plus');
-            let html = "";
-            let count2 = parseInt(page / 7) + 1;
-            html = `
-                <tr data-row-id='${parseInt(page) + 1}'>
-                    <td>${parseInt(page) + 1}</td>
-                    <td>
-                        <div style="display:flex;flex-direction:column;position:relative;">
-                            <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                                <li class="parent" style="border: 1px solid #dce1e5;">
-                                    <a href="#">Chọn danh mục</a>
-                                    <ul class="child" >
-                                        <?php echo show_menu();?>
-                                    </ul>
-                                    <input type="hidden" name="product_type_id">
-                                </li>
-                            </ul>
-                            <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                            <p class='text-danger'></p>
-                        </div>
-                   </td>
-                    <td><input class='kh-inp-ctrl' name='ptd_discount_percent2' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" value='' placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='ptd_date_start2' type='text' value='' placeholder="Nhập ngày bắt đầu..."><p class='text-danger'></p></td>
-                    <td><input class='kh-inp-ctrl' name='ptd_date_end2' type='text' value='' placeholder="Nhập ngày kết thúc..."><p class='text-danger'></p></td>
-                    <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-                </tr>
-                `;
-            if(page % 7 != 0) {
-                $('.t-bd').css({"display":"none"});
-                $(`.t-bd-${parseInt(count2)}`).css({"display":"contents"});
-                $(html).appendTo(`.t-bd-${count2}`);
-            } else {
-                $('.t-bd').css({"display":"none"});
-                html = `<tbody style='display:contents;' class='t-bd t-bd-${parseInt(count2)}'>${html}</tbody>`;
-                $(html).appendTo('#form-danh-muc-khuyen-mai2 table');
-            }
-            if(page == 0) {
-                let html2 = `<div id="paging" style="justify-content:center;" class="row">
-                    <nav id="pagination2">
-                    </nav>
-                </div>`;
-                $(html2).appendTo('#form-danh-muc-khuyen-mai2');
-            }
-            $('[data-plus]').attr('data-plus',parseInt(page) + 1);
-            $('input[name="count2"]').val(parseInt(page) + 1);
-            $('#pagination2').pagination({
-                items: parseInt(page) + 1,
-                itemsOnPage: 7,
-                currentPage: count2,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                showRow(pageNumber,false);
-                },
-                cssStyle: 'light-theme',
-            });
-            showPicker();
-        }
-    }
-    function delRow(){  
-        let count_del = $("input[name=count3]").val();
-        if(count_del == "") {
-            $.alert({
-                title: "Thông báo",
-                content: "Vui lòng không để trống số dòng cần xoá",
-            })
-            return;
-        }
-        for(i = 0 ; i < count_del ; i++) {
-            let page = $('[data-plus]').attr('data-plus');
-            if(page < 0) {
-                $('[data-plus]').attr('data-plus',0);
-                return;
-            }
-            let currentPage1 = page / 7;
-            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-            $(`[data-row-id="${page}"]`).remove();
-            page--;
-            $('[data-plus]').attr('data-plus',page);
-            $('input[name="count2"]').val(page);
-            currentPage1 = page / 7;
-            if(page % 7 != 0) currentPage1 = parseInt(currentPage1) + 1;
-            else $(`.t-bd-${parseInt(currentPage1) + 1}`).remove();
-            $('.t-bd').css({"display":"none"});
-            $(`.t-bd-${parseInt(currentPage1)}`).css({"display":"contents"});
-            $('#pagination2').pagination({
-                items: parseInt(page),
-                itemsOnPage: 7,
-                currentPage: currentPage1,
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber,event){
-                    showRow(pageNumber,false);
-                },
-                cssStyle: 'light-theme',
-            });
-        }
-    }
+    }*/
     function insAll(){
       let test = true;
       let formData = new FormData();
@@ -1144,27 +852,36 @@
           test = false;
         }
       });
-      $('td input[name="ptd_discount_percent2"]').each(function(){
+      $('td input[name="ins_discount_percent"]').each(function(){
         if($(this).val() != ""){
-          formData.append("ptd_discount_percent2[]",$(this).val());
+          formData.append("ins_discount_percent[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;
         }
       });
-      $('td input[name="ptd_date_start2"]').each(function(){
+      $('td textarea[name="ins_discount_content"]').each(function(){
+        if($(this).val() != ""){
+          formData.append("ins_discount_content[]",$(this).val());
+          $(this).siblings("p.text-danger").text("");
+        } else {
+          $(this).siblings("p.text-danger").text("Không được để trống");
+          test = false;
+        }
+      });
+      $('td input[name="ins_date_start"]').each(function(){
         if($(this).val() != "") {
-          formData.append("ptd_date_start2[]",$(this).val());
+          formData.append("ins_date_start[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
           test = false;  
         }
       });
-      $('td input[name="ptd_date_end2"]').each(function(){
+      $('td input[name="ins_date_end"]').each(function(){
         if($(this).val() != "") {
-          formData.append("ptd_date_end2[]",$(this).val());
+          formData.append("ins_date_end[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
         } else {
           $(this).siblings("p.text-danger").text("Không được để trống");
@@ -1195,12 +912,9 @@
                     $.alert({
                         title: "Thông báo",
                         content: "Bạn đã thêm dữ liệu thành công",
-                        buttons: {
-                            "Ok": function(){
-                                location.reload();
-                            }
-                        }
                     });
+                    loadDataComplete('Insert');
+                    $('#modal-xl2').modal('hide');
                 }
             },
             error: function(data){
@@ -1210,127 +924,12 @@
       }
       
     }
-    var count_row_z_index = 1000000;
-    function showRow(page,apply_dom = true){
-      let count = $('[data-plus]').attr('data-plus');
-      limit = 7;
-      if(apply_dom) {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('#form-danh-muc-khuyen-mai2 table').remove();
-        $('#form-danh-muc-khuyen-mai2 #paging').remove();
-        let html = `
-        <table class='table table-bordered' style="height:auto;">
-          <thead>
-            <tr>
-                <th>Số thứ tự</th>
-                <th>Danh mục khuyến mãi</th>
-                <th>Khuyến mãi (%)</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày hết hạn</th>
-                <th>Thao tác</th>
-            </tr>
-          </thead>
-        `;
-        count2 = parseInt(count / 7);
-        g = 1;
-        for(i = 0 ; i < count2 ; i++) {
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(j = 0 ; j < 7 ; j++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                  <td>${parseInt(g)}</td>
-                  <td>
-                     <div style="display:flex;flex-direction:column;position:relative;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                           <li class="parent" style="border: 1px solid #dce1e5;">
-                              <a href="#">Chọn danh mục</a>
-                              <ul class="child" >
-                                 <?php echo show_menu();?>
-                              </ul>
-                              <input type="hidden" name="product_type_id2">
-                           </li>
-                        </ul>
-                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                     </div>
-                  </td>
-                  <td><input class='kh-inp-ctrl' name='ptd_discount_percent2' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type='text' value='' placeholder='Nhập giá trị khuyến mãi...'><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='ptd_date_start2' value='' placeholder="Nhập ngày bắt đầu..."><p class='text-danger'></p></td>
-                  <td><input class='kh-inp-ctrl' name='ptd_date_end2' type='text' value='' placeholder="Nhập ngày kết thúc..."><p class='text-danger'></p></td>
-                  <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        if(count % 7 != 0) {
-          count3 = count % 7;
-          html += `<tbody style='display:none;' class='t-bd t-bd-${parseInt(i) + 1}'>`;
-          for(k = i ; k < parseInt(count3) + parseInt(i) ; k++) {
-            html += `
-              <tr data-row-id="${parseInt(g)}">
-                <td>${parseInt(g)}</td>
-                <td>
-                    <div style="display:flex;flex-direction:column;position:relative;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;z-index: ${count_row_z_index--};" id="menu">
-                        <li class="parent" style="border: 1px solid #dce1e5;">
-                            <a href="#">Chọn danh mục</a>
-                            <ul class="child" >
-                                <?php echo show_menu();?>
-                            </ul>
-                            <input type="hidden" name="product_type_id">
-                        </li>
-                        </ul>
-                        <nav style="padding-left:0px;" class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                    </div>
-                </td>
-                <td><input class='kh-inp-ctrl' name='ptd_discount_percent2' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" type='text' value='' placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ptd_date_start2' value='' placeholder="Nhập ngày bắt đầu..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ptd_date_end2' type='text' placeholder="Nhập ngày kết thúc..." value=''><p class='text-danger'></p></td>
-                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-              </tr>
-            `;
-            g++;
-          }
-          html += "</tbody>";
-        }
-        html += `
-          </table>
-        `;
-        html += `
-          <div id="paging" style="justify-content:center;" class="row">
-            <nav id="pagination2">
-            </nav>
-          </div>
-        `;
-        $(html).appendTo('#form-danh-muc-khuyen-mai2');
-        apply_dom = false;
-        $('.t-bd-1').css({"display":"contents"});
+    function load_menu(){
+        let html =`<?php echo show_menu_3();?>`;
         console.log(html);
-      } else {
-        $('[data-plus]').attr('data-plus',$('input[name=count2]').val());
-        $('.t-bd').css({"display":"none"});
-        $('.t-bd-' + page).css({"display":"contents"});
-      }
-      $('#pagination2').pagination({
-        items: count,
-        itemsOnPage: limit,
-        currentPage: page,
-        prevText: "<",
-        nextText: ">",
-        onPageClick: function(pageNumber,event){
-          showRow(pageNumber,false);
-        },
-        cssStyle: 'light-theme',
-      });
-      showPicker();
-      $('#modal-xl2').on('hidden.bs.modal', function (e) {
-        $('#form-danh-muc-khuyen-mai2 table tbody').remove();
-        $('#form-danh-muc-khuyen-mai2 #paging').remove();
-        $('input[name="count2"]').val("");
-      })
+        $('.aaab').empty();
+        $(html).appendTo('.aaab');
+        $(event.currentTarget).removeAttr('onmouseover');
     }
     function show_menu_root(){
       let child = $(event.currentTarget).find('li').length;
@@ -1346,7 +945,7 @@
             target.closest('.ul_menu').next().append(data);
          });
       }
-   }
+    }
     
 </script>
 <script>
@@ -1378,453 +977,313 @@
 </script>
 <!--searching filter-->
 <script>
-   function choose_type_search(){
-      let _option = $("select[name='search_option'] > option:selected").val();
-      if(_option.indexOf("2") > -1) {
-         if(_option.indexOf("all") > -1) {
-            $(".s-all2").css({"display": "flex","flex-direction":"column"});
-         } else {
-            $(`#s-${_option}`).css({"display": "flex","flex-direction":"column"});
-         }
-      } else {
-         $('#s-cols').css({"display": "flex"});
-      }
-      $("select[name='search_option'] > option[value='']").prop('selected',true);
-   }
-   $('.k-select-opt-remove').click(function(){
-      $(event.currentTarget).siblings('select').find('option').prop("selected",false);
-      $(event.currentTarget).siblings('select').find("option[value='']").prop("selected",true);
-      $(event.currentTarget).siblings('.ele-select').remove()
-      $(event.currentTarget).siblings("div").find("input").val("");
-      $(event.currentTarget).closest('div').css({"display":"none"});
-   });
-   $('.k-select-opt-ins').click(function(){
-      let file_html = ``;
-      if($(event.currentTarget).closest('#s-date_start2').length) {
-         file_html = `
-         <div class="ele-select ele-date_start2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_start_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
+    function selectOptionInsert(){
+        let file_html = ``;
+        if($(event.currentTarget).closest('#s-cols').length) {
+            file_html = `
+            <div class="ele-select ele-cols mt-10">
+                <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
+                <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
             </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_start_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date_start2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-date_end2').length) {
-         file_html = `
-         <div class="ele-select ele-date_end2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_end_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_end_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date_end2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-date_created_at2').length) {
-         file_html = `
-         <div class="ele-select ele-date_created_at2 mt-10">
-            <div class="" style="display:flex;">
-               <input type="text" name="date_created_at_1[]" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="">
-            </div>
-            <div class="ml-10" style="display:flex;">
-               <input type="text" name="date_created_at_2[]" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="">
-            </div>
-            <span onclick="select_remove_child('.ele-date_created_at2')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      } else if($(event.currentTarget).closest('#s-cols').length) {
-         file_html = `
-         <div class="ele-select ele-cols mt-10">
-            <input type="text" name="keyword[]" placeholder="Nhập từ khoá..." class="form-control" value="">
-            <span onclick="select_remove_child('.ele-cols')" class="kh-select-child-remove"></span>
-         </div>
-         `;
-      }
-      $(file_html).appendTo($(this).parent());
-      $(this).parent().css({
-         "flex-direction": "column",
-         "justify-content": "space-between",
-      });
-        $(".kh-datepicker2").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            onSelect: function(dateText, inst) {
-                console.log(dateText.split("-"));
-                dateText = dateText.split("-");
-                $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-            }
+            `;
+        }
+        $(file_html).appendTo($(event.currentTarget).parent());
+        $(event.currentTarget).parent().css({
+            "flex-direction": "column",
+            "justify-content": "space-between",
         });
-      $('.select-type2').select2();
-   });
+    }
    function select_remove_child(_class){
       $(event.currentTarget).closest(_class).remove();
    }
 </script>
 <script>
-    function validate(){
-
+    function readURL(){
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#display-image').attr('src', e.target.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
-    function validateModal(){
-        
+    function validate(){
+        let test = true;
+        let code = $("input[name='code']").val();
+        let content = $("textarea[name='content']").val();
+        let discount_percent = $("input[name='discount_percent']").val();
+        let discount_content = $("textare[name='discount_content']").val();
+        let date_start = $("input[name='date_start']").val();
+        let date_end = $("input[name='date_end']").val();
+        let id = $("input[name='id']").val();
+        $('.coupon-validate').text("");
+        if(code == "") {
+            $('#code_err').text("Vui lòng không để trống danh mục khuyến mãi");
+            test = false;
+        } if(content == "") {
+            $('#content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
+            test = false;    
+        } if(discount_percent == "") {
+            $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
+            test = false;
+        } if(date_start == "") {
+            $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
+            test = false;
+        } if(date_end == "") {
+            $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
+            test = false;
+        }
+        return test;
     }
     function openModalInsert(){
-
+        $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Insert",() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $(".is-date-coupon-start").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+            });
+            $(".is-date-coupon-end").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+            });
+            $(".parent[data-id]").click(function(e){
+                let child = $(e.currentTarget).find('li').length;
+                if(!child){
+                    let id = $(e.currentTarget).attr('data-id');
+                    let name = $(e.currentTarget).text();
+                    name = name.substr(0,name.length - 1);
+                    console.log(name);
+                    $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
+                        $("input[name='product_type_id']").val(id);
+                        $("#breadcrumb-menu").empty();
+                        $("#breadcrumb-menu").append(data);
+                    });
+                }
+            })
+        })
+    }
+    function openModalRead(){
+        let id = $(event.currentTarget).attr('data-id');
+        let target = $(event.currentTarget);
+        // target.closest("tr").addClass("bg-color-selected");
+        $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Read&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+        })
     }
     function openModalUpdate(){
-
+        let id = $(event.currentTarget).attr('data-id');
+        $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Update&id=" + id,() => {
+            $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+            $(".is-date-coupon-start").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+            });
+            $(".is-date-coupon-end").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd-mm-yy',
+            });
+            $(".parent[data-id]").click(function(e){
+                let child = $(e.currentTarget).find('li').length;
+                if(!child){
+                    let id = $(e.currentTarget).attr('data-id');
+                    let name = $(e.currentTarget).text();
+                    name = name.substr(0,name.length - 1);
+                    console.log(name);
+                    $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
+                        $("input[name='product_type_id']").val(id);
+                        $("#breadcrumb-menu").empty();
+                        $("#breadcrumb-menu").append(data);
+                    });
+                }
+            })
+        })
     }
-    function processModalInsertUpdate(){
-
+    function processModalInsert(){
+        event.preventDefault();
+        let test = true;
+        let product_type_id = $("input[name='product_type_id']").val();
+        let discount_content = $("textarea[name='discount_content']").val();
+        let discount_percent = $("input[name='discount_percent']").val();
+        let date_start = $("input[name='date_start']").val();
+        let date_end = $("input[name='date_end']").val();
+        let id = $("input[name='id']").val();
+        $('.coupon-validate').text("");
+        if(product_type_id == "") {
+            $('#product_type_id_err').text("Vui lòng không để trống danh mục khuyến mãi");
+            test = false;
+        } if(discount_content == "") {
+            $('#discount_content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
+            test = false;    
+        } if(discount_percent == "") {
+            $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
+            test = false;
+        } if(date_start == "") {
+            $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
+            test = false;
+        } if(date_end == "") {
+            $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
+            test = false;
+        }
+        if(test) {
+            $.ajax({
+                url:window.location.href,
+                type: "POST",
+                data: {
+                    "status":"Insert",
+                    "product_type_id" : product_type_id,
+                    "discount_content" : discount_content,
+                    "discount_percent": discount_percent,
+                    "date_start": date_start,
+                    "date_end": date_end
+                },
+                success:function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.success,
+                        });
+                        loadDataComplete('Insert');
+                    } else {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.error
+                        });
+                    }
+                    $('#modal-xl').modal('hide');
+                },
+                error:function(data) {
+                    console.log("Error:",data);
+                }
+            });
+        }
+    }
+    function processModalUpdate(){
+        event.preventDefault();
+        let test = true;
+        let id = $("input[name='id']").val();
+        let product_type_id = $("input[name='product_type_id']").val();
+        let discount_content = $("textarea[name='discount_content']").val();
+        let discount_percent = $("input[name='discount_percent']").val();
+        let date_start = $("input[name='date_start']").val();
+        let date_end = $("input[name='date_end']").val();
+        $('.coupon-validate').text("");
+        if(product_type_id == "") {
+            $('#product_type_id_err').text("Vui lòng không để trống danh mục khuyến mãi");
+            test = false;
+        } if(discount_content == "") {
+            $('#discount_content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
+            test = false;    
+        } if(discount_percent == "") {
+            $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
+            test = false;
+        } if(date_start == "") {
+            $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
+            test = false;
+        } if(date_end == "") {
+            $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
+            test = false;
+        }
+        if(test) {
+            $.ajax({
+                url:window.location.href,
+                type: "POST",
+                data: {
+                    "id": id,
+                    "status":"Update",
+                    "product_type_id" : product_type_id,
+                    "discount_content" : discount_content,
+                    "discount_percent": discount_percent,
+                    "date_start": date_start,
+                    "date_end": date_end
+                },
+                success:function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.success,
+                        });
+                        loadDataComplete();
+                    } else {
+                        $.alert({
+                            title: "Thông báo",
+                            content: data.error
+                        });
+                    }
+                    $('#modal-xl').modal('hide');
+                },
+                error:function(data) {
+                    console.log("Error:",data);
+                }
+            });
+        }
     }
     function processDelete(){
-
+        let id = $(event.currentTarget).attr('data-id');
+        let target = $(event.currentTarget);
+        $.confirm({
+            title: 'Thông báo',
+            content: 'Bạn có chắc chắn muốn xoá danh mục khuyến mãi này ?',
+            buttons: {
+                Có: function(){
+                    $.ajax({
+                        url:window.location.href,
+                        type:"POST",
+                        cache:false,
+                        data: {
+                            id: id,
+                            status: "Delete",
+                        },
+                        success:function(data){
+                            data = JSON.parse(data);
+                            if(data.msg == "ok") {
+                                $.alert({
+                                    title: "Thông báo",
+                                    content: data.success,
+                                });
+                                loadDataComplete('Delete');
+                            } else {
+                                $.alert({
+                                    title: "Thông báo",
+                                    content: data.error,
+                                });
+                            }
+                        },
+                        error:function(data) {
+                            console.log("Error:",data);
+                        }
+                    });
+                },Không: function(){
+                    
+                }
+            }
+        });
     }
 </script>
 <script>
     $(document).ready(function(){
-        $(".kh-datepicker2").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'dd-mm-yy',
-            onSelect: function(dateText, inst) {
-                console.log(dateText.split("-"));
-                dateText = dateText.split("-");
-                $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-            }
-        });
         // validate
         const validate = () => {
-            let test = true;
-            let code = $("input[name='code']").val();
-            let content = $("textarea[name='content']").val();
-            let discount_percent = $("input[name='discount_percent']").val();
-            let discount_content = $("textare[name='discount_content']").val();
-            let date_start = $("input[name='date_start']").val();
-            let date_end = $("input[name='date_end']").val();
-            let id = $("input[name='id']").val();
-            $('.coupon-validate').text("");
-            if(code == "") {
-                $('#code_err').text("Vui lòng không để trống danh mục khuyến mãi");
-                test = false;
-            } if(content == "") {
-                $('#content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
-                test = false;    
-            } if(discount_percent == "") {
-                $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
-                test = false;
-            } if(date_start == "") {
-                $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
-                test = false;
-            } if(date_end == "") {
-                $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
-                test = false;
-            }
-            return test;
+            
         };
         // show image
         const readURL = (input) => {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                $('#display-image').attr('src', e.target.result);
+                    $('#display-image').attr('src', e.target.result);
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         };
-        // mở modal thêm dữ liệu
-        $(document).on('click','#btn-them-khuyen-mai',(e) => {
-            $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Insert",() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-                $(".is-date-coupon-start").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('.is-date-coupon-start').attr('data-coupon-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $(".is-date-coupon-end").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('.is-date-coupon-end').attr('data-coupon-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $(".parent[data-id]").click(function(e){
-                    let child = $(e.currentTarget).find('li').length;
-                    if(!child){
-                        let id = $(e.currentTarget).attr('data-id');
-                        let name = $(e.currentTarget).text();
-                        name = name.substr(0,name.length - 1);
-                        console.log(name);
-                        $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                            $("input[name='product_type_id']").val(id);
-                            $("#breadcrumb-menu").empty();
-                            $("#breadcrumb-menu").append(data);
-                        });
-                    }
-                })
-            })
-        });
-        // mở modal sửa dữ liệu
-        $(document).on('click','.btn-sua-khuyen-mai',function(e) {  
-            let id = $(e.currentTarget).attr('data-id');
-            $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Update&id=" + id,() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-                $(".is-date-coupon-start").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('.is-date-coupon-start').attr('data-coupon-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $(".is-date-coupon-end").datepicker({
-                    changeMonth: true,
-                    changeYear: true,
-                    dateFormat: 'dd-mm-yy',
-                    onSelect: function(dateText,inst) {
-                        console.log(dateText.split("-"));
-                        dateText = dateText.split("-");
-                        $('.is-date-coupon-end').attr('data-coupon-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                    }
-                });
-                $(".parent[data-id]").click(function(e){
-                    let child = $(e.currentTarget).find('li').length;
-                    if(!child){
-                        let id = $(e.currentTarget).attr('data-id');
-                        let name = $(e.currentTarget).text();
-                        name = name.substr(0,name.length - 1);
-                        console.log(name);
-                        $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
-                            $("input[name='product_type_id']").val(id);
-                            $("#breadcrumb-menu").empty();
-                            $("#breadcrumb-menu").append(data);
-                        });
-                    }
-                })
-            })
-        });
-        // thêm 
-        $(document).on('click','#btn-insert',function(e){
-            event.preventDefault();
-            let test = true;
-            let product_type_id = $("input[name='product_type_id']").val();
-            let discount_content = $("textarea[name='discount_content']").val();
-            let discount_percent = $("input[name='discount_percent']").val();
-            let date_start = $("input[name='date_start']").val();
-            let date_end = $("input[name='date_end']").val();
-            let id = $("input[name='id']").val();
-            $('.coupon-validate').text("");
-            if(product_type_id == "") {
-                $('#product_type_id_err').text("Vui lòng không để trống danh mục khuyến mãi");
-                test = false;
-            } if(discount_content == "") {
-                $('#discount_content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
-                test = false;    
-            } if(discount_percent == "") {
-                $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
-                test = false;
-            } if(date_start == "") {
-                $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
-                test = false;
-            } if(date_end == "") {
-                $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
-                test = false;
-            }
-            if(test) {
-                $.ajax({
-                    url:window.location.href,
-                    type: "POST",
-                    data: {
-                        "status":"Insert",
-                        "product_type_id" : product_type_id,
-                        "discount_content" : discount_content,
-                        "discount_percent": discount_percent,
-                        "date_start": date_start,
-                        "date_end": date_end
-                    },
-                    success:function(data){
-                        console.log(data);
-                        data = JSON.parse(data);
-                        if(data.msg == "ok") {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.success,
-                                buttons: {
-                                    "Ok": function(){
-                                        location.href="category_discount_manage.php";
-                                    },
-                                }
-                            });
-                        } else {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.error
-                            });
-                        }
-                        $('#modal-xl').modal('hide');
-                    },
-                    error:function(data) {
-                        console.log("Error:",data);
-                    }
-                });
-            }
-            
-        });
-        // sửa 
-        $(document).on('click','#btn-update',function(e){
-            event.preventDefault();
-            let test = true;
-            let id = $("input[name='id']").val();
-            let product_type_id = $("input[name='product_type_id']").val();
-            let discount_content = $("textarea[name='discount_content']").val();
-            let discount_percent = $("input[name='discount_percent']").val();
-            let date_start = $("input[name='date_start']").val();
-            let date_end = $("input[name='date_end']").val();
-            $('.coupon-validate').text("");
-            if(product_type_id == "") {
-                $('#product_type_id_err').text("Vui lòng không để trống danh mục khuyến mãi");
-                test = false;
-            } if(discount_content == "") {
-                $('#discount_content_err').text("Vui lòng không để trống nội dung mô tả khuyến mãi");
-                test = false;    
-            } if(discount_percent == "") {
-                $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
-                test = false;
-            } if(date_start == "") {
-                $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
-                test = false;
-            } if(date_end == "") {
-                $('#date_end_err').text("Vui lòng không để trống thời gian kết thúc");
-                test = false;
-            }
-            if(test) {
-                $.ajax({
-                    url:window.location.href,
-                    type: "POST",
-                    data: {
-                        "id": id,
-                        "status":"Update",
-                        "product_type_id" : product_type_id,
-                        "discount_content" : discount_content,
-                        "discount_percent": discount_percent,
-                        "date_start": date_start,
-                        "date_end": date_end
-                    },
-                    success:function(data){
-                        console.log(data);
-                        data = JSON.parse(data);
-                        if(data.msg == "ok") {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.success,
-                                buttons: {
-                                    "Ok": function(){
-                                        location.href="category_discount_manage.php";
-                                    },
-                                }
-                            });
-                        } else {
-                            $.alert({
-                                title: "Thông báo",
-                                content: data.error
-                            });
-                        }
-                        $('#modal-xl').modal('hide');
-                    },
-                    error:function(data) {
-                        console.log("Error:",data);
-                    }
-                });
-            }
-        });
-        // xoá 
-        $(document).on('click','.btn-xoa-khuyen-mai',function(e){
-            let id = $(e.currentTarget).attr('data-id');
-            let target = $(e.currentTarget);
-            target.closest("tr").addClass("bg-color-selected");
-            $.confirm({
-                title: 'Thông báo',
-			    content: 'Bạn có chắc chắn muốn xoá danh mục khuyến mãi này ?',
-                buttons: {
-                    Có: function(){
-                        $.ajax({
-                            url:window.location.href,
-                            type:"POST",
-                            cache:false,
-                            data: {
-                                id: id,
-                                status: "Delete",
-                            },
-                            success:function(data){
-                                data = JSON.parse(data);
-                                if(data.msg == "ok") {
-                                    $.alert({
-                                        title: "Thông báo",
-                                        content: data.success,
-                                        buttons: {
-                                            "Ok": function(){
-                                                location.reload();
-                                            },
-                                        }
-                                    });
-                                } else {
-                                    $.alert({
-                                        title: "Thông báo",
-                                        content: data.error,
-                                    });
-                                }
-                            },
-                            error:function(data) {
-                                console.log("Error:",data);
-                            }
-                        });
-                    },Không: function(){
-                        target.closest("tr").removeClass("bg-color-selected");
-                    }
-                }
-            });
-        });
-        // xem
-        $(document).on('click','.btn-xem-khuyen-mai',function(e){
-            let id = $(e.currentTarget).attr('data-id');
-            let target = $(e.currentTarget);
-           // target.closest("tr").addClass("bg-color-selected");
-            $('#form-danh-muc-khuyen-mai').load("ajax_category_discount_manage.php?status=Read&id=" + id,() => {
-                $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-            })
-        });
     });
-</script>
-<script>
-   $(function() {
-    $('#pagination').pagination({
-        items: <?=$total;?>,
-        itemsOnPage: <?=$limit;?>,
-		currentPage: <?=$page;?>,
-		hrefTextPrefix: "<?php echo '?page='; ?>",
-		hrefTextSuffix: "<?php echo '&' . $str_get;?>",
-        prevText: "<",
-        nextText: ">",
-		onPageClick: function(){
-			//window.location.href=""
-		},
-        cssStyle: 'light-theme'
-    });
-  });
 </script>
 <!--js section end-->
 <?php
@@ -1842,26 +1301,26 @@
         $date_end = isset($_REQUEST['date_end']) ?  Date("Y-m-d",strtotime($_REQUEST['date_end'])) : null;
         // code to be executed post method
         if($status == "Insert") {
-            $sql_check_duplicate_code = "select count(*) as 'cnt' from product_type_discount where product_type_id = '$product_type_id'";
+            $sql_check_duplicate_code = "select count(*) as 'cnt' from product_type_discount where product_type_id = '$product_type_id' and is_delete = 0";
             $count = fetch(sql_query($sql_check_duplicate_code));
             if($count['cnt'] > 0) {
                 echo_json(["msg" => "not_ok","error" => "Mã khuyến mãi đã tồn tại"]);    
             }
-            $sql_ins = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values ('$product_type_id','$discount_content','$discount_percent','$date_start','$date_end')";
-            sql_query($sql_ins);
+            $sql_ins = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values (?,?,?,?,?)";
+            sql_query($sql_ins,[$product_type_id,$discount_content,$discount_percent,$date_start,$date_end]);
             echo_json(["msg" => "ok","success" => "Bạn đã thêm dữ liệu thành công"]);
         } else if($status == "Update") {
-            $sql_check_duplicate_code = "select count(*) as 'cnt' from product_type_discount where product_type_id = '$product_type_id'";
+            $sql_check_duplicate_code = "select count(*) as 'cnt' from product_type_discount where product_type_id = '$product_type_id' and is_delete = 0";
             $count = fetch(sql_query($sql_check_duplicate_code));
             if($count['cnt'] > 1) {
                 echo_json(["msg" => "not_ok","error" => "Ngành hàng này đã khuyến mãi"]);    
             }
-            $sql_upt = "Update product_type_discount set product_type_id = '$product_type_id',discount_content = '$discount_content',discount_percent = '$discount_percent',date_start = '$date_start',date_end = '$date_end' where id = '$id'";
-            sql_query($sql_upt);
+            $sql_upt = "Update product_type_discount set product_type_id = ?,discount_content = ?,discount_percent = ?,date_start = ?,date_end = ? where id = ?";
+            sql_query($sql_upt,[$product_type_id,$discount_content,$discount_percent,$date_start,$date_end,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã sửa dữ liệu thành công"]);
         } else if($status == "Delete") {
-            $sql_del = "Update product_type_discount set is_delete = 1 where id = '$id'";
-            sql_query($sql_del);
+            $sql_del = "Update product_type_discount set is_delete = ? where id = ?";
+            sql_query($sql_del,[1,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
         } else if($status == "Active") {
             $sql_active_product_type_discount = "Update product_type_discount set is_active = 1 where id = $id";
@@ -1877,51 +1336,50 @@
             sql_query($sql_del_more);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_more") {
-            $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
             $product_type_id = isset($_REQUEST["product_type_id"]) ? $_REQUEST["product_type_id"] : null;
-            $ptd_discount_percent2 = isset($_REQUEST["ptd_discount_percent2"]) ? $_REQUEST["ptd_discount_percent2"] : null;
-            $ptd_discount_content2 = isset($_REQUEST["ptd_discount_content2"]) ? $_REQUEST["ptd_discount_content2"] : null;
-            $ptd_date_start2 = isset($_REQUEST["ptd_date_start2"]) ?  Date('Y-m-d',strtotime($_REQUEST["ptd_date_start2"])) : null;
-            $ptd_date_end2 = isset($_REQUEST["ptd_date_end2"]) ? Date('Y-m-d',strtotime($_REQUEST["ptd_date_end2"])) : null;
-            $sql = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values('$product_type_id','$ptd_discount_content2','$ptd_discount_percent2','$ptd_date_start2','$ptd_date_end2')";
-            sql_query($sql);
+            $ins_discount_percent = isset($_REQUEST["ins_discount_percent"]) ? $_REQUEST["ins_discount_percent"] : null;
+            $ins_discount_content = isset($_REQUEST["ins_discount_content"]) ? $_REQUEST["ins_discount_content"] : null;
+            $ins_date_start = isset($_REQUEST["ins_date_start"]) ?  Date('Y-m-d',strtotime($_REQUEST["ins_date_start"])) : null;
+            $ins_date_end = isset($_REQUEST["ins_date_end"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_date_end"])) : null;
+            $sql = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values(?,?,?,?,?)";
+            sql_query($sql,[$product_type_id,$ins_discount_content,$ins_discount_percent,$ins_date_start,$ins_date_end]);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
             $product_type_id = isset($_REQUEST["product_type_id"]) ? $_REQUEST["product_type_id"] : null;
-            $ptd_discount_percent2 = isset($_REQUEST["ptd_discount_percent2"]) ? $_REQUEST["ptd_discount_percent2"] : null;
-            $ptd_discount_content2 = isset($_REQUEST["ptd_discount_content2"]) ? $_REQUEST["ptd_discount_content2"] : null;
-            $ptd_date_start2 = isset($_REQUEST["ptd_date_start2"]) ? $_REQUEST["ptd_date_start2"] : null;
-            $ptd_date_end2 = isset($_REQUEST["ptd_date_end2"]) ? $_REQUEST["ptd_date_end2"] : null;
+            $ins_discount_percent = isset($_REQUEST["ins_discount_percent"]) ? $_REQUEST["ins_discount_percent"] : null;
+            $ins_discount_content = isset($_REQUEST["ins_discount_content"]) ? $_REQUEST["ins_discount_content"] : null;
+            $ins_date_start = isset($_REQUEST["ins_date_start"]) ? $_REQUEST["ins_date_start"] : null;
+            $ins_date_end = isset($_REQUEST["ins_date_end"]) ? $_REQUEST["ins_date_end"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $ptd_date_start = Date("Y-m-d",strtotime($ptd_date_start2[$i]));
-                    $ptd_date_end = Date("Y-m-d",strtotime($ptd_date_end2[$i]));
-                    $sql = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values('$product_type_id[$i]','$ptd_discount_content2[$i]','$ptd_discount_percent2[$i]','$ptd_date_start','$ptd_date_end')";
-                    sql_query($sql);
+                    $ins_date_start[$i] = Date("Y-m-d",strtotime($ins_date_start[$i]));
+                    $ins_date_end[$i] = Date("Y-m-d",strtotime($ins_date_end[$i]));
+                    $sql = "Insert into product_type_discount(product_type_id,discount_content,discount_percent,date_start,date_end) values(?,?,?,?,?)";
+                    sql_query($sql,[$product_type_id[$i],$ins_discount_content[$i],$ins_discount_percent[$i],$ins_date_start[$i],$ins_date_end[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }
         } else if($status == "upt_more") {
-            $ptd_id = isset($_REQUEST["ptd_id"]) ? $_REQUEST["ptd_id"] : null;
-            $ptd_discount_percent = isset($_REQUEST["ptd_discount_percent"]) ? $_REQUEST["ptd_discount_percent"] : null;
-            $ptd_date_start = isset($_REQUEST["ptd_date_start"]) ? Date("Y-m-d",strtotime($_REQUEST["ptd_date_start"])) : null;
-            $ptd_date_end = isset($_REQUEST["ptd_date_end"]) ? Date("Y-m-d",strtotime($_REQUEST["ptd_date_end"])) : null;
-            $sql = "Update product_type_discount set discount_percent='$ptd_discount_percent',date_start='$ptd_date_start',date_end='$ptd_date_end' where id='$ptd_id'";
-            sql_query($sql);
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_discount_percent = isset($_REQUEST["upt_discount_percent"]) ? $_REQUEST["upt_discount_percent"] : null;
+            $upt_date_start = isset($_REQUEST["upt_date_start"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_date_start"])) : null;
+            $upt_date_end = isset($_REQUEST["upt_date_end"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_date_end"])) : null;
+            $sql = "Update product_type_discount set discount_percent=?,date_start=?,date_end=? where id=?";
+            sql_query($sql,[$upt_discount_percent,$upt_date_start,$upt_date_end,$upt_id]);
             echo_json(["msg" => "ok"]);
         } else if($status == "upt_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
-            $ptd_id = isset($_REQUEST["ptd_id"]) ? $_REQUEST["ptd_id"] : null;
-            $ptd_discount_percent = isset($_REQUEST["ptd_discount_percent"]) ? $_REQUEST["ptd_discount_percent"] : null;
-            $ptd_date_start = isset($_REQUEST["ptd_date_start"]) ? $_REQUEST["ptd_date_start"] : null;
-            $ptd_date_end = isset($_REQUEST["ptd_date_end"]) ? $_REQUEST["ptd_date_end"]  : null;
+            $upt_id = isset($_REQUEST["upt_id"]) ? $_REQUEST["upt_id"] : null;
+            $upt_discount_percent = isset($_REQUEST["upt_discount_percent"]) ? $_REQUEST["upt_discount_percent"] : null;
+            $upt_date_start = isset($_REQUEST["upt_date_start"]) ? $_REQUEST["upt_date_start"] : null;
+            $upt_date_end = isset($_REQUEST["upt_date_end"]) ? $_REQUEST["upt_date_end"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
-                    $ptd_date_start_2 = Date("Y-m-d",strtotime($ptd_date_start[$i]));
-                    $ptd_date_end_2 = Date("Y-m-d",strtotime($ptd_date_end[$i]));
-                    $sql = "Update product_type_discount set discount_percent='$ptd_discount_percent[$i]',date_start='$ptd_date_start_2',date_end='$ptd_date_end_2' where id = '$ptd_id[$i]'";
-                    sql_query($sql);
+                    $upt_date_start[$i] = Date("Y-m-d",strtotime($upt_date_start[$i]));
+                    $upt_date_end[$i] = Date("Y-m-d",strtotime($upt_date_end[$i]));
+                    $sql = "Update product_type_discount set discount_percent = ?,date_start = ?,date_end = ? where id = ?";
+                    sql_query($sql,[$upt_discount_percent[$i],$upt_date_start[$i],$upt_date_end[$i],$upt_id[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }
@@ -1936,7 +1394,7 @@
                "tab_name" => $tab_name,
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
-            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['category_discount_manage_tab']),"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
+            echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['category_discount_manage_tab']) - 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
         } else if($status == "deleteTabFilter") {
             $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
             $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
