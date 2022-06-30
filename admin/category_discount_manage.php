@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
@@ -485,8 +485,9 @@
                                     $cnt++;
                                 }
                                 ?>
-                                <?php
-                                    if(count($rows) == 0) {
+                                <?php   
+                                    $count_row_table = count($rows);
+                                    if($count_row_table == 0) {
                                  ?>
                                  <tr>
                                     <td style="text-align:center;font-size:17px;" colspan="10">Không có dữ liệu</td>
@@ -612,7 +613,7 @@ include_once("include/bottom.meta.php");
 <script src="js/khoi_all.js"></script>
 <!--js section end-->
 <script>
-    <?=$upt_more != 1 ? "setSortTable();" : null;?> 
+    <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?> 
 </script>
 <!--js section start-->
 <script>

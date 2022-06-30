@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     logout_session_timeout();
     check_access_token();
     redirect_if_login_status_false();
@@ -9,22 +9,62 @@
 ?>
 <!--html & css section start-->
 <?php
-    $session_id = $_SESSION["id"];
     $sql_get_info = "select * from company_info limit 1";
-    $cp_info = fetch(sql_query($sql_get_info));
-
+    $result = fetch(sql_query($sql_get_info));
+    $sql_check_admin = "select type from user where id = ?";
+    $row = fetch(sql_query($sql_check_admin,[$_SESSION['id']]));
 ?>
 <div class="container-wrapper" style="margin-left:250px;">
     <section class="content-header">
       <div class="container-fluid">
-        <div class="row mb-2">
+        <div class="row mb-2 d-flex j-between">
           <div class="col-sm-6">
-            <h1>Hồ sơ</h1>
+            <h1>Thông tin công ty</h1>
           </div>
+          <?php
+            //log_a($row);
+            if($row['type'] == 'admin') {
+          ?>
+          <div class="">
+            <button onclick="showModalChangeCompanyInfo()" class="dt-button button-blue">
+              Sửa thông tin công ty
+            </button>
+          </div>
+          <?php } ?>
         </div>
       </div>
     </section>
     <section class="content">
+        <div class="container-fluid">
+            <div class="row kh-padding">
+                <div class="col-12">
+                    <table class="table table-bordered kh-bg-th">
+                        <tr>
+                            <th class="w-300">Tên cêng ty</th>
+                            <td><?=$result['company_name'];?></td>
+                        </tr>
+                        <tr>
+                            <th class="w-00">Mã số thuế: </th>
+                            <td><?=$result['company_tax_code'];?></td>
+                        </tr>
+                        <tr>
+                            <th class="w-200">Số điện thoại:</th>
+                            <td><?=$result['company_phone'];?></td>
+                        </tr>
+                        <tr>
+                            <th class="w-200">Email liên hệ:</th>
+                            <td><?=$result['company_email'];?></td>
+                        </tr>
+                        <tr>
+                            <th class="w-200">Địa chỉ:</th>
+                            <td><?=$result['company_address'];?></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--<section class="content">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
@@ -43,7 +83,6 @@
                         <div class="col-sm-10">
                           <input name="full_name" type="text" class="form-control" value="<?=$cp_info["company_name"];?>"">
                         </div>
-                        <!-- loi ho ten -->
                         <div id="name_err" class="text-danger"></div>
                       </div>
                       <div class="form-group row">
@@ -51,7 +90,6 @@
                         <div class="col-sm-10 d-flex">
                           <input name="email" type="email" class="form-control" value="<?=$cp_info["company_email"];?>">
                         </div>
-                        <!-- loi email -->
                         <div id="email_err" class="text-danger"></div>
                         </div>
                       <div class="form-group row">
@@ -95,106 +133,108 @@
           </div>
         </div>
       </div>
-    </section>
-  </div>
+    </section>-->
+</div>
+<div class="modal fade" id="modal-xl">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Thông tin công ty</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="change_company_info" method="post">
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <!--html & css section end-->
 <?php
         include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
 <script>
-    $(document).ready(function(){
-        const readURL = (input) => {
-          if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-            $('#display-image').attr('src', e.target.result);
-            }
-            reader.readAsDataURL(input.files[0]);
-          }
-        };
-        $("#fileInput").on("change",function(){
-          $("#where-replace > span").replaceWith("<img style='width:200px;height:200px;' data-img='' class='img-fluid' id='display-image'/>");
-          readURL(this); 
-        });
-        // kích hoạt datepicker của jquery ui
-        $( "#ngay_sinh_admin" ).datepicker({
-          changeMonth: true,
-          changeYear: true,
-          dateFormat: 'dd-mm-yy',
-          onSelect: function(dateText,inst) {
-            console.log(dateText.split("-"));
-            dateText = dateText.split("-")
-            $('input[name=birthday]').attr('data-date',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-          }
-        });
-        // cập nhật thông tin admin
-        $(document).on('click','#btn-cap-nhat-admin',function(event){
-            event.preventDefault();
-            let username = $('input[name=username]').val();
-            let full_name = $('input[name=full_name]').val();
-            let old_pass = $('input[name=old_pass]').val();
-            let email = $('input[name=email]').val();
-            let phone = $('input[name=phone]').val();
-            let birthday = $('input[name=birthday]').attr('data-date');
-            let address = $('input[name=address]').val();
-            if(old_pass == ""){
-              $.alert({
-                title: "Thông báo",
-                content: "Vui lòng không để trống mật khẩu xác thực."
-              });
-              return;
-            } 
-            var formData = new FormData($('#form-admin')[0]);
-            // xu ly du lieu
-            formData.append('status','change_info');
-            formData.append('username',username);
-            formData.append('full_name',full_name);
-            formData.append('email',email);
-            formData.append('phone',phone);
-            formData.append('birthday',birthday);
-            formData.append('address',address);
-            formData.append('old_pass',old_pass);
-            let url = window.location.href;
-            // xu ly anh
-            let file = $('input[name=img_admin_file]')[0].files;
-            if(file.length > 0){
-              formData.append('img_admin_file',file[0]);
-            }
-            // xử lý ajax
-            $.ajax({
-                url:url,
-                type:"POST",
-                cache:false,
-                dataType:"json",
-                contentType: false,
-                processData: false,
-                data:formData,
-                success:function(res_json){
-                  if(res_json.msg == 'ok'){
-                    $.alert({
-                      title: "Thông báo",
-                      content: res_json.success,
-                      buttons: {
-                        "Ok":function(){
-                          location.reload();
-                        }
-                      }
-                    });
-                  } else {
-                    $.alert({
-                      title: "Thông báo",
-                      content: res_json.error
-                    });
-                  }
-                },
-                error: function (data) {
-                    console.log('Error:', data);
-                }
-            });
-        });
-        
+   function showModalChangeCompanyInfo(){
+    $('#change_company_info').load("ajax_company_info.php?status=changeCompanyInfo",() => {
+      $('#modal-xl').modal('show');
     });
+   }
+   function processChangeCompanyInfo(){
+      let formData = new FormData();
+      let test = true;
+      let company_tax_code = $('input[name="company_tax_code"]').val();
+      let company_name = $('input[name="company_name"]').val();
+      let company_phone = $('input[name="company_phone"]').val();
+      let company_email = $('input[name="company_email"]').val();
+      let company_address = $('input[name="company_address"]').val();
+      if(company_name == ""){
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống tên công ty",
+        });
+        test = false;
+      } else if(company_phone == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống số điện thoại công ty",
+        });
+        test = false;
+      } else if(company_email == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống email công ty",
+        });
+        test = false;
+      } else if(company_address == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống địa chỉ công ty",
+        });
+        test = false;
+      } else if(company_tax_code == "") {
+        $.alert({
+          title: "Thông báo",
+          content: "Vui lòng không để trống mã số thuế công ty",
+        });
+        test = false;
+      }
+
+      if(test) {
+        formData.append('status','change_company_info');
+        formData.append('company_name',company_name);
+        formData.append('company_phone',company_phone);
+        formData.append('company_email',company_email);
+        formData.append('company_tax_code',company_tax_code);
+        formData.append('company_address',company_address);
+        $.ajax({
+          url: window.location.href,
+          type: "POST",
+          data: formData,
+          cache: false,
+          processData:false,
+          contentType:false,
+          success:function(data){
+            console.log(data);
+            data = JSON.parse(data);
+            if(data.msg == "ok") {
+              $.alert({
+                title:"Thông báo",
+                content:"Bạn đã cập nhật thông tin công ty thành công",
+                buttons:{
+                  "Ok":function(){
+                    location.reload();
+                  }
+                }
+              })
+            }
+          }
+        })
+      }
+  }
 </script>
 <!--js section end-->
 <?php
@@ -202,19 +242,24 @@
 ?>
 <?php
     } else if (is_post_method()) {
-        $session_id = $_SESSION["id"];
-        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-        $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
-        $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
-        $birthday = isset($_REQUEST["birthday"]) ? $_REQUEST["birthday"] : null;
-        $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
-        $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
-        $old_pass = isset($_REQUEST["old_pass"]) ? $_REQUEST["old_pass"] : null;
-        if($status == "change_info") {
-            $success = "Bạn đã cập nhật thông tin cá nhân thành công";
+        $sql_check_admin = "select type from user where id = ?";
+        $row = fetch(sql_query($sql_check_admin,[$_SESSION['id']]));
+        if($row['type'] == 'admin') {
+          $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+          $company_name = isset($_REQUEST["company_name"]) ? $_REQUEST["company_name"] : null;
+          $company_email = isset($_REQUEST["company_email"]) ? $_REQUEST["company_email"] : null;
+          $company_phone = isset($_REQUEST["company_phone"]) ? $_REQUEST["company_phone"] : null;
+          $company_address = isset($_REQUEST["company_address"]) ? $_REQUEST["company_address"] : null;
+          $company_tax_code = isset($_REQUEST["company_tax_code"]) ? $_REQUEST["company_tax_code"] : null;
+          $company_id = 1;
+          if($status == "change_company_info") {
+            $success = "Bạn đã cập nhật thông tin công ty thành công";
             $error = "Đã có lỗi xảy ra, vui lòng tải lại trang.";
-            ajax_db_update_by_id('user',['full_name'=>$full_name,'email'=>$email,'birthday'=>$birthday,'phone'=>$phone,'address'=>$address],[$session_id],['success' => $success],['error' => $error]);
-            $_SESSION["img_name"] = $path;
+            $sql = "Update company_info set company_name = ?,company_email = ?,company_phone = ?,company_address = ?,company_tax_code = ? where id = ?";
+            sql_query($sql,[$company_name,$company_email,$company_phone,$company_address,$company_tax_code,$company_id]);
+            echo_json(["msg" => "ok"]);
+          }
         }
+        
     }
 ?>

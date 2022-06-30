@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {

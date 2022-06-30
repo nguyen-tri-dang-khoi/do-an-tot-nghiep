@@ -19,7 +19,7 @@
         $select_payment_status_id = isset($_REQUEST['select_payment_status_id']) ? $_REQUEST['select_payment_status_id'] : null;
         $select_payment_method = isset($_REQUEST['select_payment_method']) ? $_REQUEST['select_payment_method'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $where = "where 1=1 ";
+        $where = "where 1=1 and u.type='customer' ";
         $order_by = "Order by o.id desc";
         $wh_child = [];
         $arr_search = [];
@@ -301,14 +301,14 @@
                           $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                           $limit = $_SESSION['paging'];
                           $start_page = $limit * ($page - 1);
-                          $sql_get_total = "select count(*) as 'countt' from orders o inner join customer c on o.customer_id = c.id $where";
+                          $sql_get_total = "select count(*) as 'countt' from orders o inner join user u on o.customer_id = u.id $where";
                           $total = fetch(sql_query($sql_get_total))['countt'];
                         ?>
                         <tbody dt-parent-id dt-items="<?=$total;?>" dt-limit="<?=$limit;?>" dt-page="<?=$page?>" class="list-order">
                         <?php
                           
                           $sql_get_order = "select o.id as 'o_id',o.is_cancel as 'o_is_cancel',o.delivery_status_id as 'o_delivery_status_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status_id,
-                          o.created_at as 'o_created_at',o.customer_id as 'o_customer_id',c.full_name,c.phone from orders o inner join customer c on o.customer_id = c.id $where limit $start_page,$limit";
+                          o.created_at as 'o_created_at',o.customer_id as 'o_customer_id',u.full_name,u.phone from orders o inner join user u on o.customer_id = u.id and u.type='customer' $where limit $start_page,$limit";
                           $rows = fetch_all(sql_query($sql_get_order));
                           $i = 0;
                           $cnt = 0;
@@ -375,7 +375,8 @@
                           }
                         ?>
                         <?php
-                            if(count($rows) == 0) {
+                            $count_row_table = count($rows);
+                            if($count_row_table == 0) {
                         ?>
                         <tr>
                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
@@ -482,7 +483,7 @@
 <script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
-  setSortTable();
+  <?=$count_row_table != 0 ? "setSortTable();" : null;?>
   $(".kh-datepicker2").datepicker({
     changeMonth: true,
     changeYear: true,

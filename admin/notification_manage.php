@@ -355,7 +355,8 @@
                               }
                               ?>
                               <?php
-                                 if(count($rows) == 0) {
+                                 $count_row_table = count($rows);
+                                 if($count_row_table == 0) {
                               ?>
                               <tr>
                                  <td style="text-align:center;font-size:17px;" colspan="6">Không có dữ liệu</td>
@@ -479,7 +480,7 @@
 <script src="js/khoi_all.js"></script>
 <!--searching filter-->
 <script>
-   <?=$upt_more != 1 ? "setSortTable();" : null;?>
+   <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?>
    function choose_type_search(){
       let _option = $("select[name='search_option'] > option:selected").val();
       if(_option.indexOf("2") > -1) {

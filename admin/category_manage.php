@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
@@ -297,7 +297,8 @@
                             ?>
                           </tbody>
                           <?php
-                            if(count($product_types) == 0) {
+                            $count_row_table = count($product_types);
+                            if($count_row_table == 0) {
                           ?>
                           <tr>
                             <td style="text-align:center;font-size:17px;" colspan="6">Không có dữ liệu</td>
@@ -429,7 +430,7 @@
 
 <script src="js/khoi_all.js"></script>
 <script>
-  <?=$upt_more != 1 ? 'setSortTable();' : null;?>
+  <?=$upt_more != 1 && $count_row_table != 0 ? 'setSortTable();' : null;?>
   $('#select-type2').select2();
   function uptAll(){
     let all_checkbox = getIdCheckbox();

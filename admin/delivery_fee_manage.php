@@ -151,26 +151,9 @@
                                         <button onclick="delMore()" id="btn-delete-fast" class="dt-button button-red">Xoá nhanh</button>
                                         <?php } ?>
                                         <?php
-                                            if($allow_update) {
-                                        ?>
-                                        <button onclick="uptMore('','<?=$tab_unique;?>')" id="btn-upt-fast" class="dt-button button-green">Sửa nhanh</button>
-                                        <?php } ?>
-                                        <?php
                                             if($allow_read) {
                                         ?>
                                         <button onclick="readMore()" class="dt-button button-grey">Xem nhanh</button>
-                                        <?php } ?>
-                                        <?php
-                                            if($allow_insert) {
-                                        ?>
-                                        <button onclick="insMore()" id="btn-ins-fast" class="dt-button button-blue">Thêm nhanh</button>
-                                        <?php } ?>
-                                        </div>
-                                        <div class="section-save">
-                                        <?php
-                                            if($upt_more == 1 && $allow_update){
-                                        ?>
-                                        <button onclick="uptAll()" class="dt-button button-green">Lưu thay đổi ?</button>
                                         <?php } ?>
                                         </div>
                                     </div>
@@ -240,7 +223,8 @@
                                                     } 
                                                 ?>
                                                 <?php
-                                                if(count($rows) == 0) {
+                                                $count_row_table = count($rows);
+                                                if($count_row_table == 0) {
                                                 ?>
                                                 <tr>
                                                     <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
@@ -294,62 +278,17 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="modal-xl3">
-    <div class="modal-dialog modal-xl" style="min-width:1700px;">
+<div class="modal fade" id="modal-xl2">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Thông tin tính phí vận chuyển</h4>
+                <h4 class="modal-title">Thông tin phí vận chuyển</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div id="form-delivery_fee2" class="modal-body">
-                    <div class="row j-between a-center">
-                        <div style="margin-left: 7px;" class="form-group">
-                            <label for="">Nhập số dòng: </label>
-                            <div class="" style="justify-content:flex-end;display:inline-flex">
-                            <div class="k-number-row">
-                                <input type="number" style="width:100px" name="count3" class="kh-inp-ctrl">
-                            </div>
-                            <div class="k-plus">
-                                <button data-plus="0" onclick="insRow()" style="font-size:15px;" class="dt-button button-blue k-btn-plus">+</button>
-                            </div>
-                            <div class="k-minus">
-                                <button onclick="delRow()" style="font-size:15px;" class="dt-button button-blue k-btn-minus">-</button>
-                            </div>
-                            </div>  
-                        </div>
-                        <div class="form-group">
-                            <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
-                        </div>
-                        <div class="d-flex f-column form-group">
-                            <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
-                            <div class="file file-csv mr-10">
-                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this)">
-                            </div>
-                            <div class="file file-excel mr-10">
-                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this)">
-                            </div>
-                            <div class="d-empty">
-                                <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    <table class='table table-bordered' style="height:auto;">
-                        <thead>
-                            <tr>
-                                <th class='w-150'>Số thứ tự</th>
-                                <th>Thành phố / Tỉnh</th>
-                                <th>Quận / Huyện / Xã</th>
-                                <th>Phường / Thị trấn</th>
-                                <th>Phí vận chuyển</th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+                <div id="form-delivery_fee2"></div>
             </div>
         </div>
     </div>
@@ -363,7 +302,7 @@
 ?>
 <script src="js/khoi_all.js"></script>
 <script>
-    <?=$upt_more != 1 ? "setSortTable();" : null;?> 
+    <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?> 
     function loadDistricts(){
         let province_id = $("select[name='province_id'] > option:selected").val();
         $(".select-districts").load("ajax_delivery_fee_manage.php?status=load_districts&province_id=" + province_id ,() => {
@@ -584,6 +523,14 @@
             $sql_del =  "Update delivery_fee set is_delete = ? where id = ?";
             sql_query($sql_del,[1,$id]);
             echo_json(["msg" => "ok","success" => "Bạn đã xoá dữ liệu thành công"]);
+        } else if($status == "del_more") {
+            $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
+            $rows = explode(",",$rows);
+            foreach($rows as $row) {
+                $sql_del = "Update delivery_fee set is_delete = ? where id = ?";
+                sql_query($sql_del,[1,$row]);
+            }
+            echo_json(["msg" => "ok"]);
         } else if($status == "saveTabFilter") {
             $_SESSION['delivery_fee_tab_id'] = isset($_SESSION['delivery_fee_tab_id']) ? $_SESSION['delivery_fee_tab_id'] + 1 : 1;
             $tab_name = isset($_SESSION['delivery_fee_tab_id']) ? "tab_" . $_SESSION['delivery_fee_tab_id'] : null;
@@ -602,7 +549,7 @@
             array_splice($_SESSION['delivery_fee_manage_tab'],$index,1);
             if(trim($is_active_2) == "") {
                 echo_json(["msg" => "ok"]);
-            }  else if($is_active_2 == 1) {
+            } else if($is_active_2 == 1) {
                 if(array_key_exists($index,$_SESSION['delivery_fee_manage_tab'])) {
                     echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['delivery_fee_manage_tab'][$index]['tab_urlencode']]);
                 } else if(array_key_exists($index - 1,$_SESSION['delivery_fee_manage_tab'])){

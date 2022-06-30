@@ -111,7 +111,6 @@
             } else if($is_active == "Deactive"){
                 $where .= " and is_active=0";
             }
-            
         }
         if($orderStatus && $orderByColumn) {
             $order_by = "ORDER BY $orderByColumn $orderStatus";
@@ -402,7 +401,8 @@
                                         }
                                         ?>
                                         <?php
-                                            if(count($rows) == 0) {
+                                            $count_row_table = count($rows);
+                                            if($count_row_table == 0) {
                                         ?>
                                         <tr>
                                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
@@ -531,7 +531,7 @@
 <script src="js/khoi_all.js"></script>
 <!--js section start-->
 <script>
-    <?=$upt_more != 1 ? "setSortTable();" : null;?>
+   <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?>
     function uptAll(){
         let test = true;
         let all_checkbox = getIdCheckbox();

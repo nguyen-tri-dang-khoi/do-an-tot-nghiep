@@ -613,13 +613,16 @@ var html_config = {
     },
     "delivery_fee_manage":{
         "load":{
-            'tbody_read':'.list-customer',
+            'tbody_read':'.list-delivery-fee',
         },
         "read_fast":{
-            'modal_read':'#manage_customer',
-            'modal_xl':'#modal-xl',
-            'tbody_read':'.list-customer',
-            'link_read':'ajax_customer',
+            'modal_read':'#form-delivery_fee2',
+            'modal_xl':'#modal-xl2',
+            'tbody_read':'.list-delivery-fee',
+            'link_read':'ajax_delivery_fee_manage',
+        },
+        "del_fast":{
+            'tbody_read':'.list-delivery-fee',
         },
         "sort_table":{
             'tbody_read':'.list-delivery-fee',
@@ -1188,13 +1191,9 @@ function insMore2(){
                         content: "Bạn đã thêm dữ liệu thành công",
                         buttons: {
                             "Ok": function(){
-                                this2.text("Đã thêm");
-                                this2.prop("disabled",true);
-                                this2.css({
-                                    "border": "1px solid #cac0c0",
-                                    "color": "#cac0c0",
-                                    "pointer-events": "none",
-                                });
+                                this2.closest('tr').find('input').val("");
+                                this2.closest('tr').find('textarea').val("");
+                                this2.closest('tr').find('select > option[value=""]').prop("selected",true);
                             }
                         }
                     })

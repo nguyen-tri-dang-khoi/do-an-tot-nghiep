@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     if(is_get_method()) {
         // permission crud for customer
         $allow_read = $allow_lock = $allow_unlock = false; 
@@ -25,7 +25,7 @@
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        $where = "where 1=1 and is_delete = 0 ";
+        $where = "where 1=1 and type='customer' and is_delete = 0 ";
         $order_by = "Order by id desc";
         $wh_child = [];
         $arr_search = [];
@@ -259,9 +259,9 @@
                                     $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1;  
                                     $limit = $_SESSION['paging'];
                                     $start_page = $limit * ($page - 1);
-                                    $sql_get_total = "select count(*) as 'countt' from customer $where";
+                                    $sql_get_total = "select count(*) as 'countt' from user $where";
                                     $total = fetch(sql_query($sql_get_total))['countt'];
-                                    $sql_get_customer = "select * from customer $where limit $start_page,$limit";
+                                    $sql_get_customer = "select * from user $where limit $start_page,$limit";
                                     $rows = fetch_all(sql_query($sql_get_customer));
                                     $cnt = 0;
                                 ?>
@@ -311,7 +311,8 @@
                                                 } 
                                             ?>
                                         <?php
-                                            if(count($rows) == 0) {
+                                            $count_row_table = count($rows);
+                                            if($count_row_table == 0) {
                                         ?>
                                         <tr>
                                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
@@ -376,7 +377,7 @@
 <!--searching filter-->
 <script src="js/khoi_all.js"></script>
 <script>
-    setSortTable();
+    <?=$count_row_table != 0 ? "setSortTable();" : null;?>
     $(".kh-datepicker2").datepicker({
         changeMonth: true,
         changeYear: true,
@@ -557,7 +558,7 @@
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update customer set is_lock = 1 where id = ?";
+                $sql = "Update user set is_lock = 1 where type = 'customer' and id = ?";
                 sql_query($sql,[$row]);
             }
             echo_json(["msg" => "ok"]);
@@ -565,7 +566,7 @@
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
             $rows = explode(",",$rows);
             foreach($rows as $row) {
-                $sql = "Update customer set is_lock = 0 where id = ?";
+                $sql = "Update user set is_lock = 0 where type = 'customer' and id = ?";
                 sql_query($sql,[$row]);
             }
             echo_json(["msg" => "ok"]);

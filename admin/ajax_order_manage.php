@@ -40,7 +40,7 @@
 </table>
 <?php
     } else if($status == "show_order_detail") {
-        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join customer c on
+        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
         c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
         $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
         $client_order = fetch(sql_query($sql_get_client_order));
@@ -173,7 +173,7 @@
         $arr = explode(",",$str_arr_upt);
         $i = 1;
         foreach($arr as $order_id) {
-            $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join customer c on
+            $sql_get_client_order = "select u.full_name,u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
             c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
             $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
             $client_order = fetch(sql_query($sql_get_client_order));
@@ -202,7 +202,7 @@
                     </tr>
                     <tr>
                         <th>Địa chỉ:</th>
-                        <td><?=$client_order['c_address'];?></td>
+                        <td><?=$client_order['u_address'];?></td>
                     </tr>
                     
                 </table>
@@ -216,7 +216,7 @@
                     </tr>
                     <tr>
                         <th>Địa chỉ giao hàng</th>
-                        <td><?=$client_order['o_address'] == $client_order['c_address'] ? "Trùng với địa chỉ khách hàng" : $client_order['o_address'];?></td>
+                        <td><?=$client_order['o_address'] == $client_order['u_address'] ? "Trùng với địa chỉ khách hàng" : $client_order['o_address'];?></td>
                     </tr>
                     <tr>
                         <th>Tổng tiền</th>
@@ -255,7 +255,8 @@
                     
                     <tbody>
                         <?php
-$sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',o.note_payment as 'o_note_payment',p.created_at as 'p_created_at' from order_payment_history o inner join payment_status p on o.payment_status_id = p.id where o.order_id = '$order_id'";                            $ress = fetch_all(sql_query($sql_payment_history));
+                        $sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',o.note_payment as 'o_note_payment',p.created_at as 'p_created_at' from order_payment_history o inner join payment_status p on o.payment_status_id = p.id where o.order_id = '$order_id'";                            
+                        $ress = fetch_all(sql_query($sql_payment_history));
                             foreach($ress as $res) {
                         ?>
                         <tr>
@@ -305,7 +306,7 @@ $sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',
 <?php } else if($status == "load_shipper") {
     $sql_get_shipper = "select * from user where type = 'shipper' and is_delete = 0";
     //
-    $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join customer c on
+    $sql_get_client_order = "select u.full_name,u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
     c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
     $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
     $client_order = fetch(sql_query($sql_get_client_order));
@@ -350,7 +351,7 @@ $sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',
                     </tr>
                     <tr>
                         <th>Địa chỉ giao hàng</th>
-                        <td><?=$client_order['o_address'] == $client_order['c_address'] ? "Trùng với địa chỉ khách hàng" : $client_order['o_address'];?></td>
+                        <td><?=$client_order['o_address'] == $client_order['u_address'] ? "Trùng với địa chỉ khách hàng" : $client_order['o_address'];?></td>
                     </tr>
                     <tr>
                         <th>Tổng tiền</th>

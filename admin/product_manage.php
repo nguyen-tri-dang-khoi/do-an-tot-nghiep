@@ -576,7 +576,8 @@
                                     ?>
                                  </tbody>
                                  <?php
-                                    if(count($rows) == 0) {
+                                    $count_row_table = count($rows);
+                                    if($count_row_table == 0) {
                                  ?>
                                  <tr>
                                     <td style="text-align:center;font-size:17px;" colspan="10">Không có dữ liệu</td>
@@ -1220,7 +1221,7 @@
    }
 </script>
 <script>
-   <?=$upt_more != 1 ? "setSortTable();" : null;?>
+   <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?>
    function insAll(){
       let test = true;
       let formData = new FormData();

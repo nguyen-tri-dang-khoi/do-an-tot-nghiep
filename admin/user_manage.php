@@ -104,7 +104,6 @@
             
         }
         $where .= " $order_by";
-        log_v($where);
 ?>
 <style>
     .sort-asc,.sort-desc {
@@ -188,7 +187,6 @@
                                                     <select name="search_option" class="form-control mb-10">
                                                         <option value="">Chọn cột tìm kiếm</option>
                                                         <option value="phone" <?=$search_option == 'phone' ? 'selected="selected"' : '' ?>>Số điện thoại</option>
-                                                        <option value="cmnd" <?=$search_option == 'cmnd' ? 'selected="selected"' : '' ?>>Chứng minh nhân dân</option>
                                                         <option value="email" <?=$search_option == 'email' ? 'selected="selected"' : '' ?>>Email</option>
                                                         <option value="full_name" <?=$search_option == 'full_name' ? 'selected="selected"' : '' ?>>Tên đầy đủ</option>
                                                         <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
@@ -246,7 +244,6 @@
                                                     <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên đầy đủ</option>
                                                     <option value="email" <?=$orderByColumn == "email" ? "selected" : "";?>>Email</option>
                                                     <option value="phone" <?=$orderByColumn == "phone" ? "selected" : "";?>>Số điện thoại</option>
-                                                    <option value="cmnd" <?=$orderByColumn == "cmnd" ? "selected" : "";?>>Số chứng minh nhân dân</option>
                                                     <option value="address" <?=$orderByColumn == "address" ? "selected" : "";?>>Địa chỉ</option>
                                                     <option value="birthday" <?=$orderByColumn == "birthday" ? "selected" : "";?>>Ngày sinh</option>
                                                     <option value="created_at" <?=$orderByColumn == "created_at" ? "selected" : "";?>>Ngày tạo</option>
@@ -320,7 +317,7 @@
                                 ?>
                                 <!--Table user-->
                                 <div class="table-responsive table-game-start">
-                                    <table id="table-user_manage" class="table table-bordered table-striped ">
+                                    <table id="table-user_manage" class="table table-bordered table-striped">
                                         <thead>
                                             <tr  style="cursor:pointer;">
                                                 <th style="width:20px !important;">
@@ -330,7 +327,6 @@
                                                 <th class="th-ten-day-du">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-170 th-email">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-170 th-so-dien-thoai">Số điện thoại <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                                <th class="w-300 th-so-cmnd">Số chứng minh nhân dân <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-300">Địa chỉ</th>
                                                 <th class="w-150 th-ngay-sinh">Ngày sinh <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-120 th-ngay-tao">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -359,7 +355,6 @@
                                                     </td>
                                                     <td class="email"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='upt_email' value='$row[email]'><span class='text-danger'></span>" : $row["email"]?></td>
                                                     <td class="so-dien-thoai"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='upt_phone' value='$row[phone]'><span class='text-danger'></span>" : $row["phone"]?></td>
-                                                    <td class="so-cmnd"><?=$upt_more == 1 ? "<input tabindex='$cnt1' class='kh-inp-ctrl' type='number' name='upt_cmnd' value='$row[cmnd]'><span class='text-danger'></span>" : $row["cmnd"]?></td>
                                                     <td><?=$upt_more == 1 ? "<textarea tabindex='$cnt1' class='kh-inp-ctrl' type='text' name='upt_address'>$row[address]</textarea><span class='text-danger'></span>" : $row["address"]?></td>
                                                     <td class="ngay-sinh">
                                                         <?php 
@@ -419,7 +414,8 @@
                                                 } 
                                             ?>
                                             <?php
-                                                if(count($rows) == 0) {
+                                                $count_row_table = count($rows);
+                                                if($count_row_table == 0) {
                                             ?>
                                             <tr>
                                                 <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
@@ -435,7 +431,6 @@
                                                 <th>Tên đầy đủ</th>
                                                 <th>Email</th>
                                                 <th>Số điện thoại</th>
-                                                <th>Số chứng minh nhân dân</th>
                                                 <th>Địa chỉ</th>
                                                 <th>Ngày sinh</th>
                                                 <th>Ngày tạo</th>
@@ -617,7 +612,7 @@
 ?>
 <script src="js/khoi_all.js"></script>
 <script>
-    <?=$upt_more != 1 ? "setSortTable();" : null;?>
+    <?=$upt_more != 1 && $count_row_table != 0  ? "setSortTable();" : null;?>
 </script>
 <!--searching filter-->
 <script>

@@ -3,7 +3,7 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,created_at,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from customer where id = '$id' and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from user where id = '$id' and type='customer' and is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_user_info));
 ?>
 <div class="card-body">
@@ -44,7 +44,7 @@
         $str_arr_upt = isset($_REQUEST['str_arr_upt']) ? $_REQUEST['str_arr_upt'] : null;
         $html = "";
         if($str_arr_upt) {
-            $sql = "select * from customer where id in ($str_arr_upt)";
+            $sql = "select * from user where id in ($str_arr_upt) and is_delete = 0 and type='customer'";
             $result2 = fetch_all(sql_query($sql));
             $i = 1;
             foreach($result2 as $res) {

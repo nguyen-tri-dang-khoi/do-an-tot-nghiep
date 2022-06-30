@@ -1,5 +1,5 @@
 <?php
-    include_once("../lib/database_v2.php");
+    include_once("../lib/database.php");
     require '../lib/vendor/autoload.php';
     use PhpOffice\PhpSpreadsheet\Chart\Chart;
     use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
@@ -206,7 +206,7 @@
         ];
         $arrDataInfoValue['countUser'] = fetch(sql_query("select count(*) as 'cnt' from user where is_delete = 0"))['cnt'];
         $arrDataInfoValue['countProduct'] = fetch(sql_query("select count(*) as 'cnt' from product_info where is_delete = 0"))['cnt'];
-        $arrDataInfoValue['countCustomer'] = fetch(sql_query("select count(*) as 'cnt' from customer where is_delete = 0"))['cnt'];
+        $arrDataInfoValue['countCustomer'] = fetch(sql_query("select count(*) as 'cnt' from user where is_delete = 0 and type = 'customer'"))['cnt'];
         // mảng thông tin nhân viên
         $arrUserInfoKey = [
             "fullName" => "Họ tên nhân viên báo cáo:",
@@ -223,7 +223,7 @@
             "Address" => "37 đường 102, Phường Thạnh Mỹ Lợi,\nTP.Thủ Đức, TP.HCM",
             "dateReport" => "29-05-2022",
         ];
-        $userInfo = fetch(sql_query("select * from user where is_delete = 0 and id = " . $_SESSION['id'] . " limit 1"));
+        $userInfo = fetch(sql_query("select * from user where is_delete = 0 and type = 'admin' and id = ? limit 1",[$_SESSION['id']]));
         $arrUserInfoValue['fullName'] = $userInfo['full_name'];
         $arrUserInfoValue['Phone'] = $userInfo['phone'];
         $arrUserInfoValue['Email'] = $userInfo['email'];
@@ -278,13 +278,18 @@
                 $arr_2[$i] = [$_data['stt'][$i],$_data['time'][$i],$_data['revenue'][$i],$_data['countProduct'][$i],$_data['revenue'][$i],$_data['profit'][$i],$_data['countOrder'][$i]];
             }
         }
+        $timeNewRoman = array(
+            'font' => array(
+                'name'  => 'Times New Roman',
+            ),
+        );
         //log_a($arr_2);
         $styleArray = array(
             'font'  => array(
                 'bold'  => true,
                 'color' => array('rgb' => '#ddd'),
                 'size'  => 12,
-                'name'  => 'Verdana'
+                'name'  => 'Times New Roman'
             )
         );
         // style cho tiêu đề
@@ -293,7 +298,7 @@
                 'bold'  => true,
                 'color' => ['argb' => '963634'],
                 'size'  => 14,
-                'name'  => 'Verdana'
+                'name'  => 'Times New Roman'
             ],
             'alignment' => [
                 'horizontal' => StyleAlignment::HORIZONTAL_CENTER
@@ -321,7 +326,7 @@
             ],
             'alignment' => [
                 'vertical' => StyleAlignment::VERTICAL_CENTER,
-                'horizontal' => StyleAlignment::HORIZONTAL_CENTER,
+                'horizontal' => StyleAlignment::HORIZONTAL_LEFT
             ],
             'borders' => [
                 'allBorders' => [
@@ -331,6 +336,22 @@
             ],
         ];
         $styleUserInfo2 = [
+            'font' => [
+                'color' => ['rgb' => '#ddd'],
+                'size'  => 11,
+            ],
+            'alignment' => [
+                'vertical' => StyleAlignment::VERTICAL_CENTER,
+                'horizontal' => StyleAlignment::HORIZONTAL_RIGHT,
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => 'FFFF0000'],
+                ],
+            ],
+        ];
+        $styleUserInfo3 = [
             'font' => [
                 'color' => ['rgb' => '#ddd'],
                 'size'  => 11,
@@ -393,6 +414,7 @@
         //$dataColumnInfoValue = array_chunk($dataColumnInfoValue,1);
         $spreadsheet = new Spreadsheet();
         $worksheet = $spreadsheet->getActiveSheet();
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Times New Roman');
         $worksheet->getColumnDimension('A')->setWidth(100,"pt");
         $worksheet->getColumnDimension('B')->setWidth(100,"pt");
         $worksheet->getColumnDimension('C')->setWidth(100,"pt");
@@ -478,6 +500,10 @@
         $worksheet->setCellValue('G' . ($cellNext + 1),"=SUM(" . 'H13:H' . ($cellNext - 3) .")");
         $worksheet->setCellValue('H' . ($cellNext + 1),"=SUM(" . 'I13:I' . ($cellNext - 3) .")");
         //
+        $worksheet->getStyle('C12:I12')->applyFromArray($styleUserInfo3);
+        $worksheet->getStyle('E9:G9')->applyFromArray($styleUserInfo3);
+        $worksheet->getStyle('E10:G10')->applyFromArray($styleUserInfo2);
+        //
         $worksheet->getStyle('D' . ($cellNext + 1))->getNumberFormat()->setFormatCode('#,##0"đ"');
         $worksheet->getStyle('E' . ($cellNext + 1))->getNumberFormat()->setFormatCode('#,##0"đ"');
         //$worksheet->getStyle('F' . ($cellNext + 1))->getNumberFormat()->setFormatCode('#,##0"đ"');
@@ -498,10 +524,14 @@
         $worksheet->getStyle('G' . ($cellNext + 2))->getNumberFormat()->setFormatCode('#,##0"đ"');
         //$worksheet->getStyle('H' . ($cellNext + 2))->getNumberFormat()->setFormatCode('#,##0"đ"');
         $worksheet->getStyle('C' . $cellNext . ":" . 'H'. ($cellNext + 2))->applyFromArray($styleUserInfo2);
+        $worksheet->getStyle('C' . $cellNext . ":" . 'H'. $cellNext)->applyFromArray($styleUserInfo3);
         $worksheet->getStyle('C' . $cellNext . ":" . 'H'. $cellNext)->applyFromArray($colorTbl);
+        $worksheet->getStyle('C' . $cellNext . ":" . 'C'. ($cellNext + 2))->applyFromArray($styleUserInfo);
         $worksheet->getStyle('E9:G9')->applyFromArray($colorTbl);
         $worksheet->getStyle('A2:A6')->applyFromArray($colorTbl);
         $worksheet->getStyle('G2:G6')->applyFromArray($colorTbl);
+
+        
         $filename = 'thong-ke-' . Date("d-m-Y",time());
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

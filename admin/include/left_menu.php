@@ -172,16 +172,6 @@
           </a>
         </li>
         <?php } ?>
-        <?php if(check_permission_link("history_manage.php")){?>
-        <li class="nav-item " >
-          <a tabindex="-1" href="history_manage.php" class="nav-link <?=strpos($url,"history_manage.php") ? "kh-active" : "";?>">
-            <img src="img/search.png" alt="">
-            <p>
-              Quản lý lịch sử tìm kiếm
-            </p>
-          </a>
-        </li>
-        <?php } ?>
         <?php if(check_permission_link("notification_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="notification_manage.php" class="nav-link <?=strpos($url,"notification_manage.php") ? "kh-active" : "";?>">

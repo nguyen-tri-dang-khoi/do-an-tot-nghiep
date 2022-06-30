@@ -13,9 +13,9 @@
         $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
         $limit = 2;
         $start_page = $limit * ($page - 1);
-        $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join customer cus on pcm.customer_id = cus.id where product_info_id = '$id' and pcm.is_delete = 0";
+        $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join user on pcm.user_id = user.id where product_info_id = '$id' and pcm.is_delete = 0";
         $total = fetch(sql_query($sql_get_count))['cnt'];
-        $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null and pcm.is_delete = 0";
+        $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null and pcm.is_delete = 0";
         $comments = fetch_all(sql_query($sql));
         
 ?>
@@ -44,14 +44,16 @@
     <div class="kh-main ml-20">
         <?php
             foreach($comments as $comment) {
-                $row = "";
-                if($comment['pcm_user_id']) {
+                //$row = "";
+                $sql_person_name = "select * from user where id = ? limit 1";
+                $row = fetch(sql_query($sql_person_name,[$comment['pcm_user_id']]));
+                /*if($comment['pcm_user_id']) {
                     $sql_person_name = "select * from user where id = ". $comment['pcm_user_id'] . " limit 1";
                     $row = fetch(sql_query($sql_person_name));
                 } else if($comment['pcm_customer_id']) {
                     $sql_person_name = "select * from customer where id = ". $comment['pcm_customer_id'] . " limit 1";
                     $row = fetch(sql_query($sql_person_name));
-                }
+                }*/
         ?>
         <div class="d-flex mt-10">
             <div class="kh-grp d-flex f-column a-center">
@@ -62,10 +64,10 @@
                     <?php
                         $img_default = "";
                         $txt_type = "";
-                        if($comment['pcm_user_id']) {
+                        if($row['type'] == 'admin' || $row['type'] == 'officer') {
                             $img_default = "img/user.png";
                             $txt_type = "Admin";
-                        } else if($comment['pcm_customer_id']) {
+                        } else if($row['type'] == 'customer') {
                             $txt_type = "Khách hàng";
                             $img_default = "img/client.png";
                         }
@@ -94,8 +96,8 @@
                         <span onclick="delComment('<?=$comment['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>   
                     </div>
                     <?php
-                        $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = " . $comment['pcm_id'];
-                        $cnt_comment = fetch(sql_query($sql22))['cnt'];
+                        $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = ?";
+                        $cnt_comment = fetch(sql_query($sql22,[$comment['pcm_id']]))['cnt'];
                         if($cnt_comment > 0) {
                     ?>
                     <div style="cursor:pointer;" onclick="showReplyOk('<?=$comment['pcm_id']?>','<?=$id;?>','input')" class="reply">
@@ -113,9 +115,10 @@
 
                         </div>
                         <?php
-                            $sql_user = "select * from user where id = " . $_SESSION['id'] . " limit 1";
-                            $user_1 = fetch(sql_query($sql_user));
+                            $sql_user = "select * from user where id = ? limit 1";
+                            $user_1 = fetch(sql_query($sql_user,[$_SESSION['id']]));
                         ?>
+
                         <img style="" width="50" height="50" src="<?=$user_1['img_name'] ? $user_1['img_name'] : 'user.png';?>" alt="">
                     </div>
                     <textarea style="height:45px;border-radius:15px;width:400px;max-width:400px;" type="text" name="reply<?=$comment['pcm_id']?>" class="form-control ml-10"></textarea>
@@ -129,17 +132,19 @@
 <div></div>
 <!--<div data-item="<?=$limit?>" data-total="<?=$total?>" data-page="<?=$page;?>" id="pagination-comment" style="width:100%;" class="mt-20 d-flex a-center j-center"></div>-->
 <?php } else if ($status=="show_reply_ok") {
-    $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id',pcm.customer_id as 'pcm_customer_id' from product_comment pcm where product_info_id = '$id' and pcm.is_delete = 0 and pcm.reply_id = " . $reply_id;
+    $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id' from product_comment pcm where product_info_id = '$id' and pcm.is_delete = 0 and pcm.reply_id = " . $reply_id;
     $replies = fetch_all(sql_query($sql));
     foreach($replies as $reply){
-        $row = "";
+        $sql_person_name = "select * from user where id = ? limit 1";
+        $row = fetch(sql_query($sql_person_name,[$reply['pcm_user_id']]));
+        /*$row = "";
         if($reply['pcm_user_id']) {
             $sql_person_name = "select * from user where id = ". $reply['pcm_user_id'] . " limit 1";
             $row = fetch(sql_query($sql_person_name));
         } else if($reply['pcm_customer_id']) {
             $sql_person_name = "select * from customer where id = ". $reply['pcm_customer_id'] . " limit 1";
             $row = fetch(sql_query($sql_person_name));
-        }
+        }*/
 ?>
     <div class="d-flex mt-10">
         <div class="kh-grp d-flex f-column a-center" style="position:relative">
@@ -148,7 +153,7 @@
 
                 </div>
                 <?php
-                    $img_default = "";
+                    /*$img_default = "";
                     $txt_type = "";
                     if($reply['pcm_user_id']) {
                         $img_default = "img/user.png";
@@ -156,6 +161,15 @@
                     } else if($reply['pcm_customer_id']) {
                         $img_default = "img/client.png";
                         $txt_type = "Khách hàng";
+                    }*/
+                    $img_default = "";
+                    $txt_type = "";
+                    if($row['type'] == 'admin' || $row['type'] == 'officer') {
+                        $img_default = "img/user.png";
+                        $txt_type = "Admin";
+                    } else if($row['type'] == 'customer') {
+                        $txt_type = "Khách hàng";
+                        $img_default = "img/client.png";
                     }
                 ?>
                 <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
@@ -183,8 +197,8 @@
                     <span onclick="delComment('<?=$reply['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>    
                 </div>
                 <?php
-                    $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = " . $reply['pcm_id'];
-                    $cnt_reply = fetch(sql_query($sql22))['cnt'];
+                    $sql22 = "select count(*) as 'cnt' from product_comment where is_delete = 0 and reply_id = ?";
+                    $cnt_reply = fetch(sql_query($sql22,[$reply['pcm_id']]))['cnt'];
                     if($cnt_reply > 0) {
                 ?>
                     <div style="cursor:pointer;" onclick="showReplyOk('<?=$reply['pcm_id']?>','<?=$id;?>','input')" class="reply">
@@ -202,8 +216,8 @@
 
                     </div>
                     <?php
-                        $sql_user = "select * from user where id = " . $_SESSION['id'] . " limit 1";
-                        $user_1 = fetch(sql_query($sql_user));
+                        $sql_user = "select * from user where id = ? limit 1";
+                        $user_1 = fetch(sql_query($sql_user,[$_SESSION['id']]));
                     ?>
                     <img style="" width="50" height="50" src="<?=$user_1['img_name'] ? $user_1['img_name'] : 'user.png';?>" alt="">
                 </div>
