@@ -48,7 +48,7 @@
                             <span>0 đ</span>
                         </div>
                         <p class="noteVAT">Đã bao gồm VAT (nếu có)</p>
-                        <a href="#" class="go-cart disable">ĐẾN GIỎ HÀNG</a>
+                        <a href="cart.php" class="go-cart disable">ĐẾN GIỎ HÀNG</a>
                         <a onclick = "deleteAllCart()" href="javascript:void(0)" style="background: rgb(237, 27, 36); border-color: rgb(237, 27, 36); color: rgb(255, 255, 255);">XÓA GIỎ HÀNG</a>
                         <a href="#" class="viewMores">XEM SẢN PHẨM KHÁC</a>
                     </div>

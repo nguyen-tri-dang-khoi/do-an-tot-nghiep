@@ -182,7 +182,7 @@
                     <div class="product__info">
                         <div class="info--percent">
                         <span>
-                            <?php //echo "-".$row["discount"]."%"; ?>
+                            <?php //echo "-".$row["discount"]."%"; ?>0 %
                         </span>
                         </div>
                         <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
@@ -275,19 +275,16 @@
                     </div>
                     <div class="content-right">
                         <div class="item">
-                            <iframe  src="https://www.youtube.com/embed/W6fdNkwRuLk" title="PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau 😱" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                            </iframe>
-                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau </a>
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/c0wTzjjklMs" title="Cấu Hình PC Chơi Liên Minh Huyền Thoại 10 NĂM Của Nữ MC Minh Nghi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">Cấu Hình PC Chơi Liên Minh Huyền Thoại "10 NĂM KHÔNG HỎNG" Của Nữ MC-Streamer Minh Nghi</a>
                         </div>
                         <div class="item">
-                            <iframe src="https://www.youtube.com/embed/W6fdNkwRuLk" title="PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau 😱" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                            </iframe>
-                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau </a>
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/Gd98kaAeXzA" title="[TNC Reaction] KHÁNH VY ĐI MUA PC BỊ PEWPEW "THUỐC ĐỒ NGON" TẠI TNC STORE NHƯ THẾ NÀO?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">KHÁNH VY ĐI MUA PC BỊ PEWPEW "THUỐC ĐỒ NGON" TẠI TNC STORE NHƯ THẾ NÀO? [REACTION]</a>
                         </div>
                         <div class="item">
-                            <iframe src="https://www.youtube.com/embed/W6fdNkwRuLk" title="PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau 😱" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-                            </iframe>
-                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau </a>
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/CeKZBe-kFfY" title="Khi Độ Mixi Đi Lượn Phố Vớ Được Hàng Khủng... Màn Hình Cực Nét Thì Stream Đến Bao Giờ??" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">Khi Độ Mixi Đi Lượn Phố Vớ Được Hàng Khủng... Màn Hình Cực Nét Thì Stream Đến Bao Giờ??</a>
                         </div>
                     </div>
                 </div>    

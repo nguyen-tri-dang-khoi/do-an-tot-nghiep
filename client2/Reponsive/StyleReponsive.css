@@ -32,9 +32,9 @@
     .block--home div {
         max-width: 1399px;
     }
-    .content__carousel2 div {
+    /* .content__carousel2 div {
         max-width: 1399px;
-    }
+    } */
 }
 
 @media (max-width: 1025px) {

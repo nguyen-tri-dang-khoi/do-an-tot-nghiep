@@ -13,7 +13,9 @@
     $gia_1 = isset($_REQUEST['gia_1']) ? $_REQUEST['gia_1'] : null;
     $gia_2 = isset($_REQUEST['gia_2']) ? $_REQUEST['gia_2'] : null;
     $id_loai_san_pham = isset($_REQUEST['id_loai_san_pham']) ? $_REQUEST['id_loai_san_pham'] : null;
+    $changeSortt = isset($_REQUEST['changeSortt']) ? $_REQUEST['changeSortt'] : null;
     $where = "is_delete like 0 and is_active like 1";
+    $order_by = "";
     if($gia_1) {
         $where .= " and price >= $gia_1";
     }
@@ -26,9 +28,17 @@
     if($id_loai_san_pham) {
         $where .= " and product_type_id = '$id_loai_san_pham'";
     }
+    if($changeSortt) {
+        $order_by = $changeSortt;
+    }
+    $conn = connect();
+    $sql_get_count = "select count(*) as 'countt' from product_info where $where limit 1";
+    $result = mysqli_query($conn, $sql_get_count);
+    $row2 = mysqli_fetch_assoc($result);
+    
 ?>
 <div class="block__home row">
-        <div class="category__product col-10 m-auto">
+        <div class="category__product col-<?php echo $id_loai_san_pham;?> m-auto">
             <div class="breadcrumb__list" style="margin-bottom: 1%">
                 <i class="fa-solid fa-house-chimney"></i>
                 <i class="fa-solid fa-angle-right"></i>
@@ -53,6 +63,7 @@
             </div>
             <div class="d-flex">
                 <div class="col-3 filterss">
+                    <form id="change_sort" action="Products.php" method="get">
                     <h5 style="color:black ">Bộ lọc sản phẩm</h5>
                     <div class="filterss_producer">
                         <div type="button" class="title_producer">
@@ -92,45 +103,49 @@
                         <div class="research_price">
                             <hr>
                             <div class="scrollprice">
-                                <a href="">Dưới 500.000đ</a>
-                                <a href="">500.000 - 1Tr</a>
-                                <a href="">2Tr - 4Tr</a>
-                                <a href="">4Tr - 7Tr</a>
+                                <a href="http://localhost:8080/project/client2/Products.php?gia_2=500000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">Dưới 500.000đ</a>
+                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=500000&gia_2=1000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">500.000 - 1Tr</a>
+                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=2000000&gia_2=4000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">2Tr - 4Tr</a>
+                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=4000000&gia_2=7000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">4Tr - 7Tr</a>
                             </div>
                         </div>
                         <div class="input_price">
                             <span>Hoặc nhập giá dưới đây</span>
                             <div>
-                                <input type="number" id="#" name="quantitymin" min="1" max="30000000">
+                                <input type="number" name="gia_1" min="1" max="30000000" value="<?php echo $gia_1;?>">
                                 <span> - </span>
-                                <input type="number" id="@" name="quantitymax" min="1" max="30000000">
+                                <input type="number" name="gia_2" min="1" max="30000000" value="<?php echo $gia_2;?>">
                             </div>
-                            <button>Áp dụng</button>
+                            <input type="hidden" name="id_loai_san_pham" value="<?php echo $id_loai_san_pham;?>">
+                            <input type="hidden" name="changeSortt">
+                            <button type="submit">Áp dụng</button>
                         </div>
                     </div>
                 </div>
                 <div class="col-9 sortss">
                     <div class="sortss_title">
                         <div class="sortss_title_L">
-                            <h5 style="color:black ">laptop Gaming </h5>
-                            <span>(80 sản phẩm)</span>
+                            <h5 style="color:black "><?php echo $row['name'];?> </h5>
+                            <span>(<?php echo $row2['countt'];?> sản phẩm)</span>
                         </div>
                         <div class="sortss_title_R">
                             <span>Sắp xếp theo:</span> 
-                            <select name="#" id="#" class="selectsort">
-                                <option value="#">Mới nhất</option>
-                                <option value="#">Giá (Thấp - Cao)</option>
-                                <option value="#">Giá (Cao - Thấp)</option>
-                                <option value="#">Tên (A - Z)</option>
-                                <option value="#">Tên (Z - A)</option>
+                            <select onchange="sortt()" name="changeSortt" class="selectsort">
+                                <option value="">Sắp xếp</option>
+                                <option <?=$changeSortt == 'Order by price asc' ? 'selected' : "";?> value="Order by price asc">Giá (Thấp - Cao)</option>
+                                <option <?=$changeSortt == 'Order by price desc' ? 'selected' : "";?> value="Order by price desc">Giá (Cao - Thấp)</option>
+                                <option <?=$changeSortt == 'Order by name asc' ? 'selected' : "";?> value="Order by name asc">Tên (A - Z)</option>
+                                <option <?=$changeSortt == 'Order by name desc' ? 'selected' : "";?> value="Order by name desc">Tên (Z - A)</option>
                             </select>
                         </div>
                     </div>
+                    </form>
                     <div class="sortss_product">
                     <?php 
-                    function get_product($where_clause){
+                    function get_product($where_clause,$order_by){
                         $conn = connect();
-                        $get_data_product = "SELECT * FROM product_info WHERE $where_clause";
+                        $get_data_product = "SELECT * FROM product_info WHERE $where_clause $order_by";
+                        //print_r($get_data_product);
                         //print_r($get_data_product);
                         $result = mysqli_query($conn, $get_data_product);
                         
@@ -162,8 +177,8 @@
                                 <div class="rate-text">0 đánh giá</div> -->
                             </div> 
                             <div class="bottom_price">
-                                <span class="price-selling"><?php echo $row["price"]. "đ";?></span> 
-                                <span class="price-root" name="price"><?php echo $row["cost"]. "đ";?></span>
+                                <span class="price-selling"><?php echo number_format($row["price"],0,'.','.'). "đ";?></span> 
+                                <span class="price-root" name="price"><?php echo number_format($row["cost"],0,'.','.'). "đ";?></span>
                             </div> 
                             <?php //echo $row["description"] ;?>
                             <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
@@ -178,12 +193,18 @@
                         }
                     } 
                 ?>
-                <?php get_product($where) ?>
+                <?php get_product($where,$order_by) ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <?php include_once 'include/footer.php'?>
+    <script>
+        function sortt(){
+            event.preventDefault();
+            $('#change_sort').submit();
+        }
+    </script>
 </body>
 </html>

@@ -15,7 +15,7 @@
             exit();
         } else {
             $_SESSION['login_error'] = "Email hoặc mật khẩu bạn đăng nhập bị sai!";
-            header("location: Login_signin.php");
+            header("location: Login_signup.php");
             exit();
         }
     } else if($thao_tac ==  "SignUp") {

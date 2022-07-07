@@ -47,7 +47,7 @@
     </li>
   </ul>
 </nav>
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#000000;">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="width: 15%; background-color:#000000;">
   <div style="min-height:2000px;" class="sidebar">
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -203,7 +203,7 @@
     } else {
       $('.main-sidebar').css({"display":"block"});
       $('.main-header').css({"margin-left":"250px"});
-      $('.container-wrapper').css({"margin-left":"250px"});
+      $('.container-wrapper').css({"margin-left":"15%"});
     }
   }
 </script>

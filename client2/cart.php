@@ -30,7 +30,7 @@
                             foreach($_SESSION['cart'] as $key => $value) {
                         ?>
                         <div data-id="<?php echo $key;?>" class="items_cart">
-                            <div class="img_products"><img src="<?php echo $value['img'];?>" alt="..."></div>
+                            <div class="img_products"><img src="<?php echo "../admin/". $value['img'];?>" alt="..."></div>
                             <div class="info_products">
                                 <div class="name_products"><p><?php echo $value['name'];?></p></div>
                                 <div class="Price_products"><p><?php echo number_format($value['price'],0,".",".");?>đ</p></div>
