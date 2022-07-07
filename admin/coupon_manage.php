@@ -15,10 +15,14 @@
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
+        
         $order_by = "ORDER BY id desc";
         $where = "where 1=1 and is_delete = 0 ";
         $wh_child = [];
         $arr_search = [];
+        if($str) {
+            $where .= " and id in ($str)";
+        }
         // từ khoá tìm kiếm
         if($keyword && is_array($keyword)) {
             $wh_child = [];
@@ -341,18 +345,18 @@
                                         ?>
                                             <tr class='<?=$upt_more == 1 ? "selected" : "";?>' id="<?=$row["id"];?>">
                                                 <td>
-                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-coupon')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["id"];?>">
                                                 </td>
                                                 <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                                 <td class="ma-khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_code' class='form-control' type='text' value='" . $row['coupon_code'] . "'><span class='text-danger'></span>" : $row['coupon_code'];?></td>
-                                                <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_discount_percent' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'><span class='text-danger'></span>" : $row['coupon_discount_percent'];?></td>
+                                                <td class="khuyen-mai"><?=$upt_more == 1 ? "<input name='upt_discount_percent' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)' class='form-control' type='text' value='" .$row['coupon_discount_percent']."'><span class='text-danger'></span>" : $row['coupon_discount_percent'];?></td>
                                                 <td class="gia-tri-toi-thieu"><?=$upt_more == 1 ? "<input name='upt_if_subtotal_min' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" . number_format($row['coupon_if_subtotal_min'],0,".",".")."'><span class='text-danger'></span>" : number_format($row['coupon_if_subtotal_min'],0,".",".");?></td>
                                                 <td class="gia-tri-toi-da"><?=$upt_more == 1 ? "<input name='upt_if_subtotal_max' onpaste='pasteAutoFormat(event)' onkeyup='allow_zero_to_nine(event)' onkeypress='allow_zero_to_nine(event)'  class='form-control' type='text' value='" .number_format($row['coupon_if_subtotal_max'],0,".",".")."'><span class='text-danger'></span>" : number_format($row['coupon_if_subtotal_max'],0,".",".");?></td>
                                                 <td class="ngay-bat-dau">
                                                     <?php
                                                         if($upt_more == 1) {
                                                     ?>
-                                                    <?=$row['coupon_date_start'] ? "<input name='upt_date_start' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'><span class='text-danger'></span>" : "";?> 
+                                                    <?=$row['coupon_date_start'] ? "<input name='upt_date_start' class='form-control kh-datepicker2' type='text' readonly value='" . Date("d-m-Y",strtotime($row['coupon_date_start'])) ."'><span class='text-danger'></span>" : "";?> 
                                                     <?php } else { ?>
                                                     <?=$row['coupon_date_start'] ? Date("d-m-Y",strtotime($row['coupon_date_start'])) : "";?>
                                                     <?php }?>
@@ -361,7 +365,7 @@
                                                     <?php
                                                         if($upt_more == 1) {
                                                     ?>
-                                                    <?=$row['coupon_date_end'] ? "<input name='upt_date_end' class='form-control kh-datepicker2' type='text' value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'><span class='text-danger'></span>" : "";?> 
+                                                    <?=$row['coupon_date_end'] ? "<input name='upt_date_end' class='form-control kh-datepicker2' type='text' readonly value='" . Date("d-m-Y",strtotime($row['coupon_date_end'])) ."'><span class='text-danger'></span>" : "";?> 
                                                     <?php } else {?>
                                                     <?=$row['coupon_date_end'] ? Date("d-m-Y",strtotime($row['coupon_date_end'])) : "";?>
                                                     <?php } ?>
@@ -400,6 +404,8 @@
                                         $cnt++;
                                         }
                                         ?>
+                                        
+                                        </tbody>
                                         <?php
                                             $count_row_table = count($rows);
                                             if($count_row_table == 0) {
@@ -408,11 +414,10 @@
                                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
                                         </tr>
                                         <?php } ?>
-                                        </tbody>
                                         <tfoot>
                                             <tr>
                                                 <th style="width:20px !important;">
-                                                    <inpu <?=$upt_more == 1 ? "checked" : "";?>t style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
+                                                    <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                                 </th>
                                                 <th>Số thứ tự</th>
                                                 <th>Mã khuyến mãi</th>
@@ -486,7 +491,7 @@
                <div class="form-group">
                   <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
                </div>
-               <div class="d-flex f-column form-group">
+               <!-- <div class="d-flex f-column form-group">
                     <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                         <div class="file file-csv mr-10">
                             <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Mã khuyến mãi','Khuyến mãi (%)','Giá trị tối thiểu','Giá trị tối đa','Ngày bắt đầu','Ngày hết hạn'],['c_code2','c_discount_percent2','c_if_subtotal_min2','c_if_subtotal_max2','c_date_start2','c_date_end2'])">
@@ -498,7 +503,7 @@
                             <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
                         </div>
                     </div>
-               </div>
+               </div> -->
             </div>
              <!--table-->
             <table class='table table-bordered' style="height:auto;">
@@ -531,7 +536,7 @@
 <script src="js/khoi_all.js"></script>
 <!--js section start-->
 <script>
-   <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?>
+    setSortTable();
     function uptAll(){
         let test = true;
         let all_checkbox = getIdCheckbox();
@@ -559,53 +564,98 @@
         });
         $('tr.selected input[name="upt_discount_percent"]').each(function(){
             if($(this).val() != "") {
-                formData.append("upt_discount_percent[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
+                let percent = $(this).val().replace(/\./g,"");
+                if(percent < 0 || percent > 100) {
+                    $(this).siblings("p.text-danger").text("Phần trăm khuyến mãi phải có giá trị từ 1 đến 100");
+                    test = false;
+                } else {
+                    formData.append("upt_discount_percent[]",$(this).val());
+                    $(this).siblings("p.text-danger").text("");
+                }
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
                 test = false;
             }
             
         });
-        $('tr.selected input[name="upt_if_subtotal_min"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_if_subtotal_min[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
+        let subtotal_min_max_length = $('tr.selected input[name="upt_if_subtotal_min"]').length;
+        for(let i = 0 ; i < subtotal_min_max_length ; i++) {
+            $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).siblings("span").text("");
+            $('tr.selected input[name="upt_if_subtotal_max"]').eq(i).siblings("span").text("");
+            let a = $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).val().replace(/\./g,"");
+            let b = $('tr.selected input[name="upt_if_subtotal_max"]').eq(i).val().replace(/\./g,"");
+            if(a == "") {
+                $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối thiểu không được để trống');
+                test = false;
+            } else if(a < 10000) {
+                $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối thiểu phải lớn hơn hoặc bằng 10.000đ');
+                test = false;
+            } else if(a % 1000 != 0 && a % 1000 != 500){
+                $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối thiểu không hợp lệ');
                 test = false;
             }
-            
-        });
-        $('tr.selected input[name="upt_if_subtotal_max"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_if_subtotal_max[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
+            //
+            if(b == "") {
+                $('tr.selected input[name="upt_if_subtotal_max"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối đa không được để trống');
+                test = false;
+            }  else if(b < 100000) {
+                $('tr.selected input[name="upt_if_subtotal_max"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối đa phải phải lớn hơn hoặc bằng 100.000đ');
+                test = false;
+            } else if(b % 1000 != 0 && b % 1000 != 500){
+                $('tr.selected input[name="upt_if_subtotal_max"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối đa không hợp lệ');
                 test = false;
             }
-            
-        });
-        $('tr.selected input[name="upt_date_start"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_date_start[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
+            //
+            if(test) {
+                if(b - a < 50000) {
+                    $('tr.selected input[name="upt_if_subtotal_min"]').eq(i).siblings("span").text('Tổng tiền hoá đơn tối thiểu phải nhỏ hơn hoặc bằng tổng tiền hoá đơn tối đa 50.000đ');
+                    test = false;
+                } else {
+                    formData.append("upt_if_subtotal_min[]",a);
+                    formData.append("upt_if_subtotal_max[]",b);
+                }
             }
-            
-        });
-        $('tr.selected input[name="upt_date_end"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_date_end[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
+        } 
+        let date_start_end_length = $('tr.selected input[name="upt_date_start"]').length;
+        for(let i = 0 ; i < date_start_end_length ; i++) {
+            $('tr.selected input[name="upt_date_start"]').eq(i).siblings("span").text("");
+            $('tr.selected input[name="upt_date_end"]').eq(i).siblings("span").text("");
+            let a = $('tr.selected input[name="upt_date_start"]').eq(i).val();
+            let b = $('tr.selected input[name="upt_date_end"]').eq(i).val();
+            if(a == "") {
+                $('tr.selected input[name="upt_date_start"]').eq(i).siblings("span").text('Ngày bắt đầu không được để trống');
                 test = false;
+            } else {
+                a = a.split("-");
+                a = `${a[2]}-${a[1]}-${a[0]}`;
+                if(Date.parse(a) < Date.parse(new Date().toISOString().slice(0,10))) {
+                    $('tr.selected input[name="upt_date_start"]').eq(i).siblings("span").text('Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại');
+                    test = false;
+                }
+            } 
+            //
+            if(b == "") {
+                $('tr.selected input[name="upt_date_end"]').eq(i).siblings("span").text('Ngày hết hạn không được để trống');
+                test = false;
+            }  else {
+                b = b.split("-");
+                b = `${b[2]}-${b[1]}-${b[0]}`;
+                if(Date.parse(b) < Date.parse(new Date().toISOString().slice(0,10))) {
+                    $('tr.selected input[name="upt_date_end"]').eq(i).siblings("span").text('Ngày hết hạn phải lớn hơn hoặc bằng ngày hiện tại');
+                    test = false;
+                }
+            } 
+            //
+            if(test) {
+                if(Date.parse(b) - Date.parse(a) < 0) {
+                    $('tr.selected input[name="upt_date_start"]').eq(i).siblings("span").text('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hết hạn.');
+                    test = false;
+                } else {
+                    formData.append("upt_date_start[]",a);
+                    formData.append("upt_date_end[]",b);
+                }
             }
-        });
+        }
         if(test) {
             formData.append("status","upt_all");
             formData.append("len",list_checkbox.length);
@@ -637,108 +687,157 @@
     }
     // thêm nhanh
     function insAll(){
-      let test = true;
-      let formData = new FormData();
-      let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="ins_code"]').length;
-      $('td input[name="ins_code"]').each(function(){
-        if($(this).val() != ""){
-          formData.append("ins_code[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td input[name="ins_discount_percent"]').each(function(){
-        if($(this).val() != ""){
-          formData.append("ins_discount_percent[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td textarea[name="ins_content"]').each(function(){
-        if($(this).val() != ""){
-          formData.append("ins_discount_content[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td input[name="ins_if_subtotal_min"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_if_subtotal_min[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td input[name="ins_if_subtotal_max"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_if_subtotal_max[]",$(this).val());
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td input[name="ins_date_start"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_date_start[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;  
-        }
-      });
-      $('td input[name="ins_date_end"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_date_end[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      formData.append("status","ins_all");
-      formData.append("len",len);
-      if(count == 0) {
-        $.alert({
-            title:"Thông báo",
-            content:"Vui lòng tạo input"
-        })
-        test = false;
-      }
-      if(test) {
-        $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                console.log(data);
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã thêm dữ liệu thành công",
-                    });
-                    loadDataComplete('Insert');
-                }
-            },
-            error: function(data){
-                console.log("Error: " + data);
+        let test = true;
+        let formData = new FormData();
+        let len = $('[data-plus]').attr('data-plus');
+        let count = $('td input[name="ins_code"]').length;
+        $('td input[name="ins_code"]').each(function(){
+            if($(this).val() != ""){
+            formData.append("ins_code[]",$(this).val());
+            $(this).siblings("p.text-danger").text("");
+            } else {
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
             }
-        })
-      }
-      
+        });
+        $('td input[name="ins_discount_percent"]').each(function(){
+            if($(this).val() != ""){
+                let percent = $(this).val().replace(/\./g,"");
+                if(percent < 0 || percent > 100) {
+                    $(this).siblings("p.text-danger").text("Phần trăm khuyến mãi phải có giá trị từ 1 đến 100");
+                    test = false;
+                } else {
+                    formData.append("ins_discount_percent[]",$(this).val());
+                    $(this).siblings("p.text-danger").text("");
+                }
+            } else {
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;
+            }
+        });
+        $('td textarea[name="ins_content"]').each(function(){
+            if($(this).val() != ""){
+            formData.append("ins_discount_content[]",$(this).val());
+            $(this).siblings("p.text-danger").text("");
+            } else {
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
+            }
+        });
+        let subtotal_min_max_length = $('td input[name="ins_if_subtotal_min"]').length;
+        for(let i = 0 ; i < subtotal_min_max_length ; i++) {
+            $('td input[name="ins_if_subtotal_min"]').eq(i).siblings("p").text("");
+            $('td input[name="ins_if_subtotal_max"]').eq(i).siblings("p").text("");
+            let a = $('td input[name="ins_if_subtotal_min"]').eq(i).val().replace(/\./g,"");
+            let b = $('td input[name="ins_if_subtotal_max"]').eq(i).val().replace(/\./g,"");
+            if(a == "") {
+                $('td input[name="ins_if_subtotal_min"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối thiểu không được để trống');
+                test = false;
+            } else if(a < 10000) {
+                $('td input[name="ins_if_subtotal_min"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối thiểu phải lớn hơn hoặc bằng 10.000đ');
+                test = false;
+            } else if(a % 1000 != 0 && a % 1000 != 500){
+                $('td input[name="ins_if_subtotal_min"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối thiểu không hợp lệ');
+                test = false;
+            }
+            //
+            if(b == "") {
+                $('td input[name="ins_if_subtotal_max"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối đa không được để trống');
+                test = false;
+            }  else if(b < 100000) {
+                $('td input[name="ins_if_subtotal_max"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối đa phải phải lớn hơn hoặc bằng 100.000đ');
+                test = false;
+            } else if(b % 1000 != 0 && b % 1000 != 500){
+                $('td input[name="ins_if_subtotal_max"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối đa không hợp lệ');
+                test = false;
+            }
+            //
+            if(test) {
+                if(b - a < 50000) {
+                    $('td input[name="ins_if_subtotal_min"]').eq(i).siblings("p").text('Tổng tiền hoá đơn tối thiểu phải nhỏ hơn hoặc bằng tổng tiền hoá đơn tối đa 50.000đ');
+                    test = false;
+                } else {
+                    formData.append("ins_if_subtotal_min[]",a);
+                    formData.append("ins_if_subtotal_max[]",b);
+                }
+            }
+        } 
+        let date_start_end_length = $('td input[name="ins_date_start"]').length;
+        console.log(Date.parse(new Date().toISOString().slice(0,10)));
+        for(let i = 0 ; i < date_start_end_length ; i++) {
+            $('td input[name="ins_date_start"]').eq(i).siblings("p").text("");
+            $('td input[name="ins_date_end"]').eq(i).siblings("p").text("");
+            let a = $('td input[name="ins_date_start"]').eq(i).val();
+            let b = $('td input[name="ins_date_end"]').eq(i).val();
+            if(a == "") {
+                $('td input[name="ins_date_start"]').eq(i).siblings("p").text('Ngày bắt đầu không được để trống');
+                test = false;
+            } else {
+                a = a.split("-");
+                a = `${a[2]}-${a[1]}-${a[0]}`;
+                if(Date.parse(a) < Date.parse(new Date().toISOString().slice(0,10))) {
+                    $('td input[name="ins_date_start"]').eq(i).siblings("p").text('Ngày bắt đầu phải lớn hơn hoặc bằng ngày hiện tại');
+                    test = false;
+                }
+            } 
+            //
+            if(b == "") {
+                $('td input[name="ins_date_end"]').eq(i).siblings("p").text('Ngày hết hạn không được để trống');
+                test = false;
+            }  else {
+                b = b.split("-");
+                b = `${b[2]}-${b[1]}-${b[0]}`;
+                if(Date.parse(b) < Date.parse(new Date().toISOString().slice(0,10))) {
+                    $('td input[name="ins_date_end"]').eq(i).siblings("p").text('Ngày hết hạn phải lớn hơn hoặc bằng ngày hiện tại');
+                    test = false;
+                }
+            } 
+            //
+            if(test) {
+                if(Date.parse(b) - Date.parse(a) < 0) {
+                    $('td input[name="ins_date_start"]').eq(i).siblings("p").text('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày hết hạn.');
+                    test = false;
+                } else {
+                    formData.append("ins_date_start[]",a);
+                    formData.append("ins_date_end[]",b);
+                }
+            }
+        }
+        formData.append("status","ins_all");
+        formData.append("len",len);
+        if(count == 0) {
+            $.alert({
+                title:"Thông báo",
+                content:"Vui lòng tạo input"
+            })
+            test = false;
+        }
+        if(test) {
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã thêm dữ liệu thành công",
+                        });
+                        $('#modal-xl2').modal('hide');
+                        loadDataComplete('Insert');
+                    }
+                },
+                error: function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
     }
-
     function show_menu_root(){
       let child = $(event.currentTarget).find('li').length;
       if(!child){
@@ -754,7 +853,6 @@
          });
       }
     }
-    
 </script>
 
 <script>
@@ -1099,8 +1197,8 @@
         $coupon_date_end = isset($_REQUEST['coupon_date_end']) ? Date("Y-m-d",strtotime($_REQUEST['coupon_date_end'])) : null;
         // code to be executed post method
         if($status == "Insert") {
-            $sql_check_duplicate_coupon_code = "select count(*) as 'cnt' from coupon where coupon_code = '$coupon_code'";
-            $count = fetch(sql_query($sql_check_duplicate_coupon_code));
+            $sql_check_duplicate_coupon_code = "select count(*) as 'cnt' from coupon where coupon_code = ? and is_delete = 0";
+            $count = fetch(sql_query($sql_check_duplicate_coupon_code,[$coupon_code]));
             if($count['cnt'] > 0) {
                 echo_json(["msg" => "not_ok","error" => "Mã khuyến mãi đã tồn tại"]);    
             }
@@ -1108,8 +1206,8 @@
             sql_query($sql_ins,[$coupon_code,$coupon_content,$coupon_discount_percent,$coupon_if_subtotal_min,$coupon_if_subtotal_max,$coupon_date_start,$coupon_date_end]);
             echo_json(["msg" => "ok","success" => "Bạn đã thêm dữ liệu thành công"]);
         } else if($status == "Update") {
-            $sql_check_duplicate_coupon_code = "select count(*) as 'cnt' from coupon where coupon_code = '$coupon_code'";
-            $count = fetch(sql_query($sql_check_duplicate_coupon_code));
+            $sql_check_duplicate_coupon_code = "select count(*) as 'cnt' from coupon where coupon_code = ? and is_delete = 0";
+            $count = fetch(sql_query($sql_check_duplicate_coupon_code,[$coupon_code]));
             if($count['cnt'] > 1) {
                 echo_json(["msg" => "not_ok","error" => "Mã khuyến mãi đã tồn tại"]);    
             }

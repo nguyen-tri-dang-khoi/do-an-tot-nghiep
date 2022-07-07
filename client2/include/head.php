@@ -12,25 +12,31 @@
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <!-- Add the slick-theme.css if you want default styling -->
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <link rel="stylesheet" href="Css/jquery-confirm.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-confirm.min.js"></script>
     <script src="slick-master/slick/slick.js"></script>
     
-
+    <!-- jQuery.min.js  -->
+    <!-- <script src="js/jquery.min.js"></script> -->
    
     <!-- <link rel="stylesheet" href="Css/StyleCss.css"> -->
+    <!-- <link rel="stylesheet" href="Css/toastr.min.css"> -->
     <link rel="stylesheet" href="Css/StyleCss.css">
     <link rel="stylesheet" href="Reponsive/StyleReponsive.css">
     
     <!-- StyleCssDetail -->
     <link rel="stylesheet" href="./Css/StyleCssDetail.css">
+    
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="owlcarousel/owl.carousel.min.js"></script>
+    
+    <!-- <script src="owlcarousel/owl.carousel.min.js"></script> -->
 
     <!-- Carousel -->
-    <script src="owlcarousel/styleCarousel.js"></script>
+    <!-- <script src="owlcarousel/styleCarousel.js"></script>
     <link rel="stylesheet" href="owlcarousel/assets/owl.carousel.min.css">
     <link rel="stylesheet" href="owlcarousel/assets/owl.theme.default.min.css">
-    
+     -->
     <!-- <link rel="stylesheet" href="Fontswesome/css/all.css">
     <link rel="stylesheet" href="Bootstrap/css/bootstrap.css">
     <script src="Bootstrap/js/bootstrap.bundle.min.js"></script>

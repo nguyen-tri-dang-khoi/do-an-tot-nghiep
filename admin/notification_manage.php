@@ -304,7 +304,7 @@
                               ?>
                                  <tr class="<?=$upt_more == 1 ? "selected" : "";?>" id="<?=$row["id"];?>">
                                     <td>
-                                       <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>" <?=$upt_more == 1 ? "checked" : "";?>>
+                                       <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["id"];?>" <?=$upt_more == 1 ? "checked" : "";?>>
                                     </td>
                                     <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                     <td class="tieu-de"><?=$upt_more == 1 ? "<input class='kh-inp-ctrl' type='text' name='upt_title' value='$row[title]'><span class='text-danger'></span>" : $row['title'];?></td>
@@ -354,6 +354,7 @@
                                  $cnt++;
                               }
                               ?>
+                              </tbody>
                               <?php
                                  $count_row_table = count($rows);
                                  if($count_row_table == 0) {
@@ -362,7 +363,6 @@
                                  <td style="text-align:center;font-size:17px;" colspan="6">Không có dữ liệu</td>
                               </tr>
                               <?php } ?>
-                              </tbody>
                               <tfoot>
                                  <tr>
                                     <th style="width:20px !important;">
@@ -436,7 +436,7 @@
                <div class="form-group">
                   <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
                </div>
-               <div class="d-flex f-column form-group">
+               <!-- <div class="d-flex f-column form-group">
                      <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                      <div class="file file-csv mr-10">
                         <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tiêu đề','Nội dung'],['n_title2','n_content2'])">
@@ -448,7 +448,7 @@
                         <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
                      </div>
                      </div>
-               </div>
+               </div> -->
             </div>
              <!--table-->
             <table class='table table-bordered' style="height:auto;">

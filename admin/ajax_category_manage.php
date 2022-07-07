@@ -3,11 +3,10 @@
 	$number = isset($_REQUEST["number"]) ? $_REQUEST["number"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
-    
     $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
     if($status == "Update") {
         if($id) {
-            $sql = "select id, name from product_type where is_delete = 0 and id = '$id'";
+            $sql = "select id,name,img_name from product_type where is_delete = 0 and id = '$id'";
             $result = fetch(sql_query($sql));       
 ?>
 <div class="card-body">
@@ -18,6 +17,17 @@
         <?php if($parent_id) { ?>
             <input type="hidden" name="parent_id" value="<?=$parent_id;?>">
         <?php } ?>
+    </div>
+    <div class="form-group col-6" style="padding: 0;">
+        <label for="exampleInputFile">Upload ảnh danh mục sản phẩm</label>
+        <div class="input-group">
+            <div class="custom-file">
+                <input id="fileInput" name="img_category_file" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile" onchange="readURLok(this)">
+                <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
+            </div>
+        </div>
+        <div class="img-fluid" id="where-replace" style="background-image:url('<?=$result['img_name'] ? $result['img_name'] : '';?>');background-size:cover;height:300px;"></div>
+        <div id="image_err" class="text-danger"></div>
     </div>
     <div id="product_type_err" class="text-danger"></div>
 </div>
@@ -36,8 +46,21 @@
         <input type="text" name="ten_loai_san_pham" class="form-control" placeholder="Nhập tên danh mục">
         <input type="hidden" name="id">
         <?php if($parent_id) { ?>
-            <input type="hidden" name="parent_id" value="<?=$parent_id;?>">
+            <input type="hidden" name="parent_id" value="<?=$parent_id ? $parent_id : '';?>">
         <?php } ?>
+    </div>
+    <div class="form-group col-6" style="padding: 0;">
+        <label for="exampleInputFile">Upload ảnh danh mục sản phẩm</label>
+        <div class="input-group">
+            <div class="custom-file">
+                <input id="fileInput" name="img_category_file" type="file" accept="image/*" class="custom-file-input" id="exampleInputFile" onchange="readURLok(this)">
+                <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
+            </div>
+        </div>
+        <div class="img-fluid" id="where-replace">
+            <span></span>
+        </div>
+        <div id="image_err" class="text-danger"></div>
     </div>
     <div id="product_type_err" class="text-danger"></div>
 </div>

@@ -224,14 +224,14 @@
                               </div>
                               <input type="hidden" name="is_search" value="true">
                               <div id="s-payment_status_id2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
-                                <select onchange="activePayment()" name="select_payment_status_id" class="form-control">
+                                <select name="select_payment_status_id" class="form-control">
                                   <option value="">Tình trạng thanh toán</option>
                                   <option value="payment_completed" <?=$select_payment_status_id == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
                                   <option value="payment_not_completed" <?=$select_payment_status_id == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
                                 </select>
                               </div>
                               <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
-                                <select style="<?=$select_payment_status_id=='payment_completed' ? "cursor:pointer;" : "cursor:not-allowed;";?>" name="select_payment_method" class="form-control" <?=$select_payment_status_id=='payment_completed' ? "" : "disabled"?>>
+                                <select name="select_payment_method" class="form-control">
                                   <option value="">Phương thức thanh toán</option>
                                   <?php
                                     $sql = "select * from payment_method";
@@ -316,7 +316,7 @@
                         ?>
                           <tr id="<?=$row['o_id']?>">
                               <td>
-                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["o_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-order')" type="checkbox" name="check_id<?=$row["o_id"];?>">
+                                <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["o_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["o_id"];?>">
                               </td>
                               <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                               <td class="ma-hoa-don"><?=$row['orders_code']?></td>
@@ -327,7 +327,6 @@
                                 <?php
                                   $sql_get_payment_status = "select * from payment_status where id = " . $row['payment_status_id'];
                                   $res = fetch(sql_query($sql_get_payment_status));
-                                  //log_v($sql_get_payment_status);
                                   echo $res['payment_status_name'];
                                 ?>
                               </td>
@@ -374,6 +373,8 @@
                             $i++;
                           }
                         ?>
+                        
+                        </tbody>
                         <?php
                             $count_row_table = count($rows);
                             if($count_row_table == 0) {
@@ -382,7 +383,6 @@
                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
                         </tr>
                         <?php } ?>
-                        </tbody>
                         <tfoot>
                           <tr>
                             <th style="width:20px !important;">
@@ -483,7 +483,7 @@
 <script src="js/toastr.min.js"></script>
 <script src="js/khoi_all.js"></script>
 <script>
-  <?=$count_row_table != 0 ? "setSortTable();" : null;?>
+  setSortTable();
   $(".kh-datepicker2").datepicker({
     changeMonth: true,
     changeYear: true,
@@ -549,7 +549,7 @@
   function select_remove_child(_class){
     $(event.currentTarget).closest(_class).remove();
   }
-  function activePayment(){
+  /*function activePayment(){
     let status = $("select[name='select_payment_status_id'] > option:selected").val();
     if(status == "payment_completed") {
       $("select[name='select_payment_method']").prop("disabled",false);
@@ -559,7 +559,7 @@
       $("select[name='select_payment_method']").css({"cursor":"not-allowed"});
       $("select[name='select_payment_method'] > option[value='']").prop('selected',true);
     }
-  }
+  }*/
 
   function showListPayment(){
     $('#form-payment').load(`ajax_order_manage.php?status=show_list_payment`,() => {

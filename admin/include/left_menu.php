@@ -62,8 +62,6 @@
     <!-- Sidebar Menu -->
     <nav class="mt-2" style="width:270px;">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="">
-        <!-- Add icons to the links using the .nav-icon class
-              with font-awesome or any other icon font library -->
         <li class="nav-item " >
           <a tabindex="-1" href="company_info.php" class="nav-link <?=strpos($url,"company_info.php") ? "kh-active" : "";?>">
             <img src="img/company.png" alt="">
@@ -182,14 +180,6 @@
           </a>
         </li>
         <?php } ?>
-        <li class="nav-item ">
-          <a tabindex="-1" href="change_password.php" class="nav-link <?=strpos($url,"change_password.php") ? "kh-active" : "";?>">
-            <img src="img/key.png" alt="">
-            <p>
-            Đổi mật khẩu
-            </p>
-          </a>
-        </li>
         <li class="nav-item " >
           <a tabindex="-1" href="logout.php" class="nav-link">
             <img src="img/logout.png" alt="">

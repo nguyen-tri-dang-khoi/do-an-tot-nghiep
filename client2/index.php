@@ -1,12 +1,15 @@
-<?php include_once 'db.php'; ?>
+<?php 
+    include_once 'db.php';
+    //session_start();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <?php include_once ('include/head.php'); ?>
-
 <body>
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
+
 
     <div class="content container-fluid">
         <div class="content__carousel row">
@@ -18,17 +21,17 @@
                 </div>  
                 <div class="carousel-inner">
                     <a href="#" class="carousel-item active" data-bs-interval="10000">
-                        <img src="Img/slide1.jpg" class="d-block w-100" alt="...">
+                        <img src="Img/slide1.jpg" class="d-block w-100" alt="#">
                         <div class="carousel-caption d-none d-md-block">
                         </div>
                     </a>
                     <a href="#" class="carousel-item" data-bs-interval="2000">
-                        <img src="Img/slide3.png" class="d-block w-100" alt="...">
+                        <img src="Img/slide3.png" class="d-block w-100" alt="#">
                         <div class="carousel-caption d-none d-md-block">
                         </div>
                     </a>
                     <a href="#" class="carousel-item">
-                        <img src="Img/slide2.png" class="d-block w-100" alt="...">
+                        <img src="Img/slide2.png" class="d-block w-100" alt="#">
                         <div class="carousel-caption d-none d-md-block">
                         </div>
                     </a>
@@ -71,70 +74,150 @@
             </div>
             <div class="block--content col-10 m-auto">
                 <div class="content_collapse">
-                    <div class="collapse-items">
-                        <a href="#">
+                    <!-- <div class="collapse-items">
+                        <a href="categoryProduct.php">
                             <span>GAMING WORKSTATION PC</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(255, 143, 2);"></div>
                             <img src="Img/content-collapse1.png" alt="collapse1">
                         </a>
                     </div>
                     <div class="collapse-items">
-                        <a href="#">
+                        <a href="categoryProduct.php">
                             <span>GAMING LAPTTOP</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(255, 242, 0);"></div>
                             <img src="Img/content-collapse2.png" alt="collapse1">
                         </a>
                     </div>
                     <div class="collapse-items">
-                        <a href="#">
+                        <a href="categoryProduct.php">
                             <span>GAMING GEAR</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(30, 236, 24);"></div>
                             <img src="Img/content-collapse3.png" alt="collapse1">
                         </a>
                     </div>
                     <div class="collapse-items">
-                        <a href="#">
+                        <a href="categoryProduct.php">
                             <span>PHỤ KIỆN TẢN NHIỆT PC</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(142, 7, 239);"></div>
                             <img src="Img/content-collapse4.png" alt="collapse1">
                         </a>
                     </div>
                     <div class="collapse-items">
-                       <a href="#">
+                       <a href="categoryProduct.php">
                             <span>LINH KIỆN MÁY TÍNH</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(0, 249, 201);"></div>
                             <img src="Img/content-collapse5.png" alt="collapse1">
                        </a>
                     </div>
                     <div class="collapse-items">
-                       <a href="#">
+                       <a href="categoryProduct.php">
                             <span>MÀN HÌNH MÁY TÍNH</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(249, 73, 95);"></div>
                             <img src="Img/content-collapse6.png" alt="collapse1">
                        </a>
                     </div>
                     <div class="collapse-items">
-                        <a href="#">
+                        <a href="categoryProduct.php">
                             <span>BÀN GHẾ GAMING</span>
                             <div class="shape" style="border-color:rgb(41, 50, 78) transparent rgb(102, 93, 234);"></div>
                             <img src="Img/content-collapse7.png" alt="collapse1">
                         </a>
                     </div>
                     <div class="collapse-items">
-                        <a href="#">
+                        <a href="categoryProduct.php">
                             <span>THIẾT BỊ MẠNG</span>
                             <div class="shape" style="border-color: rgb(41, 50, 78) transparent rgb(241, 232, 155);"></div>
                             <img src="Img/content-collapse8.png" alt="collapse1">
                         </a>
-                    </div>
+                    </div> -->
+                    <?php
+                        $conn = connect();
+                        $sql_product_type = "Select * from product_type where is_active like 1 and is_delete like 0 and parent_id is null";
+                        $result = mysqli_query($conn, $sql_product_type);
+                        if(mysqli_num_rows($result) > 0){
+                            while($row = mysqli_fetch_assoc($result)){
+                                $id2 = $row['id'];
+                                $link_href = "";
+                                $sql_check_parent_id = "select id from product_type where parent_id = '$id2'";
+                                $result_id = mysqli_query($conn, $sql_check_parent_id);
+                                // neu no co con
+                                if($result_id) {
+                                    $link_href = "categoryProducts.php?id_loai_san_pham=" . $row['id'];
+                                } else {
+                                    // neu no ko co con
+                                    $link_href = "Products.php?id_loai_san_pham=" . $row['id'];
+                                }
+                    ?>
+                                <div class="collapse-items">
+                                    <a href="<?php echo $link_href; ?>">
+                                        <span><?php echo $row['name'];?></span>
+                                        <div class="shape" ></div>
+                                        <img src="<?php echo "../admin/" . $row['img_name']; ?>" alt="collapse1">
+                                    </a>
+                                </div>
+                    <?php
+                            }
+                        }
+                    ?>
+                    
                 </div>
             </div>
             <div class="block--header col-10 m-auto ">
                 <span class="block--header_title">SẢN PHẨM GIẢM GIÁ</span>
             </div>
+            <!-- define get_product 🐛 ⬇⬇⬇⬇ -->
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <?php get_product()?>
-                
+                <?php 
+                    function get_product(){
+                        $conn = connect();
+                        $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1)";
+                        $result = mysqli_query($conn, $getDataProduct);
+                        
+                        if(mysqli_num_rows($result) > 0){
+                            //out put data in whike loop, or out "Không có sản phẩm "
+                            
+                            while($row = mysqli_fetch_assoc($result)){
+                ?>
+                <div  class="product">                    
+                    <div class="product__info">
+                        <div class="info--percent">
+                        <span>
+                            <?php //echo "-".$row["discount"]."%"; ?>
+                        </span>
+                        </div>
+                        <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                            <a href="javascript:void(0)" class="product__link">
+                                <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
+                            </a>
+                        </div> 
+                        <div class="info--bottom">
+                            <div class="bottom_title" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                                    <a href="javascript:void(0)" class="product__link"><?php echo $row["name"]; ?></a>
+                            </div> 
+                            <div class="bottom_rate" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                                <!-- <div class="rate-star">
+                                    <?php //echo $row["rate"]; ?>
+                                </div> 
+                                <div class="rate-text">0 đánh giá</div> -->
+                            </div> 
+                            <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                                <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   
+                                <span class="price-root" name="price"><?php echo number_format($row["price"],0,".","."). "đ";?></span>
+                            </div> 
+                            <?php //echo $row["description"] ;?>
+                            <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                            }
+                        }
+                        else {
+                            echo "Không có sản phẩm";
+                        }
+                    } 
+                ?>
+                <?php get_product() ?>
             </div>
             <div class="block--button col-10 m-auto"> 
                 <button type="button" class="view-more">XEM THÊM</button>   
@@ -284,6 +367,8 @@
     </div>
 
     <?php include_once ('include/footer.php'); ?>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <!-- <script src = '../js/toast.min.js' > </script> -->
+    <script type = "text/javascript" src = "//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"> </script>
+    <?php include_once ('js/js_customIndex.php'); ?>
 </body>
 </html>

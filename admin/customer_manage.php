@@ -286,7 +286,7 @@
                                         <?php foreach($rows as $row) { ?>
                                             <tr id="<?=$row["id"]?>">
                                                 <td>
-                                                    <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-customer')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                    <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["id"];?>">
                                                 </td>
                                                 <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                                 <td class="ten-day-du">
@@ -310,6 +310,8 @@
                                                     $cnt++;
                                                 } 
                                             ?>
+                                        
+                                        </tbody>
                                         <?php
                                             $count_row_table = count($rows);
                                             if($count_row_table == 0) {
@@ -318,7 +320,6 @@
                                             <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
                                         </tr>
                                         <?php } ?>
-                                        </tbody>
                                         <tfoot>
                                             <tr>
                                                 <th style="width:20px !important;">
@@ -377,7 +378,7 @@
 <!--searching filter-->
 <script src="js/khoi_all.js"></script>
 <script>
-    <?=$count_row_table != 0 ? "setSortTable();" : null;?>
+    setSortTable();
     $(".kh-datepicker2").datepicker({
         changeMonth: true,
         changeYear: true,

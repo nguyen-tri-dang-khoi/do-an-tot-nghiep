@@ -412,20 +412,25 @@
     function get_permission($link) {
         $test = false;
         // if this is admin, we set admin full access role
-        $sql_check_admin = "select type from user where id = '$_SESSION[id]'";
-        $check_ad = fetch(sql_query($sql_check_admin));
-        if($check_ad['type'] == "admin") {
-            return [true,true];
-        }
-        //
-        $sql_get_role = "select m.name as 'm_name',m.link as 'm_link',u.permission as 'u_role' from user_role u inner join menus m on u.menu_id = m.id where user_id = '$_SESSION[id]'";
-        $result_role = fetch_all(sql_query($sql_get_role));
-        foreach($result_role as $role) {
-            if($role["m_link"] == $link) {
-               return $role["u_role"];
+        $id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
+        if($id){
+            $sql_check_admin = "select type from user where id = '$id'";
+            $check_ad = fetch(sql_query($sql_check_admin));
+            if($check_ad['type'] == "admin") {
+                return [true,true];
             }
+            //
+            $sql_get_role = "select m.name as 'm_name',m.link as 'm_link',u.permission as 'u_role' from user_role u inner join menus m on u.menu_id = m.id where user_id = '$_SESSION[id]'";
+            $result_role = fetch_all(sql_query($sql_get_role));
+            foreach($result_role as $role) {
+                if($role["m_link"] == $link) {
+                   return $role["u_role"];
+                }
+            }
+            return false;
         }
         return false;
+       
     }
     function check_permission_crud($link,$str){
         $permission = get_permission($link);

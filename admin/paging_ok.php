@@ -5,8 +5,8 @@
     redirect_if_login_status_false();
     $paging = isset($_REQUEST['paging']) ? $_REQUEST['paging'] : 5;
     $id = $_SESSION['id'];
-    $sql = "Update user set paging = '$paging' where id = '$id'";
-    db_query($sql);
+    $sql = "Update user set paging = ? where id = ?";
+    sql_query($sql,[$paging,$id]);
     $_SESSION['paging'] = $paging;
     echo "<script>window.history.back();</script>";
     exit();

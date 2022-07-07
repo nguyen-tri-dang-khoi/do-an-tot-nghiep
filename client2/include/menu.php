@@ -95,9 +95,18 @@
                     <img src="IMG/search-icon.svg" alt="#" aria-valuetext="test">
                 </div>
             </div>
-            <div class="headerMain__cart">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="cart--amount">0</span>
+            <div class="headerMain__cart">     
+                <?php include_once("modal_cart.php"); ?>
+                <span class="cart--amount">
+                    <?php
+                        $sum = 0;
+                        $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] :[];
+                            foreach($_SESSION['cart'] as $cart){
+                                $sum += $cart["count"];
+                            }
+                            echo $sum;
+                    ?>
+                </span>
             </div>
         </div>
     </div>

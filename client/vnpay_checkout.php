@@ -30,31 +30,13 @@ $inputData = array(
     "vnp_OrderType" => $vnp_OrderType,
     "vnp_ReturnUrl" => $vnp_Returnurl,
     "vnp_TxnRef" => $vnp_TxnRef,
-    //"vnp_ExpireDate"=>$vnp_ExpireDate,
-    /*"vnp_Bill_Mobile"=>$vnp_Bill_Mobile,
-    "vnp_Bill_Email"=>$vnp_Bill_Email,
-    "vnp_Bill_FirstName"=>$vnp_Bill_FirstName,
-    "vnp_Bill_LastName"=>$vnp_Bill_LastName,
-    "vnp_Bill_Address"=>$vnp_Bill_Address,
-    "vnp_Bill_City"=>$vnp_Bill_City,
-    "vnp_Bill_Country"=>$vnp_Bill_Country,
-    "vnp_Inv_Phone"=>$vnp_Inv_Phone,
-    "vnp_Inv_Email"=>$vnp_Inv_Email,
-    "vnp_Inv_Customer"=>$vnp_Inv_Customer,
-    "vnp_Inv_Address"=>$vnp_Inv_Address,
-    "vnp_Inv_Company"=>$vnp_Inv_Company,
-    "vnp_Inv_Taxcode"=>$vnp_Inv_Taxcode,
-    "vnp_Inv_Type"=>$vnp_Inv_Type*/
 );
-//print_r("aaa");
 if (isset($vnp_BankCode) && $vnp_BankCode != "") {
     $inputData['vnp_BankCode'] = $vnp_BankCode;
 }
 if (isset($vnp_Bill_State) && $vnp_Bill_State != "") {
     $inputData['vnp_Bill_State'] = $vnp_Bill_State;
 }
-
-//var_dump($inputData);
 ksort($inputData);
 $query = "";
 $i = 0;

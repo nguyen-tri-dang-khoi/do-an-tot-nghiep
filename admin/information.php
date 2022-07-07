@@ -38,10 +38,6 @@
                             <td><?=$result['full_name'];?></td>
                         </tr>
                         <tr>
-                            <th class="w-00">Số chứng minh nhân dân: </th>
-                            <td><?=$result['cmnd'];?></td>
-                        </tr>
-                        <tr>
                             <th class="w-200">Ngày sinh:</th>
                             <td><?=Date("d-m-Y",strtotime($result['birthday']));?></td>
                         </tr>
@@ -59,7 +55,7 @@
                         </tr>
                         <tr>
                             <th class="w-200">Ảnh đại diên:</th>
-                            <td><img style="width:200px;height:200px;" src="<?=$result['img_name'] ? "../admin/".$result['img_name'] : "../admin/upload/noimage.jpg";?>" alt=""></td>
+                            <td><img style="width:200px;height:200px;" src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" alt=""></td>
                         </tr>
                     </table>
                 </div>
@@ -263,7 +259,7 @@
       $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
       $old_pass = isset($_REQUEST["old_pass"]) ? $_REQUEST["old_pass"] : null;
       $img_admin_file = isset($_REQUEST["img_admin_file"]) ? $_REQUEST["img_admin_file"] : null;
-      if($status == "create_token_email") {
+      /*if($status == "create_token_email") {
         $time = Date("d-m-Y h:i:s",time());
         $hidden_key = "&!239yhf98@";
         $rand = rand(0,999999);
@@ -279,7 +275,8 @@
           echo_json(["msg" => "not_ok","link" => ""]);
         }
       } else if($status == "auth_token_email") {
-      } else if($status == "change_info") {
+      } else*/ 
+      if($status == "change_info") {
         $success = "Bạn đã cập nhật thông tin cá nhân thành công";
         $error = "Đã có lỗi xảy ra, vui lòng tải lại trang.";
         $img_admin = "";
@@ -308,13 +305,6 @@
           $sql_update = "update user set img_name='$path' where id = ?";
           sql_query($sql_update,[$session_id]);
         }
-        $sql_get_phone_email = "select phone,email from user where id = '$session_id' limit 1";
-        $result = fetch(sql_query($sql_get_phone_email));
-        // Nếu số điện thoại hoặc email thay đổi thì sẽ kích hoạt button yêu cầu xác thực
-        if($result["email"] != $email) {
-          $sql_update_verify_email = "Update user set email_verify_token = NULL,email_verify_at = NULL where id = '$session_id'";
-          sql_query($sql_update_verify_email);
-        }
         $sql_upt = "Update user set full_name = ?,email = ?,birthday = ?,phone = ?,address = ? where id = ?";
         sql_query($sql_upt,[$full_name,$email,$birthday,$phone,$address,$session_id]);
         echo_json(["msg" => "ok","success" => $success]);
@@ -336,6 +326,6 @@
         }
         echo_json(["msg" => "ok"]);
         
-    }
+      }
     }
 ?>

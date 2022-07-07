@@ -213,11 +213,11 @@ var html_config = {
             "tbody":`
                 <td><input class='kh-inp-ctrl' name='ins_code' type='text' value='' ><p class='text-danger'></p></td>
                 <td><textarea type='textarea' class='kh-inp-ctrl' name='ins_content' type='text' value=''></textarea><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' value='' ><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name='ins_discount_percent' type='text' value='' ><p class='text-danger'></p></td>
                 <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_min' type='text' value=''><p class='text-danger'></p></td>
                 <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_max' type='text' value='' ><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' value='' ><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' value='' readonly><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' value='' readonly><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
             'ins_more':{
@@ -372,7 +372,6 @@ var html_config = {
                     <th>Tên đầy đủ</th>
                     <th>Email</th>
                     <th>Số điện thoại</th>
-                    <th>Số cmnd</th>
                     <th>Địa chỉ</th>
                     <th>Ngày sinh</th>
                     <th>Chức vụ</th>
@@ -384,7 +383,6 @@ var html_config = {
                 <td><input class='kh-inp-ctrl' name='ins_fullname' type='text' value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_email' type='text' value=''><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_phone' type='text' value=''><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_cmnd' type='text' value=''><p class='text-danger'></p></td>
                 <td><textarea class='kh-inp-ctrl' type="textarea" name='ins_address' value=''></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_birthday' type='text' value=''><p class='text-danger'></p></td>
                 <td>
@@ -407,9 +405,6 @@ var html_config = {
                 'ins_phone':{
                     "not_null":"Số điện thoại không được để trống",
                 },
-                'ins_cmnd':{
-                    "not_null":"Số chứng minh nhân dân không được để trống",
-                },
                 'ins_address':{
                     "not_null":"Địa chỉ không được để trống",
                 },
@@ -431,9 +426,6 @@ var html_config = {
                 },
                 'upt_phone':{
                     "not_null":"Số điện thoại không được để trống",
-                },
-                'upt_cmnd':{
-                    "not_null":"Số chứng minh nhân dân không được để trống",
                 },
                 'upt_address':{
                     "not_null":"Địa chỉ không được để trống",
@@ -461,7 +453,6 @@ var html_config = {
                 '.ten-day-du':'.th-ten-day-du|string',
                 '.email':'.th-email|string',
                 '.so-dien-thoai':'.th-so-dien-thoai|string',
-                '.so-cmnd':'.th-so-cmnd|string',
                 '.dia-chi':'.th-dia-chi|string',
                 '.ngay-sinh':'.th-ngay-sinh|date',
                 '.ngay-tao':'.th-ngay-tao|date',
@@ -504,8 +495,8 @@ var html_config = {
                 </td>
                 <td><textarea type="textarea" name="ins_discount_content" class="kh-inp-ctrl"></textarea><p class='text-danger'></p></td>
                 <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text'><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text'><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' readonly><p class='text-danger'></p></td>
+                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' readonly><p class='text-danger'></p></td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
             "ins_more":{
@@ -863,7 +854,8 @@ function checkedAll(){
 let begin_shift_click = "";
 let end_shift_click = "";
 let is_checked = "";
-function shiftCheckedRange(parent){
+function shiftCheckedRange(){
+    let parent = html_config[file_name_config]['load']['tbody_read']; 
     if(!event.shiftKey) {
         begin_shift_click = $(event.currentTarget).attr('data-shift');
         $(event.currentTarget).closest('tr').toggleClass('selected');
@@ -946,6 +938,10 @@ function sortTable(event,type,class_td,asc_desc = "asc"){
         obj_html_td[$(this).text().trim()].push("<tr>" + $(this).parent().html().trim() + "</tr>");
       }
     })
+    console.log($(`${tbody_read} > tr > td`).text());
+    if($(`${tbody_read} > tr > td`).text() == "Không có dữ liệu") {
+        return;
+    }
     console.log(obj_html_td);
     let html_result = "";
     let result = [];
@@ -1017,7 +1013,7 @@ function showPicker(){
 }
 showPicker();
 // file procession
-function xlsx2input(input,arr_column,arr_name_input) {
+/*function xlsx2input(input,arr_column,arr_name_input) {
     if(input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -1109,7 +1105,7 @@ function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
         });
     }
     $("input[name='read_excel']").val("");
-}
+}*/
 //validate input
 function compare(variable_number, value, sign){
     let test = "";
@@ -1212,7 +1208,6 @@ function uptMore(parent_id = "",tab_unique=""){
     } else {
         loadDataInTab(`${file_name_config}.php?upt_more=1&str=${str_arr_upt}&tab_unique=${tab_unique}`);
     }
-    
 }
 function uptMore2(){
     let upt_more =  html_config[file_name_config]['upt_fast']['upt_more'];

@@ -23,10 +23,6 @@
     </div>
     <div class="row">
         <div class="col-md-6 col-sm-12 form-group">
-            <label for="email">Số chứng minh nhân dân</label>
-            <input type="number" min="1" class="form-control" name="cmnd" placeholder="Nhập số chứng minh nhân dân" value="<?=$result['cmnd']?>">
-        </div>
-        <div class="col-md-6 col-sm-12 form-group">
             <label for="image">Ảnh đại diện</label>
             <div class="custom-file">
                 <input name="img_admin_file" type="file" class="custom-file-input" id="fileInput" onchange="readURL(this)">

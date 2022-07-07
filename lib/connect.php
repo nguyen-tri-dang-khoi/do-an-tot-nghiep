@@ -8,7 +8,7 @@
     define("PRODUCT_IMG","upload/product");
     function db_connect() {         
         $host = 'localhost';
-        $dbname = 'shop_cua_hang_may_tinh'; //id16910140_do_an_tot_nghiep
+        $dbname = 'test114'; //id16910140_do_an_tot_nghiep
         $username = 'root';  //id16910140_khoi
         $password = ''; //>iSxpL-6>Q{GbTq<
         try {

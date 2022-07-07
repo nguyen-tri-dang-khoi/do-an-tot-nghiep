@@ -233,7 +233,7 @@
                           <?php foreach($product_types as $product_type) {?>
                             <tr class="parent-type <?=$upt_more == 1 ? "selected" : "";?>" style="cursor:pointer;" id="<?=$product_type["id"];?>">
                               <td>
-                                <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product-type')" type="checkbox" name="check_id<?=$product_type["id"];?>">
+                                <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$product_type["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$product_type["id"];?>">
                               </td>
                               <td class="so-thu-tu" onclick="loadDataInTab('category_manage.php?upt_more=<?=$upt_more;?>&parent_id=<?=$product_type['id'];?>&tab_unique=<?=$tab_unique;?>')">
                                 <?=$total - ($start_page + $cnt);?>
@@ -379,7 +379,7 @@
               <div class="form-group">
                 <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
               </div>
-              <div class="d-flex f-column form-group">
+              <!-- <div class="d-flex f-column form-group">
                 <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                   <div class="file file-csv mr-10">
                     <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên danh mục'],['ins_name'])">
@@ -391,7 +391,7 @@
                     <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
                   </div>
                 </div>
-              </div>
+              </div> -->
           </div>
           <table class='table table-bordered' style="height:auto;">
             <thead>
@@ -432,6 +432,19 @@
 <script>
   <?=$upt_more != 1 && $count_row_table != 0 ? 'setSortTable();' : null;?>
   $('#select-type2').select2();
+  function readURLok(input){
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('#where-replace').css({
+          'background-image': `url('${e.target.result}')`,
+          'background-size':'cover',
+          'height':'300px',
+        });
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
   function uptAll(){
     let all_checkbox = getIdCheckbox();
     let list_checkbox = all_checkbox['result'].split(",");
@@ -539,10 +552,16 @@
   function openModalInsert(){
     let parameters = new URLSearchParams(location.search);
     let parent_id = parameters.get('parent_id');
-    console.log(parent_id);
-    $('#form-product-type').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
-      $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-    });
+    //console.log(parent_id);
+    if(parent_id) {
+      $('#form-product-type').load(`ajax_category_manage.php?parent_id=${parent_id}&status=Insert`,() => {
+        $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+      });
+    } else {
+      $('#form-product-type').load(`ajax_category_manage.php?status=Insert`,() => {
+        $('#modal-xl').modal({backdrop: 'static', keyboard: false});
+      });
+    }
   }
   function readModal(){
     let id = $(event.currentTarget).attr('data-id');
@@ -616,54 +635,58 @@
     })
   }
   function processModalInsertUpdate(){
-    $('#form-product-type').validate({
-      rules:{
-        'ten_loai_san_pham':'required'
-      },
-      messages:{
-        'ten_loai_san_pham':"Vui lòng không để trống"
-      },
-      submitHandler:function(form){
-        event.preventDefault();
-        $.ajax({
-          url:window.location.href,
-          type:"POST",
-          cache:false,
-          data:{
-            id: $('input[name=id]').val(),
-            name:$('input[name=ten_loai_san_pham]').val(),
-            status: $('#btn-luu-loai-san-pham').attr("data-status"),
-          },
-          success:function(res){
-            console.log(res);
-            let res_json = JSON.parse(res);
-            $('#form-product-type').trigger('reset');
-            $('#modal-xl').modal('hide');
-            if(res_json.msg == "ok"){
-              let status = $('#btn-luu-loai-san-pham').attr("data-status");
-              if(status == "Insert"){
-                $.alert({
-                  title: "Thông báo",
-                  content: "Thêm danh mục thành công",
-                });
-                loadDataComplete('Insert');
-              } else if(status == "Update") {
-                $.alert({
-                  title: "Thông báo",
-                  content: "Sửa danh mục thành công",
-                });
-                loadDataComplete();
-              }
-            } else {
+    event.preventDefault();
+    let test = true;
+    console.log($('input[name="img_category_file"]').val());
+    if($('input[name=ten_loai_san_pham]').val() == "") {
+      test = false;
+    }
+    let formData = new FormData($('#form-product-type')[0]);
+    if(test) {
+      formData.append('id',$('input[name=id]').val());
+      formData.append('name',$('input[name=ten_loai_san_pham]').val());
+      formData.append('parent_id',$('input[name=parent_id]').val());
+      formData.append('status',$('#btn-luu-loai-san-pham').attr("data-status"));
+      if($('input[name="img_category_file"]')[0].files.length > 0) {
+        formData.append('img_category_file',$('input[name="img_category_file"]')[0].files[0]);
+      }
+      console.log(formData.getAll('img_category_file'));
+      $.ajax({
+        url:window.location.href,
+        type:"POST",
+        cache:false,
+        contentType:false,
+        processData:false,
+        data: formData,
+        success:function(res){
+          console.log(res);
+          let res_json = JSON.parse(res);
+          $('#form-product-type').trigger('reset');
+          $('#modal-xl').modal('hide');
+          if(res_json.msg == "ok"){
+            let status = $('#btn-luu-loai-san-pham').attr("data-status");
+            if(status == "Insert"){
               $.alert({
                 title: "Thông báo",
-                content: res_json.error,
+                content: "Thêm danh mục thành công",
               });
+              loadDataComplete('Insert');
+            } else if(status == "Update") {
+              $.alert({
+                title: "Thông báo",
+                content: "Sửa danh mục thành công",
+              });
+              loadDataComplete();
             }
+          } else {
+            $.alert({
+              title: "Thông báo",
+              content: res_json.error,
+            });
           }
-        })
-      }
-    });
+        }
+      })
+    }
     /*if(!$('input[name=ten_loai_san_pham]').val()) {
       $.alert({
         title: "Thông báo",
@@ -682,7 +705,6 @@
 <?php
     } else if (is_post_method()) {
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
-      $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : null;
       $name = isset($_REQUEST["name"]) ? $_REQUEST["name"] : null;
       $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
       $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
@@ -694,6 +716,30 @@
       } else if($status == "Update") {
         $sql_upt = "Update product_type set name = ? where id = ?";
         sql_query($sql_upt,[$name,$id]);
+        $dir = "upload/category";
+        if(!file_exists($dir)) {
+          mkdir($dir, 0777); 
+          chmod($dir, 0777);
+        }
+        $dir = "upload/category/" . $id;
+        if(!file_exists($dir)) {
+          mkdir($dir, 0777); 
+          chmod($dir, 0777);
+        }
+        if($_FILES['img_category_file']['name'] != "") {
+          $sql_get_old_file = "select img_name from product_type where id = '$id'";
+          $old_file = fetch(sql_query($sql_get_old_file))['img_name'];
+          if(file_exists($old_file)){
+            unlink($old_file);
+          }
+          $ext = strtolower(pathinfo($_FILES['img_category_file']['name'],PATHINFO_EXTENSION));
+          $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+          $file_name = str_replace("_","",$file_name);
+          $path = $dir . "/" . $file_name ;
+          move_uploaded_file($_FILES['img_category_file']['tmp_name'],$path);
+          $sql_update = "update product_type set img_name = ? where id = ?";
+          sql_query($sql_update,[$path,$id]);
+        }
         echo_json(["msg" => "ok"]);
       } else if($status == "Insert") {
           if($parent_id) {
@@ -706,6 +752,28 @@
             $sql = "Insert into product_type(name,is_active) values(?,?)";
             sql_query($sql,[$name,1]);
           }
+          // upload img
+          $insert = ins_id();
+          $dir = "upload/category";
+          if(!file_exists($dir)) {
+            mkdir($dir, 0777); 
+            chmod($dir, 0777);
+          }
+          $dir = "upload/category/" . $insert;
+          if(!file_exists($dir)) {
+            mkdir($dir, 0777); 
+            chmod($dir, 0777);
+          }
+          if($_FILES['img_category_file']['name'] != "") {
+            $ext = strtolower(pathinfo($_FILES['img_category_file']['name'],PATHINFO_EXTENSION));
+            $file_name = md5(rand(1,999999999)). $id . "." . $ext;
+            $file_name = str_replace("_","",$file_name);
+            $path = $dir . "/" . $file_name ;
+            move_uploaded_file($_FILES['img_category_file']['tmp_name'],$path);
+            $sql_update = "update product_type set img_name = ? where id = ?";
+            sql_query($sql_update,[$path,$insert]);
+          }
+          //
           echo_json(["msg" => "ok"]);
       } else if($status == "Active") {
         exec_active_all(NULL,$id);
@@ -731,7 +799,7 @@
         $parent_id = isset($_REQUEST["parent_id"]) ? $_REQUEST["parent_id"] : null;
         $sql_get_active = "select is_active from product_type where id='$parent_id'";
         $row = fetch(sql_query($sql_get_active));
-        $is_active = $row['is_active'] ? $row['is_active'] : 0;;
+        $is_active = $row['is_active'] ? $row['is_active'] : 0;
         if(!$parent_id || $parent_id == ""){
           $parent_id = null;
         }

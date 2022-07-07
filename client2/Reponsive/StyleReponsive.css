@@ -17,7 +17,7 @@
     .headerTop__infoCompany p {
         max-width: 1399px;
     }
-    .headerMain div {
+    .headerMain>div {
         max-width: 1399px;
     }
     .headerTop div {
@@ -30,6 +30,9 @@
         max-width: 1399px;
     }
     .block--home div {
+        max-width: 1399px;
+    }
+    .content__carousel2 div {
         max-width: 1399px;
     }
 }

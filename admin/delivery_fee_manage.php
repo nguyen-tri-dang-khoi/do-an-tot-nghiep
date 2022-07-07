@@ -189,7 +189,7 @@
                                                     <?php $cnt1 = $cnt + 1;?>
                                                     <tr id="<?=$row["df_id"];?>">
                                                         <td>
-                                                            <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["df_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-delivery-fee')" type="checkbox" name="check_id<?=$row["df_id"];?>">
+                                                            <input style="width:16px;height:16px;cursor:pointer" value="<?=$row["df_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["df_id"];?>">
                                                         </td>
                                                         <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                                         <td class="province"><?=$row['pr_full_name']?></td>
@@ -222,7 +222,9 @@
                                                         $cnt++;
                                                     } 
                                                 ?>
-                                                <?php
+                                                
+                                            </tbody>
+                                            <?php
                                                 $count_row_table = count($rows);
                                                 if($count_row_table == 0) {
                                                 ?>
@@ -230,7 +232,6 @@
                                                     <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
                                                 </tr>
                                                 <?php } ?>
-                                            </tbody>
                                             <tfoot>
                                                 <tr>
                                                     <th style="width:20px !important;">
@@ -302,7 +303,7 @@
 ?>
 <script src="js/khoi_all.js"></script>
 <script>
-    <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?> 
+    setSortTable();
     function loadDistricts(){
         let province_id = $("select[name='province_id'] > option:selected").val();
         $(".select-districts").load("ajax_delivery_fee_manage.php?status=load_districts&province_id=" + province_id ,() => {

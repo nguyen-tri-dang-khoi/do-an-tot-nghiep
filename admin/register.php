@@ -1,7 +1,7 @@
 <?php
     include_once("../lib/database.php");
     if(is_get_method()) {
-        include_once("include/head.meta.php");
+        //include_once("include/head.meta.php");
         // code to be executed get method
 ?>
 <!--html & css section start-->
@@ -86,14 +86,7 @@
         let email = document.getElementById('email').value;
         let password = document.getElementById('password').value;
         let confirm_password = document.getElementById('confirm_password').value;
-        if(!username){
-            $.alert({
-                title: "Thông báo",
-                content: "Tên đăng nhập không được để trống"
-            });
-            //alert("Tên đăng nhập không được để trống");
-            test = false;
-        } else if(!email) {
+       if(!email) {
             $.alert({
                 title: "Thông báo",
                 content: "Email không được để trống"
@@ -107,19 +100,6 @@
             });
             //alert("Mật khẩu không được để trống");
             test = false;
-        } else if(!confirm_password) {
-            $.alert({
-                title: "Thông báo",
-                content: "Xác nhận mật khẩu không được để trống."
-            });
-            //alert("Xác nhận mật khẩu không được để trống.");
-            test = false;
-        } else if(password !== confirm_password) {
-            $.alert({
-                title: "Thông báo",
-                content: "Bạn xác nhận mật khẩu không khớp với mật khẩu bạn nhập."
-            });
-            test = false;
         }
         return test;
     }
@@ -130,11 +110,10 @@
 ?>
 <?php
     } else if (is_post_method()) {
-        $username = isset($_REQUEST["username"]) ? $_REQUEST["username"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
-        $sql = "select id,count(*) as 'countt' from user where username = ? and email = ? limit 1";
-        $row = fetch_row($sql,[$username,$email]);
+        $sql = "select id,count(*) as 'countt' from user where email = ? limit 1";
+        $row = fetch(sql_query($sql,[$email]));
         if($row['countt'] > 0){
             $msg_error = "Tên đăng nhập hoặc email này đã tồn tại.";
             $_SESSION["error"] = $msg_error;
@@ -148,10 +127,11 @@
             $rand = rand(0,999999);
             $md5_str = md5($email.$time.$rand.$hidden_key);
             setcookie("verify",$md5_str,time() + 600,"/");
-            setcookie("cookie_username",$username,time() + 600,"/");
+            // setcookie("cookie_username",$username,time() + 600,"/");
             setcookie("cookie_password",$password,time() + 600,"/");
             setcookie("cookie_email",$email,time() + 600,"/");
-            header("location:email_tmp_verify.php?email={$email}");
+            $sql = "insert into user(type,email,password) values('admin','$email','$password')";
+            sql_query($sql);
             exit();
         }
         header("location:register.php");

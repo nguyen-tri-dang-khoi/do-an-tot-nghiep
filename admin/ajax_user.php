@@ -4,7 +4,7 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
     if($id && $status == "Update") {
-        $sql_get_user_info = "select id,type,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,type,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_user_info));
 ?>
 <?php
@@ -26,10 +26,6 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 form-group">
-                <label for="email">Số chứng minh nhân dân</label>
-                <input type="number" min="1" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân" value="<?=$result['cmnd']?>">
-            </div>
             <div class="col-md-6 form-group">
                 <label for="image">Ảnh đại diện</label>
                 <div class="custom-file">
@@ -91,10 +87,6 @@
     </div>
     <div class="row">
         <div class="col-md-6 form-group">
-            <label for="email">Số chứng minh nhân dân</label>
-            <input type="number" min="1" class="form-control" id="cmnd" placeholder="Nhập số chứng minh nhân dân">
-        </div>
-        <div class="col-md-6 form-group">
             <label for="image">Ảnh đại diện</label>
             <div class="custom-file">
                 <input name="img_name" type="file" class="custom-file-input" id="fileInput">
@@ -136,7 +128,7 @@
 <?php } ?>
 <?php
     if($id && $status == "Read") {
-        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,cmnd,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
+        $sql_get_user_info = "select id,type,created_at,full_name,email,phone,address,birthday,img_name,count(*) as 'countt' from user where id = '$id' and is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_user_info));
 ?>
     <div class="card-body">
@@ -152,10 +144,6 @@
             <tr>
                 <th class='w-200'>Số điện thoại</th>
                 <td><?=$result['phone']?></td>
-            </tr>
-            <tr>
-                <th class='w-200'>Số chứng minh nhân dân</th>
-                <td><?=$result['cmnd']?></td>
             </tr>
             <tr>
                 <th class='w-200'>Ảnh đại diện</th>
@@ -203,10 +191,6 @@
                 <tr>
                     <th class='w-200'>Số điện thoại</th>
                     <td>" . $res['phone'] . "</td>
-                </tr>
-                <tr>
-                    <th class='w-200'>Số chứng minh nhân dân</th>
-                    <td>" . $res['cmnd'] . "</td>
                 </tr>
                 <tr>
                     <th class='w-200'>Ảnh đại diện</th>

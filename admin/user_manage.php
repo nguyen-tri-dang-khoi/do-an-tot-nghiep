@@ -338,7 +338,7 @@
                                                 <?php $cnt1 = $cnt + 1;?>
                                                 <tr class='<?=$upt_more == 1 ? "selected":"";?>' id="<?=$row["id"];?>">
                                                     <td>
-                                                        <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-notification')" type="checkbox" name="check_id<?=$row["id"];?>">
+                                                        <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["id"];?>">
                                                     </td>
                                                     <td class="so-thu-tu"><?=$total - ($start_page + $cnt);?></td>
                                                     <td class="ten-day-du">
@@ -413,15 +413,16 @@
                                                     $cnt++;
                                                 } 
                                             ?>
-                                            <?php
-                                                $count_row_table = count($rows);
-                                                if($count_row_table == 0) {
-                                            ?>
-                                            <tr>
-                                                <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
-                                            </tr>
-                                            <?php } ?>
+                                            
                                         </tbody>
+                                        <?php
+                                            $count_row_table = count($rows);
+                                            if($count_row_table == 0) {
+                                        ?>
+                                        <tr>
+                                            <td style="text-align:center;font-size:17px;" colspan="20">Không có dữ liệu</td>
+                                        </tr>
+                                        <?php } ?>
                                         <tfoot>
                                             <tr>
                                                 <th style="width:20px !important;">
@@ -569,19 +570,6 @@
                         <div class="form-group">
                             <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
                         </div>
-                        <div class="d-flex f-column form-group">
-                            <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
-                            <div class="file file-csv mr-10">
-                                <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['upt_fullname2','upt_email2','upt_phone2','upt_cmnd2','upt_address2','upt_birthday2'])">
-                            </div>
-                            <div class="file file-excel mr-10">
-                                <input type="file" name="read_excel" accept=".xls,.xlsx" onchange="xlsx2input(this,['Tên đầy đủ','Email','Số điện thoại','Số cmnd','Địa chỉ','Ngày sinh'],['upt_fullname2','upt_email2','upt_phone2','upt_cmnd2','upt_address2','upt_birthday2'])">
-                            </div>
-                            <div class="d-empty">
-                                <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
-                            </div>
-                            </div>
-                        </div>
                     </div>
                     <table class='table table-bordered' style="height:auto;">
                         <thead>
@@ -590,7 +578,6 @@
                                 <th>Tên đầy đủ</th>
                                 <th>Email</th>
                                 <th>Số điện thoại</th>
-                                <th>Số cmnd</th>
                                 <th>Địa chỉ</th>
                                 <th>Ngày sinh</th>
                                 <th>Chức vụ</th>
@@ -612,7 +599,7 @@
 ?>
 <script src="js/khoi_all.js"></script>
 <script>
-    <?=$upt_more != 1 && $count_row_table != 0  ? "setSortTable();" : null;?>
+    setSortTable();
 </script>
 <!--searching filter-->
 <script>
@@ -675,7 +662,6 @@
         let test = true;
         let full_name = $('#full_name').val();
         let email = $('#email').val();
-        let cmnd = $('#cmnd').val();
         let phone = $('#phone').val();
         let address = $('#address').val();
         let birthday = $('#birthday').val();
@@ -701,13 +687,6 @@
             $.alert({
                 title: "Thông báo",
                 content: "Số điện thoại nhân viên không được để trống."
-            });
-            test = false;
-        } else if(cmnd == "") {
-            $('#cmnd').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Số chứng minh nhân dân của nhân viên không được để trống."
             });
             test = false;
         } else if(birthday == "") {
@@ -806,7 +785,6 @@
             formData.append("full_name",$('#full_name').val());
             formData.append("email",$('#email').val());
             formData.append("phone",$('#phone').val());
-            formData.append("cmnd",$('#cmnd').val());
             formData.append("address",$('#address').val());
             
             let birthday = $('#birthday').val().split('-');
@@ -861,7 +839,6 @@
             formData.append("full_name",$('#full_name').val());
             formData.append("email",$('#email').val());
             formData.append("phone",$('#phone').val());
-            formData.append("cmnd",$('#cmnd').val());
             formData.append("address",$('#address').val());
             let birthday = $('#birthday').val().split('-');
             birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
@@ -1009,14 +986,6 @@
           test = false;
         }
       });
-      $('td input[name="ins_cmnd"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_cmnd[]",$(this).val());
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
       $('td textarea[name="ins_address"]').each(function(){
         if($(this).val() != "") {
           formData.append("ins_address[]",$(this).val());
@@ -1117,16 +1086,6 @@
         $('tr.selected input[name="upt_phone"]').each(function(){
             if($(this).val() != "") {
                 formData.append("upt_phone[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
-            }
-            
-        });
-        $('tr.selected input[name="upt_cmnd"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_cmnd[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
             } else {
                 $(this).siblings("span.text-danger").text("Không được để trống");
@@ -1434,7 +1393,6 @@
         // code to be executed post method
         $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
         $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
-        $cmnd = isset($_REQUEST["cmnd"]) ? $_REQUEST["cmnd"] : null;
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
         $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
@@ -1475,14 +1433,14 @@
                $sql_update = "update user set img_name = ? where id = ?";
                sql_query($sql_update,[$path,$id]);
             }
-            $sql = "Update user set full_name = ?,type = ?,email = ?,phone = ?,cmnd = ?,address = ?,birthday = ? where id = ?";
-            sql_query($sql,[$full_name,$type,$email,$phone,$cmnd,$address,$birthday,$id]);
+            $sql = "Update user set full_name = ?,type = ?,email = ?,phone = ?,address = ?,birthday = ? where id = ?";
+            sql_query($sql,[$full_name,$type,$email,$phone,$address,$birthday,$id]);
             echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "Insert") {
             $success = "Bạn đã thêm dữ liệu thành công";
             $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
-            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday,password) values(?,?,?,?,?,?,?,?)";
-            sql_query($sql,[$full_name,$type,$email,$phone,$cmnd,$address,$birthday,$password]);
+            $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?,?)";
+            sql_query($sql,[$full_name,$type,$email,$phone,$address,$birthday,$password]);
             $insert = ins_id();
             if($insert > 0) {
                 $success = "Cập nhật dữ liệu thành công";
@@ -1515,11 +1473,10 @@
             $upt_fullname = isset($_REQUEST["upt_fullname"]) ? $_REQUEST["upt_fullname"] : null;
             $upt_email = isset($_REQUEST["upt_email"]) ? $_REQUEST["upt_email"] : null;
             $upt_phone = isset($_REQUEST["upt_phone"]) ? $_REQUEST["upt_phone"] : null;
-            $upt_cmnd = isset($_REQUEST["upt_cmnd"]) ? $_REQUEST["upt_cmnd"] : null;
             $upt_address = isset($_REQUEST["upt_address"]) ? $_REQUEST["upt_address"] : null;
             $upt_birthday = isset($_REQUEST["upt_birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["upt_birthday"])) : null;
-            $sql = "Update user set full_name = ?,email = ?,phone = ?,cmnd = ?,address = ?,birthday = ? where id = ?";
-            sql_query($sql,[$upt_fullname,$upt_email,$upt_phone,$upt_cmnd,$upt_address,$upt_birthday,$upt_id]);
+            $sql = "Update user set full_name = ?,email = ?,phone = ?,address = ?,birthday = ? where id = ?";
+            sql_query($sql,[$upt_fullname,$upt_email,$upt_phone,$upt_address,$upt_birthday,$upt_id]);
             echo_json(["msg" => "ok"]);
         } else if($status == "del_more") {
             $rows = isset($_REQUEST['rows']) ? $_REQUEST['rows'] : null;
@@ -1593,10 +1550,9 @@
             $ins_email = isset($_REQUEST["ins_email"]) ? $_REQUEST["ins_email"] : null;
             $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
             $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
-            $ins_cmnd = isset($_REQUEST["ins_cmnd"]) ? $_REQUEST["ins_cmnd"] : null;
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_birthday"])) : null;
-            $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values(?,?,?,?,?,?,?)";
-            sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_cmnd,$ins_address,$ins_birthday]);
+            $sql = "Insert into user(full_name,type,email,phone,address,birthday) values(?,?,?,?,?,?,?)";
+            sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_address,$ins_birthday]);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
@@ -1604,14 +1560,13 @@
             $ins_email = isset($_REQUEST["ins_email"]) ? $_REQUEST["ins_email"] : null;
             $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
             $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
-            $ins_cmnd = isset($_REQUEST["ins_cmnd"]) ? $_REQUEST["ins_cmnd"] : null;
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? $_REQUEST["ins_birthday"]  : null;
             $ins_type = isset($_REQUEST["ins_type"]) ? $_REQUEST["ins_type"] : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $ins_birthday[$i] ? Date('Y-m-d',strtotime($ins_birthday[$i])) : null;
-                    $sql = "Insert into user(full_name,type,email,phone,cmnd,address,birthday) values(?,?,?,?,?,?,?)";
-                    sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_cmnd[$i],$ins_address[$i],$birth]);
+                    $sql = "Insert into user(full_name,type,email,phone,address,birthday) values(?,?,?,?,?,?,?)";
+                    sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_address[$i],$birth]);
                 }
                 echo_json(["msg" => "ok"]);
             }
@@ -1622,13 +1577,12 @@
             $upt_email = isset($_REQUEST["upt_email"]) ? $_REQUEST["upt_email"] : null;
             $upt_phone = isset($_REQUEST["upt_phone"]) ? $_REQUEST["upt_phone"] : null;
             $upt_address = isset($_REQUEST["upt_address"]) ? $_REQUEST["upt_address"] : null;
-            $upt_cmnd = isset($_REQUEST["upt_cmnd"]) ? $_REQUEST["upt_cmnd"] : null;
             $upt_birthday = isset($_REQUEST["upt_birthday"]) ? $_REQUEST["upt_birthday"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
                     $birth = $upt_birthday[$i] ? Date('Y-m-d',strtotime($upt_birthday[$i])) : null;                 
-                    $sql = "Update user set full_name=?,email=?,phone=?,cmnd=?,address=?,birthday=? where id = ?";
-                    sql_query($sql,[$upt_fullname[$i],$upt_email[$i],$upt_phone[$i],$upt_cmnd[$i],$upt_address[$i],$birth,$upt_id[$i]]);
+                    $sql = "Update user set full_name=?,email=?,phone=?,address=?,birthday=? where id = ?";
+                    sql_query($sql,[$upt_fullname[$i],$upt_email[$i],$upt_phone[$i],$upt_address[$i],$birth,$upt_id[$i]]);
                 }
                 echo_json(["msg" => "ok"]);
             }

@@ -509,7 +509,7 @@
                                  ?>
                                        <tr class="<?=$upt_more == 1 ? "selected" : "";?>" id="<?=$row["pi_id"];?>">
                                           <td>
-                                             <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["pi_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange('.list-product')" type="checkbox" name="check_id<?=$row["pi_id"];?>">
+                                             <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["pi_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["pi_id"];?>">
                                           </td>
                                           <td class="so-thu-tu w-150"><?=$total - ($start_page + $cnt);?></td>
                                           <td class="ten-san-pham">
@@ -659,7 +659,7 @@
                <div class="form-group">
                   <button onclick="insAll()" class="dt-button button-blue">Lưu dữ liệu</button> 
                </div>
-               <div class="d-flex f-column form-group">
+               <!-- <div class="d-flex f-column form-group">
                      <div style="cursor:pointer;" class="d-flex list-file-read mt-10 mb-10">
                      <div class="file file-csv mr-10">
                         <input type="file" name="read_csv" accept=".csv" onchange="csv2input(this,['Tên sp','Số lượng','Đơn giá','Mô tả sp'],['name_p2','count_p2','price_p2','desc_p2'])">
@@ -671,7 +671,7 @@
                         <button onclick="delEmpty()" style="font-size:30px;font-weight:bold;width:64px;height:64px;" class="dt-button button-red k-btn-plus">x</button>
                      </div>
                      </div>
-               </div>
+               </div> -->
             </div>
             <!--table-->
             <table class='table table-bordered' style="height:auto;">
@@ -891,7 +891,7 @@
          }
          reader.readAsDataURL(input.files[0]);
       }
-	 };
+	 }
 	 function removeImage(input,key){
 		//key = "file_" + key;
 		$(input).parent().css({'display':'none'});
@@ -1221,25 +1221,53 @@
    }
 </script>
 <script>
-   <?=$upt_more != 1 && $count_row_table != 0 ? "setSortTable();" : null;?>
+   setSortTable();
    function insAll(){
       let test = true;
       let formData = new FormData();
       let len = $('[data-plus]').attr('data-plus');
       let count = $('td input[name="ins_name"]').length;
+      let cost_price_length = $('td input[name="ins_cost"]').length;
+      for(let i = 0 ; i < cost_price_length ; i++) {
+         $('td input[name="ins_cost"]').eq(i).siblings("p").text("");
+         $('td input[name="ins_price"]').eq(i).siblings("p").text("");
+         let a = $('td input[name="ins_cost"]').eq(i).val().replace(/\./g,"");
+         let b = $('td input[name="ins_price"]').eq(i).val().replace(/\./g,"");
+         if(a == "") {
+            $('td input[name="ins_cost"]').eq(i).siblings("p").text('Giá gốc không được để trống');
+            test = false;
+         } else if(a < 10000) {
+            $('td input[name="ins_cost"]').eq(i).siblings("p").text('Giá gốc phải lớn hơn hoặc bằng 10.000đ');
+            test = false;
+         } else if(a % 1000 != 0 && a % 1000 != 500){
+            $('td input[name="ins_cost"]').eq(i).siblings("p").text('Giá gốc không hợp lệ');
+            test = false;
+         }
+         //
+         if(b == "") {
+            $('td input[name="ins_price"]').eq(i).siblings("p").text('Giá bán không được để trống');
+            test = false;
+         }  else if(b < 100000) {
+            $('td input[name="ins_price"]').eq(i).siblings("p").text('Giá bán phải phải lớn hơn hoặc bằng 100.000đ');
+            test = false;
+         } else if(b % 1000 != 0 && b % 1000 != 500){
+            $('td input[name="ins_price"]').eq(i).siblings("p").text('Giá bán không hợp lệ');
+            test = false;
+         }
+         //
+         if(test) {
+            if(b - a < 50000) {
+               $('td input[name="ins_cost"]').eq(i).siblings("p").text('Giá gốc phải nhỏ hơn hoặc bằng giá bán 50.000đ');
+               test = false;
+            } else {
+               formData.append("ins_cost[]",a);
+               formData.append("ins_price[]",b);
+            }
+         }
+      } 
       $('td input[name="ins_name"]').each(function(){
          if($(this).val() != "") {
             formData.append("ins_name[]",$(this).val());
-            $(this).siblings("p").text("");
-
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td input[name="ins_price"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("ins_price[]",$(this).val());
             $(this).siblings("p").text("");
          } else {
             $(this).siblings("p").text("Không được để trống");
@@ -1258,15 +1286,6 @@
       $('td input[name="ins_count"]').each(function(){
          if($(this).val() != "") {
             formData.append("ins_count[]",$(this).val());
-            $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
-         }
-      });
-      $('td input[name="ins_cost"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("ins_cost[]",$(this).val());
             $(this).siblings("p").text("");
          } else {
             $(this).siblings("p").text("Không được để trống");
@@ -1339,7 +1358,6 @@
             }
          })
       }
-      
    }
    function uptAll(){
       let test = true;
@@ -1375,24 +1393,45 @@
          }
          
       });
-      $('tr.selected input[name="upt_cost"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("upt_cost[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
+      let cost_price_length = $('td input[name="upt_cost"]').length;
+      for(let i = 0 ; i < cost_price_length ; i++) {
+         $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text("");
+         $('tr.selected input[name="upt_price"]').eq(i).siblings("span").text("");
+         let a = $('tr.selected input[name="upt_cost"]').eq(i).val().replace(/\./g,"");
+         let b = $('tr.selected input[name="upt_price"]').eq(i).val().replace(/\./g,"");
+         if(a == "") {
+            $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text('Giá gốc không được để trống');
+            test = false;
+         } else if(a < 10000) {
+            $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text('Giá gốc phải lớn hơn hoặc bằng 10.000đ');
+            test = false;
+         } else if(a % 1000 != 0 && a % 1000 != 500){
+            $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text('Giá gốc không hợp lệ');
             test = false;
          }
-      });
-      $('tr.selected input[name="upt_price"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("upt_price[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
+         //
+         if(b == "") {
+            $('tr.selected input[name="upt_price"]').eq(i).siblings("span").text('Giá bán không được để trống');
+            test = false;
+         }  else if(b < 100000) {
+            $('tr.selected input[name="upt_price"]').eq(i).siblings("span").text('Giá bán phải phải lớn hơn hoặc bằng 100.000đ');
+            test = false;
+         } else if(b % 1000 != 0 && b % 1000 != 500){
+            $('tr.selected input[name="upt_price"]').eq(i).siblings("span").text('Giá bán không hợp lệ');
             test = false;
          }
-      });
+         //
+         if(test) {
+            if(b - a < 50000) {
+               $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text('Giá gốc phải nhỏ hơn hoặc bằng giá bán 50.000đ');
+               test = false;
+            } else {
+               formData.append("upt_cost[]",a);
+               formData.append("upt_price[]",b);
+            }
+         }
+      }
+      //return;
       formData.append("status","upt_all");
       formData.append("len",all_checkbox.length);
       if(test) {
@@ -1428,7 +1467,6 @@
    }
    function load_menu(){
       let html =`<?php echo show_menu_3();?>`;
-      console.log(html);
       $('.aaab').empty();
       $(html).appendTo('.aaab');
       $(event.currentTarget).removeAttr('onmouseover');
