@@ -15,7 +15,7 @@
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
 
-    <div class="Product__Detail container-fluid">
+    <div class="Product__Detail container-fluidp-0">
         <div class=" row p-0 block__home">
             <div class="col-10 m-auto row p-0">
                 <div id="carouselExampleDark" class="col-6 p-0 carousel carousel-dark slide" data-bs-ride="carousel">

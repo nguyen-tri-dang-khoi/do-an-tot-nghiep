@@ -482,7 +482,7 @@ li:hover .dropdown {
 }
 
 .block__home .block--header {
-    margin-top: 10px !important;
+    margin-top: 35px !important;
     margin-bottom: 45px !important;
     background: #dddfe6;
     height: 11px;
@@ -540,7 +540,7 @@ li:hover .dropdown {
     height: 132px;
     overflow: hidden;
     width: 23%;
-    margin-bottom: 1%;
+    margin-bottom: 3%;
     background-color: #29324e;
 }
 
@@ -1455,6 +1455,7 @@ td {
     display: flex;
     margin: auto;
     flex-direction: column;
+    /* margin-bottom: 2%; */
 }
 
 .category_block_top {
@@ -1475,7 +1476,7 @@ td {
     align-items: center;
     background-color: #f0f3fc;
     padding: 20px;
-    margin-bottom: 1%;
+    margin-bottom: 2%;
     width: 23%;
     /* margin: 20px; */
 }
@@ -1489,4 +1490,10 @@ td {
     margin: 0;
 }
 
-.collapse-items
+
+/* Product__Detail */
+
+.Product__Detail .carousel-inner {
+    border: 1px solid green;
+    overflow: hidden;
+}
