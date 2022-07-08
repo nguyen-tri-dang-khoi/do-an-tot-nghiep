@@ -445,6 +445,100 @@
       reader.readAsDataURL(input.files[0]);
     }
   }
+  function uptMore2(){
+    $('span.text-danger').text('');
+    let test = true;
+    let target2 = $(event.currentTarget).closest('tr');
+    target2.find('span.text-danger').text('');
+    let upt_name = target2.find('td input[name="upt_name"]').val();
+    //console.log(upt_name);
+    let upt_id = $(event.currentTarget).attr('data-id');
+    //console.log(upt_id);
+    if(upt_name == "") {
+      target2.find('span.text-danger').text("Không được để trống");
+      test = false;
+    } else if(upt_name.length > 200) {
+      target2.find('span.text-danger').text("Không được quá 200 ký tự");
+      test = false;
+    }
+    if(test) {
+      let this2 = $(event.currentTarget);
+      let formData = new FormData();
+      formData.append('status','upt_more')
+      formData.append('upt_id',upt_id);
+      formData.append('upt_name',upt_name);
+      $.ajax({
+          url: window.location.href,
+          type: "POST",
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: formData,
+          success: function(data) {
+              console.log(data);
+              data = JSON.parse(data);
+              if (data.msg == "ok") {
+                  $.alert({
+                    title: "Thông báo",
+                    content: "Bạn đã sửa dữ liệu thành công",
+                  })
+                  //loadDataComplete();
+              }
+          },
+          error: function(data) {
+              console.log("Error: " + data);
+          }
+      })
+    }
+  }
+  function insMore2(){
+    let test = true;
+    let target2 = $(event.currentTarget).closest('tr');
+    target2.find('p.text-danger').text('');
+    let ins_name = target2.find('td input[name="ins_name"]').val();
+    if(ins_name == "") {
+      target2.find('p.text-danger').text("Không được để trống");
+      test = false;
+    } else if(ins_name.length > 200) {
+      target2.find('p.text-danger').text("Không được quá 200 ký tự");
+      test = false;
+    }
+    if(test) {
+      let this2 = $(event.currentTarget);
+      let formData = new FormData();
+      formData.append('status','ins_more')
+      formData.append('ins_name',ins_name);
+      $.ajax({
+          url: window.location.href,
+          type: "POST",
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: formData,
+          success: function(data) {
+              console.log(data);
+              data = JSON.parse(data);
+              if (data.msg == "ok") {
+                  $.alert({
+                      title: "Thông báo",
+                      content: "Bạn đã thêm dữ liệu thành công",
+                      buttons: {
+                          "Ok": function() {
+                              this2.closest('tr').find('input').val("");
+                              this2.closest('tr').find('textarea').val("");
+                              this2.closest('tr').find('select > option[value=""]').prop("selected", true);
+                          }
+                      }
+                  })
+                  loadDataComplete("Insert");
+              }
+          },
+          error: function(data) {
+              console.log("Error: " + data);
+          }
+      })
+    }
+  }
   function uptAll(){
     let all_checkbox = getIdCheckbox();
     let list_checkbox = all_checkbox['result'].split(",");

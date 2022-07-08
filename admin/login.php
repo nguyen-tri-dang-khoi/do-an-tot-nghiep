@@ -120,7 +120,7 @@
         }
         if($row['countt'] > 0 && $test_lock){
             //password_verify($password,$row["password"])
-            if(1 == 1){
+            if(password_verify($password,$row["password"])){
                 $_SESSION["isLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];
                 $_SESSION["email"] = $row["email"];

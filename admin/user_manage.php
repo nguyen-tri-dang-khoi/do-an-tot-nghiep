@@ -659,62 +659,49 @@
 </script>
 <script>
     function validate(){
+        $('p.text-danger').text("");
         let test = true;
+        let file = $('input[name="img_name"]')[0].files;
         let full_name = $('#full_name').val();
         let email = $('#email').val();
         let phone = $('#phone').val();
+        let phone_reg = /^\d{10}$/;
+        let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
         let address = $('#address').val();
         let birthday = $('#birthday').val();
         let password = $('#password').val();
-        let type = $('#type > option:selected').val();
+        let type = $('select[name=type] > option:selected').val();
         if(full_name == "") {
-            $('#full_name').focus();
-            $.alert({
-                title: "",
-                content: "Họ tên nhân viên không được để trống.",
-            });
-            //$('#full_name').focus();
+            $('#full_name_err').text("Họ tên nhân viên không được để trống.");
             test = false;
-        } else if(email == "") {
-            $('#email').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Email nhân viên không được để trống.",
-            });
+        } if(email == "") {
+            $('#email_err').text("Email nhân viên không được để trống.");
             test = false;
-        } else if(phone == "") {
-            $('#phone').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Số điện thoại nhân viên không được để trống."
-            });
+        } else if(!email.match(email_reg)) {
+            $('#email_err').text("Định dạng email không hợp lệ.");
             test = false;
-        } else if(birthday == "") {
-            $('#birthday').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Ngày sinh của nhân viên không được để trống."
-            });
+        } if(phone == "") {
+            $('#phone_err').text("Số điện thoại nhân viên không được để trống.");
             test = false;
-        } else if(address == "") {
-            $('#address').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Địa chỉ của nhân viên không được để trống."
-            });
+        } else if(!phone.match(phone_reg)) {
+            $('#phone_err').text("Định dạng số điện thoại không hợp lệ.");
             test = false;
-        } else if(password == "") {
-            $('#password').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Mật khẩu của nhân viên không được để trống.",
-            });
+        }
+        if(file.length == 0) {
+            $('#img_name_err').text("Ảnh đại diện không được để trống.");
             test = false;
-        } else if(type == "") {
-            $.alert({
-                title: "Thông báo",
-                content: "Chức vụ của nhân viên không được để trống.",
-            });
+        } 
+        if(birthday == "") {
+            $('#birthday_err').text("Ngày sinh của nhân viên không được để trống.");
+            test = false;
+        } if(address == "") {
+            $('#address_err').text("Địa chỉ của nhân viên không được để trống.");
+            test = false;
+        } if(password == "") {
+            $('#password_err').text("Mật khẩu của nhân viên không được để trống.");
+            test = false;
+        } if(type == "") {
+            $('#type_err').text("Chức vụ của nhân viên không được để trống.");
             test = false;
         }
         return test;
@@ -786,7 +773,6 @@
             formData.append("email",$('#email').val());
             formData.append("phone",$('#phone').val());
             formData.append("address",$('#address').val());
-            
             let birthday = $('#birthday').val().split('-');
             birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
             formData.append("birthday",birthday);
@@ -954,9 +940,190 @@
       $('#form-insert #paging').remove();
       $('[data-plus]').attr('data-plus',0);
     })
+    function uptMore2(){
+        let test = true;
+        let phone_reg = /^\d{10}$/;
+        let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+        let target2 = $(event.currentTarget).closest('tr');
+        target2.find('span.text-danger').text('');
+        let upt_fullname = target2.find('td input[name="upt_fullname"]').val();
+        let upt_phone = target2.find('td input[name="upt_phone"]').val();
+        let upt_address = target2.find('td textarea[name="upt_address"]').val();
+        let upt_email = target2.find('td input[name="upt_email"]').val();
+        let upt_birthday = target2.find('td input[name="upt_birthday"]').val();
+        //console.log(upt_name);
+        let upt_id = $(event.currentTarget).attr('data-id');
+        //console.log(upt_id);
+        if(upt_fullname == "") {
+            target2.find('td input[name="upt_fullname"] ~ span.text-danger').text("Không được để trống");
+            test = false;
+        } else if(upt_fullname.length > 200) {
+            target2.find('td input[name="upt_fullname"] ~ span.text-danger').text("Không được quá 200 ký tự");
+            test = false;
+        }
+        //
+        if(upt_phone == "") {
+            target2.find('td input[name="upt_phone"] ~ span.text-danger').text("Không được để trống");
+            test = false;
+        } else if(!upt_phone.match(phone_reg)) {
+            target2.find('td input[name="upt_phone"] ~ span.text-danger').text("Đinh dạng số điện thoại không hợp lệ");
+            test = false;
+        }
+        // 
+        if(upt_email == "") {
+            target2.find('td input[name="upt_email"] ~ span.text-danger').text("Không được để trống");
+            test = false;
+        } else if(!upt_email.match(email_reg)) {
+            target2.find('td input[name="upt_email"] ~ span.text-danger').text("Đinh dạng email không hợp lệ");
+            test = false;
+        }
+        //
+        if(upt_address == "") {
+            target2.find('td textarea[name="upt_address"] ~ span.text-danger').text("Không được để trống");
+            test = false;
+        } else if(upt_address.length > 254) {
+            target2.find('td textarea[name="upt_address"] ~ span.text-danger').text("Không được quá 254 ký tự");
+            test = false;
+        } 
+        //
+        if(upt_birthday == "") {
+            target2.find('td input[name="upt_birthday"] ~ span.text-danger').text("Không được để trống");
+            test = false;
+        }
+        if(test) {
+            let this2 = $(event.currentTarget);
+            let formData = new FormData();
+            formData.append('status','upt_more')
+            formData.append('upt_id',upt_id);
+            formData.append('upt_fullname',upt_fullname);
+            formData.append('upt_phone',upt_phone);
+            formData.append('upt_address',upt_address);
+            formData.append('upt_email',upt_email);
+            formData.append('upt_birthday',upt_birthday);
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(data) {
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if (data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã sửa dữ liệu thành công",
+                        })
+                        //loadDataComplete();
+                    }
+                },
+                error: function(data) {
+                    console.log("Error: " + data);
+                }
+            })
+        }
+    }
+    function insMore2(){
+        let test = true;
+        let target2 = $(event.currentTarget).closest('tr');
+        target2.find('p.text-danger').text('');
+        let phone_reg = /^\d{10}$/;
+        let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+        let ins_fullname = target2.find('td input[name="ins_fullname"]').val();
+        let ins_phone = target2.find('td input[name="ins_phone"]').val();
+        let ins_address = target2.find('td textarea[name="ins_address"]').val();
+        let ins_email = target2.find('td input[name="ins_email"]').val();
+        let ins_birthday = target2.find('td input[name="ins_birthday"]').val();
+        let ins_type = target2.find('td select[name="ins_type"] > option:selected').val();
+        if(ins_fullname == "") {
+            target2.find('td input[name="ins_fullname"] ~ p.text-danger').text("Không được để trống");
+            test = false;
+        } else if(ins_fullname.length > 200) {
+            target2.find('td input[name="ins_fullname"] ~ p.text-danger').text("Không được quá 200 ký tự");
+            test = false;
+        }
+        //
+        if(ins_phone == "") {
+            target2.find('td input[name="ins_phone"] ~ p.text-danger').text("Không được để trống");
+            test = false;
+        } else if(!ins_phone.match(phone_reg)) {
+            target2.find('td input[name="ins_phone"] ~ p.text-danger').text("Đinh dạng số điện thoại không hợp lệ");
+            test = false;
+        }
+        // 
+        if(ins_email == "") {
+            target2.find('td input[name="ins_email"] ~ p.text-danger').text("Không được để trống");
+            test = false;
+        } else if(!ins_email.match(email_reg)) {
+            target2.find('td input[name="ins_email"] ~ p.text-danger').text("Đinh dạng email không hợp lệ");
+            test = false;
+        }
+        //
+        if(ins_address == "") {
+            target2.find('td textarea[name="ins_address"] ~ p.text-danger').text("Không được để trống");
+            test = false;
+        } else if(ins_address.length > 254) {
+            target2.find('td textarea[name="ins_address"] ~ p.text-danger').text("Không được quá 254 ký tự");
+            test = false;
+        } 
+        //
+        if(ins_birthday == "") {
+            target2.find('td input[name="ins_birthday"] ~ p.text-danger').text("Không được để trống");
+            test = false;
+        }
+
+        if(ins_type == "") {
+            target2.find('td select[name="ins_type"] ~ p.text-danger').text("Vui lòng chọn chức vụ");
+            test = false;
+        }
+
+        if(test) {
+            let this2 = $(event.currentTarget);
+            let formData = new FormData();
+            formData.append('status','ins_more')
+            formData.append('ins_fullname',ins_fullname);
+            formData.append('ins_phone',ins_phone);
+            formData.append('ins_address',ins_address);
+            formData.append('ins_email',ins_email);
+            formData.append('ins_birthday',ins_birthday);
+            formData.append('ins_type',ins_type);
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: formData,
+                success: function(data) {
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if (data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã thêm dữ liệu thành công",
+                            buttons: {
+                                "Ok": function() {
+                                    this2.closest('tr').find('input').val("");
+                                    this2.closest('tr').find('textarea').val("");
+                                    this2.closest('tr').find('select > option[value=""]').prop("selected", true);
+                                }
+                            }
+                        })
+                        loadDataComplete("Insert");
+                    }
+                },
+                error: function(data) {
+                    console.log("Error: " + data);
+                }
+            })
+        }
+    }
     function insAll(){
       let test = true;
       let formData = new FormData();
+      let phone_reg = /^\d{10}$/;
+      let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
       let len = $('[data-plus]').attr('data-plus');
       let count = $('td input[name="ins_fullname"]').length;
       $('td input[name="ins_fullname"]').each(function(){
@@ -969,21 +1136,27 @@
         }
       });
       $('td input[name="ins_email"]').each(function(){
-        if($(this).val() != ""){
-          formData.append("ins_email[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
+        if($(this).val() == ""){
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
+        } else if(!$(this).val().match(email_reg)){
+            $(this).siblings("p.text-danger").text("Email không đúng định dạng");
+            test = false;
         } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
+            formData.append("ins_email[]",$(this).val());
+            $(this).siblings("p.text-danger").text("");
         }
       });
       $('td input[name="ins_phone"]').each(function(){
-        if($(this).val() != "") {
+        if($(this).val() == "") {
+            $(this).siblings("p.text-danger").text("Không được để trống");
+            test = false;
+        } else if(!$(this).val().match(phone_reg)){
+            $(this).siblings("p.text-danger").text("Số điện thoại không đúng định dạng");
+            test = false;
+        } else {    
           formData.append("ins_phone[]",$(this).val());
           $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
         }
       });
       $('td textarea[name="ins_address"]').each(function(){
@@ -1051,6 +1224,8 @@
     }
     function uptAll(){
         let test = true;
+        let phone_reg = /^\d{10}$/;
+        let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
         let all_checkbox = getIdCheckbox();
         let list_checkbox = all_checkbox['result'].split(",");
         let formData = new FormData();
@@ -1074,22 +1249,28 @@
             }
         });
         $('tr.selected input[name="upt_email"]').each(function(){
-            if($(this).val() != "") {
+            if($(this).val() == "") {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;   
+            } else if(!$(this).val().match(email_reg)){
+                $(this).siblings("span.text-danger").text("Email không đúng định dạng");
+                test = false;
+            } else {
                 formData.append("upt_email[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
             }
             
         });
         $('tr.selected input[name="upt_phone"]').each(function(){
-            if($(this).val() != "") {
+            if($(this).val() == "") {
+                $(this).siblings("span.text-danger").text("Không được để trống");
+                test = false;    
+            } else if(!$(this).val().match(phone_reg)){
+                $(this).siblings("span.text-danger").text("Số điện thoại không đúng định dạng");
+                test = false;
+            } else {
                 formData.append("upt_phone[]",$(this).val());
                 $(this).siblings("span.text-danger").text("");
-            } else {
-                $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
             }
             
         });
@@ -1138,7 +1319,6 @@
                 }
             })
         }
-        
     }
     function unlockMore(){
         let all_checkbox = getIdCheckbox();
@@ -1598,26 +1778,26 @@
                "tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique",
             ]);
             echo_json(["msg" => "ok","tab_name" => $tab_name,"tab_index" => count($_SESSION['user_manage_tab']) - 1,"tab_urlencode" => $tab_urlencode . "&tab_unique=$tab_unique"]);
-         } else if($status == "deleteTabFilter") {
-            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
-            $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
-            array_splice($_SESSION['user_manage_tab'],$index,1);
-            if(trim($is_active_2) == "") {
-               echo_json(["msg" => "ok"]);
-            }  else if($is_active_2 == 1) {
-               if(array_key_exists($index,$_SESSION['user_manage_tab'])) {
-                  echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
-               } else if(array_key_exists($index - 1,$_SESSION['user_manage_tab'])){
-                  echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index - 1]['tab_urlencode']]);
-               } else {
-                  echo_json(["msg" => "ok","tab_urlencode" => "user_manage.php?tab_unique=all"]);
-               }
+        } else if($status == "deleteTabFilter") {
+        $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+        $is_active_2 = isset($_REQUEST['is_active_2']) ? $_REQUEST['is_active_2'] : null;
+        array_splice($_SESSION['user_manage_tab'],$index,1);
+        if(trim($is_active_2) == "") {
+            echo_json(["msg" => "ok"]);
+        }  else if($is_active_2 == 1) {
+            if(array_key_exists($index,$_SESSION['user_manage_tab'])) {
+                echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
+            } else if(array_key_exists($index - 1,$_SESSION['user_manage_tab'])){
+                echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index - 1]['tab_urlencode']]);
+            } else {
+                echo_json(["msg" => "ok","tab_urlencode" => "user_manage.php?tab_unique=all"]);
             }
-         } else if($status == "changeTabNameFilter") {
-            $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
-            $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
-            $_SESSION['user_manage_tab'][$index]['tab_name'] = $new_tab_name;
-            echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
-         }
+        }
+        } else if($status == "changeTabNameFilter") {
+        $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
+        $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
+        $_SESSION['user_manage_tab'][$index]['tab_name'] = $new_tab_name;
+        echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['user_manage_tab'][$index]['tab_urlencode']]);
+        }
     }
 ?>

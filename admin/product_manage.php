@@ -1222,6 +1222,200 @@
 </script>
 <script>
    setSortTable();
+   function insMore2(){
+      let target2 = $(event.currentTarget).closest('tr');
+      target2.find('p.text-danger').text("");
+      let product_type_id = target2.find('td input[name="product_type_id"]').val();
+      let ins_name = target2.find('td input[name="ins_name"]').val();
+      let ins_count = target2.find('td input[name="ins_count"]').val();
+      let ins_cost = target2.find('td input[name="ins_cost"]').val();
+      let ins_price = target2.find('td input[name="ins_price"]').val();
+      let ins_desc = target2.find('td textarea[name="ins_desc"]').val();
+      console.log(ins_desc);
+      let ins_img = target2.find('td input[name="ins_img"]')[0].files;
+      let test = true;
+      if(ins_name == ""){
+         target2.find('td input[name="ins_name"] ~ p.text-danger').text("Không được để trống");
+         test = false;
+      } else if(ins_name.length > 200) {
+         target2.find('td input[name="ins_name"] ~ p.text-danger').text("Không được quá 200 ký tự");
+         test = false;
+      }
+      //
+      if(product_type_id == ""){
+         target2.find('td input[name="product_type_id"]').closest('td').find('p.text-danger').text("Không được để trống");
+         test = false;
+      }
+      //
+      if(ins_count == ""){
+         target2.find('td input[name="ins_count"] ~ p.text-danger').text("Không được để trống");
+         test = false;
+      } 
+      //
+      ins_cost = ins_cost.replace(/\./g,"");
+      if(ins_cost == "") {
+         target2.find('td input[name="ins_cost"] ~ p.text-danger').text("Không được để trống");
+         test = false;
+      } else if(ins_cost < 10000){
+         target2.find('td input[name="ins_cost"] ~ p.text-danger').text("Không được nhỏ hơn 10.000đ");
+         test = false;
+      } else if(ins_cost % 1000 != 0 && ins_cost % 1000 != 500){
+         target2.find('td input[name="ins_cost"] ~ p.text-danger').text("Định dạng giá gốc không hợp lệ");
+         test = false;
+      }
+      ins_price = ins_price.replace(/\./g,"");
+      if(ins_price == "") {
+         target2.find('td input[name="ins_price"] ~ p.text-danger').text("Không được để trống");
+         test = false;
+      } else if(ins_price < 100000){
+         target2.find('td input[name="ins_price"] ~ p.text-danger').text("Không được nhỏ hơn 100.000đ");
+         test = false;
+      } else if(ins_price % 1000 != 0 && ins_price % 1000 != 500){
+         target2.find('td input[name="ins_price"] ~ p.text-danger').text("Định dạng giá bán không hợp lệ");
+         test = false;
+      } else if(ins_price - ins_cost < 50000) {
+         target2.find('td input[name="ins_cost"] ~ p.text-danger').text("Giá gốc phải nhỏ hơn giá bán ít nhất 50.000đ trở lên");
+         test = false;
+      }
+
+      if(ins_desc == ""){
+         target2.find('td textarea[name="ins_desc"] ~ p.text-danger').text("Không được để trống");
+         test = false;
+      } else if(ins_desc.length > 1800) {
+         target2.find('td textarea[name="ins_desc"] ~ p.text-danger').text("Không được quá 1800 ký tự");
+         test = false;
+      }
+      //
+      if(ins_img.length == 0){
+         target2.find('td input[name="ins_img"]').parent().siblings('p.text-danger').text("Không được để trống hình");
+         test = false;
+      }
+      if(test) {
+         let this2 = $(event.currentTarget);
+         let formData = new FormData();
+         formData.append('status','ins_more');
+         formData.append('ins_name',ins_name);
+         formData.append('product_type_id',product_type_id);
+         formData.append('ins_count',ins_count);
+         formData.append('ins_cost',ins_cost);
+         formData.append('ins_price',ins_price);
+         formData.append('ins_desc',ins_desc);
+         formData.append('ins_img',ins_img[0]);
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if (data.msg == "ok") {
+                     $.alert({
+                        title: "Thông báo",
+                        content: "Bạn đã thêm dữ liệu thành công",
+                        buttons: {
+                           "Ok": function() {
+                                 this2.closest('tr').find('input').val("");
+                                 this2.closest('tr').find('textarea').val("");
+                                 this2.closest('tr').find('select > option[value=""]').prop("selected", true);
+                           }
+                        }
+                     })
+                     loadDataComplete("Insert");
+               }
+            },
+            error: function(data) {
+               console.log("Error: " + data);
+            }
+         })
+      }
+   }
+   function uptMore2(){
+      $('span.text-danger').text("");
+      let target2 = $(event.currentTarget).closest('tr');
+      target2.find('p.text-danger').text("");
+      let upt_name = target2.find('td input[name="upt_name"]').val();
+      let upt_count = target2.find('td input[name="upt_count"]').val();
+      let upt_cost = target2.find('td input[name="upt_cost"]').val();
+      let upt_price = target2.find('td input[name="upt_price"]').val();
+      let upt_id = $(event.currentTarget).attr('data-id');
+      let test = true;
+      if(upt_name == ""){
+         target2.find('td input[name="upt_name"] ~ span.text-danger').text("Không được để trống");
+         test = false;
+      } else if(upt_name.length > 200) {
+         target2.find('td input[name="upt_name"] ~ span.text-danger').text("Không được quá 200 ký tự");
+         test = false;
+      }
+      //
+      if(upt_count == ""){
+         target2.find('td input[name="upt_count"] ~ span.text-danger').text("Không được để trống");
+         test = false;
+      } 
+      //
+      upt_cost = upt_cost.replace(/\./g,"");
+      if(upt_cost == "") {
+         target2.find('td input[name="upt_cost"] ~ span.text-danger').text("Không được để trống");
+         test = false;
+      } else if(upt_cost < 10000){
+         target2.find('td input[name="upt_cost"] ~ span.text-danger').text("Không được nhỏ hơn 10.000đ");
+         test = false;
+      } else if(upt_cost % 1000 != 0 && upt_cost % 1000 != 500){
+         target2.find('td input[name="upt_cost"] ~ span.text-danger').text("Định dạng giá gốc không hợp lệ");
+         test = false;
+      }
+      upt_price = upt_price.replace(/\./g,"");
+      if(upt_price == "") {
+         target2.find('td input[name="upt_price"] ~ span.text-danger').text("Không được để trống");
+         test = false;
+      } else if(upt_price < 100000){
+         target2.find('td input[name="upt_price"] ~ span.text-danger').text("Không được nhỏ hơn 100.000đ");
+         test = false;
+      } else if(upt_price % 1000 != 0 && upt_price % 1000 != 500){
+         target2.find('td input[name="upt_price"] ~ span.text-danger').text("Định dạng giá bán không hợp lệ");
+         test = false;
+      }
+
+      if(upt_price - upt_cost < 50000) {
+         target2.find('td input[name="upt_cost"] ~ span.text-danger').text("Giá gốc phải nhỏ hơn giá bán ít nhất 50.000đ trở lên");
+         test = false;
+      }
+      
+      if(test) {
+         let this2 = $(event.currentTarget);
+         let formData = new FormData();
+         formData.append('status','upt_more');
+         formData.append('upt_id',upt_id);
+         formData.append('upt_name',upt_name);
+         formData.append('upt_count',upt_count);
+         formData.append('upt_cost',upt_cost);
+         formData.append('upt_price',upt_price);
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if (data.msg == "ok") {
+                  $.alert({
+                     title: "Thông báo",
+                     content: "Bạn đã sửa dữ liệu thành công",
+                  })
+                  //loadDataComplete();
+               }
+            },
+            error: function(data) {
+               console.log("Error: " + data);
+            }
+         })
+      }
+   }
    function insAll(){
       let test = true;
       let formData = new FormData();

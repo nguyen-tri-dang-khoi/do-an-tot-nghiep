@@ -15,14 +15,17 @@
             <div class="col-md-4 form-group">
                 <label for="full_name">Tên đầy đủ</label>
                 <input type="text" class="form-control" id="full_name" placeholder="Nhập họ tên đầy đủ" value="<?=$result['full_name']?>">
+                <p id="full_name_err" class="text-danger"></p>
             </div>
             <div class="col-md-4 form-group">
                 <label for="email">Email</label>
                 <input type="email" class="form-control" id="email" placeholder="Nhập email" value="<?=$result['email']?>">
+                <p id="email_err" class="text-danger"></p>
             </div>
             <div class="col-md-4 form-group">
                 <label for="phone">Số điện thoại</label>
                 <input type="number" min="1" class="form-control" id="phone" placeholder="Nhập số điện thoại" value="<?=$result['phone']?>">
+                <p id="phone_err" class="text-danger"></p>
             </div>
         </div>
         <div class="row">
@@ -32,6 +35,7 @@
                     <input name="img_name" type="file" class="custom-file-input" id="fileInput">
                     <label class="custom-file-label" for="fileInput">Chọn ảnh đại diện</label>
                 </div>
+                <p id="img_name_err" class="text-danger"></p>
                 <div class="img-fluid" id="where-replace">
                     <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
                 </div>
@@ -41,10 +45,13 @@
             <div class="col-md-6 form-group">
                 <label for="birthday">Ngày sinh</label>
                 <input type="text" date-date="<?=$result['birthday']?>" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh" value="<?=Date('d-m-Y',strtotime($result['birthday']));?>">
+                <p id="birthday_err" class="text-danger"></p>
             </div>
+            
             <div class="col-md-6 form-group">
                 <label for="address">Địa chỉ</label>
                 <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ thường trú" value="<?=$result['address']?>">
+                <p id="address_err" class="text-danger"></p>
             </div>
         </div>
         
@@ -56,6 +63,7 @@
                     <option value="officer" <?=$result['type'] == 'officer' ? "selected" : "";?>>Nhân viên văn phòng</option>
                     <option value="shipper" <?=$result['type'] == 'shipper' ? "selected" : "";?>>Nhân viên giao hàng</option>
                 </select>
+                <p id="type_err" class="text-danger"></p>
             </div>
         </div>
     </div>
@@ -75,14 +83,17 @@
         <div class="col-md-4 form-group">
             <label for="full_name">Tên đầy đủ</label>
             <input type="text" class="form-control" id="full_name" placeholder="Nhập họ tên đầy đủ" >
+            <p id="full_name_err" class="text-danger"></p>
         </div>
         <div class="col-md-4 form-group">
             <label for="email">Email</label>
             <input type="email" class="form-control" id="email" placeholder="Nhập email">
+            <p id="email_err" class="text-danger"></p>
         </div>
         <div class="col-md-4 form-group">
             <label for="phone">Số điện thoại</label>
             <input type="number" min="1" class="form-control" id="phone" placeholder="Nhập số điện thoại">
+            <p id="phone_err" class="text-danger"></p>
         </div>
     </div>
     <div class="row">
@@ -92,6 +103,7 @@
                 <input name="img_name" type="file" class="custom-file-input" id="fileInput">
                 <label class="custom-file-label" for="fileInput">Chọn ảnh đại diện</label>
             </div>
+            <p id="img_name_err" class="text-danger"></p>
             <div class="img-fluid" id="where-replace">
                 <span></span>
             </div>
@@ -101,10 +113,12 @@
         <div class="col-md-6 form-group">
             <label for="birthday">Ngày sinh</label>
             <input date-date="" type="text" class="form-control" id="birthday" placeholder="Nhập ngày tháng năm sinh">
+            <p id="birthday_err" class="text-danger"></p>
         </div>
         <div class="col-md-6 form-group">
             <label for="address">Địa chỉ</label>
             <input type="text" class="form-control" id="address" placeholder="Nhập địa chỉ thường trú">
+            <p id="address_err" class="text-danger"></p>
         </div>
     </div>
     <div class="row">
@@ -115,6 +129,7 @@
                 <option value="officer">Nhân viên văn phòng</option>
                 <option value="shipper">Nhân viên giao hàng</option>
             </select>
+            <p id="type_err" class="text-danger"></p>
         </div>
         <div class="col-md-6 form-group">
             <label for="password">Mật khẩu (mặc định là 1234)</label>

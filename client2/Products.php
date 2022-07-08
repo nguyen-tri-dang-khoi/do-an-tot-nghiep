@@ -111,10 +111,10 @@
                         <div class="research_price">
                             <hr>
                             <div class="scrollprice">
-                                <a href="/project/client2/Products.php?gia_2=500000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">Dưới 500.000đ</a>
-                                <a href="/project/client2/Products.php?gia_1=500000&gia_2=1000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">500.000 - 1Tr</a>
-                                <a href="/project/client2/Products.php?gia_1=2000000&gia_2=4000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">2Tr - 4Tr</a>
-                                <a href="/project/client2/Products.php?gia_1=4000000&gia_2=7000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">4Tr - 7Tr</a>
+                                <a onclick="setInputPrice(0,500000)" href="javascript:void(0)">Dưới 500.000đ</a>
+                                <a onclick="setInputPrice(500000,1000000)" href="javascript:void(0)">500.000 - 1Tr</a>
+                                <a onclick="setInputPrice(2000000,4000000)" href="javascript:void(0)">2Tr - 4Tr</a>
+                                <a onclick="setInputPrice(4000000,7000000)" href="javascript:void(0)">4Tr - 7Tr</a>
                             </div>
                         </div>
                         <div class="input_price">
@@ -240,6 +240,13 @@
         function sortt(){
             event.preventDefault();
             $('#change_sort').submit();
+        }
+        function setInputPrice(gia_1,gia_2) {
+            if(gia_1 > 0) {
+                $('input[name="gia_1"]').val(gia_1);
+            }
+            
+            $('input[name="gia_2"]').val(gia_2);
         }
     </script>
 </body>
