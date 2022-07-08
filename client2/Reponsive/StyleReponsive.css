@@ -32,6 +32,19 @@
     .block--home div {
         max-width: 1399px;
     }
+    .slick-carousel2 {
+        max-width: 1399px;
+    }
+    .block__home .block--header {
+        max-width: 1399px;
+    }
+    .block__home>div {
+        max-width: 1399px;
+    }
+    .footer-top,
+    .footer-bottom {
+        max-width: 1399px;
+    }
     /* .content__carousel2 div {
         max-width: 1399px;
     } */

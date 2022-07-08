@@ -36,7 +36,7 @@
                                 <div class="Price_products"><p><?php echo number_format($value['price'],0,".",".");?>đ</p></div>
                             </div>
                             <div class="change_product">
-                                <div><span onclick="updateInfoCart('-')">-</span><input name="count" readonly="" type="text" value="<?php echo $value['count'];?>"> <span onclick="updateInfoCart('+')">+</span></div>
+                                <div class="input-product"><span onclick="updateInfoCart('-')">-</span><input name="count" readonly="" type="text" value="<?php echo $value['count'];?>"> <span onclick="updateInfoCart('+')">+</span></div>
                                 <div class="i-product">
                                     <i onclick="deleteCart()" class="fa-solid fa-trash-can"></i>
                                 </div>

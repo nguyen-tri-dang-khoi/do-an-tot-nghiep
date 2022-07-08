@@ -380,8 +380,51 @@ li:hover .dropdown {
     min-height: 361px;
     max-height: 362px;
     flex-wrap: wrap;
-    min-width: 474px;
+    min-width: 494.5px;
 }
+
+.ul-list-element li:hover>.dropdown-menu div {
+    position: absolute;
+    left: 100%;
+    /* top: 25%; */
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+.ul-list-element li:hover>.dropdown-menu div::before {
+    content: "";
+    height: 100%;
+    width: 100%;
+    background: #005ec4;
+    position: absolute;
+    top: 0;
+    left: 110px;
+    z-index: 102;
+    transform: skewX(-17deg);
+}
+
+.ul-list-element li:hover>.dropdown-menu div>img {
+    width: 50%;
+    /* position: absolute; */
+    /* display: flex; */
+    z-index: 105;
+}
+
+
+/* start daaus ther ul duw thuwaf cua deej quy */
+
+.ul-list-element ul.dropdown-menu li:hover>ul {
+    display: none;
+}
+
+
+/* endgame daaus ther ul cura ddeej quy  */
 
 .ul-list-element>li:hover>.dropdown-menu hr {
     color: #ffffff00;
@@ -1067,9 +1110,16 @@ td {
 
 /* modal_cart */
 
+.modal-content {
+    padding: 0 10px;
+}
+
 .items_cart {
     display: flex;
-    height: 20%;
+    border: 1px solid green;
+    padding: 10px;
+    justify-content: space-evenly;
+    margin: 10px 10px 0;
 }
 
 .img_products {
@@ -1082,14 +1132,33 @@ td {
 
 .info_products {
     width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.input-product {
+    justify-content: space-evenly;
+    display: flex;
+}
+
+.change_product {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 
 .change_product>div {
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .change_product input {
-    width: 20px;
+    width: 30px;
+    height: 50%;
+    text-align: center;
+    border: none;
 }
 
 .i-product>i {

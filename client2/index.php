@@ -139,6 +139,7 @@
                                 $id2 = $row['id'];
                                 $link_href = "";
                                 $sql_check_parent_id = "select id from product_type where parent_id = '$id2'";
+                                print_r($sql_check_parent_id);
                                 $result_id = mysqli_query($conn, $sql_check_parent_id);
                                 // neu no co con
                                 if($result_id) {
@@ -162,6 +163,9 @@
                     
                 </div>
             </div>
+        </div>
+        <div class="block__home row ">
+            
             <div class="block--header col-10 m-auto ">
                 <span class="block--header_title">SẢN PHẨM GIẢM GIÁ</span>
             </div>
@@ -361,6 +365,7 @@
                     </div>
             </div>
         </div>
+        
     </div>
 
     <?php include_once ('include/footer.php'); ?>

@@ -1,3 +1,8 @@
+<!-- 
+<script>
+               $ temp2= $("ul").empty();
+</script> -->
+
 <?php   
 session_start(); 
 function connect()
@@ -31,18 +36,29 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
     }
 
     $result = mysqli_query($connection, $sql);
+    // print_r($result);
+        while($row = mysqli_fetch_assoc($result)){
+            // $link_href= "";
+            $id2 = $row['id'];
+            // print_r($id2);
+            // print_r($parent_id); ở đây thì parent_id ban đầu sẽ luôn là null (Dòng 31)
 
-    while($row = mysqli_fetch_assoc($result)){
-        // if($row['page']){
-        //     $menu .='<li><a href="'.$row['page'].'">'.$row['name'].'</a>';
-        // }
-        // else{
-        //    
-        // }
-        $menu .= '<li> <a href="javascript:void(0);">'.$row['name'].'</a>';     
-        $menu .= '<ul class="dropdown-menu">'.generate_multilevel_menus($connection, $row['id']).'</ul>';
-        $menu .= '</li>'.'<hr>';
-    }
+            if($parent_id == null) {
+                $link_href = "categoryProducts.php?id_loai_san_pham=" . $row['id'];
+            } else {
+                // neu no ko co con
+                $link_href = "Products.php?id_loai_san_pham=" . $row['id'];
+            }
+
+            $menu .= '<li> <a href='. $link_href.'>'.$row['name'].'</a>';
+            $menu .= '<ul  class="dropdown-menu">'.generate_multilevel_menus($connection, $row['id']);
+            $menu .= '<div><img src='."../admin/".$row['img_name'].' alt='.$row['name'].'></div>'.'</ul>';
+            $menu .= '</li>'.'<hr>';
+
+            // $menu .= '<li> <a href="javascript:void(0);">'.$row['name'].'</a>';  
+            // $menu .= '<ul class="dropdown-menu">'.generate_multilevel_menus($connection, $row['id']).'</ul>';
+            // $menu .= '</li>'.'<hr>';
+        }
     return $menu;
 }
 ?>
