@@ -540,7 +540,7 @@ li:hover .dropdown {
     height: 132px;
     overflow: hidden;
     width: 23%;
-    margin-bottom: 2.5%;
+    margin-bottom: 1%;
     background-color: #29324e;
 }
 
@@ -1346,7 +1346,7 @@ td {
 .sortss .sortss_title .sortss_title_R {
     display: flex;
     align-items: center;
-    width: 32%;
+    width: 35%;
 }
 
 .sortss .sortss_title h5 {
@@ -1384,7 +1384,7 @@ td {
 
 .sortss .sortss_product {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     flex-wrap: wrap;
 }
 
@@ -1454,9 +1454,39 @@ td {
 .content__category {
     display: flex;
     margin: auto;
+    flex-direction: column;
+}
+
+.category_block_top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.category_block_bottom {
+    /* display: flex;
+    flex-direction: row;
+    justify-content: space-between; */
 }
 
 .category--item {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    background-color: #f0f3fc;
+    padding: 20px;
+    margin-bottom: 1%;
+    width: 23%;
+    /* margin: 20px; */
 }
+
+.category_block_top .category--item>i {
+    font-size: 55px;
+}
+
+.category_block_top .category--item>p {
+    width: 55%;
+    margin: 0;
+}
+
+.collapse-items

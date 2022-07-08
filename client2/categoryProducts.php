@@ -14,8 +14,8 @@
     <?php include_once ('include/menu.php');?>
 
 
-<div class="content__category col-10">
-    <div>
+<div class="content__category col-10 mt-4">
+    <div class="category_block_top">
         <div class="category--item">
             <i class="fa-solid fa-sack-dollar"></i>
             <p>Hỗ trợ trả góp 0%, trả trước 0đ</p>
@@ -33,8 +33,8 @@
             <p>Hỗ trợ kĩ thuật online 7/7</p>
         </div>
     </div>
-    <div class="d-flex w-100">
-        <div class="block--content col-10 m-auto">
+    <div class="category_block_bottom">
+        <div class="block--content">
                     <div class="content_collapse">
                         <?php
                         if($id_loai_san_pham) {
@@ -59,7 +59,7 @@
                                         $link_href = "Products.php?id_loai_san_pham=" . $row['id'];
                                     }
                         ?>
-                                    <div class="collapse-items">
+                                    <div class="collapse-items mt-3">
                                         <a href="<?php echo $link_href; ?>">
                                             <span><?php echo $row['name'];?></span>
                                             <div class="shape" ></div>

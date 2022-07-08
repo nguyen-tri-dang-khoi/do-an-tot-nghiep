@@ -43,7 +43,7 @@
     
 ?>
 <div class="block__home row">
-        <div class="category__product col-9 m-auto">
+        <div class="category__product col-10 m-auto">
             <div class="breadcrumb__list" style="margin-bottom: 1%">
                 <i class="fa-solid fa-house-chimney"></i>
                 <i class="fa-solid fa-angle-right"></i>

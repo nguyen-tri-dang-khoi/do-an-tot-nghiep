@@ -139,7 +139,7 @@
                                 $id2 = $row['id'];
                                 $link_href = "";
                                 $sql_check_parent_id = "select id from product_type where parent_id = '$id2'";
-                                print_r($sql_check_parent_id);
+                                // print_r($sql_check_parent_id);
                                 $result_id = mysqli_query($conn, $sql_check_parent_id);
                                 // neu no co con
                                 if($result_id) {
