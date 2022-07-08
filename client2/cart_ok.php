@@ -28,8 +28,5 @@
     } else if($thao_tac == 'deleteAllCart') {
         unset($_SESSION['cart']);
     }
-    //echo "name: khoideptrai";
     echo_json(['msg' => 'ok','cart' => $_SESSION['cart']]);
-    //print_r(json_encode(['msg' => 'ok','cart' => $_SESSION['cart']]));
-    //print_r('bbbaewwegwegwgeaweg')
 ?>

@@ -257,10 +257,7 @@
         $res = fetch(sql_query($sql_upt_pi));
         $sum += $res['countt'];
         while($result = $stmt->fetch(PDO::FETCH_ASSOC)){
-            //print_r($sql_upt_pi . " ");   
             $sum += confirm_when_deactive($connection,$result['id']);
-            //print_r($sum . " ");
-            //confirm_when_del_pt($connection,$result['id']);
         }
         return $sum;
     }
