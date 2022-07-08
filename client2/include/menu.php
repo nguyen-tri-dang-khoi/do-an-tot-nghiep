@@ -1,3 +1,8 @@
+<?php
+    $conn = connect();
+    $id_loai_san_pham = isset($_REQUEST['id_loai_san_pham']) ? $_REQUEST['id_loai_san_pham'] : null;
+    $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
+?>
 <header class="container-fluid">
     <div class="headerTop row">
         <div class="col-10 m-auto">
@@ -13,20 +18,44 @@
             <a href="index.php" class="headerMain__logo">
                 <img src="IMG/tnc-logo.svg" alt="#" >
             </a>
-            <div class="headerMain__formSearch">
+            <form id="headerMain--form-search" action="Products.php" method="get" class="headerMain__formSearch">
                 <div class="formSearch--keyWord">
-                    <input type="text" name="search" autocomplete="off" placeholder="Nhập sản phẩm cần tìm ...">
-                </div>
-                                                    
+                    <input type="text" name="keyword" autocomplete="off" placeholder="Nhập sản phẩm cần tìm ..." value="<?php echo $keyword;?>">
+                </div>                    
                 <div class="formSearch--select">
-                    <div class="btn-group ">
+                    <?php
+                    if($id_loai_san_pham) {
+                        $sql_get_product_type_name = "select distinct pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id 
+                        where pt.is_delete like 0 and pi.is_delete like 0 and pt.is_active and pi.is_active like 1 and pt.id = '$id_loai_san_pham'";
+                        //print_r($sql_get_product_type_name);
+                        $result33 = mysqli_query($conn,$sql_get_product_type_name);
+                        $row33 = mysqli_fetch_array($result33);
+                       
+                    } 
+                    ?>
+                    <div class="btn-group">
                         <div class="select_title" class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <p>Tất cả danh mục</p> <i class="fa-solid fa-sort-down"></i>
+                            <p id="menu--name"><?=isset($row33['pt_name']) ? $row33['pt_name'] : "Tất cả danh mục";?></p> <i class="fa-solid fa-sort-down"></i>
                         </div>
                         <ul class="dropdown-menu" aria-labelledby="defaultDropdown">
-                            <li><a class="dropdown-item" href="#">Tất cả danh mục</a><hr></li>
-                            <li><a class="dropdown-item" href="#">AUDIO</a><hr></li>
-                            <li><a class="dropdown-item" href="#">Tai Nghe True wwireless</a><hr></li>
+                            
+                            <li><a onclick="setText('Tất cả danh mục','')" class="dropdown-item" href="javascript:void(0);">Tất cả danh mục</a><hr></li>
+                            <?php
+                                
+                                $sql_no_child = "select distinct pi.product_type_id as 'pr_type_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id 
+                                where pt.is_delete like 0 and pi.is_delete like 0 and pt.is_active and pi.is_active like 1";
+                                $result22 = mysqli_query($conn,$sql_no_child);
+                                while($row22 = mysqli_fetch_array($result22)) {
+                            ?>
+                                    <li onclick="setText('<?php echo $row22['pt_name'];?>','<?php echo $row22['pr_type_id'];?>')"><a class="dropdown-item" href="javascript:void(0);"><?php echo $row22['pt_name'];?></a><hr></li>
+                            
+                            <?php 
+                                } 
+                            
+                            ?>
+                          
+                            
+                            <!-- <li><a class="dropdown-item" href="#">Tai Nghe True wwireless</a><hr></li>
                             <li><a class="dropdown-item" href="#">Xây dụng cấu hình PC</a><hr></li>
                             <li><a class="dropdown-item" href="#">PRO AUDIO</a><hr></li>
                             <li><a class="dropdown-item" href="#">PRO CREATOR</a><hr></li>
@@ -87,14 +116,15 @@
                             <li><a class="dropdown-item" href="#">Phần Mềm Bản Quyền</a><hr></li>
                             <li><a class="dropdown-item" href="#">USB Flash</a><hr></li>
                             <li><a class="dropdown-item" href="#">Webcam</a><hr></li>
-                            <li><a class="dropdown-item" href="#">máy In Laser</a><hr></li>
+                            <li><a class="dropdown-item" href="#">máy In Laser</a><hr></li> -->
                         </ul>
                     </div>
                 </div>
+                <input type="hidden" name="id_loai_san_pham" value="<?php echo $id_loai_san_pham;?>">
                 <div class="formSearch--button">
-                    <img src="IMG/search-icon.svg" alt="#" aria-valuetext="test">
+                    <img onclick="submitFormSearch()" src="IMG/search-icon.svg" alt="#" aria-valuetext="test">
                 </div>
-            </div>
+            </form>
             <div class="headerMain__cart">     
                 <?php include_once("modal_cart.php"); ?>
                 <span class="cart--amount">
@@ -150,3 +180,13 @@
         </div>
     </div>
 </header>
+<script>
+    function submitFormSearch(){
+        $('#headerMain--form-search').submit();
+    }
+
+    function setText(txt,id){
+        $('#menu--name').text(txt);
+        $('input[name="id_loai_san_pham"]').val(id);
+    }
+</script>

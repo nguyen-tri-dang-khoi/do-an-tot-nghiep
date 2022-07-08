@@ -13,6 +13,7 @@
     $gia_1 = isset($_REQUEST['gia_1']) ? $_REQUEST['gia_1'] : null;
     $gia_2 = isset($_REQUEST['gia_2']) ? $_REQUEST['gia_2'] : null;
     $id_loai_san_pham = isset($_REQUEST['id_loai_san_pham']) ? $_REQUEST['id_loai_san_pham'] : null;
+    $keyword = isset($_REQUEST['keyword']) ? $_REQUEST['keyword'] : null;
     $changeSortt = isset($_REQUEST['changeSortt']) ? $_REQUEST['changeSortt'] : null;
     $where = "is_delete like 0 and is_active like 1";
     $order_by = "";
@@ -25,6 +26,9 @@
     if($hang_san_xuat) {
         $where .= " and brand_id = '$hang_san_xuat'";
     }
+    if($keyword) {
+        $where .= " and name like '%$keyword%'";
+    }
     if($id_loai_san_pham) {
         $where .= " and product_type_id = '$id_loai_san_pham'";
     }
@@ -32,13 +36,14 @@
         $order_by = $changeSortt;
     }
     $conn = connect();
+
     $sql_get_count = "select count(*) as 'countt' from product_info where $where limit 1";
     $result = mysqli_query($conn, $sql_get_count);
     $row2 = mysqli_fetch_assoc($result);
     
 ?>
 <div class="block__home row">
-        <div class="category__product col-<?php echo $id_loai_san_pham;?> m-auto">
+        <div class="category__product col-9 m-auto">
             <div class="breadcrumb__list" style="margin-bottom: 1%">
                 <i class="fa-solid fa-house-chimney"></i>
                 <i class="fa-solid fa-angle-right"></i>
@@ -46,7 +51,9 @@
                 <i class="fa-solid fa-angle-right"></i>
                 <!-- <span>Bàn di chuột</span> -->
                 <?php
+                $row_name2 = "";
                 if($id_loai_san_pham){
+                    
                     $conn = connect();
                     $sql_show_name = "select * from product_type where id = '$id_loai_san_pham' limit 1";
                     $result = mysqli_query($conn, $sql_show_name);
@@ -56,6 +63,7 @@
                 ?>
                         <span><?php echo $row['name'];?></span>
                 <?php
+                        $row_name2 = $row['name'];
                     }
                 }
                 ?>
@@ -103,10 +111,10 @@
                         <div class="research_price">
                             <hr>
                             <div class="scrollprice">
-                                <a href="http://localhost:8080/project/client2/Products.php?gia_2=500000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">Dưới 500.000đ</a>
-                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=500000&gia_2=1000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">500.000 - 1Tr</a>
-                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=2000000&gia_2=4000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">2Tr - 4Tr</a>
-                                <a href="http://localhost:8080/project/client2/Products.php?gia_1=4000000&gia_2=7000000&id_loai_san_pham=<?php echo $id_loai_san_pham;?>">4Tr - 7Tr</a>
+                                <a onclick="setInputPrice(0,500000)" href="javascript:void(0)">Dưới 500.000đ</a>
+                                <a onclick="setInputPrice(500000,1000000)" href="javascript:void(0)">500.000 - 1Tr</a>
+                                <a onclick="setInputPrice(2000000,4000000)" href="javascript:void(0)">2Tr - 4Tr</a>
+                                <a onclick="setInputPrice(4000000,7000000)" href="javascript:void(0)">4Tr - 7Tr</a>
                             </div>
                         </div>
                         <div class="input_price">
@@ -125,7 +133,7 @@
                 <div class="col-9 sortss">
                     <div class="sortss_title">
                         <div class="sortss_title_L">
-                            <h5 style="color:black "><?php echo $row['name'];?> </h5>
+                            <h5 style="color:black "><?php echo $row_name2;?> </h5>
                             <span>(<?php echo $row2['countt'];?> sản phẩm)</span>
                         </div>
                         <div class="sortss_title_R">
@@ -142,25 +150,38 @@
                     </form>
                     <div class="sortss_product">
                     <?php 
-                    function get_product($where_clause,$order_by){
-                        $conn = connect();
-                        $get_data_product = "SELECT * FROM product_info WHERE $where_clause $order_by";
-                        //print_r($get_data_product);
-                        //print_r($get_data_product);
-                        $result = mysqli_query($conn, $get_data_product);
-                        
-                        if(mysqli_num_rows($result) > 0){
-                            //out put data in whike loop, or out "0 NO RESULT "
-                            
-                            while($row = mysqli_fetch_assoc($result)){
+                    $conn = connect();
+                    $get_data_product = "SELECT * FROM product_info WHERE $where $order_by";
+                    $result = mysqli_query($conn, $get_data_product);
+                    
+                    if(mysqli_num_rows($result) > 0){
+                        while($row = mysqli_fetch_assoc($result)){
                 ?>
                 <div class="product">                    
                     <div class="product__info">
-                        <div class="info--percent">
-                        <span>
-                            <?php //echo "-".$row["discount"]."%"; ?>
-                        </span>
-                        </div>
+                        <?php
+                            $row_discount = "";
+                            $sql_check_product_type = "";
+                            if($row) {
+                              $product_type_id = $row['product_type_id'];
+                              $sql_check_product_type = "select * from product_type_discount where product_type_discount.product_type_id = '$product_type_id' and is_delete like 0 and is_active like 1 limit 1";
+                              $result_discount = mysqli_query($conn, $sql_check_product_type);
+                              $row_discount = mysqli_fetch_array($result_discount);
+                            } else if($keyword) {
+
+                            }
+                        ?>
+                        <?php
+                            if($row_discount != ""){
+                        ?>
+                                <div class="info--percent">
+                                    <span><?php echo "-".$row_discount['discount_percent']."%"; ?></span>
+                                </div>
+                        <?php
+                            } else {
+                                echo "";
+                            }
+                        ?>
                         <div class="info--thumb">
                             <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link">
                                 <img src="<?php echo "../admin/".$row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -177,8 +198,24 @@
                                 <div class="rate-text">0 đánh giá</div> -->
                             </div> 
                             <div class="bottom_price">
-                                <span class="price-selling"><?php echo number_format($row["price"],0,'.','.'). "đ";?></span> 
-                                <span class="price-root" name="price"><?php echo number_format($row["cost"],0,'.','.'). "đ";?></span>
+                                <?php
+                                    if($row_discount != "") {
+                                ?>
+                                <span class="price-selling"><?php echo number_format($row["price"] * (100 - $row_discount['discount_percent']) / 100,0,'.','.'). "đ";?></span> 
+                                <?php
+                                    } else {
+                                ?>
+                                <span class="price-selling"><?php echo number_format($row["price"] * (100) / 100,0,'.','.'). "đ";?></span> 
+                                <?php
+                                    }
+                                ?>
+                                <?php
+                                    if($row_discount != "") {
+                                ?>
+                                <span class="price-root" name="price"><?php echo number_format($row["price"],0,'.','.'). "đ";?></span>
+                                <?php
+                                    }
+                                ?>
                             </div> 
                             <?php //echo $row["description"] ;?>
                             <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
@@ -186,14 +223,13 @@
                     </div>
                 </div>
                 <?php
-                            }
                         }
-                        else {
-                            echo "Không có sản phẩm";
-                        }
-                    } 
+                    }
+                    else {
+                        echo "Không có sản phẩm";
+                    }
+
                 ?>
-                <?php get_product($where,$order_by) ?>
                     </div>
                 </div>
             </div>
@@ -204,6 +240,13 @@
         function sortt(){
             event.preventDefault();
             $('#change_sort').submit();
+        }
+        function setInputPrice(gia_1,gia_2) {
+            if(gia_1 > 0) {
+                $('input[name="gia_1"]').val(gia_1);
+            }
+            
+            $('input[name="gia_2"]').val(gia_2);
         }
     </script>
 </body>

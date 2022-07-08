@@ -741,7 +741,8 @@ function searchTabLoad(form_id) {
 }
 
 function saveTabFilter() {
-    let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
+    //let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
+    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
     $.ajax({
         url: window.location.href,
         type: "POST",
@@ -1119,71 +1120,13 @@ function setDataFromXLSX(arr_xlsx,arr_excel_columns,arr_input_names){
     }
     $("input[name='read_excel']").val("");
 }*/
-//validate input
-function compare(variable_number, value, sign) {
-    let test = "";
-    let message = "Ok";
-    switch (sign) {
-        case ">":
-            test = variable_number > value;
-            message = `Giá trị bạn nhập phải lớn hơn ${value}`;
-            break;
-        case ">=":
-            test = variable_number >= value;
-            message = `Giá trị bạn nhập phải lớn hơn hoặc bằng ${value}`;
-            break;
-        case "<":
-            test = variable_number < value;
-            message = `Giá trị bạn nhập phải nhỏ hơn hoặc bằng ${value}`;
-            break;
-        case "<=":
-            test = variable_number <= value;
-            message = `Giá trị bạn nhập phải bé hơn hoặc bằng ${value}`;
-            break;
-        case "==":
-            test = variable_number == value;
-            message = `Giá trị bạn nhập phải bằng ${value}`;
-            break;
-    }
-    return {
-        "msg": test,
-        "error": message
-    };
-}
-
-function isOk(variable, sign) {
-    let test = "";
-    let message = "Ok";
-    switch (sign) {
-        case "number":
-            test = isNaN(variable.replace(/\./g, ""));
-            message = "Vui lòng nhập dữ liệu kiểu số";
-            break;
-        case "date":
-            test = /^(\d{1,2})\-(\d{1,2})\-(\d{4})$/.test(variable);
-            message = "Vui lòng nhập dữ liệu theo định dạng dd-mm-yyyy";
-            break;
-        case "string":
-            test = variable.length < 250;
-            message = "Số lượng ký tự phải nhỏ hơn hoặc bằng 250";
-            break;
-        case "content":
-            test = variable.length < 100000;
-            message = "Số lượng ký tự phải nhỏ hơn hoặc bằng 100.000";
-            break;
-    }
-    return {
-        "msg": test,
-        "error": message
-    };
-}
 
 // crud
 function insMore(number = 2) {
     $(`#modal-xl${number}`).modal({ backdrop: 'static', keyboard: false });
 }
 
-function insMore2() {
+/*function insMore2() {
     let ins_more = html_config[file_name_config]['ins_fast']['ins_more'];
     let target2 = $(event.currentTarget).closest('tr');
     let formData = new FormData();
@@ -1243,7 +1186,7 @@ function insMore2() {
             }
         })
     }
-}
+}*/
 
 function uptMore(parent_id = "", tab_unique = "") {
     let str_arr_upt = getIdCheckbox()['result'];
@@ -1254,7 +1197,7 @@ function uptMore(parent_id = "", tab_unique = "") {
     }
 }
 
-function uptMore2() {
+/*function uptMore2() {
     let upt_more = html_config[file_name_config]['upt_fast']['upt_more'];
     let upt_more_id = html_config[file_name_config]['upt_fast']['upt_more_id'];
     let target2 = $(event.currentTarget).closest('tr');
@@ -1306,8 +1249,7 @@ function uptMore2() {
             }
         });
     }
-}
-
+}*/
 function showRow(page, apply_dom = true) {
     let count = $('[data-plus]').attr('data-plus');
     limit = 7;

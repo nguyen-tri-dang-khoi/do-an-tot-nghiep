@@ -17,9 +17,9 @@
         //
         $product_type_id = isset($_REQUEST['product_type_id']) ? $_REQUEST['product_type_id'] : null;
         //
-        $date_start = isset($_REQUEST['date_start']) ? $_REQUEST['date_start'] : null;
+        $date_start = isset($_REQUEST['date_start_1']) ? $_REQUEST['date_start_1'] : null;
         //
-        $date_end = isset($_REQUEST['date_end']) ? $_REQUEST['date_end'] : null;
+        $date_end = isset($_REQUEST['date_end_1']) ? $_REQUEST['date_end_1'] : null;
         //
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
@@ -323,10 +323,10 @@
                                         </div>
                                         <div id="s-date_start2" class="k-select-opt ml-15 col-2 s-all2" style="display:flex;">
                                             <div class="col-6" style="display:flex;padding:0px 5px;">
-                                                <input type="text" name="date_start" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_start;?>">
+                                                <input type="text" name="date_start_1" placeholder="Ngày 1" class="kh-datepicker2 form-control" value="<?=$date_start;?>">
                                             </div>
                                             <div class="col-6" style="display:flex;padding:0px 5px;">
-                                                <input type="text" name="date_end" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_end;?>">
+                                                <input type="text" name="date_end_1" placeholder="Ngày 2" class="kh-datepicker2 form-control" value="<?=$date_end;?>">
                                             </div>
                                         </div>
                                         <div class="ml-15 col-2 k-select-opt">
@@ -1079,6 +1079,7 @@ setSortTable();
         let discount_content = $("textarea[name='discount_content']").val();
         let discount_percent = $("input[name='discount_percent']").val();
         let date_start = $("input[name='date_start']").val();
+        console.log(date_start);
         let date_end = $("input[name='date_end']").val();
         $('.coupon-validate').text("");
         if(product_type_id == "") {
@@ -1091,6 +1092,7 @@ setSortTable();
             $('#discount_percent_err').text("Vui lòng không để trống số phần trăm giảm giá");
             test = false;
         } if(date_start == "") {
+            
             $('#date_start_err').text("Vui lòng không để trống thời gian bắt đầu");
             test = false;
         } if(date_end == "") {

@@ -721,6 +721,113 @@
    }
 </script>
 <script>
+   function insMore2(){
+      let target2 = $(event.currentTarget).closest('tr');
+      target2.find('p.text-danger').text('');
+      let ins_title = target2.find('td input[name="ins_title"]').val();
+      let ins_content = target2.find('td textarea[name="ins_content"]').val();
+      let ins_img = target2.find('td input[name="ins_img"]')[0].files;
+      let test = true;
+      if(ins_title == "") {
+         target2.find('td input[name="ins_title"] ~ p.text-danger').text('Không được để trống');
+         test = false;
+      } else if(ins_title.length > 200) {
+         target2.find('td input[name="ins_title"] ~ p.text-danger').text('Phải nhỏ hơn 200 ký tự');
+         test = false;
+      }
+      //
+      if(ins_content == "") {
+         target2.find('td textarea[name="ins_content"] ~ p.text-danger').text('Không được để trống');
+         test = false;
+      } else if(ins_content.length > 1800) {
+         target2.find('td textarea[name="ins_content"] ~ p.text-danger').text('Phải nhỏ hơn 1800 ký tự');
+         test = false;
+      }
+      //
+      if(ins_img.length == 0) {
+         target2.find('td input[name="ins_img"]').parent().siblings('p.text-danger').text('Phải upload hình');
+         test = false;
+      }
+      //
+      if(test) {
+         let formData = new FormData();
+         formData.append('status','ins_more');
+         formData.append('ins_title',ins_title);
+         formData.append('ins_content',ins_content);
+         formData.append('ins_img',ins_img[0]);
+         $.ajax({
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if (data.msg == "ok") {
+                     $.alert({
+                        title: "Thông báo",
+                        content: "Bạn đã thêm dữ liệu thành công",
+                        buttons: {
+                           "Ok": function() {
+                                 this2.closest('tr').find('input').val("");
+                                 this2.closest('tr').find('textarea').val("");
+                                 this2.closest('tr').find('select > option[value=""]').prop("selected", true);
+                           }
+                        }
+                     })
+                     loadDataComplete("Insert");
+               }
+            },
+            error: function(data) {
+               console.log("Error: " + data);
+            }
+         })
+      }
+   }
+   function uptMore2(){
+      let target2 = $(event.currentTarget).closest('tr');
+      target2.find('span.text-danger').text('');
+      let upt_id = $(event.currentTarget).attr('data-id');
+      let upt_title = target2.find('td input[name="upt_title"]').val();
+      let test = true;
+      if(upt_title == "") {
+         target2.find('td input[name="upt_title"] ~ span.text-danger').text('Không được để trống');
+         test = false;
+      } else if(upt_title.length > 200) {
+         target2.find('td input[name="upt_title"] ~ span.text-danger').text('Phải nhỏ hơn 200 ký tự');
+         test = false;
+      }
+      if(test) {
+         let formData = new FormData();
+         formData.append('status','upt_more');
+         formData.append('upt_id',upt_id);
+         formData.append('upt_title',upt_title);
+         $.ajax({
+          url: window.location.href,
+          type: "POST",
+          cache: false,
+          contentType: false,
+          processData: false,
+          data: formData,
+          success: function(data) {
+              console.log(data);
+              data = JSON.parse(data);
+              if (data.msg == "ok") {
+                  $.alert({
+                    title: "Thông báo",
+                    content: "Bạn đã sửa dữ liệu thành công",
+                  })
+                  //loadDataComplete();
+              }
+          },
+          error: function(data) {
+              console.log("Error: " + data);
+          }
+      })
+      }
+   }
    function insAll(){
       let test = true;
       let formData = new FormData();
