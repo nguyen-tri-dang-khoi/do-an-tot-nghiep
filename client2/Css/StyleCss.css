@@ -1653,3 +1653,7 @@ td {
 .Product__Detail .carousel-item {
     display: flex;
 }
+
+.hidden_table {
+    display: none;
+}

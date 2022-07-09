@@ -30,7 +30,7 @@
                         <p class="noteVAT">Đã bao gồm VAT (nếu có)</p>
                         <a href="cart.php" class="go-cart disable">ĐẾN GIỎ HÀNG</a>
                         <a onclick = "deleteAllCart()" href="javascript:void(0)" style="background: rgb(237, 27, 36); border-color: rgb(237, 27, 36); color: rgb(255, 255, 255);">XÓA GIỎ HÀNG</a>
-                        <a href="#" class="viewMores">XEM SẢN PHẨM KHÁC</a>
+                        <a href="http://localhost:8080/project/client2/Products.php?keyword=&id_loai_san_pham=" class="viewMores">XEM SẢN PHẨM KHÁC</a>
                     </div>
                     <div class="info-cart">
                         <div class="d-flex"><i class="fa-solid fa-circle-check"></i><p>Hỗ trợ trả góp 0%, trả trước 0đ</p></div>

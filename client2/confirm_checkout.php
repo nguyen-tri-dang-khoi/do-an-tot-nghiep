@@ -62,7 +62,7 @@
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="cash_checkout" id="flexRadioDefault1" value="cod">
                         <label class="form-check-label" for="flexRadioDefault1">
-                            Thanh toán bằng tiền mặt
+                            Thanh toán tại nơi giao hàng
                         </label>
                 </div>
                     <div class="form-check">
@@ -71,8 +71,8 @@
                         Thanh toán bằng VNPay
                     </label>
                 </div>
-                 <div class="col-12 mt-4 m-auto">
-                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                 <div class="col-12 mt-2 p-0 m-auto">
+                    <button type="submit" class="btn btn-primary">Cập nhật thông tin khác hàng</button>
                 </div>
             </form>
     <?php

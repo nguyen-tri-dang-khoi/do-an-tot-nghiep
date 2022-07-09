@@ -11,6 +11,12 @@
         $(this).find('i').toggleClass('activeClassI');
     });
 
+
+    $('.history_order >.table_order').click(function() {
+        let temp = $(this).siblings('class');
+        $(this).find('tbody').toggleClass('hidden_table');
+    });
+
     // toastr.options = {
     //     "closeButton": false,
     //     "debug": false,
