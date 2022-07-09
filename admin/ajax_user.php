@@ -37,7 +37,7 @@
                 </div>
                 <p id="img_name_err" class="text-danger"></p>
                 <div class="img-fluid" id="where-replace">
-                    <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
+                    <img src="<?=$result['img_name'];?>" class="img-fluid" id="display-image"/>
                 </div>
             </div>
         </div>

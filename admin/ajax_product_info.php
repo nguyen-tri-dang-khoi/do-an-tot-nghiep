@@ -15,10 +15,12 @@
             <div class="col-md-6 form-group">
                 <label for="ten_san_pham">Tên sản phẩm</label>
                 <input type="text" name="ten_san_pham" class="form-control" placeholder="Nhập tên sản phẩm..." value="<?php echo $result['pi_name']?>">
+                <p id="name_err" class="text-danger"></p>
             </div>
             <div class="col-md-6 form-group">
                 <label for="so_luong">Số lượng</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng" value="<?=number_format($result['count'],0,'','.');?>">
+                <p id="count_err" class="text-danger"></p>
             </div>
         </div>
         <div class="row" style="margin-left:0px;flex-direction:column;">
@@ -38,12 +40,14 @@
             </div>
             <input type="hidden" name="product_type_id" value="<?=$result['pi_type_id'];?>">
             <input type="hidden" name="category_name" value="<?=$result['pt_name'];?>">
+            <p style="margin-top:-25px;" id="product_type_id_err" class="text-danger"></p>
         </div>
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="don_gia">Giá gốc</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc" value="<?=number_format($result['cost'],0,'','.')?>">
-                <div id="price_err" class="text-danger"></div>
+                <div id="cost_err" class="text-danger"></div>
+                
             </div>
             <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
@@ -123,7 +127,7 @@
         <div class="form-group" style="width:100%;">
             <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
             <textarea name="mo_ta_san_pham" id="summernote"><?=$result['description'] ? $result['description'] : ""?></textarea>
-            <div id="name_desc_err" class="text-danger"></div>
+            <div id="desc_err" class="text-danger"></div>
         </div>
     </div>
     <div class="card-footer">
@@ -141,13 +145,13 @@
             <div class="col-md-6 form-group">
                 <label for="ten_san_pham">Tên sản phẩm</label>
                 <input type="text" name="ten_san_pham" class="form-control" placeholder="Nhập tên sản phẩm...">
-                <div id="name_err" class="text-danger"></div>
+                <p id="name_err" class="text-danger"></p>
             </div>
             
             <div class="col-md-6 form-group">
                 <label for="so_luong">Số lượng</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="so_luong"  class="form-control" placeholder="Nhập số lượng">
-                <div id="count_err" class="text-danger"></div>
+                <p id="count_err" class="text-danger"></p>
             </div>
         </div>
         <div class="row" style="margin-left:0px;flex-direction:column;">
@@ -166,17 +170,18 @@
             
             <input type="hidden" name="product_type_id" value="">
             <input type="hidden" name="category_name" value="">
+            <p style="margin-top:-25px;" id="product_type_id_err" class="text-danger"></p>
         </div>
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="don_gia">Giá gốc</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
-                <div id="price_err" class="text-danger"></div>
+                <p id="cost_err" class="text-danger"></p>
             </div>
             <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
                 <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia" class="form-control" placeholder="Nhập đơn giá">
-                <div id="price_err" class="text-danger"></div>
+                <p id="price_err" class="text-danger"></p>
             </div>
             <div class="col-md-6 form-group">
                 <label for="exampleInputFile">Upload ảnh đại diện</label>
@@ -189,7 +194,7 @@
                 <div class="img-fluid" id="where-replace">
                     <span></span>
                 </div>
-                <div id="image_err" class="text-danger"></div>
+                <p id="image_err" class="text-danger"></p>
             </div>
         </div>
         <div class="form-group" style="width:100%;">
@@ -214,7 +219,7 @@
         <div class="form-group" style="width:100%;">
             <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
             <textarea name="mo_ta_san_pham" id="summernote"></textarea>
-            <div id="name_desc_err" class="text-danger"></div>
+            <p id="desc_err" class="text-danger"></p>
         </div>
     </div>
     <div class="card-footer">
@@ -224,7 +229,7 @@
 </form>
 <?php } if($id && $status == "Read") {?>
     <?php
-        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.cost,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 limit 1";
+        $sql_get_all = "select pi.id as 'pi_id',pi.product_type_id as 'pi_type_id',pi.name as 'pi_name',pi.created_at as 'created_at',pi.count,pi.cost,pi.price,pi.description as 'description',pi.img_name,pt.id as 'pt_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id where pi.id = '$id' and pi.is_delete = 0 and pt.is_delete = 0 limit 1";
         $result = fetch(sql_query($sql_get_all));    
     ?>
     <div class="card-body">

@@ -688,8 +688,10 @@
             test = false;
         }
         if(file.length == 0) {
-            $('#img_name_err').text("Ảnh đại diện không được để trống.");
-            test = false;
+            if($('#where-replace > img').length == 0) {
+                $('#img_name_err').text("Ảnh đại diện không được để trống.");
+                test = false;
+            }
         } 
         if(birthday == "") {
             $('#birthday_err').text("Ngày sinh của nhân viên không được để trống.");

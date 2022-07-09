@@ -1283,7 +1283,16 @@ function delEmpty() {
 }
 
 function insRow() {
+    let is_ok_row = $('[data-plus]').attr('data-plus');
     num_of_row_insert = $('input[name="count3"]').val();
+    is_ok_row = parseInt(is_ok_row) + parseInt(num_of_row_insert);
+    if(is_ok_row > 20) {
+        $.alert({
+            title:"Thông báo",
+            content: "Bạn chỉ được phép có tối đa 20 dòng trong bảng",
+        });
+        return;
+    }
     let k_first_z_index = $('[data-plus]').attr('data-plus');
     if (num_of_row_insert == "") {
         $.alert({

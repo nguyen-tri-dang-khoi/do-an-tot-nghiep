@@ -789,7 +789,6 @@
       if($('input[name="list_file_del"]').val() != "") {
          arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
       }
-	
       console.log(arr_list_file_del);
       if(arr_list_file_del != ['']) {
          arr_list_file_del.forEach((element) => {
@@ -798,83 +797,61 @@
       }
    }
 	console.log(arr_input_file);
-   //var arr_input_file = new Map();
-	// update
 	function readURLChange(input,key) {
-		// key = "file_" + key;
-		// 8_del, 8_upt
-		 let target = event.currentTarget;
-		 console.log(input.files);
-		 if (input.files && input.files[0]) {
-			var reader = new FileReader();
-			if(arr_input_file.has(key)) {
-				//arr_input_file.set(key,key + "_upt");
-				if(arr_input_file.get(key).indexOf("_has") == -1) {
-					if(arr_input_file.get(key).indexOf("_del") > 0) {
-						//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
-						arr_input_file.set(key,key + "_upt");
-					} else {
-						console.log("aaaa");
-					}
-				} else {
-					console.log("true_upt" + arr_input_file.get(key));
-					//let file_img_del = $(input).closest('.kh-custom-file').attr('data-src');
-					arr_input_file.set(key,key + "_upt");
-				}
-			} else {
-				arr_input_file.set(key,key + "_ins");
-				console.log(arr_input_file);
-			}
-			reader.onload = function (e) {
-			   $(target).parent().css({
-				'background-image' : 'url("' + e.target.result + '")',
-				'background-size': 'cover',
-				'background-position': '50%'
-			   });
-			   //$(target).siblings('.kh-custom-remove-img').css({'display': 'block'});
-            //$(target).first().siblings('.kh-custom-remove-img').css({'display': 'none'});
-			}
-			reader.readAsDataURL(input.files[0]);
-		 }
+      let target = event.currentTarget;
+      console.log(input.files);
+      if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      if(arr_input_file.has(key)) {
+         if(arr_input_file.get(key).indexOf("_has") == -1) {
+            if(arr_input_file.get(key).indexOf("_del") > 0) {
+               arr_input_file.set(key,key + "_upt");
+            } else {
+               console.log("aaaa");
+            }
+         } else {
+            arr_input_file.set(key,key + "_upt");
+         }
+      } else {
+         arr_input_file.set(key,key + "_ins");
+         console.log(arr_input_file);
+      }
+      reader.onload = function (e) {
+         $(target).parent().css({
+         'background-image' : 'url("' + e.target.result + '")',
+         'background-size': 'cover',
+         'background-position': '50%'
+         });
+      }
+      reader.readAsDataURL(input.files[0]);
+      }
 	}
 	function removeImageChange(input,key){
-		//key = "file_" + key;
 		$(input).parent().css({'display':'none'});
 		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
 		arr_input_file.set(key,key + "_upt");
 	}
 	function removeImageDel(input,key) {
-		//key = "file_" + key;
 		$(input).parent().css({'display':'none'});
 		$(input).closest('.kh-custom-file').remove();
-		//console.log(file_img_del);
 		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
 		console.log(arr_input_file.get(key));
 		if(arr_input_file.has(key)) {
 			if(arr_input_file.get(key).indexOf("_has") == -1) {
-				//console.log("false_has : " + arr_input_file[key]);
 				if(arr_input_file.get(key).indexOf("_upt") > 0){
 					arr_input_file.set(key,key + "_del");
 				} else {
 					arr_input_file.delete(key);
 				}
 			} else {
-				//console.log("true_del" + arr_input_file[key]);
 				arr_input_file.set(key,key + "_del");
 			}
 		}
-		/*} else {
-			console.log("del_key_ins_upt : " + arr_input_file.get(key));
-			arr_input_file.delete(key);
-		}*/
 	}
 	function gameChange(){
 		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
 		console.log(Array.from(arr_input_file.values()).join(","));
-		//return true;
 	}
-	//
-
 	function readURL(input,key) {
       let target = event.currentTarget;
       console.log(input.files);
@@ -892,65 +869,81 @@
          reader.readAsDataURL(input.files[0]);
       }
 	 }
-	 function removeImage(input,key){
-		//key = "file_" + key;
-		$(input).parent().css({'display':'none'});
-		$(input).closest('.kh-custom-file').remove();
-		arr_input_file.delete(key);
-	 }
-	 function game() {
-		$('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
-		console.log(Array.from(arr_input_file.keys()).join(","));
-		//return true;
-	 }
-	 function addFileInput(parent){
-		let game_start = $(".kh-custom-file").last().attr('data-id');
-		let count = $(".kh-file-list:last-child .kh-custom-file").length;
-		game_start = parseInt(game_start) + 1;
-		if(isNaN(game_start)) {
-			game_start = 1;
-		}
-	
-		let file_html = `
-		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-			<input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
-			<input type="hidden" name="image" value="">
-			<div class="kh-custom-remove-img" style="display:block;">
-				<span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
-			</div>
-		</div>`;
-		if(count % 6 == 0){
-			file_html = `<div class="kh-file-list">${file_html}</div>`;
-			$(file_html).appendTo('.kh-file-lists');
-		} else {
-			$(file_html).appendTo(parent);
-		}
-		
-	 }
-	 function addFileInputChange(parent){
-		let game_start = $(".kh-custom-file").last().attr('data-id');
-		let count = $(".kh-file-list:last-child > .kh-custom-file").length;
-		console.log(count);
-		game_start = parseInt(game_start) + 1;
-		if(isNaN(game_start)) {
-			game_start = 1;
-		}
-		
-		let file_html = `
-		<div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-			<input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
-			<input type="hidden" name="image" value="">
-			<div class="kh-custom-remove-img" style="display:block;">
-				<span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
-			</div>
-		</div>`;
-		if(count % 6 == 0){
-			file_html = `<div class="kh-file-list">${file_html}</div>`;
-			$(file_html).appendTo('.kh-file-lists');
-		} else {
-			$(file_html).appendTo(parent);
-		}
-	 }
+   function removeImage(input,key){
+      $(input).parent().css({'display':'none'});
+      $(input).closest('.kh-custom-file').remove();
+      arr_input_file.delete(key);
+   }
+   function game() {
+      $('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
+      console.log(Array.from(arr_input_file.keys()).join(","));
+   }
+   function addFileInput(parent){
+      let game_start = $(".kh-custom-file").last().attr('data-id');
+      let count = $(".kh-file-list:last-child .kh-custom-file").length;
+      let count2 = $(".kh-custom-file").length;
+      console.log(count2);
+      // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
+      if(count2 > 11) {
+         $.alert({
+            'title':'Thông báo',
+            'content':'Bạn chỉ được phép thêm tối đa 12 hình',
+         });
+         return;
+      }
+      game_start = parseInt(game_start) + 1;
+      if(isNaN(game_start)) {
+         game_start = 1;
+      }
+
+      let file_html = `
+      <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+         <input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
+         <input type="hidden" name="image" value="">
+         <div class="kh-custom-remove-img" style="display:block;">
+            <span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
+         </div>
+      </div>`;
+      if(count % 6 == 0){
+         file_html = `<div class="kh-file-list">${file_html}</div>`;
+         $(file_html).appendTo('.kh-file-lists');
+      } else {
+         $(file_html).appendTo(parent);
+      }
+      
+   }
+      function addFileInputChange(parent){
+         let game_start = $(".kh-custom-file").last().attr('data-id');
+         let count = $(".kh-file-list:last-child > .kh-custom-file").length;
+         console.log(count);
+         game_start = parseInt(game_start) + 1;
+         if(isNaN(game_start)) {
+            game_start = 1;
+         }
+         let count2 = $(".kh-custom-file").length;
+         // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
+         if(count2 > 11) {
+            $.alert({
+               'title':'Thông báo',
+               'content':'Bạn chỉ được phép thêm tối đa 12 hình',
+            });
+            return;
+         }
+         let file_html = `
+         <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
+            <input type="hidden" name="image" value="">
+            <div class="kh-custom-remove-img" style="display:block;">
+               <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
+            </div>
+         </div>`;
+         if(count % 6 == 0){
+            file_html = `<div class="kh-file-list">${file_html}</div>`;
+            $(file_html).appendTo('.kh-file-lists');
+         } else {
+            $(file_html).appendTo(parent);
+         }
+      }
 </script>
 <script>
    function readURLok(input){
@@ -963,54 +956,79 @@
       }
    }
    function validate(){
-      let test = true
+      let test = true;
+      $('p.text-danger').text('');
       let name = $('input[name=ten_san_pham]').val();
       let product_type_id = $('input[name="product_type_id"]').val();
       let count = $('input[name=so_luong]').val();
       let price = $('input[name=don_gia]').val();
       let cost = $('input[name=gia_goc]').val();
+      let img = $('input[name="img_sanpham_file"]')[0].files;
       let description = $('#summernote').summernote('code');
-      if(name.trim() == "") {
-         $('input[name=ten_san_pham]').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Tên sản phẩm không được để trống"
-         });
+      if(name == "") {
+         $('#name_err').text('Tên sản phẩm không được để trống');
          test = false;
-      } else if(count.trim() == "") {
-         $('input[name=so_luong]').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Số lượng không được để trống"
-         });
+      } else if(name.length > 200) {
+         $('#name_err').text('Tên sản phẩm không được dài quá 200 ký tự');
          test = false;
-      } else if(cost.trim() == "") {
-         $('#menu').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Giá gốc sản phẩm không được để trống"
-         });
+      }
+      count = count.replace(/\./g,'');
+      if(count == "") {
+         $('#count_err').text("Số lượng không được để trống");
          test = false;
-      } else if(product_type_id.trim() == "") {
-         $('#menu').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Danh mục sản phẩm không được để trống"
-         });
+      } else if(count >= 1000000000) {
+         $('#count_err').text("Số lượng phải nhỏ hơn 1.000.000.000đ");
          test = false;
-      } else if(price.trim() == "") {
-         $('input[name=don_gia]').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Đơn giá không được để trống"
-         });
+      }
+
+      cost = cost.replace(/\./g,'');
+      if(cost == "") {
+         $('#cost_err').text("Giá gốc không được để trống");
          test = false;
-      } else if(description.trim() == "<p><br></p>") {
-         $('.note-editable.card-block').focus();
-         $.alert({
-            title: "Thông báo",
-            content: "Mô tả sản phẩm không được để trống"
-         });
+      } else if(cost <= 10000) {
+         $('#cost_err').text("Giá gốc phải lớn hơn 10.000đ");
+         test = false;
+      } else if(cost >= 1000000000){
+         $('#cost_err').text("Giá gốc phải nhỏ hơn 1.000.000.000đ");
+         test = false;
+      } else if(cost % 1000 != 0 && cost % 1000 != 500) {
+         $('#cost_err').text("Giá gốc không hợp lệ");
+         test = false;
+      } 
+
+      price = price.replace(/\./g,'');
+      if(price == "") {
+         $('#price_err').text('Đơn giá không được để trống');
+         test = false;
+      } else if(price <= 100000){
+         $('#price_err').text("Đơn giá phải lớn hơn 100.000đ");
+         test = false;
+      } else if(price >= 1000000000){
+         $('#price_err').text("Giá bán phải nhỏ hơn 1.000.000.000đ");
+         test = false;
+      } else if(price % 1000 != 0 && price % 1000 != 500){
+         $('#price_err').text("Đơn giá không hợp lệ");
+         test = false;
+      } else if(price - cost <= 50000) {
+         $('#price_err').text('Giá bán phải lớn hơn giá gốc 50.000đ trở lên');
+      }
+
+      if(product_type_id == "") {
+         $('#product_type_id_err').text('Danh mục sản phẩm không được để trống');
+         test = false;
+      } 
+       
+      if(img.length == 0) {
+         if($('#where-replace > img').length == 0) {
+            $('#image_err').text('Ảnh đại diện không được để trống');
+            test = false;
+         }
+      }
+      if(description == "<p><br></p>") {
+         $('#desc_err').text("Mô tả sản phẩm không được để trống");
+         test = false;
+      } else if(description.length > 2011) {
+         $('#desc_err').text("Mô tả sản phẩm không được dài quá 2000 ký tự");
          test = false;
       }
       return test;
@@ -1115,18 +1133,8 @@
          gameChange();
       }
       formData.append('list_file_del',$('input[name="list_file_del"]').val());
-      let img = document.getElementsByName('img[]');
-      let file = $('input[name=img_sanpham_file]')[0].files;
-      //console.log(file);
-      if(file.length > 0) {
-         formData.append('img_sanpham_file',file[0]); 
-      }
-      if(img.length > 0) {
-         let len = img.length;
-         for(let i = 0 ; i < len ;i++) {
-            formData.append('img',$('input[name="img[]"]')[i].files);
-         }
-      }
+      
+      
       if(validate()) {
          $.ajax({
             url:window.location.href,
@@ -1741,7 +1749,7 @@
             echo_json(['msg' => 'not_ok', 'error' => $error]);
          } else {
             $sql_ins = "Insert into product_info(product_type_id,user_id,name,description,count,cost,price,img_name,is_active) values(?,?,?,?,?,?,?,?,?)";
-            sql_query($sql_ins,[$product_type_id,$user_id,$name,$description,$count,$cost,$price,null,0]);
+            sql_query($sql_ins,[$product_type_id,$user_id,$name,$description,$count,$cost,$price,1,0]);
             $insert = ins_id();
             if($insert > 0) {
                $image = null;
