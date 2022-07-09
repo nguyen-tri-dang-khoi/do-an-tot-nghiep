@@ -15,7 +15,8 @@
     function check_shipper_access_token(){
         if(isset($_COOKIE['shipper_access_token'])) {
             $user_data_json = encrypt_decrypt($_COOKIE['shipper_access_token'],"decrypt");
-            if($user_data['type'] == 'shipper'){
+            $user_data = (array)json_decode($user_data_json);
+            if($user_data_json['type'] == 'shipper'){
                 $_SESSION["isShipperLoggedIn"] = true;
                 $_SESSION["shipper_id"] = $user_data["id"];
                 $_SESSION["shipper_email"] = $user_data["email"];

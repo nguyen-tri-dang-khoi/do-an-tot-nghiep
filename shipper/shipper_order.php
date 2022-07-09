@@ -18,11 +18,11 @@
                 } else if($search_option == 'address') {
                     $where .= " and (lower(o.address) like lower('%$keyword%'))";
                 } else if($search_option == 'full_name') {
-                    $where .= " and (lower(cus.full_name) like lower('%$keyword%'))";    
+                    $where .= " and (lower(u.full_name) like lower('%$keyword%'))";    
                 } else if($search_option == 'phone') {
-                    $where .= " and (lower(cus.phone) like lower('%$keyword%'))";
+                    $where .= " and (lower(u.phone) like lower('%$keyword%'))";
                 } else if($search_option == 'all') {
-                    $where .= " and (lower(o.orders_code) like lower('%$keyword%') or lower(o.address) like lower('%$keyword%') or lower(cus.full_name) like lower('%$keyword%') or lower(cus.phone) like lower('%$keyword%'))";
+                    $where .= " and (lower(o.orders_code) like lower('%$keyword%') or lower(o.address) like lower('%$keyword%') or lower(u.full_name) like lower('%$keyword%') or lower(u.phone) like lower('%$keyword%'))";
                 }
             }
         }
@@ -61,8 +61,8 @@
                             <option value="">Chọn cột tìm kiếm</option>
                             <option value="orders_code" <?=$search_option == 'orders_code' ? "selected" : "";?>>Mã hoá đơn</option>
                             <option value="address" <?=$search_option == 'address' ? "selected" : "";?>>Địa chỉ giao hàng</option>
-                            <option value="full_name" <?=$search_option == 'customer_name' ? "selected" : "";?>>Khách hàng</option>
-                            <option value="phone" <?=$search_option == 'customer_phone' ? "selected" : "";?>>Số điện thoại khách hàng</option>
+                            <option value="full_name" <?=$search_option == 'utomer_name' ? "selected" : "";?>>Khách hàng</option>
+                            <option value="phone" <?=$search_option == 'utomer_phone' ? "selected" : "";?>>Số điện thoại khách hàng</option>
                             <option value="all" <?=$search_option == 'all' ? "selected" : "";?>>Tất cả</option>
                         </select>
                         <input type="text" name="keyword" class="form-control ml-10" placeholder="Nhập từ khoá tìm kiếm" value="<?=$keyword;?>" style="width:200px;">
@@ -100,12 +100,11 @@
                         $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
                         $limit = $_SESSION['shipper_paging'];
                         $start_page = $limit * ($page - 1);
-                        $sql_get_total = "select count(*) as 'countt' from orders o inner join customer cus on o.customer_id = cus.id $where";
-                        $total = fetch_row($sql_get_total)['countt'];
-                        $sql_get_shipping_orders = "select o.orders_code as 'o_orders_code',o.address as 'o_address',o.delivery_date as 'o_delivery_date',o.delivery_complete_date as 'o_delivery_complete_date',cus.full_name as 'cus_full_name',cus.phone as 'cus_phone',o.created_at as 'o_created_at' from orders o inner join customer cus on o.customer_id = cus.id $where limit $start_page,$limit";
+                        $sql_get_total = "select count(*) as 'countt' from orders o inner join user u on o.customer_id = u.id $where";
+                        $total = fetch(sql_query($sql_get_total))['countt'];
+                        $sql_get_shipping_orders = "select o.orders_code as 'o_orders_code',o.address as 'o_address',o.delivery_date as 'o_delivery_date',o.delivery_complete_date as 'o_delivery_complete_date',u.full_name as 'u_full_name',u.phone as 'u_phone',o.created_at as 'o_created_at' from orders o inner join user u on o.customer_id = u.id $where limit $start_page,$limit";
                         $cnt=0;
-                        $rows = db_query($sql_get_shipping_orders);
-                        //log_v($sql_get_shipping_orders);
+                        $rows = fetch_all(sql_query($sql_get_shipping_orders));
                     ?>
                     <table class="table table-striped table-bordered">
                         <thead>
@@ -130,8 +129,8 @@
                                     <td><?=$total - ($cnt + $start_page);?></td>
                                     <td><?=$row['o_orders_code'];?></td>
                                     <td><?=$row['o_address'];?></td>
-                                    <td><?=$row['cus_full_name'];?></td>
-                                    <td><?=$row['cus_phone'];?></td>
+                                    <td><?=$row['u_full_name'];?></td>
+                                    <td><?=$row['u_phone'];?></td>
                                     <td><?=Date("d-m-Y",strtotime($row['o_delivery_date']));?></td>
                                     <td><?=$row['o_delivery_complete_date'] ? Date("d-m-Y",strtotime($row['o_delivery_complete_date'])) : "Chưa có thông tin";?></td>
                                     <td><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>

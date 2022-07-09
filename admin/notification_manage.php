@@ -805,27 +805,26 @@
          formData.append('upt_id',upt_id);
          formData.append('upt_title',upt_title);
          $.ajax({
-          url: window.location.href,
-          type: "POST",
-          cache: false,
-          contentType: false,
-          processData: false,
-          data: formData,
-          success: function(data) {
-              console.log(data);
-              data = JSON.parse(data);
-              if (data.msg == "ok") {
+            url: window.location.href,
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: formData,
+            success: function(data) {
+               console.log(data);
+               data = JSON.parse(data);
+               if (data.msg == "ok") {
                   $.alert({
-                    title: "Thông báo",
-                    content: "Bạn đã sửa dữ liệu thành công",
+                     title: "Thông báo",
+                     content: "Bạn đã sửa dữ liệu thành công",
                   })
-                  //loadDataComplete();
-              }
-          },
-          error: function(data) {
-              console.log("Error: " + data);
-          }
-      })
+               }
+            },
+            error: function(data) {
+               console.log("Error: " + data);
+            }
+         })
       }
    }
    function insAll(){

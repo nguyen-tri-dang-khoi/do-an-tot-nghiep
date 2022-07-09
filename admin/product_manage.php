@@ -1180,7 +1180,7 @@
                }
             },
             error: function (data) {
-               console.log('Error:', data);
+               console.log('Error:'+ data);
             }
          });
       }
@@ -1468,21 +1468,27 @@
          }
       } 
       $('td input[name="ins_name"]').each(function(){
-         if($(this).val() != "") {
+         if($(this).val() == "") {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;    
+         } else if($(this).val().length > 200){
+            $(this).siblings("p").text("Tên sản phẩm không được vượt quá 200 ký tự");
+            test = false;
+         } else {
             formData.append("ins_name[]",$(this).val());
             $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
          }
       });
       $('td textarea[name="ins_desc"]').each(function(){
-         if($(this).val() != "") {
+         if($(this).val() == "") {
+            $(this).siblings("p").text("Không được để trống");
+            test = false;    
+         } else if($(this).val().length > 1800){
+            $(this).siblings("p").text("Nội dung không được vượt quá 1800 ký tự");
+            test = false;
+         } else {
             formData.append("ins_desc[]",$(this).val());
             $(this).siblings("p").text("");
-         } else {
-            $(this).siblings("p").text("Không được để trống");
-            test = false;
          }
       });
       $('td input[name="ins_count"]').each(function(){
@@ -1577,11 +1583,14 @@
       }
       $('tr.selected input[name="upt_name"]').each(function(){
          if($(this).val() != "") {
+            $(this).siblings("span.text-danger").text("Không được để trống");
+            test = false;    
+         } else if($(this).val().length > 200) {
+            $(this).siblings("span.text-danger").text("Tên sản phẩm không được vượt quá 200 ký tự");
+            test = false;    
+         } else {
             formData.append("upt_name[]",$(this).val());
             $(this).siblings("span.text-danger").text("");
-         } else {
-            $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
          }
          
       });
@@ -1593,7 +1602,6 @@
             $(this).siblings("span.text-danger").text("Không được để trống");
             test = false;
          }
-         
       });
       let cost_price_length = $('td input[name="upt_cost"]').length;
       for(let i = 0 ; i < cost_price_length ; i++) {

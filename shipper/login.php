@@ -124,7 +124,7 @@
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
         $sql = "select id,type,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and type = 'shipper' limit 1";
-        $row = fetch_row($sql,[$email]);
+        $row = fetch(sql_query($sql,[$email]));
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
         }

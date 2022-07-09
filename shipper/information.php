@@ -46,10 +46,6 @@
                             <td><?=$result['full_name'];?></td>
                         </tr>
                         <tr>
-                            <th class="w-00">Số chứng minh nhân dân: </th>
-                            <td><?=$result['cmnd'];?></td>
-                        </tr>
-                        <tr>
                             <th class="w-200">Ngày sinh:</th>
                             <td><?=Date("d-m-Y",strtotime($result['birthday']));?></td>
                         </tr>
@@ -110,11 +106,6 @@
                 changeMonth: true,
                 changeYear: true,
                 dateFormat: 'dd-mm-yy',
-                /*onSelect: function(dateText, inst) {
-                    console.log(dateText.split("-"));
-                    dateText = dateText.split("-");
-                    $(this).attr('data-date2',`${dateText[2]}-${dateText[1]}-${dateText[0]}`);
-                }*/
             })
         })
     }
@@ -153,13 +144,6 @@
             $.alert({
                 title: "Thông báo",
                 content: "Số điện thoại nhân viên không được để trống."
-            });
-            test = false;
-        } else if(cmnd == "") {
-            $('#cmnd').focus();
-            $.alert({
-                title: "Thông báo",
-                content: "Số chứng minh nhân dân của nhân viên không được để trống."
             });
             test = false;
         } else if(birthday == "") {
