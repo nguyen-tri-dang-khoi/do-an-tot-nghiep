@@ -20,20 +20,20 @@
             if(mysqli_num_rows($result) > 0){
                 $row = mysqli_fetch_assoc($result);
     ?>
-            <form action="form_info_customer_process.php" method="post" class="row col-10 m-auto p-0">
-                <div class="col-12 m-auto p-0">
+            <form action="form_info_customer_process.php" method="post" class="row d-flex col-10 m-auto p-0">
+                <div class="col-6 m-auto p-0">
                     <label for="inputAddress2" class="form-label">Họ và Tên</label>
                     <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
                 </div>
-                <div class="col-md-12 m-auto p-0">
+                <div class="col-md-6 m-auto p-0">
                     <label for="inputEmail4" class="form-label">Email</label>
                     <input name="email" type="email" value="<?php echo $row['email']; ?>" class="form-control"  placeholder="abc@email.com">
                 </div>
-                <div class="col-md-12 m-auto p-0">
+                <div class="col-md-6 m-auto p-0">
                     <label for="inputcontact" class="form-label">Số điện thoại</label>
                     <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
                 </div>
-                <div class="col-12 m-auto mb-1 p-0">
+                <div class="col-6 m-auto mb-1 p-0">
                     <label for="inputAddress" class="form-label">Địa chỉ</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
                 </div>

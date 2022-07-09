@@ -40,6 +40,53 @@ header .headerMain>div {
     flex-wrap: wrap;
 }
 
+header .headerMain .headerMain__avatar {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+header .headerMain .headerMain__avatar .avatar {
+    width: 44px;
+    margin: auto;
+    border-radius: 50px;
+    border: 1px solid #212529;
+    overflow: hidden;
+}
+
+header .headerMain .headerMain__avatar .avatar>img {
+    width: 100%;
+}
+
+header .headerMain .headerMain__avatar .name>a>p {
+    margin: 0;
+}
+
+header .headerMain .headerMain__avatar .name a:nth-child(1),
+header .headerMain .headerMain__avatar .name a:nth-child(2) {
+    text-decoration: none;
+    color: black;
+    background-color: green;
+}
+
+header .headerMain .headerMain__avatar .name>a:hover {
+    color: white;
+    background-color: grey;
+}
+
+header .headerMain .headerMain__avatar .name {
+    position: absolute;
+    display: none;
+}
+
+header .headerMain .headerMain__avatar:hover .name {
+    position: absolute;
+    display: block;
+    background-color: white;
+    right: -65%;
+    top: 0;
+}
+
 header .headerMain .headerMain__formSearch {
     display: flex;
     position: relative;

@@ -18,7 +18,7 @@
             <a href="index.php" class="headerMain__logo">
                 <img src="IMG/tnc-logo.svg" alt="#" >
             </a>
-            <form id="headerMain--form-search" action="Products.php" method="get" class="headerMain__formSearch">
+            <form id="headerMain--form-search" class="headerMain__formSearch" action="Products.php" method="get" >
                 <div class="formSearch--keyWord">
                     <input type="text" name="keyword" autocomplete="off" placeholder="Nhập sản phẩm cần tìm ..." value="<?php echo $keyword;?>">
                 </div>                    
@@ -61,7 +61,23 @@
                     <img onclick="submitFormSearch()" src="IMG/search-icon.svg" alt="#" aria-valuetext="test">
                 </div>
             </form>
-            <div class="headerMain__cart">     
+            <div class="headerMain__avatar">
+                    <!-- <a href="#"> -->
+                        <div class="avatar">
+                            <img src="img/dmca.png" alt="#">
+                        </div>
+                        <div class="name">
+                            <a href="form_info_customer.php">
+                                <span>VawnDuwcsHuy</span>
+                            </a>
+                            <a href="#">
+                                <p style="color: black;">Đăng Xuất</p>
+                            </a>
+                        </div>
+                    <!-- </a> -->
+            </div> 
+            <div class="headerMain__cart">
+                   
                 <?php include_once("modal_cart.php"); ?>
                 <span class="cart--amount">
                     <?php
