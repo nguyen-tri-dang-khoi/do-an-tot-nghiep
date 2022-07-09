@@ -17,10 +17,10 @@
             <div class="modal-body row ">
                 <div class="body_products col-7">
                     <div id="view_cart" class=" content-products-carts cart">
-                        <div class="modal-target">      
+                        <div class="modal-target3">      
                             <div><h5>1. Chọn sản phẩm</h5></div>
                             <div><h5>2. Xác nhận đơn hàng</h5></div>
-                            <div><h5>3. Thanh toán</h5></div>
+                            <div style="background-color: #f0f3fc;"><h5 style="color: #29324e;">3. Thanh toán</h5></div>
                         </div>
                         <div class="modal-headerss">
                             <h3  style="font-weight: 800"class="modal-title" id="exampleModalLabel">Thông tin sản phẩm</h3>
@@ -36,7 +36,12 @@
                                 <div class="Price_products"><p><?php echo "Giá: ". number_format($value['price'],0,".",".");?>đ</p></div>
                             </div>
                             <div class="change_product">
-                                <div class="input-product"><span onclick="updateInfoCart('-')">-</span><input name="count" readonly="" type="text" value="<?php echo $value['count'];?>"> <span onclick="updateInfoCart('+')">+</span></div>
+                                <div class="input-product">
+                                    <!-- <span onclick="updateInfoCart('-')">-</span> -->
+                                    <span>Số lượng: </span>
+                                    <input name="count" readonly="" type="text" value="<?php echo  $value['count'];?>"> 
+                                    <!-- <span onclick="updateInfoCart('+')">+</span> -->
+                                </div>
                                 <div class="i-product">
                                     <i onclick="deleteCart()" class="fa-solid fa-trash-can"></i>
                                 </div>
@@ -52,11 +57,30 @@
                         <h5>Thông tin giỏ hàng</h5>
                         <div class="totalProduct">
                             <p>Số lượng sản phẩm</p>
-                            <span>1</span>
+                            <span>
+                                <?php
+                                    $sum = 0;
+                                    $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] :[];
+                                        foreach($_SESSION['cart'] as $cart){
+                                            $sum += $cart["count"];
+                                        }
+                                        echo $sum;
+                                ?>
+                            </span>
                         </div>
                         <div class="totalPrice">
                             <p>Tổng chi phí</p>
-                            <span>136.690đ</span>
+                            <span>
+                                <?php
+                                    $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] :[];
+                                    $totalPrice = 0;
+                                    
+                                        foreach($_SESSION['cart'] as $cart){
+                                           $totalPrice += $cart['price'] * $cart['count'];
+                                        }$totalPrice = number_format($totalPrice,"0",".",".");
+                                        echo $totalPrice. " đ";
+                                ?>
+                            </span>
                         </div>
                         <p class="noteVAT">Đã bao gồm VAT (nếu có)</p>
                         <a href="confirm_checkout.php" class="go-cart disable">Xác nhận đơn hàng</a>

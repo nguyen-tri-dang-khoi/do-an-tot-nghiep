@@ -16,10 +16,10 @@
                         <a href="#">Chính sách vận chuyển</a>
                         <a href="#">Chính sách bảo hành</a>
                         <a href="#">Chính sách đổi, trả lại hàng</a>
-                        <a href="#">CHính sách cho doanh nghiệp</a>
+                        <a href="#">Chính sách cho doanh nghiệp</a>
                     </div>
                     <div class="item">
-                        <h5>THông tin khuyến mãi</h4>
+                        <h5>Thông tin khuyến mãi</h4>
                         <a href="#">Sản phẩm bán chạy</a>
                         <a href="#">Sản phẩm khuyến mãi</a>
                         <a href="#">Hàng thanh lý</a>
