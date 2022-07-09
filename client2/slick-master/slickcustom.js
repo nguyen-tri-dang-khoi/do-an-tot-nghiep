@@ -1,18 +1,18 @@
-$(document).ready(function(){
+$(document).ready(function() {
     // $('.demo').slick();
     $('.slick-carousel').slick({
         dots: false,
         slidesToShow: 4,
         slidesToScroll: 1,
         touchMove: false
-        
+
     });
-    
-    $('.slick-carousel').on('swipe', function(event, slick, direction){
+
+    $('.slick-carousel').on('swipe', function(event, slick, direction) {
         console.log(direction);
-        // left
-      });
-    
+        // leftslickcustom
+    });
+
     $('.slick-carousel2').slick({
         dots: false,
         slidesToShow: 2,
@@ -32,6 +32,5 @@ $(document).ready(function(){
         slidesToScroll: 1,
         touchMove: false
     });
-      
-});
 
+});

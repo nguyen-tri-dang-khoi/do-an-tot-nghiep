@@ -9,11 +9,12 @@
     <link rel="stylesheet" href=" https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
     <!-- Add the slick-theme.css if you want default styling -->
+    <script src="js/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
     <!-- Add the slick-theme.css if you want default styling -->
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
     <link rel="stylesheet" href="Css/jquery-confirm.min.css">
-    <script src="js/jquery.min.js"></script>
+
     <script src="js/jquery-confirm.min.js"></script>
     <script src="slick-master/slick/slick.js"></script>
     

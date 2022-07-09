@@ -12,7 +12,7 @@
 <body>
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
-    <div class="modal-content rơ col-10 m-auto mt-5 mb-5">
+    <div class="modal-content row col-10 m-auto mt-5 mb-5">
             
             <div class="modal-body row ">
                 <div class="body_products col-7">
@@ -59,9 +59,9 @@
                             <span>136.690đ</span>
                         </div>
                         <p class="noteVAT">Đã bao gồm VAT (nếu có)</p>
-                        <a href="#" class="go-cart disable">Xác nhận đơn hàng</a>
+                        <a href="confirm_checkout.php" class="go-cart disable">Xác nhận đơn hàng</a>
                         <a onclick="deleteAllCart()" href="javascript:void(0)" style="background: rgb(237, 27, 36); border-color: rgb(237, 27, 36); color: rgb(255, 255, 255);">XÓA GIỎ HÀNG</a>
-                        <a href="#" class="viewMores">XEM SẢN PHẨM KHÁC</a>
+                        <a href="index.php" class="viewMores">XEM SẢN PHẨM KHÁC</a>
                     </div>
                     <div class="info-cart">
                         <div class="d-flex"><i class="fa-solid fa-circle-check"></i><p>Hỗ trợ trả góp 0%, trả trước 0đ</p></div>

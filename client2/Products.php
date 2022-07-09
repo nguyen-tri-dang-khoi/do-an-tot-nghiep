@@ -1,6 +1,5 @@
 <?php 
     include_once 'db.php';
-    include_once 'js/js_customIndex.php';
     //session_start();
 ?>
 <!DOCTYPE html>
@@ -9,7 +8,6 @@
 <body>
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
-    <?php include_once ('js/js_customindex.php');?>
     <script>
         $('.title_producer').click(function() {
         let temp = $(this).attr('class');
@@ -57,7 +55,8 @@
     
     
 ?>
-<script>$('.title_producer').click(function() {
+<script>
+    $('.title_producer').click(function() {
         let temp = $(this).attr('class');
         $(this).siblings().toggleClass('hidden_class');
         $(this).find('i').toggleClass('activeClassI');
@@ -281,5 +280,9 @@
             $('input[name="gia_2"]').val(gia_2);
         }
     </script>
+    <?php
+        include_once 'js/js_customIndex.php';
+    ?>
 </body>
+
 </html>

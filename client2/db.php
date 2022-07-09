@@ -65,58 +65,58 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
 
 // get product
 
-                function get_product(){
-                    $conn = connect();
-                    $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1)";
-                    $result = mysqli_query($conn, $getDataProduct);
-                    
-                    if(mysqli_num_rows($result) > 0){
-                        //out put data in whike loop, or out "Không có sản phẩm "
-                        
-                        while($row = mysqli_fetch_assoc($result)){
-            ?>
-            <div  class="product">                    
-                <div class="product__info">
-                    <div class="info--percent">
-                    <span>
-                        <?php //echo "-".$row["discount"]."%"; ?>0 %
-                    </span>
-                    </div>
-                    <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
-                        <a href="javascript:void(0)" class="product__link">
-                            <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
-                        </a>
-                    </div> 
-                    <div class="info--bottom">
-                        <div class="bottom_title" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
-                                <a href="javascript:void(0)" class="product__link"><?php echo $row["name"]; ?></a>
-                        </div> 
-                        <div class="bottom_rate" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
-                            <div class="rate-star">
-                                <?php //echo $row["rate"]; ?>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                            </div>
-                            <div class="rate-text">0 đánh giá</div> 
-                        </div> 
-                        <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
-                            <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   
-                            <span class="price-root" name="price"><?php echo number_format($row["price"],0,".","."). "đ";?></span>
-                        </div> 
-                        <?php //echo $row["description"] ;?>
-                        <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
-                    </div>
+    function get_product(){
+        $conn = connect();
+        $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1)";
+        $result = mysqli_query($conn, $getDataProduct);
+        
+        if(mysqli_num_rows($result) > 0){
+            //out put data in whike loop, or out "Không có sản phẩm "
+            
+            while($row = mysqli_fetch_assoc($result)){
+?>
+<div  class="product">                    
+    <div class="product__info">
+        <div class="info--percent">
+        <span>
+            <?php //echo "-".$row["discount"]."%"; ?>0 %
+        </span>
+        </div>
+        <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+            <a href="javascript:void(0)" class="product__link">
+                <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
+            </a>
+        </div> 
+        <div class="info--bottom">
+            <div class="bottom_title" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                    <a href="javascript:void(0)" class="product__link"><?php echo $row["name"]; ?></a>
+            </div> 
+            <div class="bottom_rate" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                <div class="rate-star">
+                    <?php //echo $row["rate"]; ?>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
                 </div>
-            </div>
-            <?php
-                        }
-                    }
-                    else {
-                        echo "Không có sản phẩm";
-                    }
-                } 
+                <div class="rate-text">0 đánh giá</div> 
+            </div> 
+            <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
+                <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   
+                <span class="price-root" name="price"><?php echo number_format($row["price"],0,".","."). "đ";?></span>
+            </div> 
+            <?php //echo $row["description"] ;?>
+            <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
+        </div>
+    </div>
+</div>
+<?php
+            }
+        }
+        else {
+            echo "Không có sản phẩm";
+        }
+    } 
 
 ?>
