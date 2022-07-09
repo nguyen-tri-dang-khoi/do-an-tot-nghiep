@@ -1,5 +1,6 @@
 <?php 
     include_once 'db.php';
+    include_once 'js/js_customIndex.php';
     //session_start();
 ?>
 <!DOCTYPE html>
@@ -8,6 +9,19 @@
 <body>
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
+    <?php include_once ('js/js_customindex.php');?>
+    <script>
+        $('.title_producer').click(function() {
+        let temp = $(this).attr('class');
+        $(this).siblings().toggleClass('hidden_class');
+        $(this).find('i').toggleClass('activeClassI');
+    });
+    $('.title_price').click(function() {
+        let temp = $(this).attr('class');
+        $(this).siblings().toggleClass('hidden_class');
+        $(this).find('i').toggleClass('activeClassI');
+    });
+    </script>
 <?php
     $hang_san_xuat = isset($_REQUEST['hang_san_xuat']) ? $_REQUEST['hang_san_xuat'] : null;
     $gia_1 = isset($_REQUEST['gia_1']) ? $_REQUEST['gia_1'] : null;
@@ -41,13 +55,26 @@
     $result = mysqli_query($conn, $sql_get_count);
     $row2 = mysqli_fetch_assoc($result);
     
+    
 ?>
+<script>$('.title_producer').click(function() {
+        let temp = $(this).attr('class');
+        $(this).siblings().toggleClass('hidden_class');
+        $(this).find('i').toggleClass('activeClassI');
+    });
+    $('.title_price').click(function() {
+        let temp = $(this).attr('class');
+        $(this).siblings().toggleClass('hidden_class');
+        $(this).find('i').toggleClass('activeClassI');
+    });
+</script>
 <div class="block__home row">
         <div class="category__product col-10 m-auto">
             <div class="breadcrumb__list" style="margin-bottom: 1%">
-                <i class="fa-solid fa-house-chimney"></i>
+                <a href="index.php"><i class="fa-solid fa-house-chimney"></i></a>
                 <i class="fa-solid fa-angle-right"></i>
-                <span>Trang chủ</span>
+                <!-- <span>Trang chủ</span> -->
+                <a style="color: black; text-decoration: none" href="index.php">Trang chủ</a>
                 <i class="fa-solid fa-angle-right"></i>
                 <!-- <span>Bàn di chuột</span> -->
                 <?php
@@ -192,10 +219,15 @@
                                     <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link"><?php echo $row["name"]; ?></a>
                             </div> 
                             <div class="bottom_rate">
-                                <!-- <div class="rate-star">
+                                <div class="rate-star">
                                     <?php //echo $row["rate"]; ?>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i>
                                 </div> 
-                                <div class="rate-text">0 đánh giá</div> -->
+                                <div class="rate-text">0 đánh giá</div>
                             </div> 
                             <div class="bottom_price">
                                 <?php

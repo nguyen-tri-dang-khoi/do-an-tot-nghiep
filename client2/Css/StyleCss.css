@@ -36,7 +36,7 @@ header .headerTop .headerTop__infoCompany p {
 }
 
 header .headerMain>div {
-    align-items: center;
+    align-items: baseline;
     flex-wrap: wrap;
 }
 
@@ -784,6 +784,7 @@ li:hover .dropdown {
 }
 
 .block--featured .featured_content .content-left .item {
+    height: 48.5%;
     width: 50%;
 }
 
@@ -1175,7 +1176,7 @@ td {
 }
 
 .breadcrumb__list>i {
-    margin: 0 2% 0 0%;
+    margin: 0 1%;
 }
 
 .inputResearch {
