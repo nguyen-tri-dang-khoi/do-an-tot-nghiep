@@ -677,13 +677,13 @@
             <table class='table table-bordered' style="height:auto;">
                <thead>
                <tr>
-                  <th>Số thứ tự</th>
-                  <th>Tên sp</th>
+                  <th class="w-100">Số thứ tự</th>
+                  <th class="w-300">Tên sản phẩm</th>
                   <th class="w-300">Danh mục</th>
                   <th>Số lượng</th>
                   <th>Giá gốc</th>
                   <th>Đơn giá</th>
-                  <th>Mô tả sp</th>
+                  <th class="w-300">Mô tả sản phẩm</th>
                   <th>Ảnh đại diện</th>
                   <th>Thao tác</th>
                </tr>
@@ -1508,7 +1508,7 @@
             formData.append("ins_img[]",$(this)[0].files[0]);
             $(this).closest('td').find("p").text("");
          } else {
-            $(this).closest('td').find("p").text("Ko để trống ảnh");
+            $(this).closest('td').find("p").text("Không để trống ảnh");
             test = false;
          }
       });

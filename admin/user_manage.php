@@ -696,7 +696,18 @@
         if(birthday == "") {
             $('#birthday_err').text("Ngày sinh của nhân viên không được để trống.");
             test = false;
-        } if(address == "") {
+        } else {
+            birthday = birthday.split('-');
+            birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+            console.log(Date.parse(new Date().toISOString().slice(0,10)));
+            console.log(Date.parse(birthday));
+            if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(birthday) < 568024668000) {
+                $('#birthday_err').text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                test = false;
+            }
+        } 
+        
+        if(address == "") {
             $('#address_err').text("Địa chỉ của nhân viên không được để trống.");
             test = false;
         } if(password == "") {
@@ -991,6 +1002,15 @@
         if(upt_birthday == "") {
             target2.find('td input[name="upt_birthday"] ~ span.text-danger').text("Không được để trống");
             test = false;
+        } else {
+            upt_birthday = upt_birthday.split('-');
+            upt_birthday = upt_birthday[2] + "-" + upt_birthday[1] + "-" + upt_birthday[0];
+            console.log(Date.parse(new Date().toISOString().slice(0,10)));
+            console.log(Date.parse(upt_birthday));
+            if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(upt_birthday) < 568024668000) {
+                target2.find('td input[name="upt_birthday"] ~ p.text-danger').text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                test = false;
+            }
         }
         if(test) {
             let this2 = $(event.currentTarget);
@@ -1070,9 +1090,19 @@
             test = false;
         } 
         //
+        
         if(ins_birthday == "") {
             target2.find('td input[name="ins_birthday"] ~ p.text-danger').text("Không được để trống");
             test = false;
+        } else {
+            ins_birthday = ins_birthday.split('-');
+            ins_birthday = ins_birthday[2] + "-" + ins_birthday[1] + "-" + ins_birthday[0];
+            console.log(Date.parse(new Date().toISOString().slice(0,10)));
+            console.log(Date.parse(ins_birthday));
+            if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(ins_birthday) < 568024668000) {
+                target2.find('td input[name="ins_birthday"] ~ p.text-danger').text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                test = false;
+            }
         }
 
         if(ins_type == "") {
@@ -1138,6 +1168,7 @@
         }
       });
       $('td input[name="ins_email"]').each(function(){
+        
         if($(this).val() == ""){
             $(this).siblings("p.text-danger").text("Không được để trống");
             test = false;
@@ -1171,13 +1202,17 @@
         }
       });
       $('td input[name="ins_birthday"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_birthday[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
+        if($(this).val() == ""){
+            $(this).siblings("p.text-danger").text("Không được để trống");
         } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
+            let date_temp = $(this).val();
+            date_temp = date_temp.split('-');
+            date_temp = date_temp[2] + "-" + date_temp[1] + "-" + date_temp[0];
+            if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(date_temp) < 568024668000) {
+                formData.append("ins_birthday[]",date_temp);
+                $(this).siblings("p.text-danger").text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+            }
+        } 
       });
       $('td select[name="ins_type"]').each(function(){
         if($(this).find('option:selected').val() != "") {
@@ -1286,13 +1321,17 @@
             }
         });
         $('tr.selected input[name="upt_birthday"]').each(function(){
-            if($(this).val() != "") {
-                formData.append("upt_birthday[]",$(this).val());
-                $(this).siblings("span.text-danger").text("");
-            } else {
+            if($(this).val() == ""){
                 $(this).siblings("span.text-danger").text("Không được để trống");
-                test = false;
-            }
+            } else {
+                let date_temp = $(this).val();
+                date_temp = date_temp.split('-');
+                date_temp = date_temp[2] + "-" + date_temp[1] + "-" + date_temp[0];
+                if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(date_temp) < 568024668000) {
+                    formData.append("upt_birthday[]",date_temp);
+                    $(this).siblings("span.text-danger").text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                }
+            } 
         });
         if(test) {
             formData.append("status","upt_all");

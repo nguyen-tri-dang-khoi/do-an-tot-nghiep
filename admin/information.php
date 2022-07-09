@@ -167,6 +167,15 @@
     if(birthday == "") {
       $('#birthday_err').text('Không để trống ngày sinh');
       test = false;
+    } else {
+      birthday = birthday.split('-');
+      birthday = birthday[2] + "-" + birthday[1] + "-" + birthday[0];
+      console.log(Date.parse(new Date().toISOString().slice(0,10)));
+      console.log(Date.parse(birthday));
+      if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(birthday) < 568024668000) {
+        $('#birthday_err').text("Bạn phải có độ tuổi từ 18 tuổi trở lên");
+        test = false;
+      }
     }
     //
     if(address == "") {
