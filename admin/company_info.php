@@ -164,42 +164,50 @@
     });
    }
    function processChangeCompanyInfo(){
+      event.preventDefault();
       let formData = new FormData();
       let test = true;
+      $('p.text-danger').text('');
+      let phone_reg = /^\d{10}$/;
+      let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
       let company_tax_code = $('input[name="company_tax_code"]').val();
       let company_name = $('input[name="company_name"]').val();
       let company_phone = $('input[name="company_phone"]').val();
       let company_email = $('input[name="company_email"]').val();
       let company_address = $('input[name="company_address"]').val();
       if(company_name == ""){
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống tên công ty",
-        });
+        $('#company_name_err').text('Vui lòng không để trống tên công ty');
         test = false;
-      } else if(company_phone == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống số điện thoại công ty",
-        });
+      } else if(company_name.length > 200){
+        $('#company_name_err').text('Tên công ty không được phép vượt quá 200 ký tự');
         test = false;
-      } else if(company_email == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống email công ty",
-        });
+      }
+      //
+      if(company_phone == "") {
+        $('#company_phone_err').text('Vui lòng không để trống số điện thoại công ty');
         test = false;
-      } else if(company_address == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống địa chỉ công ty",
-        });
+      } else if(!company_phone.match(phone_reg)) {
+        $('#company_phone_err').text('Định dạng số điện thoại công ty không hợp lệ');
         test = false;
-      } else if(company_tax_code == "") {
-        $.alert({
-          title: "Thông báo",
-          content: "Vui lòng không để trống mã số thuế công ty",
-        });
+      }
+      //
+      if(company_email == "") {
+        $('#company_email_err').text('Vui lòng không để trống email công ty');
+        test = false;
+      } else if(!company_email.match(email_reg)) {
+        $('#company_email_err').text('Định dạng email công ty không hợp lệ');
+        test = false;
+      }
+      //
+      if(company_address == "") {
+        $('#company_address_err').text('Vui lòng không để trống địa chỉ công ty');
+        test = false;
+      } else if(company_address.length > 1800) {
+        $('#company_address_err').text('Địa chỉ công ty không được phép vượt quá 1800 ký tự');
+        test = false;
+      }
+      if(company_tax_code == "") {
+        $('#company_tax_code_err').text('Vui lòng không để trống mã số thuế công ty');
         test = false;
       }
 

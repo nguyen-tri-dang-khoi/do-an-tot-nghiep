@@ -103,6 +103,81 @@
 ?>
 <!--js section start-->
 <script>
+  function validatePass(){
+    $('p.text-danger').text('');
+    let old_pass = $('input[name=old_pass]').val();
+    let new_pass = $('input[name=new_pass]').val();
+    let confirm_new_pass = $('input[name=confirm_new_pass]').val();
+    if(old_pass == "") {
+      $('#old_pass_err').text('Không để trống mật khẩu xác thực');
+      test = false;
+    } 
+
+    if(new_pass == ""){
+      $('#new_pass_err').text('Không để trống mật khẩu mới');
+      test = false;
+    }
+
+    if(confirm_new_pass == "") {
+      $('#confirm_new_pass_err').text('Không để trống xác nhận mật khẩu mới');
+      test = false;
+    } else if(new_pass != confirm_new_pass) {
+      $.alert({
+        title:"Thông báo",
+        content:"Mật khẩu mới không khớp với xác nhận mật khẩu mới",
+      })
+      test = false;
+    }
+    return test;
+  }
+  function validateInfo(){
+    $('p.text-danger').text('');
+    let test = true;
+    let full_name = $('input[name=full_name]').val();
+    let phone_reg = /^\d{10}$/;
+    let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+    let email = $('input[name=email]').val();
+    let phone = $('input[name=phone]').val();
+    let birthday = $('input[name=birthday]').val();
+    let address = $('input[name=address]').val();
+    if(full_name == "") {
+      $('#full_name_err').text('Không để trống tên đầy đủ');
+      test = false;
+    } else if(full_name.length > 200) {
+      $('#full_name_err').text('Tên đầy đủ phải có độ dài nhỏ hơn hoặc bằng 200 ký tự');
+      test = false;
+    }
+    //
+    if(email == "") {
+      $('#email_err').text('Không để trống email');
+      test = false;
+    } else if(!email.match(email_reg)) {
+      $('#email_err').text('Định dạng email không hợp lệ');
+      test = false;
+    }
+    //
+    if(phone == "") {
+      $('#phone_err').text('Không để trống số điện thoại');
+      test = false;
+    } else if(!phone.match(phone_reg)) {
+      $('#phone_err').text('Định dạng số điện thoại không hợp lệ');
+      test = false;
+    }
+    //
+    if(birthday == "") {
+      $('#birthday_err').text('Không để trống ngày sinh');
+      test = false;
+    }
+    //
+    if(address == "") {
+      $('#address_err').text('Không để trống địa chỉ');
+      test = false;
+    } else if(address.length > 1800) {
+      $('#address_err').text('Địa chỉ phải có độ dài nhỏ hơn hoặc bằng 200 ký tự');
+      test = false;
+    }
+    return test;
+  }
   function showModalChangeInfo(id){
     $('#change_info').load(`ajax_information.php?id=${id}&status=changeInfo`,() => {
       $('#modal-xl').modal('show');
@@ -116,93 +191,98 @@
   }
   function processChangeInfo(){
     event.preventDefault();
-    let full_name = $('input[name=full_name]').val();
-    let email = $('input[name=email]').val();
-    let phone = $('input[name=phone]').val();
-    let birthday = $('input[name=birthday]').val();
-    let address = $('input[name=address]').val();
-    var formData = new FormData($('#change_info')[0]);
-    // xu ly du lieu
-    formData.append('status','change_info');
-    formData.append('full_name',full_name);
-    formData.append('email',email);
-    formData.append('phone',phone);
-    formData.append('birthday',birthday);
-    formData.append('address',address);
-    let file = $('#fileInput')[0].files;
-    if(file.length > 0){
-      formData.append('img_admin_file',file[0]);
-    }
-    $.ajax({
-        url:window.location.href,
-        type:"POST",
-        cache:false,
-        dataType:"json",
-        contentType: false,
-        processData: false,
-        data:formData,
-        success:function(res_json){
-          if(res_json.msg == 'ok'){
-            $.alert({
-              title: "Thông báo",
-              content: res_json.success,
-              buttons: {
-                "Ok":function(){
-                  location.reload();
+    if(validateInfo()) {
+      let full_name = $('input[name=full_name]').val();
+      let email = $('input[name=email]').val();
+      let phone = $('input[name=phone]').val();
+      let birthday = $('input[name=birthday]').val();
+      let address = $('input[name=address]').val();
+      var formData = new FormData($('#change_info')[0]);
+      // xu ly du lieu
+      formData.append('status','change_info');
+      formData.append('full_name',full_name);
+      formData.append('email',email);
+      formData.append('phone',phone);
+      formData.append('birthday',birthday);
+      formData.append('address',address);
+      let file = $('#fileInput')[0].files;
+      if(file.length > 0){
+        formData.append('img_admin_file',file[0]);
+      }
+      $.ajax({
+          url:window.location.href,
+          type:"POST",
+          cache:false,
+          dataType:"json",
+          contentType: false,
+          processData: false,
+          data:formData,
+          success:function(res_json){
+            if(res_json.msg == 'ok'){
+              $.alert({
+                title: "Thông báo",
+                content: res_json.success,
+                buttons: {
+                  "Ok":function(){
+                    location.reload();
+                  }
                 }
-              }
-            });
-          } else {
-            $.alert({
-              title: "Thông báo",
-              content: res_json.error
-            });
+              });
+            } else {
+              $.alert({
+                title: "Thông báo",
+                content: res_json.error
+              });
+            }
+          },
+          error: function (data) {
+              console.log('Error:', data);
           }
-        },
-        error: function (data) {
-            console.log('Error:', data);
-        }
-    });
+      });
+    }
   }
   function processChangePass(){
     event.preventDefault();
-    let old_pass = $('input[name=old_pass]').val();
-    let new_pass = $('input[name=new_pass]').val();
-    let confirm_new_pass = $('input[name=confirm_new_pass]').val();
-    let formData = new FormData();
-    formData.append('status','change_pass');
-    formData.append('old_pass',old_pass);
-    formData.append('new_pass',new_pass);
-    $.ajax({
-        url:window.location.href,
-        type:"POST",
-        cache:false,
-        dataType:"json",
-        contentType: false,
-        processData: false,
-        data:formData,
-        success:function(res_json){
-          if(res_json.msg == 'ok'){
-            $.alert({
-              title: "Thông báo",
-              content: res_json.success,
-              buttons: {
-                "Ok":function(){
-                  location.reload();
+    if(validatePass()) {
+      let old_pass = $('input[name=old_pass]').val();
+      let new_pass = $('input[name=new_pass]').val();
+      let confirm_new_pass = $('input[name=confirm_new_pass]').val();
+      let formData = new FormData();
+      formData.append('status','change_pass');
+      formData.append('old_pass',old_pass);
+      formData.append('new_pass',new_pass);
+      $.ajax({
+          url:window.location.href,
+          type:"POST",
+          cache:false,
+          dataType:"json",
+          contentType: false,
+          processData: false,
+          data:formData,
+          success:function(res_json){
+            if(res_json.msg == 'ok'){
+              $.alert({
+                title: "Thông báo",
+                content: res_json.success,
+                buttons: {
+                  "Ok":function(){
+                    location.reload();
+                  }
                 }
-              }
-            });
-          } else {
-            $.alert({
-              title: "Thông báo",
-              content: res_json.error
-            });
+              });
+            } else {
+              $.alert({
+                title: "Thông báo",
+                content: res_json.error
+              });
+            }
+          },
+          error: function (data) {
+              console.log('Error:', data);
           }
-        },
-        error: function (data) {
-            console.log('Error:', data);
-        }
-    });
+      });
+    }
+    
   }
   
   function showPicker(){

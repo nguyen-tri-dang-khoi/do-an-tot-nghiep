@@ -1126,68 +1126,6 @@ function insMore(number = 2) {
     $(`#modal-xl${number}`).modal({ backdrop: 'static', keyboard: false });
 }
 
-/*function insMore2() {
-    let ins_more = html_config[file_name_config]['ins_fast']['ins_more'];
-    let target2 = $(event.currentTarget).closest('tr');
-    let formData = new FormData();
-    formData.append('status', 'ins_more');
-    if (file_name_config == "category_manage") {
-        formData.append('parent_id', $('[dt-parent-id]').attr('dt-parent-id'));
-    }
-    let test = true;
-    Object.keys(ins_more).forEach(function(ele) {
-        if (target2.find(`td [name="${ele}"]`).attr('type').indexOf('file') > -1) {
-            formData.append(`${ele}`, target2.find(`td [name="${ele}"]`)[0].files[0]);
-        } else if (target2.find(`td [name="${ele}"]`).attr('type').indexOf('select') > -1) {
-            console.log(target2.find(`td [name="${ele}"] option:selected`).val());
-            formData.append(`${ele}`, target2.find(`td [name="${ele}"] option:selected`).val());
-        } else {
-            formData.append(`${ele}`, target2.find(`td [name="${ele}"]`).val());
-        }
-        if (ins_more[ele]['not_null'] !== undefined) {
-            if (target2.find(`td [name="${ele}"]`).val() == "") {
-                target2.find(`td [name="${ele}"]`).closest('td').find('.text-danger').text(ins_more[ele]['not_null']);
-                test = false;
-                return test;
-            } else {
-                target2.find(`td [name="${ele}"]`).closest('td').find('.text-danger').text("");
-            }
-        }
-    });
-    if (test) {
-        let this2 = $(event.currentTarget);
-        $.ajax({
-            url: window.location.href,
-            type: "POST",
-            cache: false,
-            contentType: false,
-            processData: false,
-            data: formData,
-            success: function(data) {
-                console.log(data);
-                data = JSON.parse(data);
-                if (data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã thêm dữ liệu thành công",
-                        buttons: {
-                            "Ok": function() {
-                                this2.closest('tr').find('input').val("");
-                                this2.closest('tr').find('textarea').val("");
-                                this2.closest('tr').find('select > option[value=""]').prop("selected", true);
-                            }
-                        }
-                    })
-                    loadDataComplete("Insert");
-                }
-            },
-            error: function(data) {
-                console.log("Error: " + data);
-            }
-        })
-    }
-}*/
-
 function uptMore(parent_id = "", tab_unique = "") {
     let str_arr_upt = getIdCheckbox()['result'];
     if (parent_id != "") {
