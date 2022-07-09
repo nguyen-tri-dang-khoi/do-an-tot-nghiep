@@ -14,26 +14,6 @@
             <div class="modal-body row ">
                 <div class="body_products col-7">
                     <div id='view_cart' class="content-products-cart cart">
-                        <!-- <p>Bạn đang không có sản phẩm nào trong giỏ hàng</p> 
-                        
-                        
-                        aria-label="Close"-->
-                        
-                        
-                        <!-- <div class="items_cart">
-                            <div class="img_products"><img src="img/product/giadomanhinh.png" alt="#"></div>
-                            <div class="info_products">
-                                <div class="name_products"><p>PC Đồ Họa - Renda Premium - R9 5950X/ X570/ 32GB/ 250GB/ GTX 1660 Super/ 650W</p></div>
-                                <div class="Price_products"><p>105.870.000 đ</p></div>
-                            </div>
-                            <div class="change_product">
-                                <div><span>-</span><input type="text" value="1"> <span>+</span></div>
-                                <div class="i-product">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </div>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
                 <div class="body_Price col-5">

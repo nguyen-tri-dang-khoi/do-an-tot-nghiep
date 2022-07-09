@@ -53,7 +53,7 @@
                          $image_result = mysqli_query($conn, $sql_load_img);
                             while($row_image = mysqli_fetch_assoc($image_result)) {
                         ?>
-                                <div class="carousel-item" data-bs-interval="10000">
+                                <div class="carousel-item d-flex" data-bs-interval="10000">
                                     <img src="<?php echo "../admin/" . $row_image['img_id'];?>" class="d-block w-80 m-auto" alt="...">
                                     <div class="carousel-caption d-none d-md-block">
                                     </div>
@@ -122,7 +122,7 @@
                 <span class="block--header_title">SẢN PHẨM LIÊN QUAN</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <!-- <?php get_product()?> -->
+                <!-- <?php //get_product()?> -->
                 <?php
                     $product_type_id = $row['product_type_id'];
                     $price_1 = $row['price'];
@@ -178,7 +178,44 @@
                     else {
                         echo "Không có sản phẩm";
                     }
-            ?>
+                ?>
+            </div>
+            <div class="block--comment col-10 m-auto">
+                    <div class="review_comment">
+                        <h5>Bifnh Luaajn</h5>
+                        <div>
+                            <img src="#" alt="avatar ngừời dùng">
+                            <div class="#">
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i>
+                            </div>
+                            <div class="nameUser_cmt">khoi</div>
+                            <div class="content_cmt">aaaaaaaaaaaaaaaaaaaaaaaas</div>
+                            <div>
+                                <a href="javascript:void(0)">Trả lời</a> <span>Ngày tháng cmt</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input_comment">
+                        <div class="input-group mb-3">
+                            <div class="input-group mb-3 vote_rate">
+                                <span class="input-group-text">Đánh giá: </span>
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i> 
+                                <i class="fas fa-star "></i>
+                            </div>
+
+                            <div class="input-group">
+                                <span class="input-group-text">Nội dung bình luận: </span>
+                                <textarea class="form-control" aria-label="With textarea"></textarea>
+                            </div>
+                        </div>
+                </div>
             </div>
 
         <div>

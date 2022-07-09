@@ -690,6 +690,13 @@ li:hover .dropdown {
 }
 
 
+/* block--comment */
+
+.block--comment {
+    display: flex;
+}
+
+
 /* slide--product */
 
 .product__info {
@@ -1042,9 +1049,20 @@ li:hover .dropdown {
 }
 
 .body_products .content-products-cart {
-    margin: 0;
+    margin: 0px;
     height: 100%;
     border: 1px solid green;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* bor border trong cart.php */
+
+.body_products .content-products-carts {
+    margin: 0;
+    height: 100%;
+    border: 1px solid rgba(0, 128, 0, 0);
     display: flex;
     flex-direction: column;
 }
@@ -1063,6 +1081,10 @@ li:hover .dropdown {
 .modal-body h5,
 .modal-body span {
     color: #29324e;
+}
+
+.modal-body .modal-target h5 {
+    color: white;
 }
 
 .allPrice p {
@@ -1124,11 +1146,13 @@ li:hover .dropdown {
 .totalProduct span {
     background-color: darkblue;
     color: yellow;
+    padding: 1%;
 }
 
 .totalPrice span {
     background-color: rgb(180, 207, 135);
     color: #f0f3fc;
+    padding: 1%;
 }
 
 .body_Price .info-cart div i {
@@ -1145,6 +1169,10 @@ li:hover .dropdown {
 
 .info-cart {
     margin: 3% 0;
+}
+
+.info-carts {
+    margin: 3% 5%;
 }
 
 .logo-footer-cart .logo {
@@ -1168,6 +1196,14 @@ td {
     padding: 10px;
     justify-content: space-evenly;
     margin: 10px 10px 0;
+}
+
+.items_carts {
+    display: flex;
+    border: 1px solid green;
+    padding: 10px;
+    justify-content: space-between;
+    margin: 10px 0px 0px;
 }
 
 .img_products {
@@ -1457,6 +1493,16 @@ td {
     border-bottom: 1px solid rgba(128, 128, 128, 0.472);
 }
 
+.modal-headers {
+    padding: 0.7rem 0rem;
+    /* border-bottom: 1px solid rgba(128, 128, 128, 0.472); */
+}
+
+.modal-headerss {
+    padding: 0.7rem 0rem 0.2rem;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.472);
+}
+
 .modal-target {
     display: flex;
     overflow: hidden;
@@ -1489,7 +1535,7 @@ td {
     transform: skewX(-20deg);
     background-color: #005ec4;
     color: white;
-    padding: 10px 15px;
+    padding: 10px 28px;
 }
 
 .modal-target div>h4 {
@@ -1542,8 +1588,13 @@ td {
 /* Product__Detail */
 
 .Product__Detail .carousel-inner {
+    display: flex;
     border: 1px solid green;
     overflow: hidden;
     WIDTH: 540px;
     height: 508px;
+}
+
+.Product__Detail .carousel-item {
+    display: flex;
 }

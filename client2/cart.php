@@ -16,24 +16,24 @@
             
             <div class="modal-body row ">
                 <div class="body_products col-7">
-                    <div id="view_cart" class="content-products-cart cart">
+                    <div id="view_cart" class=" content-products-carts cart">
                         <div class="modal-target">      
-                            <div><h3>1. Chọn sản phẩm</h3></div>
-                            <div><h3>2. Xác nhận đơn hàng</h3></div>
-                            <div><h3>3. Thanh toán</h3></div>
+                            <div><h5>1. Chọn sản phẩm</h5></div>
+                            <div><h5>2. Xác nhận đơn hàng</h5></div>
+                            <div><h5>3. Thanh toán</h5></div>
                         </div>
-                        <div class="modal-header">
+                        <div class="modal-headerss">
                             <h3  style="font-weight: 800"class="modal-title" id="exampleModalLabel">Thông tin sản phẩm</h3>
                         </div>
                         <?php
                             //print_r($_SESSION['cart']);
                             foreach($_SESSION['cart'] as $key => $value) {
                         ?>
-                        <div data-id="<?php echo $key;?>" class="items_cart">
+                        <div data-id="<?php echo $key;?>" class="items_carts">
                             <div class="img_products"><img src="<?php echo "../admin/". $value['img'];?>" alt="..."></div>
                             <div class="info_products">
-                                <div class="name_products"><p><?php echo $value['name'];?></p></div>
-                                <div class="Price_products"><p><?php echo number_format($value['price'],0,".",".");?>đ</p></div>
+                                <div class="name_products"><p><?php echo "Tên Sp: ". $value['name'];?></p></div>
+                                <div class="Price_products"><p><?php echo "Giá: ". number_format($value['price'],0,".",".");?>đ</p></div>
                             </div>
                             <div class="change_product">
                                 <div class="input-product"><span onclick="updateInfoCart('-')">-</span><input name="count" readonly="" type="text" value="<?php echo $value['count'];?>"> <span onclick="updateInfoCart('+')">+</span></div>
@@ -63,7 +63,7 @@
                         <a onclick="deleteAllCart()" href="javascript:void(0)" style="background: rgb(237, 27, 36); border-color: rgb(237, 27, 36); color: rgb(255, 255, 255);">XÓA GIỎ HÀNG</a>
                         <a href="index.php" class="viewMores">XEM SẢN PHẨM KHÁC</a>
                     </div>
-                    <div class="info-cart">
+                    <div class="info-carts">
                         <div class="d-flex"><i class="fa-solid fa-circle-check"></i><p>Hỗ trợ trả góp 0%, trả trước 0đ</p></div>
                         <div class="d-flex"><i class="fa-solid fa-circle-check"></i><p>Hoàn tiền 200% khi phát hiện hàng giả</p></div>
                         <div class="d-flex"><i class="fa-solid fa-circle-check"></i><p>Giao hàng từ 5 - 7 ngày toàn quốc</p></div>
