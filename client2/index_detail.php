@@ -61,21 +61,6 @@
                         <?php
                             }
                         ?>
-                        <!-- <div class="carousel-item" data-bs-interval="2000">
-                            <img src="Img/product/giado01b.jpg" class="d-block w-80 m-auto" alt="...">
-                            <div class="carousel-caption d-none d-md-block">
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <img src="Img/product/giado01c.jpg" class="d-block w-80 m-auto" alt="...">
-                            <div class="carousel-caption d-none d-md-block">
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <img src="Img/product/giado01d.jpg" class="d-block w-80 m-auto" alt="...">
-                            <div class="carousel-caption d-none d-md-block">
-                            </div>
-                        </div> -->
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>

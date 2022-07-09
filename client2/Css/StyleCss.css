@@ -1544,4 +1544,6 @@ td {
 .Product__Detail .carousel-inner {
     border: 1px solid green;
     overflow: hidden;
+    WIDTH: 540px;
+    height: 508px;
 }
