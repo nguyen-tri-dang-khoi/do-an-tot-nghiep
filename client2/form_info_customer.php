@@ -20,7 +20,6 @@
             if(mysqli_num_rows($result) > 0){
                 $row = mysqli_fetch_assoc($result);
                 $name = $row['full_name'];
-
     ?>
             <div class="col-10 m-auto p-0 mt-0 mb-4 row d-flex">
                 <form action="form_info_customer_process.php" method="post" class="row d-flex col-6 mt-4 m-auto p-0">

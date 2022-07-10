@@ -731,12 +731,24 @@
   function processModalInsertUpdate(){
     event.preventDefault();
     let test = true;
-    console.log($('input[name="img_category_file"]').val());
-    if($('input[name=ten_loai_san_pham]').val() == "") {
+    let name = $('input[name=ten_loai_san_pham]').val();
+    let file_img = $('input[name="img_category_file"]')[0].files;
+    if(name == "") {
+      $('#name_err').text("Vui lòng không để trống tên danh mục");
+      test = false;
+    } else if(name.length > 200) {
+      $('#name_err').text("Vui lòng nhập tên danh mục nhỏ hơn hoặc bằng 200 ký tự");
       test = false;
     }
-    let formData = new FormData($('#form-product-type')[0]);
+
+    if(file_img.length == 0) {
+      if($('#where-replace > img').length == 0) {
+        $('#img_name_err').text("Vui lòng không để trống hình ảnh");
+        test = false;
+      } 
+    }
     if(test) {
+      let formData = new FormData($('#form-product-type')[0]);
       formData.append('id',$('input[name=id]').val());
       formData.append('name',$('input[name=ten_loai_san_pham]').val());
       formData.append('parent_id',$('input[name=parent_id]').val());

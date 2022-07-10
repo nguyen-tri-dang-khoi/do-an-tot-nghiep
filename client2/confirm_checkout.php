@@ -10,7 +10,31 @@
     $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
     $_SESSION['customer_id'] = isset($_SESSION['customer_id']) ? $_SESSION['customer_id'] : null;
     if(!$_SESSION['customer_id']) {
-        header("Location:Login_signup.php");
+        echo "<script>
+            $.alert({
+                'title':'Thông báo',
+                'content':'Bạn vui lòng đăng nhập để tiếp tục',
+                'buttons':{
+                    'Ok': function(){
+                        history.back(-1);
+                    }
+                }
+            });
+        </script>";
+        exit();
+    }
+    if($_SESSION['cart'] == []) {
+        echo "<script>
+            $.alert({
+                'title':'Thông báo',
+                'content':'Giỏ hàng của bạn đang trống',
+                'buttons':{
+                    'Ok': function(){
+                        history.back(-1);
+                    }
+                }
+            });
+        </script>";
         exit();
     }
 ?>

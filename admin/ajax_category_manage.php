@@ -13,6 +13,7 @@
     <div class="form-group">
         <label for="product_type">Tên danh mục</label>
         <input type="text" name="ten_loai_san_pham" class="form-control" placeholder="Nhập tên danh mục" value="<?php echo $result["name"];?>">
+        <p id="name_err" class="text-danger"></p>
         <input type="hidden" name="id" value="<?=$result["id"];?>">
         <?php if($parent_id) { ?>
             <input type="hidden" name="parent_id" value="<?=$parent_id;?>">
@@ -26,10 +27,11 @@
                 <label class="custom-file-label" for="exampleInputFile">Chọn ảnh</label>
             </div>
         </div>
-        <div class="img-fluid" id="where-replace" style="background-image:url('<?=$result['img_name'] ? $result['img_name'] : '';?>');background-size:cover;height:300px;"></div>
-        <div id="image_err" class="text-danger"></div>
+        <div class="img-fluid" id="where-replace">
+            <img src="<?=$result['img_name'] ? $result['img_name'] : '';?>" alt="">
+        </div>
     </div>
-    <div id="product_type_err" class="text-danger"></div>
+    <p id="img_name_err" class="text-danger"></p>
 </div>
 <div class="card-footer">
     <button onclick="processModalInsertUpdate()" data-status="<?=$status;?>" id="btn-luu-loai-san-pham" type="submit" class="dt-button button-purple">Sửa</button>
@@ -44,10 +46,12 @@
     <div class="form-group">
         <label for="product_type">Tên danh mục</label>
         <input type="text" name="ten_loai_san_pham" class="form-control" placeholder="Nhập tên danh mục">
+        <p id="name_err" class="text-danger"></p>
         <input type="hidden" name="id">
         <?php if($parent_id) { ?>
             <input type="hidden" name="parent_id" value="<?=$parent_id ? $parent_id : '';?>">
         <?php } ?>
+        
     </div>
     <div class="form-group col-6" style="padding: 0;">
         <label for="exampleInputFile">Upload ảnh danh mục sản phẩm</label>
@@ -60,7 +64,7 @@
         <div class="img-fluid" id="where-replace">
             <span></span>
         </div>
-        <div id="image_err" class="text-danger"></div>
+        <p id="img_name_err" class="text-danger"></p>
     </div>
     <div id="product_type_err" class="text-danger"></div>
 </div>
