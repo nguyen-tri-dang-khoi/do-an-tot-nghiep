@@ -1212,6 +1212,20 @@ td {
     margin: 10px 10px 0;
 }
 
+.items_cart>a {
+    display: flex;
+    padding: 10px;
+    justify-content: space-between;
+    margin: 10px 10px 0;
+}
+
+.items_carts>a {
+    display: flex;
+    padding: 10px;
+    justify-content: space-evenly;
+    margin: 10px 10px 0;
+}
+
 .items_carts {
     display: flex;
     border: 1px solid green;
@@ -1656,4 +1670,8 @@ td {
 
 .hidden_table {
     display: none;
+}
+
+a:-webkit-any-link {
+    text-decoration: none;
 }

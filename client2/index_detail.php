@@ -182,7 +182,7 @@
             </div>
             <div class="block--comment col-10 m-auto">
                     <div class="review_comment">
-                        <h5>Bifnh Luaajn</h5>
+                        <h5>Bình luận</h5>
                         <div>
                             <img src="#" alt="avatar ngừời dùng">
                             <div class="#">

@@ -58,19 +58,21 @@
                         for (let i = 0; i < arr.length; i++) {
                             let value = result['cart'][arr[i]];
                             //let price2 = value['price']+"đ";
-                            html += `<div data-id = "${arr[i]}" class="items_cart">
-                                        <div class="img_products"><img src=" ../admin/${value['img']}" alt="#"></div>
-                                        <div class="info_products">
-                                            <div class="name_products"><p>${value['name']}</p></div>
-                                            <div class="Price_products"><p>${parseInt(value['price']).toLocaleString().replace(/\,/g,".")}đ</p></div>
-                                        </div>
-                                        <div class="change_product">
-                                            <div><span onclick="updateInfoCart('-')">-</span><input name='count' readonly type="text" value="${value['count']}"> <span onclick="updateInfoCart('+')">+</span></div>
-                                            <div class="i-product">
-                                                <i onclick = "deleteCart()" class="fa-solid fa-trash-can"></i>
+                            html += `
+                                        <div data-id = "${arr[i]}"  class="items_cart">
+                                                <div class="img_products"><img src=" ../admin/${value['img']}" alt="#"></div>
+                                                <div class="info_products">
+                                                    <div class="name_products"><p>${value['name']}</p></div>
+                                                    <div class="Price_products"><p>${parseInt(value['price']).toLocaleString().replace(/\,/g,".")}đ</p></div>
+                                                </div>
+                                            <div class="change_product">
+                                                <div><span onclick="updateInfoCart('-')">-</span><input name='count' readonly type="text" value="${value['count']}"> <span onclick="updateInfoCart('+')">+</span></div>
+                                                <div class="i-product">
+                                                    <i onclick = "deleteCart()" class="fa-solid fa-trash-can"></i>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>`;
+                                    `;
                             totalProduct += parseInt(value['count']);
                             console.log(totalProduct);
                             totalPrice += parseInt(value['price'] * value['count']);
