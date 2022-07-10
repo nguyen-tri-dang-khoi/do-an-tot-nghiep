@@ -2,10 +2,11 @@
     include_once 'db.php';
     $id = isset($_REQUEST['id'])?$_REQUEST['id']:null;
     $sql = "SELECT * FROM product_info WHERE id like $id and is_active like 1 and is_delete like 0";
-
+   // print_r($sql);
     $conn = connect();
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
+  //  print_r($row);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -73,7 +74,8 @@
                 </div> 
                 <div class="Detail--right col-6 m-auto p-0">
                     <div class="right_info">
-                        <h3 style="color: #005ec4"><?php echo $row["name"]; ?></h3>
+                       
+                        <h3 style="color: #005ec4;"><?php echo $row["name"]; ?></h3>
                         <div class="d-flex justify-content-between mb-4">
                             <div>
                                 <i class="fas fa-star "></i> 

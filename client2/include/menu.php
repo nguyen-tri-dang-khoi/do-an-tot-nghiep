@@ -68,8 +68,8 @@
                         $conn = connect();
                         $customer_id = $_SESSION['customer_id'];
                         $sql_customer = "select * from user where type = 'customer' and id = '$customer_id' limit 1";
-                        $row = mysqli_query($conn,$sql_customer);
-                        $row = mysqli_fetch_array($row);
+                        $row44 = mysqli_query($conn,$sql_customer);
+                        $row44 = mysqli_fetch_array($row44);
 
                 ?>
                     <!-- <a href="#"> -->
@@ -79,7 +79,7 @@
                         <div class="name">
 
                             <a href="form_info_customer.php">
-                                <span><?php echo $row['full_name'];?></span>
+                                <span><?php echo $row44['full_name'];?></span>
                             </a>
                             <a href="logout.php">
                                 <p style="color: black;">Đăng Xuất</p>
