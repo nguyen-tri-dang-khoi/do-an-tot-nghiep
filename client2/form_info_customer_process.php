@@ -13,5 +13,12 @@
         $result = mysqli_query($conn, $sql_update_info);
         header("location: form_info_customer.php");
         exit();
+    } else if($thao_tac == "updateInfoConfirmCheckout"){
+        $customer_id = $_SESSION['customer_id'];
+        $conn = connect();
+        $sql_update_info = "Update user set full_name = '$full_name',email = '$email',phone = '$phone',address = '$address' where id = '$customer_id' and type = 'customer'";
+        $result = mysqli_query($conn, $sql_update_info);
+        header("location: confirm_checkout.php");
+        exit();
     }
 ?>

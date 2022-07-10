@@ -29,7 +29,7 @@
                             //print_r($_SESSION['cart']);
                             foreach($_SESSION['cart'] as $key => $value) {
                         ?>
-                        <div data-id="<?php echo $key;?>" class="items_carts">
+                        <div data-id="<?php echo $key;?>" class="items_carts item_cart">
 
                                 <div class="img_products"><img src="<?php echo "../admin/". $value['img'];?>" alt="..."></div>
                                 <div class="info_products">
@@ -45,7 +45,7 @@
                                     <!-- <span onclick="updateInfoCart('+')">+</span> -->
                                 </div>
                                 <div class="i-product">
-                                    <i onclick="deleteCart()" class="fa-solid fa-trash-can"></i>
+                                    <i onclick="deleteCart2()" class="fa-solid fa-trash-can"></i>
                                 </div>
                             </div>
                         </div>

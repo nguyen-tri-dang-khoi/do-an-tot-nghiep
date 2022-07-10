@@ -1,4 +1,6 @@
 <?php
-    unset($_SESSION['customer_id']);
-    header("Location:Login_signup.php");
+    session_start();
+    $_SESSION = array();
+    session_destroy();
+    header("Location:index.php");
 ?>

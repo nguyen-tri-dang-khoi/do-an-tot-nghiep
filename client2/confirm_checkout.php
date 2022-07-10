@@ -8,6 +8,11 @@
 <?php include_once ('include/head.php'); ?>
 <?php
     $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+    $_SESSION['customer_id'] = isset($_SESSION['customer_id']) ? $_SESSION['customer_id'] : null;
+    if(!$_SESSION['customer_id']) {
+        header("Location:Login_signup.php");
+        exit();
+    }
 ?>
 <body>
     <script src="slick-master/slickcustom.js"></script>
@@ -36,7 +41,7 @@
             if(mysqli_num_rows($result) > 0){
                 $row = mysqli_fetch_assoc($result);
     ?>
-            <form id="infoCustomer_Checkout" action="confirm_checkout_process.php" method="post" class="row col-12 m-auto p-0">
+            <form id="infoCustomer_Checkout" action="form_info_customer_process.php" method="post" class="row col-12 m-auto p-0">
                 <div class="col-12 m-auto mt-2 p-0 ">
                     <label for="inputAddress2" class="form-label">Họ và Tên</label>
                     <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
@@ -53,26 +58,29 @@
                     <label for="inputAddress" class="form-label">Địa chỉ</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
                 </div>
-                <div class="col-12 m-auto mt-2  p-0">
-                    <label for="inputAddress" class="form-label">Ghi chú</label>
-                    <textarea name="address" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="Bỏ tạm address đó sửa sau"></textarea>
+                
+                <input type="hidden" name="thao_tac" value="updateInfoConfirmCheckout">
+                <div class="col-12 mt-2 p-0 m-auto">
+                    <button type="submit" class="btn btn-primary">Cập nhật thông tin khác hàng</button>
                 </div>
+                
+                <h4 class="p-0" style="font-weight: 700;margin-top:15px;">Hình thức thanh toán</h4>
                 <hr>
-                <h4 class="p-0" style="font-weight: 700;">Hình thức thanh toán</h4>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="cash_checkout" id="flexRadioDefault1" value="cod">
+                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault1" value="cod">
                         <label class="form-check-label" for="flexRadioDefault1">
                             Thanh toán tại nơi giao hàng
                         </label>
                 </div>
                     <div class="form-check">
-                    <input class="form-check-input" type="radio" name="cash_checkout" id="flexRadioDefault2" value="vnpay" checked>
+                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault2" value="vnpay" checked>
                     <label class="form-check-label" for="flexRadioDefault2">
                         Thanh toán bằng VNPay
                     </label>
                 </div>
-                 <div class="col-12 mt-2 p-0 m-auto">
-                    <button type="submit" class="btn btn-primary">Cập nhật thông tin khác hàng</button>
+                <div class="col-12 m-auto mt-2  p-0">
+                    <label for="inputAddress" class="form-label">Ghi chú</label>
+                    <textarea name="note" value="" class="form-control" placeholder="Bỏ tạm address đó sửa sau"></textarea>
                 </div>
             </form>
     <?php
@@ -140,6 +148,9 @@
     <?php include_once ('js/js_customIndex.php'); ?>
     <script>
         function submitForm(){
+            event.preventDefault();
+            $('input[name="thao_tac"]').val('tao_don_hang');
+            $('#infoCustomer_Checkout').attr('action','confirm_checkout_process.php');
             $('#infoCustomer_Checkout').submit();
         }
     </script>

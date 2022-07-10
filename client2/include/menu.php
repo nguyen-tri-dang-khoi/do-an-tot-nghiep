@@ -63,6 +63,7 @@
             </form>
             <div class="headerMain__avatar">
                 <?php
+                    //print_r($_SESSION['customer_id']);
                     if(isset($_SESSION['customer_id'])) {
                         $conn = connect();
                         $customer_id = $_SESSION['customer_id'];
@@ -93,7 +94,7 @@
                         </div>
                         <div class="name">
 
-                            <a href="login.php">
+                            <a href="Login_signup.php">
                                 <span>Đăng nhập</span>
                             </a>
                             

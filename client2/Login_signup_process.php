@@ -22,7 +22,7 @@
         $password = password_hash($password,PASSWORD_DEFAULT);
         $sql_signup = "Insert into user(type,full_name,email,password) values('customer','$full_name','$email','$password')";
         $result = mysqli_query($conn, $sql_signup);
-        header("location: index.php");
+        header("location: Login_signup.php");
         exit();
     }
 ?>

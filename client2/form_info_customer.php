@@ -23,7 +23,7 @@
                 <form action="form_info_customer_process.php" method="post" class="row d-flex col-6 mt-4 m-auto p-0">
                     <h3 class="p-0">Thông tin khách hàng</h3>    
                     <div class="col-12 mb-1 m-auto p-0">
-                        <label for="inputAddress2" class="form-label">Họ và Tên</label>
+                        <label for="full_name2" class="form-label">Họ và Tên</label>
                         <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
                     </div>
                     <div class="col-md-12 mb-1 m-auto p-0">

@@ -222,6 +222,21 @@
             }
         });
     }
+    function deleteCart2(){
+        let id = $(event.currentTarget).closest(".item_cart").attr('data-id');
+        $.ajax({
+            url: `cart_ok.php`,
+            type: "POST",
+            data: {
+                "id": id,
+                "thao_tac": "deleteCart",
+            },
+            success: function(data) {
+                data = JSON.parse(data);
+                if(data.msg == "ok")  location.reload();
+            }
+        });
+    }
 
     function deleteAllCart() {
         let temp = $(event.currentTarget);
