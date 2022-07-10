@@ -14,10 +14,13 @@
         if($_SESSION['customer_id']){
             $customer_id = $_SESSION['customer_id'];
             $conn = connect();
+            $name = "";
             $sql_customer = "select * from user where type = 'customer' and id = '$customer_id' limit 1";
             $result = mysqli_query($conn, $sql_customer);
             if(mysqli_num_rows($result) > 0){
                 $row = mysqli_fetch_assoc($result);
+                $name = $row['full_name'];
+
     ?>
             <div class="col-10 m-auto p-0 mt-0 mb-4 row d-flex">
                 <form action="form_info_customer_process.php" method="post" class="row d-flex col-6 mt-4 m-auto p-0">
@@ -45,116 +48,81 @@
                 </form>
                 <div class="col-6 mt-4">
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
+                    <?php
+                        $sql_order = "select orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where customer_id = '$customer_id'";
+                        //print_r($sql_order);
+                        $result = mysqli_query($conn,$sql_order);
+                        while($row11 = mysqli_fetch_array($result)) {
+                    ?>
                     <div class="history_order">
                         <table class="table table_order">
-                            <thead>
+                            <thead style="cursor:pointer;">
                                 <tr>
-                                    <th scope="col">Đơn hàng</th>
-                                    <th scope="col">HDB_asdfasdfasdfasdf_023423423</th>
-                                    <th scope="col">22/07/2022</th>
+                                    <th scope="col">Mã đơn hàng</th>
+                                    <th scope="col"><?php echo $row11['orders_code'];?></th>
                                 </tr>
                             </thead>
                             <tbody class="hidden_table">
                                 <tr>
-                                    <th scope="row">Thông tin</th>
-                                    <td>Alpha 1030 - i3 10105F/ H510/ 8GB/ 120GB/ GT 1030/ 450W</td>
+                                    <th scope="row">Tổng tiền thanh toán</th>
+                                    <td><?php echo number_format($row11['total'],0,".",".");?>đ</td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Giá trị đơn hàng</th>
-                                    <td>31.431.000đ</td>
+                                    <th scope="row">Trạng thái thanh toán</th>
+                                    <td><?php echo $row11['trang_thai_thanh_toan'];?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Tình Trạng</th>
-                                    <td>Đang chờ xác nhận</td>
+                                    <th scope="row">Ghi chú đơn hàng</th>
+                                    <td><?php echo $row11['note'];?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Mô tả</th>
-                                    <td>-</td>
+                                    <th scope="row">Ngày đặt hàng</th>
+                                    <td><?php echo Date("d-m-Y",strtotime($row11['created_at']));?></td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Người thực hiện</th>
-                                    <td>khoideptrai</td>
+                                    <th scope="row">Người mua hàng</th>
+                                    <td><?php echo $name;?></td>
                                     <td></td>
                                 </tr>
-                            </tbody>
-                        </table>
-                        <table class="table table_order">
-                            <thead>
+                                <tr></tr>
                                 <tr>
-                                    <th scope="col">Đơn hàng</th>
-                                    <th scope="col">HDB_asdfasdfasdfasdf_023423423</th>
-                                    <th scope="col">22/07/2022</th>
+                                    <tr style="color:red;">
+                                        <th style="width:400px;">Tên sản phẩm</th>
+                                        <th style="width:100px;">Ảnh sản phẩm</th>
+                                        <th style="width:100px;">Số lượng</th>
+                                        <th style="width:100px;">Đơn giá</th>
+                                        <th style="width:100px;">Số tiền</td>
+                                    </tr>
+                                    <?php
+                                        $customer_id = $_SESSION['customer_id'];
+                                        $sql_order_history = "Select pi.name as 'ten_san_pham',pi.img_name as 'pi_img', od.count as 'so_luong_mua', od.price as 'gia_mua' from orders o inner join order_detail od on o.id = od.order_id inner join product_info pi on od.product_info_id = pi.id where o.customer_id = '$customer_id' and o.is_cancel = 0";
+                                        $result = mysqli_query($conn,$sql_order_history);
+                                        while($row = mysqli_fetch_array($result)) {
+                                    ?>
+                                        <tr>
+                                            <td><?php echo $row['ten_san_pham']?></td>
+                                            <td>
+                                                <img width="100" height="100" src="../admin/<?php echo $row['pi_img'];?>" alt="">
+                                            </td>
+                                            <td><?php echo $row['so_luong_mua']?></td>
+                                            <td><?php echo number_format($row['gia_mua'],0,".",".");?>đ</td>
+                                            <td><?php echo number_format(($row['so_luong_mua'] * $row['gia_mua']),0,".",".");?>đ</td>
+                                        </tr>
+                                    <?php
+                                        }
+                                    ?>
                                 </tr>
-                            </thead>
-                            <tbody class="hidden_table">
-                                <tr>
-                                    <th scope="row">Thông tin</th>
-                                    <td>Alpha 1030 - i3 10105F/ H510/ 8GB/ 120GB/ GT 1030/ 450W</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Giá trị đơn hàng</th>
-                                    <td>31.431.000đ</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Tình Trạng</th>
-                                    <td>Đang chờ xác nhận</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Mô tả</th>
-                                    <td>-</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Người thực hiện</th>
-                                    <td>khoideptrai</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="table table_order">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Đơn hàng</th>
-                                    <th scope="col">HDB_asdfasdfasdfasdf_023423423</th>
-                                    <th scope="col">22/07/2022</th>
-                                </tr>
-                            </thead>
-                            <tbody class="hidden_table">
-                                <tr>
-                                    <th scope="row">Thông tin</th>
-                                    <td>Alpha 1030 - i3 10105F/ H510/ 8GB/ 120GB/ GT 1030/ 450W</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Giá trị đơn hàng</th>
-                                    <td>31.431.000đ</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Tình Trạng</th>
-                                    <td>Đang chờ xác nhận</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Mô tả</th>
-                                    <td>-</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Người thực hiện</th>
-                                    <td>khoideptrai</td>
-                                    <td></td>
-                                </tr>
+                               
                             </tbody>
                         </table>
                     </div>
+                    <?php
+                        }
+                    ?>
                 </div>
             </div>
     <?php
