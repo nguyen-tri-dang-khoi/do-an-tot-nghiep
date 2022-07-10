@@ -49,10 +49,11 @@
                 <div class="col-6 mt-4">
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
                     <?php
-                        $sql_order = "select orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where customer_id = '$customer_id'";
+                        $sql_order = "select o.id as 'id_don_hang', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where o.customer_id = '$customer_id'";
                         //print_r($sql_order);
                         $result = mysqli_query($conn,$sql_order);
-                        while($row11 = mysqli_fetch_array($result)) {
+                        while($row11 = mysqli_fetch_assoc($result)) {
+                           
                     ?>
                     <div class="history_order">
                         <table class="table table_order">
@@ -99,9 +100,10 @@
                                     </tr>
                                     <?php
                                         $customer_id = $_SESSION['customer_id'];
-                                        $sql_order_history = "Select pi.name as 'ten_san_pham',pi.img_name as 'pi_img', od.count as 'so_luong_mua', od.price as 'gia_mua' from orders o inner join order_detail od on o.id = od.order_id inner join product_info pi on od.product_info_id = pi.id where o.customer_id = '$customer_id' and o.is_cancel = 0";
-                                        $result = mysqli_query($conn,$sql_order_history);
-                                        while($row = mysqli_fetch_array($result)) {
+                                        $order_id = $row11['id_don_hang'];
+                                        $sql_order_history = "Select pi.name as 'ten_san_pham',pi.img_name as 'pi_img', od.count as 'so_luong_mua', od.price as 'gia_mua' from orders o inner join order_detail od on o.id = od.order_id inner join product_info pi on od.product_info_id = pi.id where o.customer_id = '$customer_id' and o.id = $order_id and o.is_cancel = 0";
+                                        $result2 = mysqli_query($conn,$sql_order_history);
+                                        while($row = mysqli_fetch_array($result2)) {
                                     ?>
                                         <tr>
                                             <td><?php echo $row['ten_san_pham']?></td>
