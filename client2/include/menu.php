@@ -62,19 +62,45 @@
                 </div>
             </form>
             <div class="headerMain__avatar">
+                <?php
+                    if(isset($_SESSION['customer_id'])) {
+                        $conn = connect();
+                        $customer_id = $_SESSION['customer_id'];
+                        $sql_customer = "select * from user where type = 'customer' and id = '$customer_id' limit 1";
+                        $row = mysqli_query($conn,$sql_customer);
+                        $row = mysqli_fetch_array($row);
+
+                ?>
                     <!-- <a href="#"> -->
                         <div class="avatar">
                             <img src="img/dmca.png" alt="#">
                         </div>
                         <div class="name">
+
                             <a href="form_info_customer.php">
-                                <span>VawnDuwcsHuy</span>
+                                <span><?php echo $row['full_name'];?></span>
                             </a>
                             <a href="logout.php">
                                 <p style="color: black;">Đăng Xuất</p>
                             </a>
                         </div>
                     <!-- </a> -->
+                <?php
+                    } else {
+                ?>
+                        <div class="avatar">
+                            <img src="img/dmca.png" alt="#">
+                        </div>
+                        <div class="name">
+
+                            <a href="login.php">
+                                <span>Đăng nhập</span>
+                            </a>
+                            
+                        </div>
+                <?php
+                    }
+                ?>
             </div> 
             <div class="headerMain__cart">
                    
