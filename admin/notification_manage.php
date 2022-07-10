@@ -535,21 +535,28 @@
 <script>
    function validate(){
       let test = true
+      $('div.text-danger').text("");
       let title = $('input[name="title"]').val();
       let content2 = $('#summernote').summernote('code');
-      if(title.trim() == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Tiêu đề không được để trống"
-         });
+      let img = $('input[name="img_bangtin_file"]')[0].files;
+      if(title == "") {
+         $('#title_err').text('Tiêu đề không được để trống');
          test = false;
-      } else if(content2.trim() == "") {
-         $.alert({
-            title: "Thông báo",
-            content: "Nội dung bảng tin không được để trống"
-         });
+      } else if(title.length > 200) {
+         $('#title_err').text('Tiêu đề không được quá 200 ký tự');
          test = false;
       }
+
+      if(img.length == 0) {
+         if($('#where-replace > img').length == 0) {
+            $('#img_name_err').text('Ảnh đại diện không được để trống');
+            test = false;
+         }
+      }
+      if(content2 == "<p><br></p>") {
+         $('#content_err').text('Nội dung bảng tin không được để trống');
+         test = false;
+      } 
       return test;
    }
    function readURL2(input){
@@ -640,7 +647,6 @@
             processData: false,
             data:formData,
             success:function(res_json){
-               // console.log(res_json);
                if(res_json.msg == 'ok'){
                   let status = $('#btn-luu-bang-tin').attr('data-status').trim();
                   let msg ="";

@@ -12,7 +12,7 @@
         <div class="col-md-6 form-group">
             <label for="title">Tiêu đề</label>
             <input type="text" name="title" class="form-control" placeholder="Nhập Tiêu đề..." value="<?=$result['title'];?>">
-            <div id="name_err" class="text-danger"></div>
+            <div id="title_err" class="text-danger"></div>
         </div>
     </div>
     <div class="row">
@@ -27,12 +27,12 @@
         <div class="img-fluid" id="where-replace">
             <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
         </div>
-        <div id="image_err" class="text-danger"></div>
+        <div id="img_name_err" class="text-danger"></div>
     </div>
     <div class="form-group" style="width:100%;">
         <label for="content">Nội dung bảng tin</label>
         <textarea name="content" id="summernote"><?=$result['content'] ? $result['content'] : ""?></textarea>
-        <div id="name_desc_err" class="text-danger"></div>
+        <div id="content_err" class="text-danger"></div>
     </div>
 </div>
 <div class="card-footer">
@@ -47,7 +47,7 @@
         <div class="col-md-6 form-group">
             <label for="title">Tiêu đề</label>
             <input type="text" name="title" class="form-control" placeholder="Nhập Tiêu đề...">
-            <div id="name_err" class="text-danger"></div>
+            <div id="title_err" class="text-danger"></div>
         </div>
     </div>
     <div class="row">
@@ -62,13 +62,13 @@
             <div class="img-fluid" id="where-replace">
                 <span></span>
             </div>
-            <div id="image_err" class="text-danger"></div>
+            <div id="img_name_err" class="text-danger"></div>
         </div>
     </div>
     <div class="form-group" style="width:100%;">
         <label for="content">Nội dung bảng tin</label>
         <textarea name="content" id="summernote"></textarea>
-        <div id="name_desc_err" class="text-danger"></div>
+        <div id="content_err" class="text-danger"></div>
     </div>
 </div>
 <div class="card-footer">
