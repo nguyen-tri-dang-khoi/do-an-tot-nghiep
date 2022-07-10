@@ -70,7 +70,7 @@
                             <a href="form_info_customer.php">
                                 <span>VawnDuwcsHuy</span>
                             </a>
-                            <a href="#">
+                            <a href="logout.php">
                                 <p style="color: black;">Đăng Xuất</p>
                             </a>
                         </div>
