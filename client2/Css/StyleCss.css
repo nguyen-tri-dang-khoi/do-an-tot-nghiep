@@ -498,12 +498,23 @@ li:hover .dropdown {
     width: 3%;
 }
 
+.carousel-control-nexts,
+.carousel-control-prevs {
+    background-color: #ffffff;
+    height: 8%;
+    width: 3%;
+}
+
 .carousel-control-prev {
     left: 3%;
 }
 
 .carousel-control-next {
     right: 3%;
+}
+
+.carousel-control-nexts {
+    right: 17%;
 }
 
 .carousel-control-next,
@@ -1674,4 +1685,54 @@ td {
 
 a:-webkit-any-link {
     text-decoration: none;
+}
+
+
+/* comment in index_deatail */
+
+.block--comment {
+    display: flex;
+    justify-content: space-between;
+}
+
+.block--comment .review_comment .content {
+    display: flex;
+}
+
+.block--comment .review_comment .content .avatar_user {
+    width: 50px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+.block--comment .review_comment .content .avatar_user img {
+    width: 100%;
+}
+
+.block--comment .review_comment .rateOf_user>div:nth-child(4) {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input_comment .input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input_comment .input-group .vote_rate>span {
+    margin-right: 10px !important;
+}
+
+.input_comment .input-group .vote_rate>i {
+    margin-right: 10px !important;
+}
+
+.input_comment .input-group .content_rate {
+    display: flex;
+    flex-direction: column;
+}
+
+.input_comment .input-group .content_rate textarea {
+    width: 540px;
+    height: 185px;
 }

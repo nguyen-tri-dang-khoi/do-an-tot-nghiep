@@ -63,11 +63,11 @@
                             }
                         ?>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                    <button class="carousel-control-prevs" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                    <button class="carousel-control-nexts" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
@@ -91,15 +91,6 @@
                             <?php 
                                 echo $row["description"]; 
                             ?>
-                            <!-- <p>- Chuẩn VESA tương thích: 100x100mm và 75x75m.</p>
-                            <p>- Có thể gắn 2 màn hình hiển thị từ 17”-27″ inch</p>
-                            <p>- Xoay 180 độ</p>
-                            <p>- Trọng lượng màn hình 2-7kg</p>
-                            <p>- Trọng lượng: 2.6kg</p>
-                            <p>- Kích thước: 117x506x570mm</p>
-                            <p>- Kéo giãn tối đa: 463mm</p>
-                            <p>- Màu sắc: Đen</p>
-                            <p>- Chất liệu: Sắt</p> -->
                         </div>
                     </div>
                     <div class="right_button">
@@ -182,29 +173,34 @@
                     }
                 ?>
             </div>
-            <div class="block--comment col-10 m-auto">
+            <div class="block--comment col-10 m-auto p-0">
                     <div class="review_comment">
                         <h5>Bình luận</h5>
-                        <div>
-                            <img src="#" alt="avatar ngừời dùng">
-                            <div class="#">
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i>
+                        <div class="content">
+                            <div class="avatar_user">
+                                <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
                             </div>
-                            <div class="nameUser_cmt">khoi</div>
-                            <div class="content_cmt">aaaaaaaaaaaaaaaaaaaaaaaas</div>
-                            <div>
-                                <a href="javascript:void(0)">Trả lời</a> <span>Ngày tháng cmt</span>
+                            <div class="rateOf_user">
+                                <div>
+                                    <i class="fas fa-star "></i> 
+                                    <i class="fas fa-star "></i> 
+                                    <i class="fas fa-star "></i> 
+                                    <i class="fas fa-star "></i> 
+                                    <i class="fas fa-star "></i>
+                                </div>
+                                <div class="nameUser_cmt">khôi</div>
+                                <div class="content_cmt">Sản phẩm này rất ổn trong tầm giá </div>
+                                <div>
+                                    <a href="javascript:void(0)">Trả lời</a> <span>22/07/2022</span>
+                                </div>
                             </div>
+                            
                         </div>
                     </div>
                     <div class="input_comment">
                         <div class="input-group mb-3">
-                            <div class="input-group mb-3 vote_rate">
-                                <span class="input-group-text">Đánh giá: </span>
+                            <div class=" mb-3 vote_rate">
+                                <span>Đánh giá: </span>
                                 <i class="fas fa-star "></i> 
                                 <i class="fas fa-star "></i> 
                                 <i class="fas fa-star "></i> 
@@ -212,8 +208,8 @@
                                 <i class="fas fa-star "></i>
                             </div>
 
-                            <div class="input-group">
-                                <span class="input-group-text">Nội dung bình luận: </span>
+                            <div class="content_rate">
+                                <span>Nội dung bình luận: </span>
                                 <textarea class="form-control" aria-label="With textarea"></textarea>
                             </div>
                         </div>
