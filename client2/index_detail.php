@@ -63,11 +63,11 @@
                             }
                         ?>
                     </div>
-                    <button class="carousel-control-prevs" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-nexts" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Next</span>
                     </button>
@@ -103,7 +103,7 @@
                             </p>
                         </div>
                         <div>
-
+                            <a href="confirm_checkout.php" class="go-cart disable">Xác nhận đơn hàng</a>
                         </div>
                         <div>
 
@@ -111,7 +111,28 @@
                     </div>  
                 </div>
             </div>
+            <div class="content__category col-10 m-auto mt-4 p-0">
+                <div class="category_block_top">
+                    <div class="category--item">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                        <p>Hỗ trợ trả góp 0%, trả trước 0đ</p>
+                    </div>
+                    <div class="category--item">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                        <p>Hoàn tiền 200% nếu có hàng giả</p>
+                    </div>
+                    <div class="category--item">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <p>Giao hàng nhanh trên toàn quốc</p>
+                    </div>
+                    <div class="category--item">
+                        <i class="fa-brands fa-rocketchat"></i>
+                        <p>Hỗ trợ kĩ thuật online 7/7</p>
+                    </div>
+                </div>
+            </div>
             <div class="block--header col-10 m-auto ">
+                
                 <span class="block--header_title">SẢN PHẨM LIÊN QUAN</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">

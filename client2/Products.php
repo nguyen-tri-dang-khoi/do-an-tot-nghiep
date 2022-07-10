@@ -106,10 +106,6 @@
                         </div>
                         <div class="research_producer">
                             <hr>
-                            <!-- <div class="inputResearch">
-                                <input placeholder="Tìm hãng sản xuất" type="text" value="">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </div> -->
                             <div class="checkboxResearch">
                                 <div>
                                     <input type="checkbox" name="acer" id="acer1"> <span>ACER</span>

@@ -110,17 +110,17 @@
         </div>
         <div class="block__home flex-column row ">
             <div class="block--header col-10 m-auto ">
-                <span class="block--header_title">SẢN PHẨM GIẢM GIÁ</span>
+                <span class="block--header_title">PRO GAMING PC</span>
             </div>
             <!-- define get_product 🐛 ⬇⬇⬇⬇ -->
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
                 <?php get_product() ?>
             </div>
             <div class="block--button col-10 m-auto"> 
-                <button type="button" class="view-more">XEM THÊM</button>   
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=10">XEM THÊM</a></button>   
             </div>
             <div class="block--header col-10 m-auto ">
-                <span class="block--header_title">SẢN PHẨM NỔI BẬT</span>
+                <span class="block--header_title">PRO DUCTIVITY</span>
             </div>
             <div class="block--featured col-10 m-auto">
                 <div class="featured_content">
@@ -138,25 +138,25 @@
                 </div>
             </div>
             <div class="block--button col-10 m-auto"> 
-                <button type="button" class="view-more">XEM THÊM</button>   
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=11">XEM THÊM</a></button>   
             </div>
             <div class="block--header col-10 m-auto ">
-                <span class="block--header_title">SẢN PHẨM  MỚI VỀ</span>
+                <span class="block--header_title">PRO CREATER</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
                 <?php get_product()?>
             </div>  
             <div class="block--button col-10 m-auto"> 
-                <button type="button" class="view-more">XEM THÊM</button>   
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=14">XEM THÊM</a></button>   
             </div>    
             <div class="block--header col-10 m-auto ">
-                <span class="block--header_title">SẢN PHẨM BÁN CHẠY</span>
+                <span class="block--header_title">PRO WORKSTATION</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
                 <?php get_product()?>
             </div>  
             <div class="block--button col-10 m-auto"> 
-                <button type="button" class="view-more">XEM THÊM</button>   
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=13">XEM THÊM</a></button>   
             </div>   
             <div class="block--header col-10 m-auto ">
                 <span class="block--header_title">TNC CHANNEL</span>

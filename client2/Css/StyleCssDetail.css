@@ -1,18 +1,23 @@
-.Product__Detail .Detail--right .right_info p{
+.Product__Detail .Detail--right .right_info p {
     margin-bottom: 3px !important;
 }
 
 .Product__Detail .Detail--right .right_info div:nth-child(3) {
-margin-bottom: 3%;
+    margin-bottom: 3%;
 }
-.Product__Detail .block__home{
+
+.Product__Detail .block__home {
     margin: 0!important;
 }
 
-.Product__Detail .block__home .block--carousel{
+.Product__Detail .block__home .block--carousel {
     margin-bottom: 3% !important;
 }
 
-.Product__Detail .block__home footer{
-    padding: 0!important;
+.Product__Detail .block__home footer {
+    /* padding: 0!important; */
+}
+
+.view-more a {
+    color: white;
 }
