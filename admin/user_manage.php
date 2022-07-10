@@ -36,7 +36,7 @@
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
-        $where = "where 1=1 and is_delete = 0";
+        $where = "where 1=1 and is_delete = 0 and (type = 'officer' or type = 'shipper')" ;
         $order_by = "Order by user.id desc";
         $wh_child = [];
         $arr_search = [];
