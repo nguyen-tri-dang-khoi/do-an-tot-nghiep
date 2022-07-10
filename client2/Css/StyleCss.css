@@ -1736,3 +1736,8 @@ a:-webkit-any-link {
     width: 540px;
     height: 185px;
 }
+
+.input_comment .input-group .content_rate button {
+    background-color: #005ec4;
+    color: white;
+}

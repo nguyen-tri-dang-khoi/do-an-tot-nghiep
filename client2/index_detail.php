@@ -211,6 +211,7 @@
                             <div class="content_rate">
                                 <span>Nội dung bình luận: </span>
                                 <textarea class="form-control" aria-label="With textarea"></textarea>
+                                <button class="mt-3" type="submit">Bình luận</button>
                             </div>
                         </div>
                 </div>
