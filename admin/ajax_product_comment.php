@@ -35,6 +35,9 @@
         position: relative;
         z-index: 1;
     }
+    .kh-border-vertical{
+        min-height:calc(100% - 32px) !important;
+    }
 </style>
 <div class="kh-list-cmt ">
     <div class="kh-main ml-20">
@@ -60,7 +63,7 @@
                     ?>
                     <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
                 </div>
-                <div style="border-left:0px ;border-left:1px solid #c1bcbc;min-height:100%;"; class="kh-border-vertical<?=$comment['pcm_id']?>"></div>
+                <div style="border-left:0px ;border-left:1px solid #c1bcbc;"; class="kh-border-vertical<?=$comment['pcm_id']?> kh-border-vertical"></div>
             </div>
             <div class="ml-10 all-reply">
                 <div class="info">
@@ -139,7 +142,7 @@
                 ?>
                 <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
             </div>
-            <div style="border-left:1px solid #c1bcbc;min-height:100%;position:relative;z-index:1;" class="kh-border-vertical<?=$reply['pcm_id']?>"></div>
+            <div style="border-left:1px solid #c1bcbc;position:relative;z-index:1;" class="kh-border-vertical<?=$reply['pcm_id']?> kh-border-vertical"></div>
         </div>
         <div class="ml-10 all-reply">
             <div class="info">

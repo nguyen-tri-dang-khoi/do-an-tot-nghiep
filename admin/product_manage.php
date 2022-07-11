@@ -1027,8 +1027,8 @@
       if(description == "<p><br></p>") {
          $('#desc_err').text("Mô tả sản phẩm không được để trống");
          test = false;
-      } else if(description.length > 2011) {
-         $('#desc_err').text("Mô tả sản phẩm không được dài quá 2000 ký tự");
+      } else if(description.length > 30011) {
+         $('#desc_err').text("Mô tả sản phẩm không được dài quá 30000 ký tự");
          test = false;
       }
       return test;
