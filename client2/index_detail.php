@@ -124,16 +124,18 @@
                         <div>
                             <div>
                                 <span>Số lượng </span>
-                                <div>
+                                <!-- <div>
                                     <span>+</span>
                                     <input onreads type="text" value="1">
                                     <span>-</span>
+                                </div> -->
+                                <div class="change_product">
+                                    <div><span onclick="updateInfoCart('-','<?php echo $id;?>')">-</span><input name="count" readonly="" type="text" value="1"> <span onclick="updateInfoCart('+','<?php echo $id;?>')">+</span></div>
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <a href="javascript:void(0)" class="go-cart disable">Thêm vào giỏ hàng</a>
-                            <a href="javascript:void(0)" class="go-cart disable">Mua hàng</a>
+                            <a href="cart.php" class="go-carts disable">Mua Hàng</a>
                         </div>
                     </div>  
                 </div>

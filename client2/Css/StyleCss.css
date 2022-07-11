@@ -1167,6 +1167,19 @@ li:hover .dropdown {
     color: white;
 }
 
+.go-carts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-weight: 750;
+    height: 45px;
+    margin-bottom: 1%;
+    margin-top: 2%;
+    background-color: #29324e;
+    color: white;
+}
+
 .noteVAT {
     text-align: end;
     font-weight: 400;

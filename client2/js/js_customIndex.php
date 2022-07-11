@@ -76,7 +76,7 @@
 
     }
 
-    function updateInfoCart(thaotac) {
+    function updateInfoCart(thaotac,id_san_pham = "") {
         let count = $(event.currentTarget).siblings('input[name="count"]').val();
         let totalProduct = $('.totalProduct > span').text();
         let price = $(event.currentTarget).closest('.change_product').siblings('.info_products').find('.Price_products p').text();
@@ -102,7 +102,7 @@
                 price = price.replace(/\.|đ/g, "");
                 totalPrice = totalPrice.replace(/\.|đ/g, "");
                 let totalId = $('#exampleModalLabel span').text();
-
+                
                 $.ajax({
                     url: `cart_ok.php`,
                     type: "POST",
@@ -136,25 +136,43 @@
 
         } else if (thaotac == "+") {
             count++;
+
             $('.totalProduct > span').text(parseInt(totalProduct) + 1);
             $(event.currentTarget).siblings('input[name="count"]').val(count);
             $('.totalPrice span').text((parseInt(totalPrice) + parseInt(price)).toLocaleString().replace(/\,/g, ".") + "đ");
             cartamount++;
             $('.cart--amount').text(cartamount);
         }
-        $.ajax({
-            url: `cart_ok.php`,
-            type: "POST",
-            data: {
-                "id": id,
-                "count": count,
-                "price": price,
-                "thao_tac": "updateInfoCart",
-            },
-            success: function(data) {
-                $('#exampleModal').modal('show');
-            }
-        });
+        if(id_san_pham == "") {
+            $.ajax({
+                url: `cart_ok.php`,
+                type: "POST",
+                data: {
+                    "id": id,
+                    "count": count,
+                    "price": price,
+                    "thao_tac": "updateInfoCart",
+                },
+                success: function(data) {
+                    $('#exampleModal').modal('show');
+                }
+            });
+        } else {
+            $.ajax({
+                url: `cart_ok.php`,
+                type: "POST",
+                data: {
+                    "id": id_san_pham,
+                    "count": count,
+                    "price": price,
+                    "thao_tac": "updateInfoCart",
+                },
+                success: function(data) {
+                    $('#exampleModal').modal('show');
+                }
+            });
+        }
+       
 
 
     }
