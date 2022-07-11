@@ -97,20 +97,19 @@
                         <div class="d-flex justify-content-between">
                             <?php 
                                 if($row['count'] > 0 ) {
-                            ?>
-                                <span style="color: green">
-                                    <i class="fa-solid fa-circle"></i>Còn hàng
-                                </span>
-                            <?php }
+                                ?>
+                                    <span style="color: green">
+                                        <i class="fa-solid fa-circle"></i> Còn hàng
+                                    </span>
+                                <?php }
                                 else{
-                            ?>
-                                <span style="color: red">
-                                    <i class="fa-solid fa-circle"></i> Hết hàng
-                                </span>
-                            <?php        
+                                    ?>
+                                        <span style="color: red">
+                                            <i class="fa-solid fa-circle"></i> Hết hàng
+                                        </span>
+                                    <?php        
                                 }  
                             ?>
-                                 
                             <p style="font-weight:700">
                                 <?php 
                                     echo number_format($row["price"],0,".","."); 
@@ -118,10 +117,18 @@
                             </p>
                         </div>
                         <div>
-                            <a href="confirm_checkout.php" class="go-cart disable">Xác nhận đơn hàng</a>
+                            <div>
+                                <span>Số lượng </span>
+                                <div>
+                                    <span>+</span>
+                                    <input onreads type="text" value="1">
+                                    <span>-</span>
+                                </div>
+                            </div>
                         </div>
                         <div>
-
+                            <a href="javascript:void(0)" class="go-cart disable">Thêm vào giỏ hàng</a>
+                            <a href="javascript:void(0)" class="go-cart disable">Mua hàng</a>
                         </div>
                     </div>  
                 </div>
@@ -133,7 +140,7 @@
                         <p>Hỗ trợ trả góp 0%, trả trước 0đ</p>
                     </div>
                     <div class="category--item">
-                        <i class="fa-solid fa-sack-dollar"></i>
+                    <i class="fa-thin fa-arrow-right-arrow-left"></i>
                         <p>Hoàn tiền 200% nếu có hàng giả</p>
                     </div>
                     <div class="category--item">

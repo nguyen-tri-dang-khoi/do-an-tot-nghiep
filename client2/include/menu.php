@@ -74,7 +74,7 @@
                 ?>
                     <!-- <a href="#"> -->
                         <div class="avatar">
-                            <img src="img/dmca.png" alt="#">
+                            <img src="img/avatar/img_placeholder_avatar.jpg" alt="#">
                         </div>
                         <div class="name">
 
@@ -90,7 +90,7 @@
                     } else {
                 ?>
                         <div class="avatar">
-                            <img src="img/dmca.png" alt="#">
+                            <img src="img/avatar/img_placeholder_avatar.jpg" alt="#">
                         </div>
                         <div class="name">
 

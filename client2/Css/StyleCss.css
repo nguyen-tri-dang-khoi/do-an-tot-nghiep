@@ -789,6 +789,10 @@ li:hover .dropdown {
     visibility: unset;
 }
 
+.product:hover .info--bottom button {
+    visibility: unset;
+}
+
 .product {
     border: 1px solid #dddfe600;
 }
@@ -801,12 +805,25 @@ li:hover .dropdown {
     background-color: #29324e;
 }
 
+.product:hover .info--bottom {
+    background-color: #29324e;
+}
+
 .slick-track .product:hover .info--bottom .bottom_title a {
+    color: white;
+}
+
+.product:hover .info--bottom .bottom_title a {
     color: white;
 }
 
 .slick-track .product:hover .info--bottom .bottom_rate,
 .slick-track .product:hover .info--bottom .bottom_price {
+    visibility: hidden;
+}
+
+.product:hover .info--bottom .bottom_rate,
+.product:hover .info--bottom .bottom_price {
     visibility: hidden;
 }
 
@@ -1510,6 +1527,8 @@ td {
     justify-content: space-between;
     flex-wrap: wrap;
 }
+
+.product:hover {}
 
 .hidden_class {
     display: none;
