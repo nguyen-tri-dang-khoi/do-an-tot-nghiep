@@ -46,9 +46,7 @@
         <div class="d-flex mt-10">
             <div class="kh-grp d-flex f-column a-center">
                 <div class="kh-img d-flex a-center" style="position:relative">
-                    <div style="" class="kh-border-line">
-                        
-                    </div>
+                    <div style="" class="kh-border-line"></div>
                     <?php
                         $img_default = "";
                         $txt_type = "";
@@ -62,9 +60,7 @@
                     ?>
                     <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
                 </div>
-                <div style="border-left:0px ;border-left:1px solid #c1bcbc;min-height:100%;"; class="kh-border-vertical<?=$comment['pcm_id']?>">
-                    
-                </div>
+                <div style="border-left:0px ;border-left:1px solid #c1bcbc;min-height:100%;"; class="kh-border-vertical<?=$comment['pcm_id']?>"></div>
             </div>
             <div class="ml-10 all-reply">
                 <div class="info">
@@ -77,9 +73,7 @@
                         <span onclick="showReplyOk('<?=$comment['pcm_id']?>','<?=$id;?>','input')" style="font-size:14px;color:blue;text-decoration:underline;cursor:pointer;">Phản hồi</span>
                         <div style="font-size:14px;color:green;text-decoration:underline;cursor:pointer" class="ml-20 form-check d-flex">
                             <input <?=$comment['pcm_is_active'] == 1 ? "checked" : "";?> onchange="toggleComment('<?=$comment['pcm_id']?>','<?=$id;?>','<?=$comment['pcm_is_active'] == 1 ? 'Deactive' : 'Active';?>')" style="accent-color: green;font-size:17px;" class="form-check-input" name="check_cmt<?=$comment['pcm_id'];?>" type="checkbox" value="" id="check_cmt<?=$comment['pcm_id'];?>">
-                            <label style="cursor:pointer;" class="form-check-label" for="check_cmt<?=$comment['pcm_id'];?>">
-                                Duyệt
-                            </label>
+                            <label style="cursor:pointer;" class="form-check-label" for="check_cmt<?=$comment['pcm_id'];?>">Duyệt</label>
                         </div>
                         <span onclick="delComment('<?=$comment['pcm_id']?>','<?=$id;?>')" class="ml-20" style="font-size:14px;color:red;text-decoration:underline;cursor:pointer;">Xoá</span>   
                     </div>
@@ -117,7 +111,7 @@
         <?php } ?>
     </div>
 </div>
-<div></div>
+<div>
 
 <?php } else if ($status=="show_reply_ok") {
     $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id' from product_comment pcm where product_info_id = '$id' and pcm.is_delete = 0 and pcm.reply_id = " . $reply_id;
@@ -145,9 +139,7 @@
                 ?>
                 <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
             </div>
-            <div style="border-left:1px solid #c1bcbc;min-height:100%;" class="kh-border-vertical<?=$reply['pcm_id']?>">
-
-            </div>
+            <div style="border-left:1px solid #c1bcbc;min-height:100%;position:relative;z-index:1;" class="kh-border-vertical<?=$reply['pcm_id']?>"></div>
         </div>
         <div class="ml-10 all-reply">
             <div class="info">

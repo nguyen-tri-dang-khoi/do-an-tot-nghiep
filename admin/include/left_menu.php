@@ -47,7 +47,7 @@
     </li>
   </ul>
 </nav>
-<aside class="main-sidebar sidebar-dark-primary elevation-4" style="width: 14%; background-color:#000000;">
+<aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#000000;">
   <div style="min-height:2000px;" class="sidebar">
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
@@ -130,7 +130,7 @@
           <a tabindex="-1" href="product_comment_manage.php" class="nav-link <?=strpos($url,"product_comment_manage.php") ? "kh-active" : "";?>">
             <img style="" src="img/message.png" alt="">
             <p>
-              Quản lý bình luận sản phẩm
+              Quản lý bình luận
             </p>
           </a>
         </li>
@@ -203,7 +203,7 @@
     } else {
       $('.main-sidebar').css({"display":"block"});
       $('.main-header').css({"margin-left":"250px"});
-      $('.container-wrapper').css({"margin-left":"15%"});
+      $('.container-wrapper').css({"margin-left":"250px"});
     }
   }
 </script>
