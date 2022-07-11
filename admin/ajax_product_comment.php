@@ -4,20 +4,8 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $reply_id = isset($_REQUEST["reply_id"]) ? $_REQUEST["reply_id"] : null;
     if($status == "show_list_comment") {
-        // set get
-        $get = $_GET;
-        unset($get['page']);
-        $str_get = http_build_query($get);
-        // query
-        $cnt = 0;
-        $page = isset($_REQUEST['page']) ? $_REQUEST['page'] : 1; 
-        $limit = 2;
-        $start_page = $limit * ($page - 1);
-        $sql_get_count = "select count(*) as 'cnt' from product_comment pcm inner join user on pcm.user_id = user.id where product_info_id = '$id' and pcm.is_delete = 0";
-        $total = fetch(sql_query($sql_get_count))['cnt'];
         $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id' from product_comment pcm where product_info_id = '$id' and pcm.reply_id is null and pcm.is_delete = 0";
         $comments = fetch_all(sql_query($sql));
-        
 ?>
 <style>
     .kh-name {
@@ -31,29 +19,29 @@
         display: none !important;
     }
     .kh-border-line {
-        border-top:1px solid #c1bcbc;width: 100%;position: absolute;right: 35px;z-index: 0;
+        border-top:1px solid #c1bcbc;
+        width: 100%;
+        position: absolute;
+        right: 35px;
+        z-index: 0;
     }
     .kh-img > img {
-        border-radius:50%;border:1px solid #c1bcbc;padding:3px;width:50px;height:50px;background-color:#fff;position: relative;z-index: 1;
-    }
-    .d-flex:last-child  .kh-border-vertical {
-        
+        border-radius:50%;
+        border:1px solid #c1bcbc;
+        padding:3px;
+        width:50px;
+        height:50px;
+        background-color:#fff;
+        position: relative;
+        z-index: 1;
     }
 </style>
 <div class="kh-list-cmt ">
     <div class="kh-main ml-20">
         <?php
             foreach($comments as $comment) {
-                //$row = "";
                 $sql_person_name = "select * from user where id = ? limit 1";
                 $row = fetch(sql_query($sql_person_name,[$comment['pcm_user_id']]));
-                /*if($comment['pcm_user_id']) {
-                    $sql_person_name = "select * from user where id = ". $comment['pcm_user_id'] . " limit 1";
-                    $row = fetch(sql_query($sql_person_name));
-                } else if($comment['pcm_customer_id']) {
-                    $sql_person_name = "select * from customer where id = ". $comment['pcm_customer_id'] . " limit 1";
-                    $row = fetch(sql_query($sql_person_name));
-                }*/
         ?>
         <div class="d-flex mt-10">
             <div class="kh-grp d-flex f-column a-center">
@@ -74,7 +62,7 @@
                     ?>
                     <img style="" src="<?=$row['img_name'] ? $row['img_name'] : $img_default;?>" alt=""> 
                 </div>
-                <div style="<?=$cnt == $limit + 1 ? "border-left:0px" :"border-left:1px solid #c1bcbc;min-height:100%;"; ?>" class="kh-border-vertical<?=$comment['pcm_id']?>">
+                <div style="border-left:0px ;border-left:1px solid #c1bcbc;min-height:100%;"; class="kh-border-vertical<?=$comment['pcm_id']?>">
                     
                 </div>
             </div>
@@ -126,25 +114,17 @@
                 </div>
             </div>
         </div>
-        <?php $cnt++;} ?>
+        <?php } ?>
     </div>
 </div>
 <div></div>
-<!--<div data-item="<?=$limit?>" data-total="<?=$total?>" data-page="<?=$page;?>" id="pagination-comment" style="width:100%;" class="mt-20 d-flex a-center j-center"></div>-->
+
 <?php } else if ($status=="show_reply_ok") {
     $sql = "select pcm.id as 'pcm_id',pcm.comment as 'pcm_comment',pcm.created_at as 'pcm_created_at',pcm.is_active as 'pcm_is_active',pcm.user_id as 'pcm_user_id' from product_comment pcm where product_info_id = '$id' and pcm.is_delete = 0 and pcm.reply_id = " . $reply_id;
     $replies = fetch_all(sql_query($sql));
     foreach($replies as $reply){
         $sql_person_name = "select * from user where id = ? limit 1";
         $row = fetch(sql_query($sql_person_name,[$reply['pcm_user_id']]));
-        /*$row = "";
-        if($reply['pcm_user_id']) {
-            $sql_person_name = "select * from user where id = ". $reply['pcm_user_id'] . " limit 1";
-            $row = fetch(sql_query($sql_person_name));
-        } else if($reply['pcm_customer_id']) {
-            $sql_person_name = "select * from customer where id = ". $reply['pcm_customer_id'] . " limit 1";
-            $row = fetch(sql_query($sql_person_name));
-        }*/
 ?>
     <div class="d-flex mt-10">
         <div class="kh-grp d-flex f-column a-center" style="position:relative">
@@ -153,15 +133,6 @@
 
                 </div>
                 <?php
-                    /*$img_default = "";
-                    $txt_type = "";
-                    if($reply['pcm_user_id']) {
-                        $img_default = "img/user.png";
-                        $txt_type = "Admin";
-                    } else if($reply['pcm_customer_id']) {
-                        $img_default = "img/client.png";
-                        $txt_type = "Khách hàng";
-                    }*/
                     $img_default = "";
                     $txt_type = "";
                     if($row['type'] == 'admin' || $row['type'] == 'officer') {

@@ -10,6 +10,11 @@
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<style>
+    .rate-yellow,.rate-yellow2 {
+        color:#ffc107;
+    }
+</style>
 <?php include_once ('include/head.php'); ?>
 
 <body>
@@ -195,53 +200,132 @@
                 ?>
             </div>
             <div class="block--comment col-10 m-auto p-0">
-                    <div class="review_comment">
-                        <h5>Bình luận</h5>
+                <div id="comment--product" class="review_comment">
+                    <h5>Bình luận</h5>
+                    <?php
+                        $sql_product_comment = "select comment,rate,created_at from product_comment where product_info_id = $id and user_id = $customer_id and is_delete = 0";
+                        $result_comment = mysqli_query($conn,$sql_product_comment);
+                        $sql_get_customer2 = "select full_name from user where id = '$customer_id' and type = 'customer' and is_delete like 0 limit 1";
+                        $result_customer = mysqli_query($conn,$sql_get_customer2);
+                        $customer_name = mysqli_fetch_array($result_customer);
+                        while($row_comment = mysqli_fetch_array($result_comment)) {
+                    ?>
+                    <div class="content mt-3">
+                        <div class="avatar_user">
+                            <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
+                        </div>
+                        <div class="rateOf_user">
+                            <div>
+                                <?php
+                                    $rate = $row_comment['rate'];
+                                    $i = 0;
+                                    for($i = 0 ; $i < $rate ; $i++) {
+                                ?>
+                                    <i class="fas fa-star rate-yellow2" ></i> 
+                                <?php
+                                    }
+                                    for($i = 0 ; $i < 5 - $rate ; $i++) {
+                                ?>
+                                        <i class="fas fa-star"></i> 
+                                <?php
+                                    }
+                                ?>
+                            </div>
+                            <div class="nameUser_cmt">
+                                <?php
+                                    
+                                    echo $customer_name['full_name'];
+                                ?>
+                            </div>
+                            <div class="content_cmt"><?php echo $row_comment['comment'];?></div>
+                            <div class="d-flex">
+                                <a href="javascript:void(0)">Trả lời</a> <span><?php echo Date("d-m-Y",strtotime($row_comment['created_at']));?></span>
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+                        }
+                    ?>
+                </div>
+                <div class="input_comment">
+                    <div class="input-group mb-3">
+                        <div class=" mb-3 vote_rate" style="cursor:pointer;">
+                            <span>Đánh giá: </span>
+                            <i data-rate="1" class="fas fa-star rate-comment" onclick="rateEffect()" onmouseover="rateEffect()"></i> 
+                            <i data-rate="2" class="fas fa-star rate-comment" onclick="rateEffect()" onmouseover="rateEffect()"></i> 
+                            <i data-rate="3" class="fas fa-star rate-comment" onclick="rateEffect()" onmouseover="rateEffect()"></i> 
+                            <i data-rate="4" class="fas fa-star rate-comment" onclick="rateEffect()" onmouseover="rateEffect()"></i> 
+                            <i data-rate="5" class="fas fa-star rate-comment" onclick="rateEffect()" onmouseover="rateEffect()"></i>
+                        </div>
+                        <div class="content_rate">
+                            <span>Nội dung bình luận: </span>
+                            <textarea name="comment" class="form-control" aria-label="With textarea"></textarea>
+                            <button class="mt-3" type="button" onclick="send()">Bình luận</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <div>
+    </div>
+    <?php include_once ('js/js_customIndex.php'); ?>                       
+    <?php include_once ('include/footer.php'); ?>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script>
+        function rateEffect(){
+            $('.rate-comment').removeClass('rate-yellow');
+            let rate = $(event.currentTarget).attr('data-rate');
+            console.log(rate);
+            for(i = 1; i <= rate ; i++) {
+                $(`[data-rate='${i}']`).addClass('rate-yellow');
+            }
+        }
+        function send(){
+            let comment = $('textarea[name="comment"]').val();
+            let rate = $('.rate-yellow').length;
+            let product_info_id = '<?php echo $id;?>';
+            console.log(rate);
+            console.log(product_info_id);
+            console.log(comment);
+            $.ajax({
+                url:"comment_process.php",
+                type:"POST",
+                data: {
+                    product_info_id: product_info_id,
+                    rate: rate,
+                    comment: comment,
+                    thao_tac:'send',
+                },success:function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok"){
+                        let html_rate = '';
+                        for(let i = 0 ; i < rate ; i++) {
+                            html_rate += `<i class="fas fa-star rate-yellow"></i>`;
+                        }
+                        for(let i = 0 ; i < 5 - rate ; i++) {
+                            html_rate += `<i class="fas fa-star"></i>`;
+                        }
+                        let html_baby = `
                         <div class="content">
                             <div class="avatar_user">
                                 <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
                             </div>
                             <div class="rateOf_user">
                                 <div>
-                                    <i class="fas fa-star "></i> 
-                                    <i class="fas fa-star "></i> 
-                                    <i class="fas fa-star "></i> 
-                                    <i class="fas fa-star "></i> 
-                                    <i class="fas fa-star "></i>
+                                    ${html_rate}
                                 </div>
-                                <div class="nameUser_cmt">khôi</div>
-                                <div class="content_cmt">Sản phẩm này rất ổn trong tầm giá </div>
-                                <div>
-                                    <a href="javascript:void(0)">Trả lời</a> <span>22/07/2022</span>
+                                <div class="nameUser_cmt">${data.customer_name}</div>
+                                <div class="content_cmt">${comment}</div>
+                                <div class="d-flex" style="justify-content:space-between;">
+                                    <a href="javascript:void(0)">Trả lời</a> <span>${data.date}</span>
                                 </div>
                             </div>
-                            
-                        </div>
-                    </div>
-                    <div class="input_comment">
-                        <div class="input-group mb-3">
-                            <div class=" mb-3 vote_rate">
-                                <span>Đánh giá: </span>
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i>
-                            </div>
-
-                            <div class="content_rate">
-                                <span>Nội dung bình luận: </span>
-                                <textarea class="form-control" aria-label="With textarea"></textarea>
-                                <button class="mt-3" type="submit">Bình luận</button>
-                            </div>
-                        </div>
-                </div>
-            </div>
-
-        <div>
-    </div>
-    <?php include_once ('js/js_customIndex.php'); ?>                       
-    <?php include_once ('include/footer.php'); ?>
-    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+                        </div>`;
+                        $(html_baby).appendTo('#comment--product');
+                    }
+                }
+            })
+        }
+    </script>
 </body>
 </html>

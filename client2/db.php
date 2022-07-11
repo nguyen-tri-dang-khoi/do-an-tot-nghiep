@@ -1,8 +1,3 @@
-<!-- 
-<script>
-               $ temp2= $("ul").empty();
-</script> -->
-
 <?php   
 session_start(); 
 function connect()

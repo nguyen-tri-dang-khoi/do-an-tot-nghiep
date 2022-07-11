@@ -195,23 +195,6 @@
    function showListComment(id,page=1) {
       $('#list-product-comment').load(`ajax_product_comment.php?status=show_list_comment&id=${id}&page=${page}`,() => {
          $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-         let total_all = $('#pagination-comment').attr('data-total');
-         let page = $('#pagination-comment').attr('data-page');
-         let limit = $('#pagination-comment').attr('data-item');
-         /*$('#pagination-comment').pagination({
-            items: total_all,
-            itemsOnPage: limit,
-            currentPage: page,
-            hrefTextPrefix: "",
-            hrefTextSuffix: "",
-            prevText: "<",
-            nextText: ">",
-            onPageClick: function(pageNumber,event){
-               event.preventDefault();
-               showListComment(id,pageNumber);
-            },
-            cssStyle: 'light-theme'
-         });*/
       });
    }
    function showReplyOk(reply_id,product_info_id,type=""){
