@@ -222,7 +222,7 @@
                 ?>
             </div>
             <div class="block--comment col-10 m-auto p-0">
-                <div id="comment--product" class="review_comment">
+                <div id="comment--product" class="col-7 review_comment">
                     <h5>Bình luận</h5>
                     <?php
                         $sql_product_comment = "select comment,rate,created_at from product_comment where product_info_id = $id and user_id = $customer_id and is_delete = 0";
@@ -232,35 +232,38 @@
                         $customer_name = mysqli_fetch_array($result_customer);
                         while($row_comment = mysqli_fetch_array($result_comment)) {
                     ?>
-                    <div class="content mt-3">
+                    <div class="content mt-3 ">
                         <div class="avatar_user">
                             <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
                         </div>
-                        <div class="rateOf_user">
-                            <div>
-                                <?php
-                                    $rate = $row_comment['rate'];
-                                    $i = 0;
-                                    for($i = 0 ; $i < $rate ; $i++) {
-                                ?>
-                                    <i class="fas fa-star rate-yellow2" ></i> 
-                                <?php
-                                    }
-                                    for($i = 0 ; $i < 5 - $rate ; $i++) {
-                                ?>
-                                        <i class="fas fa-star"></i> 
-                                <?php
-                                    }
-                                ?>
+                        <div class="rateOf_user w-40">
+                            <div class="d-flex  justify-content-between">
+                                <div>
+                                    <?php
+                                        $rate = $row_comment['rate'];
+                                        $i = 0;
+                                        for($i = 0 ; $i < $rate ; $i++) {
+                                    ?>
+                                        <i class="fas fa-star rate-yellow2" ></i> 
+                                    <?php
+                                        }
+                                        for($i = 0 ; $i < 5 - $rate ; $i++) {
+                                    ?>
+                                            <i class="fas fa-star"></i> 
+                                    <?php
+                                        }
+                                    ?>
+                                </div>
+                                <div class="content_cmt"><?php echo $row_comment['comment'];?></div>
+                                
                             </div>
-                            <div class="nameUser_cmt">
+                            <div class="nameUser_cmt" style="font-weight: bold;">
                                 <?php
                                     
                                     echo $customer_name['full_name'];
                                 ?>
-                            </div>
-                            <div class="content_cmt"><?php echo $row_comment['comment'];?></div>
-                            <div class="d-flex">
+                                </div>
+                            <div class="d-flex justify-content-between">
                                 <a href="javascript:void(0)">Trả lời</a> <span><?php echo Date("d-m-Y",strtotime($row_comment['created_at']));?></span>
                             </div>
                         </div>
