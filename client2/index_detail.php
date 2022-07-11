@@ -165,7 +165,6 @@
                 <span class="block--header_title">SẢN PHẨM LIÊN QUAN</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <!-- <?php //get_product()?> -->
                 <?php
                     $product_type_id = $row['product_type_id'];
                     $price_1 = $row['price'];
@@ -227,11 +226,8 @@
                 <div id="comment--product" class="col-7 review_comment">
                     <h5>Bình luận</h5>
                     <?php
-                        $sql_product_comment = "select comment,rate,created_at from product_comment where product_info_id = $id and user_id = $customer_id and is_delete = 0";
+                        $sql_product_comment = "select user_id,comment,rate,created_at from product_comment where reply_id is null and product_info_id = $id and is_active like 0 and is_delete like 0";
                         $result_comment = mysqli_query($conn,$sql_product_comment);
-                        $sql_get_customer2 = "select full_name from user where id = '$customer_id' and type = 'customer' and is_delete like 0 limit 1";
-                        $result_customer = mysqli_query($conn,$sql_get_customer2);
-                        $customer_name = mysqli_fetch_array($result_customer);
                         while($row_comment = mysqli_fetch_array($result_comment)) {
                     ?>
                     <div class="content mt-3 ">
@@ -261,7 +257,10 @@
                             </div>
                             <div class="nameUser_cmt" style="font-weight: bold;">
                                 <?php
-                                    
+                                    $all_customer_id = $row_comment['user_id'];
+                                    $sql_get_customer2 = "select full_name from user where type = 'customer' and id = $all_customer_id and is_delete like 0 limit 1";
+                                    $result_customer = mysqli_query($conn,$sql_get_customer2);
+                                    $customer_name = mysqli_fetch_array($result_customer);
                                     echo $customer_name['full_name'];
                                 ?>
                                 </div>
@@ -274,6 +273,9 @@
                         }
                     ?>
                 </div>
+                <?php
+                    if(isset($_SESSION['customer_id'])) {
+                ?>
                 <div class="input_comment">
                     <div class="input-group mb-3">
                         <div class=" mb-3 vote_rate" style="cursor:pointer;">
@@ -291,6 +293,15 @@
                         </div>
                     </div>
                 </div>
+                <?php
+                    } else {
+                ?>
+                    <div class="input_comment">
+                        <p style="font-weight:bold;">Vui lòng đăng nhập để được đánh giá bình luận</p> 
+                    </div>
+                <?php
+                    }
+                ?>
             </div>
         <div>
     </div>
