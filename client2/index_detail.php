@@ -173,9 +173,7 @@
                     $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1) and product_type_id like $product_type_id and price >= $price_1 and price <= $price_2";
                     $result = mysqli_query($conn, $getDataProduct);
                     
-                    if(mysqli_num_rows($result) > 0){
-                        //out put data in whike loop, or out "Không có sản phẩm "
-                        
+                    if(mysqli_num_rows($result) > 0){               
                         while($row = mysqli_fetch_assoc($result)){
                 ?>
                 <div  class="product">                    
@@ -226,7 +224,7 @@
                 <div id="comment--product" class="col-7 review_comment">
                     <h5>Bình luận</h5>
                     <?php
-                        $sql_product_comment = "select user_id,comment,rate,created_at from product_comment where reply_id is null and product_info_id = $id and is_active like 0 and is_delete like 0";
+                        $sql_product_comment = "select user_id,comment,rate,created_at from product_comment where reply_id is null and product_info_id = $id and is_active like 1 and is_delete like 0";
                         $result_comment = mysqli_query($conn,$sql_product_comment);
                         while($row_comment = mysqli_fetch_array($result_comment)) {
                     ?>
@@ -289,6 +287,7 @@
                         <div class="content_rate">
                             <span>Nội dung bình luận: </span>
                             <textarea name="comment" class="form-control" aria-label="With textarea"></textarea>
+                            <span class="text-danger" id="comment_err"></span>
                             <button class="mt-3" type="button" onclick="send()">Bình luận</button>
                         </div>
                     </div>
@@ -318,51 +317,62 @@
             }
         }
         function send(){
+            $('span.text-danger').text("");
+            let test = true;
             let comment = $('textarea[name="comment"]').val();
             let rate = $('.rate-yellow').length;
             let product_info_id = '<?php echo $id;?>';
-            console.log(rate);
-            console.log(product_info_id);
-            console.log(comment);
-            $.ajax({
-                url:"comment_process.php",
-                type:"POST",
-                data: {
-                    product_info_id: product_info_id,
-                    rate: rate,
-                    comment: comment,
-                    thao_tac:'send',
-                },success:function(data){
-                    console.log(data);
-                    data = JSON.parse(data);
-                    if(data.msg == "ok"){
-                        let html_rate = '';
-                        for(let i = 0 ; i < rate ; i++) {
-                            html_rate += `<i class="fas fa-star rate-yellow"></i>`;
+            if(comment == "") {
+                $('#comment_err').text('Vui lòng không để trống nội dung bình luận');
+                test = false;
+            } else if(comment.length > 1500) {
+                $('#comment_err').text('Nội dung bình luận không được nhiều hơn 1500 ký tự');
+            }
+            if(test) {
+                $.ajax({
+                    url:"comment_process.php",
+                    type:"POST",
+                    data: {
+                        product_info_id: product_info_id,
+                        rate: rate,
+                        comment: comment,
+                        thao_tac:'send',
+                    },success:function(data){
+                        console.log(data);
+                        data = JSON.parse(data);
+                        if(data.msg == "ok"){
+                            $.alert({
+                                "title":"Thông báo",
+                                "content":"Bạn đã gửi phản hồi sản phẩm cho chúng tôi thành công",
+                            });
+                            // let html_rate = '';
+                            // for(let i = 0 ; i < rate ; i++) {
+                            //     html_rate += `<i class="fas fa-star rate-yellow"></i>`;
+                            // }
+                            // for(let i = 0 ; i < 5 - rate ; i++) {
+                            //     html_rate += `<i class="fas fa-star"></i>`;
+                            // }
+                            // let html_baby = `
+                            // <div class="content mt-3">
+                            //     <div class="avatar_user">
+                            //         <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
+                            //     </div>
+                            //     <div class="rateOf_user">
+                            //         <div>
+                            //             ${html_rate}
+                            //         </div>
+                            //         <div class="nameUser_cmt">${data.customer_name}</div>
+                            //         <div class="content_cmt">${comment}</div>
+                            //         <div class="d-flex" style="justify-content:space-between;">
+                            //             <a href="javascript:void(0)">Trả lời</a> <span>${data.date}</span>
+                            //         </div>
+                            //     </div>
+                            // </div>`;
+                            // $(html_baby).appendTo('#comment--product');
                         }
-                        for(let i = 0 ; i < 5 - rate ; i++) {
-                            html_rate += `<i class="fas fa-star"></i>`;
-                        }
-                        let html_baby = `
-                        <div class="content mt-3">
-                            <div class="avatar_user">
-                                <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
-                            </div>
-                            <div class="rateOf_user">
-                                <div>
-                                    ${html_rate}
-                                </div>
-                                <div class="nameUser_cmt">${data.customer_name}</div>
-                                <div class="content_cmt">${comment}</div>
-                                <div class="d-flex" style="justify-content:space-between;">
-                                    <a href="javascript:void(0)">Trả lời</a> <span>${data.date}</span>
-                                </div>
-                            </div>
-                        </div>`;
-                        $(html_baby).appendTo('#comment--product');
                     }
-                }
-            })
+                })
+            }
         }
     </script>
 </body>

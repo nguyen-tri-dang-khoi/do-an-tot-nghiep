@@ -1,6 +1,9 @@
 <?php
     include_once 'db.php';
     $_SESSION['login_error']= isset($_SESSION['login_error']) ? $_SESSION['login_error'] : "";
+    if(isset($_SESSION['customer_id'])) {
+        header("Location:index.php");
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
