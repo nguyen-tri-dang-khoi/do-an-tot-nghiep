@@ -328,7 +328,7 @@
                             html_rate += `<i class="fas fa-star"></i>`;
                         }
                         let html_baby = `
-                        <div class="content">
+                        <div class="content mt-3">
                             <div class="avatar_user">
                                 <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
                             </div>
