@@ -145,7 +145,7 @@
                         <p>Hỗ trợ trả góp 0%, trả trước 0đ</p>
                     </div>
                     <div class="category--item">
-                    <i class="fa-thin fa-arrow-right-arrow-left"></i>
+                    <i class="fa-solid fa-sack-dollar"></i>
                         <p>Hoàn tiền 200% nếu có hàng giả</p>
                     </div>
                     <div class="category--item">
