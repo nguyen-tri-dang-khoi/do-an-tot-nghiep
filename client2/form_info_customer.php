@@ -22,23 +22,27 @@
                 $name = $row['full_name'];
     ?>
             <div class="col-10 m-auto p-0 mt-0 mb-4 row d-flex">
-                <form action="form_info_customer_process.php" method="post" class="row d-flex col-6 mt-4 m-auto p-0">
+                <form action="form_info_customer_process.php" method="post" onsubmit="return validate()" class="row d-flex col-6 mt-4 m-auto p-0">
                     <h3 class="p-0">Thông tin khách hàng</h3>    
                     <div class="col-12 mb-1 m-auto p-0">
                         <label for="full_name2" class="form-label">Họ và Tên</label>
                         <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
+                        <p id="full_name_err" class="text-danger"></p>
                     </div>
                     <div class="col-md-12 mb-1 m-auto p-0">
                         <label for="inputEmail4" class="form-label">Email</label>
                         <input name="email" type="email" value="<?php echo $row['email']; ?>" class="form-control"  placeholder="abc@email.com">
+                        <p id="email_err" class="text-danger"></p>
                     </div>
                     <div class="col-md-12 mb-1  m-auto p-0">
                         <label for="inputcontact" class="form-label">Số điện thoại</label>
                         <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
+                        <p id="phone_err" class="text-danger"></p>
                     </div>
                     <div class="col-12 m-auto mb-1 p-0">
                         <label for="inputAddress" class="form-label">Địa chỉ</label>
                         <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
+                        <p id="address_err" class="text-danger"></p>
                     </div>
                     <input type="hidden" name="thao_tac" value="updateInfo">
                     <div class="col-12 m-auto p-0">
@@ -132,8 +136,44 @@
     ?>
     
     <?php include_once ('include/footer.php'); ?>
-    <!-- <script src = '../js/toast.min.js' > </script> -->
     <script type = "text/javascript" src = "//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"> </script>
+    <script>
+        function validate(){
+            let test = true;
+            $('p.text-danger').text("");
+            let full_name = $('input[name="full_name"]').val();
+            let phone_reg = /^\d{10}$/;
+            let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+            let phone = $('input[name="phone"]').val();
+            let email = $('input[name="email"]').val();
+            let address = $('input[name="address"]').val();
+            if(full_name == ""){
+                $('#full_name_err').text("Tên đầy đủ không được để trống");
+                test = false;
+            } 
+            if(phone == "") {
+                $('#phone_err').text("Số điện thoại không được để trống");
+                test = false;
+            } else if(!phone.match(phone_reg)) {
+                $('#phone_err').text("Số điện thoại không đúng định dạng");
+                test = false;
+            }
+
+            if(email == "") {
+                $('#email_err').text("Email không được để trống");
+                test = false;
+            } else if(!email.match(email_reg)) {
+                $('#email_err').text("Email không đúng định dạng");
+                test = false;
+            }
+
+            if(address == "") {
+                $('#address_err').text("Địa chỉ không được để trống");
+                test = false;
+            }
+            return test;
+        }
+    </script>
     <?php include_once ('js/js_customIndex.php'); ?>
 </body>
 </html>

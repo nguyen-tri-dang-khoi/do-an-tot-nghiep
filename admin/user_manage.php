@@ -1018,7 +1018,7 @@
             console.log(Date.parse(new Date().toISOString().slice(0,10)));
             console.log(Date.parse(upt_birthday));
             if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(upt_birthday) < 568024668000) {
-                target2.find('td input[name="upt_birthday"] ~ p.text-danger').text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                target2.find('td input[name="upt_birthday"] ~ span.text-danger').text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
                 test = false;
             }
         }
@@ -1684,7 +1684,7 @@
         } else if($status == "Insert") {
             $success = "Bạn đã thêm dữ liệu thành công";
             $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
-            $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?,?)";
+            $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
             sql_query($sql,[$full_name,$type,$email,$phone,$address,$birthday,$password]);
             $insert = ins_id();
             if($insert > 0) {
@@ -1710,7 +1710,6 @@
                     $sql_update = "update user set img_name = ? where id = ?";
                     sql_query($sql_update,[$path,$insert]);
                 }
-                $__arr['id'] = $insert;
             }
             echo_json(["msg" => "ok","success" => $success]);
         } else if($status == "upt_more") {
@@ -1796,8 +1795,10 @@
             $ins_phone = isset($_REQUEST["ins_phone"]) ? $_REQUEST["ins_phone"] : null;
             $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_birthday"])) : null;
-            $sql = "Insert into user(full_name,type,email,phone,address,birthday) values(?,?,?,?,?,?,?)";
-            sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_address,$ins_birthday]);
+            $password = '1234';
+            $password = password_hash($password,PASSWORD_DEFAULT);
+            $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
+            sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_address,$ins_birthday,$password]);
             echo_json(["msg" => "ok"]);
         } else if($status == "ins_all") {
             $len = isset($_REQUEST["len"]) ? $_REQUEST["len"] : null;
@@ -1807,11 +1808,13 @@
             $ins_address = isset($_REQUEST["ins_address"]) ? $_REQUEST["ins_address"] : null;
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? $_REQUEST["ins_birthday"]  : null;
             $ins_type = isset($_REQUEST["ins_type"]) ? $_REQUEST["ins_type"] : null;
+            $password = '1234';
+            $password = password_hash($password,PASSWORD_DEFAULT);
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $ins_birthday[$i] ? Date('Y-m-d',strtotime($ins_birthday[$i])) : null;
-                    $sql = "Insert into user(full_name,type,email,phone,address,birthday) values(?,?,?,?,?,?,?)";
-                    sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_address[$i],$birth]);
+                    $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
+                    sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_address[$i],$birth,$password]);
                 }
                 echo_json(["msg" => "ok"]);
             }

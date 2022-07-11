@@ -108,9 +108,8 @@
         $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
         $password = isset($_REQUEST["password"]) ? $_REQUEST["password"] : null;
         $remember = isset($_REQUEST["remember"]) ? $_REQUEST["remember"] : null;
-        $sql = "select id,type,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and type = 'officer'  or type = 'admin' limit 1";
+        $sql = "select id,type,email,password,img_name,paging,is_lock,count(*) as 'countt' from user where email = ? and (type = 'officer'  or type = 'admin') limit 1";
         $row = fetch(sql_query($sql,[$email]));
-        print_r($sql);
         if($row['countt'] == 0) {
             $_SESSION["error"] = "Email bạn đăng nhập không tồn tại";
         }
@@ -119,7 +118,6 @@
             $test_lock = false;
         }
         if($row['countt'] > 0 && $test_lock){
-            //password_verify($password,$row["password"])
             if(password_verify($password,$row["password"])){
                 $_SESSION["isLoggedIn"] = true;
                 $_SESSION["id"] = $row["id"];

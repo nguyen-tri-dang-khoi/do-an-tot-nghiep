@@ -65,22 +65,26 @@
             if(mysqli_num_rows($result) > 0){
                 $row = mysqli_fetch_assoc($result);
     ?>
-            <form id="infoCustomer_Checkout" action="form_info_customer_process.php" method="post" class="row col-12 m-auto p-0">
+            <form id="infoCustomer_Checkout" action="form_info_customer_process.php" onsubmit="return validate()"method="post" class="row col-12 m-auto p-0">
                 <div class="col-12 m-auto mt-2 p-0 ">
                     <label for="inputAddress2" class="form-label">Họ và Tên</label>
                     <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
+                    <p id="full_name_err" class="text-danger"></p>
                 </div>
                 <div class="col-md-12 m-auto mt-2 p-0 ">
                     <label for="inputEmail4" class="form-label">Email</label>
                     <input name="email" type="email" value="<?php echo $row['email']; ?>" class="form-control"  placeholder="abc@email.com">
+                    <p id="email_err" class="text-danger"></p>
                 </div>
                 <div class="col-md-12 m-auto mt-2 p-0">
                     <label for="inputcontact" class="form-label">Số điện thoại</label>
                     <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
+                    <p id="phone_err" class="text-danger"></p>
                 </div>
                 <div class="col-12 m-auto  mt-2 p-0 ">
                     <label for="inputAddress" class="form-label">Địa chỉ</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
+                    <p id="address_err" class="text-danger"></p>
                 </div>
                 
                 <input type="hidden" name="thao_tac" value="updateInfoConfirmCheckout">
@@ -176,6 +180,41 @@
             $('input[name="thao_tac"]').val('tao_don_hang');
             $('#infoCustomer_Checkout').attr('action','confirm_checkout_process.php');
             $('#infoCustomer_Checkout').submit();
+        }
+        function validate(){
+            let test = true;
+            $('p.text-danger').text("");
+            let full_name = $('input[name="full_name"]').val();
+            let phone_reg = /^\d{10}$/;
+            let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+            let phone = $('input[name="phone"]').val();
+            let email = $('input[name="email"]').val();
+            let address = $('input[name="address"]').val();
+            if(full_name == ""){
+                $('#full_name_err').text("Tên đầy đủ không được để trống");
+                test = false;
+            } 
+            if(phone == "") {
+                $('#phone_err').text("Số điện thoại không được để trống");
+                test = false;
+            } else if(!phone.match(phone_reg)) {
+                $('#phone_err').text("Số điện thoại không đúng định dạng");
+                test = false;
+            }
+
+            if(email == "") {
+                $('#email_err').text("Email không được để trống");
+                test = false;
+            } else if(!email.match(email_reg)) {
+                $('#email_err').text("Email không đúng định dạng");
+                test = false;
+            }
+
+            if(address == "") {
+                $('#address_err').text("Địa chỉ không được để trống");
+                test = false;
+            }
+            return test;
         }
     </script>
 </body>

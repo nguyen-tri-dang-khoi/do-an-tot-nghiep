@@ -1133,8 +1133,6 @@
          gameChange();
       }
       formData.append('list_file_del',$('input[name="list_file_del"]').val());
-      
-      
       if(validate()) {
          $.ajax({
             url:window.location.href,

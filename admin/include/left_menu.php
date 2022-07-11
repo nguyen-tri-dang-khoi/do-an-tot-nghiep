@@ -60,7 +60,7 @@
     </div>
 
     <!-- Sidebar Menu -->
-    <nav class="mt-2" style="width:270px;">
+    <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="">
         <li class="nav-item " >
           <a tabindex="-1" href="company_info.php" class="nav-link <?=strpos($url,"company_info.php") ? "kh-active" : "";?>">
