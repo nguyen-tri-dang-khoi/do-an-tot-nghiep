@@ -39,7 +39,7 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
     // print_r($result);
         while($row = mysqli_fetch_assoc($result)){
             // $link_href= "";
-            $id2 = $row['id'];
+            // $id2 = $row['id'];
             // print_r($id2);
             // print_r($parent_id); ở đây thì parent_id ban đầu sẽ luôn là null (Dòng 31)
 

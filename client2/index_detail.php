@@ -95,7 +95,22 @@
                     </div>
                     <div class="right_button">
                         <div class="d-flex justify-content-between">
-                            <span style="color: green"><i class="fa-solid fa-circle"></i> Còn hàng</span>
+                            <?php 
+                                if($row['count'] > 0 ) {
+                            ?>
+                                <span style="color: green">
+                                    <i class="fa-solid fa-circle"></i>Còn hàng
+                                </span>
+                            <?php }
+                                else{
+                            ?>
+                                <span style="color: red">
+                                    <i class="fa-solid fa-circle"></i> Hết hàng
+                                </span>
+                            <?php        
+                                }  
+                            ?>
+                                 
                             <p style="font-weight:700">
                                 <?php 
                                     echo number_format($row["price"],0,".","."); 
