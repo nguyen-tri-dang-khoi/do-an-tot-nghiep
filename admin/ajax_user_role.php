@@ -3,7 +3,6 @@
     $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : null;
     $sql_get_count = "select count(m.id) as 'cnt' from user_role u inner join menus m on u.menu_id = m.id where u.user_id='$id'";
     $sql = "select m.name as 'm_name',u.permission as 'u_permission',u.user_id as 'u_user_id',u.menu_id as 'u_menu_id' from menus m inner join user_role u on u.menu_id = m.id where u.user_id='$id'";
-    //print_r($sql);
     $result = fetch_all(sql_query($sql));
     $count3 = sql_query($sql_get_count);
     $count3 = fetch($count3)['cnt'];
