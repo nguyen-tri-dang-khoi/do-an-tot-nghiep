@@ -367,7 +367,6 @@
         }       
         return true;
     }
-    
     function del_pi_when_del_pt($connection,$parent_id = NULL) {
         $sql = "";
         if(is_null($parent_id)) {
@@ -386,7 +385,6 @@
         }       
         return true;
     }
-    
     function check_permission_link($link){
         $test = false;
         $sql_get_role = "select m.name as 'm_name',m.link as 'm_link',u.permission as 'u_role' from user_role u inner join menus m on u.menu_id = m.id where user_id = '$_SESSION[id]'";
