@@ -133,7 +133,6 @@
                 cartamount--;
                 $('.cart--amount').text(cartamount);
             }
-
         } else if (thaotac == "+") {
             count++;
 
@@ -245,30 +244,38 @@
             }
         });
     }
-
-    function addToCart() {
-        //console.log('khoideptrai');
-        console.log($(event.currentTarget));
-        let id = $(event.currentTarget).attr('data-id'); //lay du lieu sau khi bat su kien (click) bang currentTarget
+    function changeCountInputCart(thaotac){
+        let count = $('input[name="count"]').val();
+        count = parseInt(count);
+        if(thaotac == "-") {
+            count--;
+            if(count == 0) {
+                return;
+            }
+        } else if(thaotac == "+") {
+            count++;
+        }
+        $('input[name="count"]').val(count);
+        $('button[data-action="mua_hang"]').attr('onclick',`addToCart(${count})`);
+    }
+    function addToCart(count = 1) {
+        let id = $(event.currentTarget).attr('data-id'); 
         let name = $(event.currentTarget).attr('data-name');
         let price = $(event.currentTarget).attr('data-price');
         let img = $(event.currentTarget).attr('data-img');
-        //let page = $(event.currentTarget).attr('data-page');
-        console.log(name);
-        console.log(id);
-        console.log(price);
         $.ajax({
             url: `cart_ok.php`,
             type: "POST",
             data: {
                 "id": id,
-                'count': 1,
+                'count': count,
                 'name': name,
                 'price': price,
                 'img': img,
                 'thao_tac': 'addCart',
             },
             success: function(data) {
+                console.log(data);
                 $('#exampleModal').modal('show');
             }
         });

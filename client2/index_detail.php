@@ -124,18 +124,13 @@
                         <div>
                             <div>
                                 <span>Số lượng </span>
-                                <!-- <div>
-                                    <span>+</span>
-                                    <input onreads type="text" value="1">
-                                    <span>-</span>
-                                </div> -->
                                 <div class="change_product">
-                                    <div><span onclick="updateInfoCart('-','<?php echo $id;?>')">-</span><input name="count" readonly="" type="text" value="1"> <span onclick="updateInfoCart('+','<?php echo $id;?>')">+</span></div>
+                                    <div style="cursor:pointer;"><span onclick="changeCountInputCart('-')">-</span><input name="count" readonly="" type="text" value="1"> <span onclick="changeCountInputCart('+')">+</span></div>
                                 </div>
                             </div>
                         </div>
                         <div>
-                            <a href="cart.php" class="go-carts disable">Mua Hàng</a>
+                            <button data-action="mua_hang" onclick="addToCart(1)" type="button" data-img="<?php echo $row["img_name"];?>" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>" class="go-carts disable">Mua Hàng</button>
                         </div>
                     </div>  
                 </div>
@@ -208,7 +203,7 @@
                                 <span class="price-root" name="price"><?php echo number_format($row["price"],0,".","."). "đ";?></span>
                             </div> 
                             <?php //echo $row["description"] ;?>
-                            <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
+                            <button onclick="addToCart(1)" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
                         </div>
                     </div>
                 </div>

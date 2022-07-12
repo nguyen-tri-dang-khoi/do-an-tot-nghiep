@@ -12,7 +12,7 @@
         if(isset($_SESSION['cart']))
         {
             if(isset($_SESSION['cart'][$id])){
-                $_SESSION['cart'][$id]['count']++;
+                $_SESSION['cart'][$id]['count'] += $count;
             }
             else
             {
