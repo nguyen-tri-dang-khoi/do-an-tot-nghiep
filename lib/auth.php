@@ -55,12 +55,9 @@
     function is_get_method(){
         return ($_SERVER["REQUEST_METHOD"] == "GET");  
     }
-    //================redirect===================//
-    //f_t
     function get_url_current_page() {
         return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     }
-    //f_u
     function redirect_if_login_status_false($uri_login_redirect = "login.php") {
         if(!isset($_SESSION["isLoggedIn"]) || $_SESSION["isLoggedIn"] !== true){
             $_SESSION["redirect"] = get_url_current_page();
@@ -68,7 +65,6 @@
             exit();
         }
     }
-    //f_w
     function redirect_if_login_success($uri_login_success_redirect = "information.php",$type = 'admin|officer') {
         if($type == 'admin|officer') {
             if(isset($_SESSION["isLoggedIn"]) && $_SESSION['isLoggedIn'] !== false) {
@@ -92,24 +88,6 @@
             }
         }
         
-    }
-    function redirect_if_customer_login_success($uri_login_success_redirect = "index.php") {
-        if(isset($_SESSION["isUserLoggedIn"]) && $_SESSION['isUserLoggedIn']) {
-            if(isset($_SESSION["redirect"])) {
-                header("location: " . $_SESSION['redirect']);
-                unset($_SESSION["redirect"]);
-                exit();
-            }
-            header("location:$uri_login_success_redirect");
-            exit();
-        }
-    }
-    function redirect_if_customer_login_status_false($uri_login_redirect = "login.php") {
-        if(!isset($_SESSION["isUserLoggedIn"]) || $_SESSION["isUserLoggedIn"] !== true){
-            $_SESSION["redirect"] = get_url_current_page();
-            header("location:$uri_login_redirect");
-            exit();
-        }
     }
     function encrypt_decrypt($string, $action = 'encrypt')
     {

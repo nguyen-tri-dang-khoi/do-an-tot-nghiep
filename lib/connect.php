@@ -1,7 +1,6 @@
 <?php
     ini_set('session.cookie_httponly', 1);
     session_start();
-    // database connect setting
     $link = db_connect();
     define("NOTIFY_IMG","upload/notify");
     define("USER_IMG","upload/user");

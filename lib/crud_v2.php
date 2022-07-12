@@ -1,6 +1,5 @@
 <?php
     function sql_query($sql = "",$__arr = []) {
-        //print_r($sql);
         $pdo = $GLOBALS['link']->prepare($sql);
         if($pdo->execute($__arr)) return $pdo;
         return false;   
@@ -17,7 +16,7 @@
     function ins_id() {
         return $GLOBALS['link']->lastInsertId();
     }
-    function generate_sql_ins_more_row($table_name, $__arr = [] , $values = []) {
+    /*function generate_sql_ins_more_row($table_name, $__arr = [] , $values = []) {
         $binding = array_fill(0,count($__arr),"?");
         $str_binding = array_fill(0,count($values),"(" . implode(",",$binding) . ")");
         $str_binding = implode(",",$str_binding);
@@ -90,5 +89,5 @@
             }
         }
         return json_encode($__arr);
-    }
+    }*/
 ?>
