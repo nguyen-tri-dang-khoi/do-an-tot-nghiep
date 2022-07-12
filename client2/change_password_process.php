@@ -2,7 +2,6 @@
     include_once 'db.php';
     $old_pass = isset($_REQUEST['old_pass']) ? $_REQUEST['old_pass'] : null;
     $new_pass = isset($_REQUEST['new_pass']) ? $_REQUEST['new_pass'] : null;
-
     $customer_id = isset($_SESSION['customer_id']) ? $_SESSION['customer_id'] : null;
     if($_SERVER['REQUEST_METHOD'] == "POST") {
         if($old_pass && $new_pass && $customer_id){

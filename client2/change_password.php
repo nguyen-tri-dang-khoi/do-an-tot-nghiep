@@ -1,8 +1,9 @@
 <?php
     include_once 'db.php';
     $_SESSION['login_error']= isset($_SESSION['login_error']) ? $_SESSION['login_error'] : "";
-    if(isset($_SESSION['customer_id'])) {
-        header("Location:index.php");
+    if(!isset($_SESSION['forgive_password'])) {
+        header("Location:Login_signup.php");
+        exit();
     }
 ?>
 <!DOCTYPE html>
@@ -24,18 +25,18 @@
     
 <div class="container" id="container">
     <div class="form-container sign-in-container">
-        <form id="form-login" action="Login_signup_process.php" method="post" onsubmit="return validateLogin()">
+        <form id="form-login" action="reset_password_process.php" method="post" onsubmit="return validateLogin()">
             <h1>Thay đổi mật khẩu</h1>
-            <div class="social-container">
+                <div class="social-container">
             </div>
             <span>Nhập mật khẩu</span>
-            <input id="login_email" type="password" name="pass word" placeholder="password" />
-            <span id="login_email_err" class="text-danger"></span>
-            <input id="login_email" type="password" name="pass word" placeholder="confirm password" />
-            <span id="login_email_err" class="text-danger"></span>
+            <input id="login_password" type="password" name="password" placeholder="password" />
             <span id="login_password_err" class="text-danger"></span>
-            <input type="hidden" name="thao_tac" value="Login">
-            <button type="submit">Change Password</button>
+
+            <input type="password" name="confirm_password" placeholder="confirm password" />
+            <span id="confirm_password_err" class="text-danger"></span>
+
+            <button type="submit">Đổi mật khẩu</button>
         </form>
     </div>
 
@@ -51,17 +52,17 @@
 </div>
 
     <script>
-        const signUpButton = document.getElementById('signUp');
-        const signInButton = document.getElementById('signIn');
-        const container = document.getElementById('container');
+        // const signUpButton = document.getElementById('signUp');
+        // const signInButton = document.getElementById('signIn');
+        // const container = document.getElementById('container');
 
-        signUpButton.addEventListener('click', () => {
-            container.classList.add('right-panel-active');
-        });
+        // signUpButton.addEventListener('click', () => {
+        //     container.classList.add('right-panel-active');
+        // });
 
-        signInButton.addEventListener('click', () => {
-            container.classList.remove('right-panel-active');
-        });
+        // signInButton.addEventListener('click', () => {
+        //     container.classList.remove('right-panel-active');
+        // });
         function validateLogin(){
             $('span.text-danger').text("");
             let test = true;
