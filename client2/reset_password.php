@@ -41,7 +41,7 @@
         <div class="overlay">
             <div class="overlay-panel overlay-right">
                 <h1>Cảm ơn vì tiếp tục sử dụng dịch vụ của chúng tôi!</h1>
-                <p>Để khôi phục lại mật khẩu, vui lòng điền thông tin email tài khoản của bạn</p>
+                <p>Hãy kiểm tra email sau 1 vài phút! để nhận liên kết thay đổi mật khẩu</p>
                 <!-- <button type="button" class="ghost" id="signIn">Đăng nhập</button> -->
             </div>
         </div>
