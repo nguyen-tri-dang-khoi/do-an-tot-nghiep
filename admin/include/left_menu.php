@@ -88,14 +88,14 @@
           </a>
         </li>
         <?php } ?>
-        <li class="nav-item" >
+        <!-- <li class="nav-item" >
           <a tabindex="-1" href="delivery_fee_manage.php" class="nav-link <?=strpos($url,"delivery_fee_manage.php") ? "kh-active" : "";?>">
           <img src="img/cargo.png" alt="">
             <p>
               Quản lý phí vận chuyển
             </p>
           </a>
-        </li>
+        </li> -->
         <?php if(check_permission_link("statistic.php")){?>
         <li class="nav-item" >
           <a tabindex="-1" href="statistic.php" class="nav-link <?=strpos($url,"statistic.php") ? "kh-active" : "";?>">
@@ -134,7 +134,7 @@
             </p>
           </a>
         </li>
-        <li class="nav-item " >
+        <!-- <li class="nav-item " >
           <a tabindex="-1" href="coupon_manage.php" class="nav-link <?=strpos($url,"coupon_manage.php") ? "kh-active" : "";?>">
             <img src="img/voucher.png" alt="">
             <p>
@@ -149,7 +149,7 @@
               Danh mục khuyến mãi
             </p>
           </a>
-        </li>
+        </li> -->
         <?php if(check_permission_link("user_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="user_manage.php" class="nav-link <?=strpos($url,"user_manage.php") ? "kh-active" : "";?>">

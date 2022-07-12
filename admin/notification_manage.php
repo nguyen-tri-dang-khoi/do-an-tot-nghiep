@@ -553,10 +553,14 @@
             test = false;
          }
       }
-      if(content2 == "<p><br></p>") {
+      //
+      if(content2.trim() == "<p><br></p>") {
          $('#content_err').text('Nội dung bảng tin không được để trống');
          test = false;
-      } 
+      }  else if(content2.trim().length > 10000) {
+         $('#content_err').text('Nội dung bảng tin không được quá 10.000 ký tự');
+         test = false;
+      }
       return test;
    }
    function readURL2(input){
@@ -666,9 +670,9 @@
                      });
                      loadDataComplete();
                   }
-                  $('#form-bang-tin').trigger('reset');
-                  $("#msg_style").removeAttr('style');
-                  $("#msg").text(msg);
+                  // $('#form-bang-tin').trigger('reset');
+                  // $("#msg_style").removeAttr('style');
+                  // $("#msg").text(msg);
                   $('#modal-xl').modal('hide');
                } else if(res_json.msg == 'not_ok') {
                   $.alert({
@@ -745,8 +749,8 @@
       if(ins_content == "") {
          target2.find('td textarea[name="ins_content"] ~ p.text-danger').text('Không được để trống');
          test = false;
-      } else if(ins_content.length > 1800) {
-         target2.find('td textarea[name="ins_content"] ~ p.text-danger').text('Phải nhỏ hơn 1800 ký tự');
+      } else if(ins_content.length > 10000) {
+         target2.find('td textarea[name="ins_content"] ~ p.text-danger').text('Phải nhỏ hơn 10.000 ký tự');
          test = false;
       }
       //

@@ -128,8 +128,7 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
                     }
                 } 
 
-function get_productindex($id_category){
-                
+            function get_productindex($id_category){
                     $conn = connect();
                     $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1) and product_type_id like $id_category";
                     $result = mysqli_query($conn, $getDataProduct);
@@ -175,12 +174,12 @@ function get_productindex($id_category){
                     </div>
                 </div>
             </div>
-<?php
-                        }
-                    }
-                    else {
-                        echo "Không có sản phẩm";
-                    }
-                } 
+        <?php
+                }
+            }
+            else {
+                echo "Không có sản phẩm";
+            }
+        } 
 
-?>
+        ?>

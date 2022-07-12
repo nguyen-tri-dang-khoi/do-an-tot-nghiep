@@ -1733,9 +1733,9 @@
         } else if($status == "role_load") {
             $rows = isset($_REQUEST['roles']) ? $_REQUEST['roles'] : null;
             if($rows) {
-                $sql = "select * from user where id in ($rows) and is_delete = 0";
+                $sql = "select * from user where id in ($rows) and type = 'officer' and is_delete = 0";
             } else {
-                $sql = "select * from user where is_delete = 0";
+                $sql = "select * from user where type='officer' and is_delete = 0";
             }
             $result = sql_query($sql);
             $result = fetch_all($result);
