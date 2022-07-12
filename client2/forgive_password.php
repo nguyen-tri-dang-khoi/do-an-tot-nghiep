@@ -74,8 +74,8 @@ if($_SESSION['forgive_password']) {
                                         </div>
                                         <div style="text-align:left">
                                             <div style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">
-                                                <div>Trân trọng, Đội ngũ ephone.</div>
-                                                <div style="direction:ltr">©2022 Ephone LLC 
+                                                <div>Trân trọng, Đội ngũ TNC.</div>
+                                                <div style="direction:ltr">©2022 TNC Store 
                                                     <a class="m_-5645504512316095871afal" style="font-family:Roboto-Regular,Helvetica,Arial,sans-serif;color:rgba(0,0,0,0.54);font-size:11px;line-height:18px;padding-top:12px;text-align:center">38 đường 101 Phường Thạnh Mỹ Lợi Quận 2 TPHCM.</a>
                                                 </div>
                                             </div>
