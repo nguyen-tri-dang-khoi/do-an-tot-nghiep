@@ -15,7 +15,6 @@
         $orderByColumn = isset($_REQUEST['orderByColumn']) ? $_REQUEST['orderByColumn'] : null;
         $orderStatus = isset($_REQUEST['orderStatus']) ? $_REQUEST['orderStatus'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
-        
         $order_by = "ORDER BY id desc";
         $where = "where 1=1 and is_delete = 0 ";
         $wh_child = [];

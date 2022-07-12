@@ -858,7 +858,6 @@
             $sql = "Insert into product_type(name,is_active) values(?,?)";
             sql_query($sql,[$name,1]);
           }
-          // upload img
           $insert = ins_id();
           $dir = "upload/category";
           if(!file_exists($dir)) {
@@ -879,7 +878,6 @@
             $sql_update = "update product_type set img_name = ? where id = ?";
             sql_query($sql_update,[$path,$insert]);
           }
-          //
           echo_json(["msg" => "ok"]);
       } else if($status == "Active") {
         exec_active_all(NULL,$id);
