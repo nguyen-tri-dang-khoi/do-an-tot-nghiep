@@ -270,7 +270,7 @@
                       </div>
                       <div class="mb-3 col-12 d-flex j-between" style="padding-left:0;padding-right:0;">
                         <div class="">
-                          <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button>
+                          <!-- <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button> -->
                           <?php
                             if($allow_read) {
                           ?>
@@ -337,7 +337,7 @@
                                 ?>
                                 <button class="btn-xem-hoa-don dt-button button-grey"
                                 data-id="<?=$row["o_id"];?>" >
-                                Xem
+                                <i class="fa fa-eye" aria-hidden="true"></i>
                                 </button>
                                 <?php } ?>
                                 <?php
@@ -345,7 +345,7 @@
                                 ?>
                                   <button onclick="showModalShipOrder('<?=$row['o_id'];?>')" class="dt-button button-grey"
                                   data-id="<?=$row["o_id"];?>" >
-                                  Xác nhận vận chuyển
+                                  <i class="fas fa-shipping-fast"></i>
                                   </button>
                                 <?php } else {?>
                                   <button class="dt-button button-grey">

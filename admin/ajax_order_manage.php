@@ -173,8 +173,8 @@
         $arr = explode(",",$str_arr_upt);
         $i = 1;
         foreach($arr as $order_id) {
-            $sql_get_client_order = "select u.full_name,u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
-            c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
+            $sql_get_client_order = "select u.full_name as 'u_full_name',u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
+            u.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' and u.type = 'customer' limit 1";
             $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
             $client_order = fetch(sql_query($sql_get_client_order));
             $detail_order = fetch_all(sql_query($sql_get_detail_order));
@@ -186,7 +186,7 @@
                 <table class="table table-bordered">
                     <tr>
                         <th>Họ tên:</th>
-                        <td><?=$client_order['full_name'];?></td>
+                        <td><?=$client_order['u_full_name'];?></td>
                     </tr>
                     <tr>
                         <th>Email: </th>
@@ -236,7 +236,7 @@
                     </tr>
                     <tr>
                         <th>Ngày tạo</th>
-                        <td><?=$client_order['o_created_at']?></td>
+                        <td><?=Date('d-m-Y h:i:s',strtotime($client_order['o_created_at']))?></td>
                     </tr>
                 </table>
             </div>
@@ -307,7 +307,7 @@
     $sql_get_shipper = "select * from user where type = 'shipper' and is_delete = 0";
     //
     $sql_get_client_order = "select u.full_name,u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
-    c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
+    u.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
     $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
     $client_order = fetch(sql_query($sql_get_client_order));
     $detail_order = fetch_all(sql_query($sql_get_detail_order));
@@ -337,7 +337,7 @@
                     </tr>
                     <tr>
                         <th>Địa chỉ:</th>
-                        <td><?=$client_order['c_address'];?></td>
+                        <td><?=$client_order['u_address'];?></td>
                     </tr>
                     
                 </table>
@@ -377,7 +377,7 @@
                     </tr>
                     <tr>
                         <th>Ngày tạo</th>
-                        <td><?=$client_order['o_created_at']?></td>
+                        <td><?=Date("d-m-Y h:i:s",strtotime($client_order['o_created_at']));?></td>
                     </tr>
                 </table>
             </div>
