@@ -5,7 +5,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php include_once ('include/head.php'); ?>
-<body>
+<body>.
+    <style>
+        .rate-yellow2 {
+            color:#ffc107;
+        }
+    </style>
     <script src="slick-master/slickcustom.js"></script>
     <?php include_once ('include/menu.php');?>
     <script>
@@ -48,12 +53,17 @@
         $order_by = $changeSortt;
     }
     $conn = connect();
-
+    
+    //print_r($str_get);
+    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
+    $limit = 8;
+    $start_page = $limit * ($page - 1);
     $sql_get_count = "select count(*) as 'countt' from product_info where $where limit 1";
     $result = mysqli_query($conn, $sql_get_count);
     $row2 = mysqli_fetch_assoc($result);
-    
-    
+    $total = $row2['countt'];
+    unset($_GET['page']);
+    $str_get = http_build_query($_GET);
 ?>
 <script>
     $('.title_producer').click(function() {
@@ -169,11 +179,27 @@
                             </select>
                         </div>
                     </div>
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <!-- <li class="page-item"><a class="page-link" href="#" tabindex="-1"><<</a></li> -->
+                            <?php
+                                $pagination = ceil($total / $limit) + 1; 
+                                for($i = 1 ; $i < $pagination ; $i++) {
+                            ?>
+                                    <li class="page-item <?=$i == $page ? 'active' : '';?>"><a class="page-link" href="Products.php?page=<?php echo $i;?>&<?php echo $str_get;?>"><?php echo $i;?></a></li>
+                            <?php
+                                }
+                            ?>
+                            <!-- <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li> -->
+                            <!-- <li class="page-item"><a class="page-link" href="#">>></a></li> -->
+                        </ul>
+                    </nav>
                     </form>
                     <div class="sortss_product">
                     <?php 
                     $conn = connect();
-                    $get_data_product = "SELECT * FROM product_info WHERE $where $order_by";
+                    $get_data_product = "SELECT * FROM product_info WHERE $where limit $start_page,$limit $order_by";
                     $result = mysqli_query($conn, $get_data_product);
                     
                     if(mysqli_num_rows($result) > 0){
@@ -215,14 +241,39 @@
                             </div> 
                             <div class="bottom_rate">
                                 <div class="rate-star">
-                                    <?php //echo $row["rate"]; ?>
+                                    <?php
+                                        $id_load_rate = $row['id'];
+                                        $sql_load_rate = "select count(rate) as 'cnt_rate', avg(rate) as 'avg_rate' from product_comment where product_info_id = $id_load_rate and is_delete like 0 and is_active like 1 limit 1";
+                                        $result_load_rate = mysqli_query($conn,$sql_load_rate);
+                                        $row_load_rate = mysqli_fetch_array($result_load_rate);
+                                        for($j = 0 ; $j < round($row_load_rate['avg_rate']) ; $j++) {
+                                    ?>
+                                            <i class="fa-solid fa-star rate-yellow2"></i>
+                                    <?php
+                                        }
+                                        if(round($row_load_rate['avg_rate']) > 0 ){
+                                        for($j = 0 ; $j < 5 - round($row_load_rate['avg_rate']) ; $j++) {
+                                    ?>
+                                            <i class="fa-solid fa-star"></i>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                    <!-- <i class="fa-solid fa-star"></i>
                                     <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i> -->
                                 </div> 
-                                <div class="rate-text">0 đánh giá</div>
+                                <?php
+                                    if($row_load_rate['cnt_rate'] > 0) {
+                                ?>
+                                    <div class="rate-text"><?php echo $row_load_rate['cnt_rate'];?> đánh giá</div>
+                                <?php
+                                    } else {
+                                ?>
+                                    <div class="rate-text">Chưa có đánh giá</div>
+                                <?php
+                                    }
+                                ?>
                             </div> 
                             <div class="bottom_price">
                                 <?php

@@ -83,13 +83,38 @@
                         <h3 style="color: #005ec4;"><?php echo $row["name"]; ?></h3>
                         <div class="d-flex justify-content-between mb-4">
                             <div>
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i> 
-                                <i class="fas fa-star "></i>
-                                <span> 0 đánh giá</span>
+                                <?php
+                                    $sql_average_rate = "select product_info_id,avg(rate) as 'avg_rate',count(rate) as 'cnt_rate' from product_comment where product_info_id = '$id' and is_delete like 0 and is_active like 1 group by product_info_id";
+                                    $rates = mysqli_query($conn,$sql_average_rate);
+                                    $rate = mysqli_fetch_array($rates);
+                                    for($i = 0 ; $i < round($rate['avg_rate']) ; $i++) {
+                                ?>
+                                        <i class="fas fa-star rate-yellow2"></i> 
+                                <?php
+                                    }
+                                    if($rate['avg_rate'] > 0) {
+                                    for($i = 0 ; $i < 5 - round($rate['avg_rate']) ; $i++) {
+                                ?>
+                                        <i class="fas fa-star "></i>
+                                <?php
+                                        }
+                                    } else {
+                                        echo '';
+                                    }
+                                ?>
+                                <?php
+                                if($rate['cnt_rate'] == 0) {
+                                ?>
+                                        <span>Chưa có đánh giá</span>
+                                <?php
+                                    } else {
+                                ?>  
+                                        <span><?php echo $rate['cnt_rate'];?> đánh giá</span>
+                                <?php
+                                    }
+                                ?>
                             </div>
+                            
                             <span>Bảo Hành 24 Tháng</span>
                         </div>
                         <div>
@@ -125,7 +150,7 @@
                             <div>
                                 <span>Số lượng </span>
                                 <div class="change_product">
-                                    <div style="cursor:pointer;"><span onclick="changeCountInputCart('-')">-</span><input name="count" readonly="" type="text" value="1"> <span onclick="changeCountInputCart('+')">+</span></div>
+                                    <div style="cursor:pointer;"><span onclick="changeCountInputCart('-')">-</span><input name="count" min="1" max="<?php echo $row['count'];?>" readonly="" type="text" value="1"> <span onclick="changeCountInputCart('+')">+</span></div>
                                 </div>
                             </div>
                         </div>

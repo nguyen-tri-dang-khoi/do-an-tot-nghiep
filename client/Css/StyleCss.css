@@ -1531,13 +1531,14 @@ td {
 
 .sortss .sortss_product .product {
     border: 1px solid grey;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    margin-right: 5PX ;
     width: 24%;
 }
 
 .sortss .sortss_product {
     display: flex;
-    justify-content: space-between;
+    justify-content:  flex-start;
     flex-wrap: wrap;
 }
 

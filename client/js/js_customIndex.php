@@ -263,6 +263,10 @@
         let name = $(event.currentTarget).attr('data-name');
         let price = $(event.currentTarget).attr('data-price');
         let img = $(event.currentTarget).attr('data-img');
+        if(count <= 0) {
+            $('#exampleModal').modal('show');
+            return;  
+        }
         $.ajax({
             url: `cart_ok.php`,
             type: "POST",
@@ -276,6 +280,9 @@
             },
             success: function(data) {
                 console.log(data);
+                if(data.msg == "out_of_stock") {
+                    return;
+                }
                 $('#exampleModal').modal('show');
             }
         });

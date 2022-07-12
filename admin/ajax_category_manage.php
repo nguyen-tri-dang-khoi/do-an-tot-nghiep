@@ -74,7 +74,7 @@
 <?php
     } if($status == "Read") {
         if($id) {
-            $sql = "select id, name, created_at from product_type where is_delete = 0 and id = '$id'";
+            $sql = "select id, name,img_name, created_at from product_type where is_delete = 0 and id = '$id'";
             $result = fetch(sql_query($sql));
 ?>
 <div class="card-body">
@@ -82,6 +82,12 @@
         <tr>
             <th>Tên danh mục: </th>
             <td><?=$result['name'];?></td>
+        </tr>
+        <tr>
+            <th>Ảnh danh mục: </th>
+            <td>
+                <img width='200' height='200' src='../admin/<?=$result['img_name'];?>'>
+            </td>
         </tr>
         <tr>
             <th>Ngày thêm: </th>
@@ -94,13 +100,14 @@
     }
     if($status == "read_more") {
         $str_arr_upt = isset($_REQUEST['str_arr_upt']) ? $_REQUEST['str_arr_upt'] : null;
-        $sql = "select * from product_type where id in ($str_arr_upt)";
+        $sql = "select * from product_type where id in ($str_arr_upt) and is_delete = 0";
         $result = fetch_all(sql_query($sql));
         $tbody = "";
         $i = 1;
         foreach($result as $res) {
             $_name = $res['name'];
             $_created_at = $res['created_at'] ? Date("d-m-Y H:i:s",strtotime($res['created_at'])) : "";
+            $_img_name = $res['img_name'];
             $tbody .= "
                 <tbody style='display:none;' class='t-bd-read t-bd-read-$i'>
                     <tr>
@@ -108,9 +115,16 @@
                         <td>$_name</td>
                     </tr>
                     <tr>
+                        <th>Ảnh danh mục: </th>
+                        <td>
+                            <img width='200' height='200' src='../admin/$_img_name'>
+                        </td>
+                    </tr>
+                    <tr>
                         <th>Ngày thêm: </th>
                         <td>$_created_at</td>
                     </tr>
+                    
                 </tbody>
             ";
             $i++;
