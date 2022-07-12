@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <?php include_once ('include/head.php'); ?>
-<body>.
+<body>
     <style>
         .rate-yellow2 {
             color:#ffc107;

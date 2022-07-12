@@ -60,8 +60,9 @@
         }
         $sql_update_total = "Update orders set total = '$total' where id = $id";
         mysqli_query($conn,$sql_update_total);
-        echo json_encode(["msg" => "ok"]);
-        exit();
+        // echo json_encode(["msg" => "ok"]);
+        // exit();
+        header("Location:form_info_customer.php");
     } else if($thao_tac == "cap_nhat_thanh_toan_thanh_cong") {
         $sql_upt_payment_status = "Update orders set payment_status_id = 1 where id = '$order_id'";
         mysqli_query($conn,$sql_upt_payment_status);
