@@ -54,7 +54,7 @@
             <?php
                 $_SESSION['login_error'] = "";
             ?>
-            <a href="forgive_password.php">Quên mật khẩu?</a>
+            <a href="reset_password.php">Quên mật khẩu?</a>
             <button type="submit">Đăng nhập</button>
         </form>
     </div>
