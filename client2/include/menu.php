@@ -8,7 +8,7 @@
         <div class="col-10 m-auto">
             <div class="headerTop__infoCompany d-flex">
                 <p class="# ">
-                    Hotline : (024) 3628.8790 - (086) 830.2123 • Email: cskh@tncstore.vn
+                    Hotline : (033) 713 1246 / (070) 732 7857 • Email: huykhoitnc@gmail.com .
                 </p>
             </div>
         </div>
