@@ -1,7 +1,6 @@
 <?php
     include_once 'db.php';
     $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
-    
     if(isset($_SESSION['forgive_password'])) {
         $email = encrypt_decrypt($_SESSION['forgive_password']['forgive_password_token'],'decrypt');
         if($_SERVER['REQUEST_METHOD'] == "POST") {

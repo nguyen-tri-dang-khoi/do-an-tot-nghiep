@@ -13,7 +13,18 @@
         </script>";
         include_once 'change_password.php';
     } else {
-        header("Location:Login_signup.php");
+        echo "
+        <script>
+            $.alert({
+                title: 'Thông báo',
+                content: 'Token này đã hết hạn',
+                buttons: {
+                    'Ok':function(){
+                        location.href='reset_password.php';
+                    }
+                }
+            })
+        </script>";
     }
     
 ?>

@@ -40,7 +40,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         exit();
     }
 
-    // xu ly mail
+    // xu ly gui mail
     $token_auth = encrypt_decrypt($email,'encrypt');
     $_SESSION['forgive_password'] = 
     [
