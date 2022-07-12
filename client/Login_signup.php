@@ -100,6 +100,7 @@
                 $('#login_email_err').text("Email không đúng đinh dạng");
                 test = false;
             } 
+            
             if(password == ""){
                 $('#login_password_err').text("Vui lòng không để trống mật khẩu");
                 test = false;

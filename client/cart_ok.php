@@ -1,37 +1,32 @@
 <?php
     include_once("../lib/database.php");
-    if(!isset($_SESSION['cart'])) {
-        $_SESSION['cart'] = [];
-    }
-    $status = isset($_REQUEST['status']) ? $_REQUEST['status'] : null;
-    $pi_id = isset($_REQUEST['pi_id']) ? $_REQUEST['pi_id'] : null;
-    $pi_image = isset($_REQUEST['pi_image']) ? $_REQUEST['pi_image'] : null;
-    $pi_name = isset($_REQUEST['pi_name']) ? $_REQUEST['pi_name'] : null;
-    $pi_count = isset($_REQUEST['pi_count']) ? $_REQUEST['pi_count'] : null;
-    $pi_price = isset($_REQUEST['pi_price']) ? $_REQUEST['pi_price'] : null;
-    $success = "Success";
-    if($status == "Insert") {
-        $test = true;
-        $row = ['pi_id' => $pi_id,'pi_name' => $pi_name,'pi_image' => $pi_image,'pi_count' => $pi_count,'pi_price' => $pi_price];
-        for($i = 0 ; $i < count($_SESSION['cart']) ; $i++) {
-            if($pi_id == $_SESSION['cart'][$i]['pi_id']) {
-                $_SESSION['cart'][$i]['pi_count'] += $pi_count;
-                $test = false;
-                break;
+    $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null; 
+    $count = isset($_REQUEST['count']) ? $_REQUEST['count'] : null;
+    $img = isset($_REQUEST['img']) ? $_REQUEST['img'] : null;
+    $price = isset($_REQUEST['price']) ? $_REQUEST['price'] : null;
+    $name = isset($_REQUEST['name']) ? $_REQUEST['name'] : null;
+    $thao_tac = isset($_REQUEST['thao_tac']) ? $_REQUEST['thao_tac'] : null;
+    $_SESSION['cart'] = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+
+    if($thao_tac == 'addCart') {
+        if(isset($_SESSION['cart']))
+        {
+            if(isset($_SESSION['cart'][$id])){
+                $_SESSION['cart'][$id]['count'] += $count;
+            }
+            else
+            {
+                $_SESSION['cart'][$id] = ['count' => $count,'price' => $price,'name' => $name,'img' => $img];
             }
         }
-        if($test) {
-            array_push($_SESSION['cart'],$row);
-        }
-    } else if($status == "Update") {
-        $row = ['pi_id' => $pi_id,'pi_count' => $pi_count];
-        $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
-        $_SESSION['cart'][$index]['pi_count'] = $pi_count;
-    } else if($status == "Delete") {
-        $index = isset($_REQUEST['index']) ? $_REQUEST['index'] : null;
-        unset($_SESSION['cart'][$index]);
-    } else if($status == 'cart_cancel') {
-        $_SESSION['cart'] = [];
+    } else if($thao_tac == 'updateInfoCart') {
+        $_SESSION['cart'][$id]['count'] = $count;
+    } else if($thao_tac == 'deleteCart') {
+        unset($_SESSION['cart'][$id]);
+    } else if($thao_tac == 'loadCart') {
+        echo_json(['msg' => 'ok','cart' => $_SESSION['cart']]);
+    } else if($thao_tac == 'deleteAllCart') {
+        unset($_SESSION['cart']);
     }
-    echo_json(['msg' => 'ok','success' => $success]);
+    echo_json(['msg' => 'ok','cart' => $_SESSION['cart']]);
 ?>

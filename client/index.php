@@ -1,187 +1,269 @@
-<?php
-    include_once("../lib/database.php");
-    if(is_get_method()) {
-        include_once("include/head.meta.php");
-		include_once("include/menu.php");
-        // code to be executed get method
-		$where = "where 1=1 and pi.is_delete = 0";
-		//$sql = "select * from product_info pi left join product_type pt on pi.product_info_id = pt. where pi.product_type_id = 130";
-		//$result = db_query($sql);
-		$sql = "select * from product_type where parent_id is null and is_delete = 0";
-		$results = db_query($sql);
-		//log_v(find_branch_by_root(128));
+<?php 
+    include_once 'db.php';
+    //session_start();
+?>
 
-?>
-<!--html & css section start-->
-<div role="main" class="main shop pt-4">
-	<section class="">
-		<div class="container">
-			
-		</div>
-	</section>
-	<div class="container">
-		<?php
-			foreach($results as $result) {
-				$type_id = find_branch_by_root($result['id']);
-				$sql = "select * from product_info where product_type_id = '$type_id' and is_delete = 0";
-				$result2 = db_query($sql);
-		?>
-		<div class="j-between row page-header page-header-modern page-header-md ptb-0 mb-10 kh-header-title">
-			<div class="col-md-6 order-2 order-md-1 align-self-center p-static">
-				<h2 class="mb-0 kh-h2-tag"><?=$result['name']?></h2>
-			</div>
-			<div class="d-flex col-md-6 order-1 order-md-2 align-self-center j-between">
-				<div></div>
-				<div class="j-end">
-					<button type="button" class="kh-btn kh-btn-pt">Samsung</button>
-					<button type="button" class="kh-btn kh-btn-pt">Nokia</button>
-					<button type="button" class="kh-btn kh-btn-pt">Lenovo</button>
-				</div>
-			</div>
-		</div>
-		<div class="masonry-loader mb-40 kh-list-product">
-			<div class="row products product-thumb-info-list" data-plugin-masonry data-plugin-options="{'layoutMode': 'fitRows'}">
-				<?php 
-					foreach($result2 as $res) {
-				?>
-					<div class="col-12 col-sm-6 col-lg-3">
-						<div class="product mb-0">
-							<div class="product-thumb-info border-0 mb-3">
-								<div class="product-thumb-info-badges-wrapper">
-									<span class="badge badge-ecommerce badge-success"></span>
-								</div>
-								<div class="addtocart-btn-wrapper">
-									<a href="#" class="text-decoration-none addtocart-btn" title="Thêm vào giỏ hàng">
-										<i class="icons icon-bag"></i>
-									</a>
-								</div>
-								<!--<a href="ajax/shop-product-quick-view.html" class="quick-view text-uppercase font-weight-semibold text-2">
-									QUICK VIEW
-								</a>-->
-								<a href="product_detail.php?id=<?=$res['id']?>">
-									<div class="product-thumb-info-image">
-										<img style="" alt="" class="img-fluid" src='<?="../admin/" . $res['img_name'];?>'>
-									</div>
-								</a>
-							</div>
-							<div class="d-flex justify-content-between">
-								<div>
-									<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">electronics</a>
-									<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="product_detail.php?id=<?=$res['id']?>" class="text-color-dark text-color-hover-primary"><?=$res['name'];?></a></h3>
-								</div>
-								<a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="far fa-heart"></i></a>
-							</div>
-							<div title="Rated 5 out of 5">
-								<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
-							</div>
-							<p class="price text-5 mb-3">
-								<!--<span class="sale text-color-dark font-weight-semi-bold"></span>-->
-								<span class="amount"><?=number_format($res['price'],0,"",".")?> VNĐ</span>
-							</p>
-						</div>
-					</div>
-				<?php 
-					}
-				?>
-			</div>
-			<div class="row mt-4">
-				<div class="col">
-					<ul class="pagination float-end">
-						<li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-						<li class="page-item active"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-		<?php
-			}
-		?>
-		<!--<div class="j-between row page-header page-header-modern page-header-md ptb-0 mb-10 kh-header-title">
-			<div class="col-md-6 order-2 order-md-1 align-self-center p-static">
-				<h2 class="mb-0 kh-h2-tag">Điện thoại</h2>
-			</div>
-			<div class="d-flex col-md-6 order-1 order-md-2 align-self-center j-between">
-				<div></div>
-				<div class="j-end">
-					<button type="button" class="kh-btn kh-btn-pt">Samsung</button>
-					<button type="button" class="kh-btn kh-btn-pt">Nokia</button>
-					<button type="button" class="kh-btn kh-btn-pt">Lenovo</button>
-				</div>
-			</div>
-		</div>
-		<div class="masonry-loader masonry-loader-showing mb-40 kh-list-product">
-			<div class="row products product-thumb-info-list" data-plugin-masonry data-plugin-options="{'layoutMode': 'fitRows'}">
-				<div class="col-12 col-sm-6 col-lg-3">
-					<div class="product mb-0">
-						<div class="product-thumb-info border-0 mb-3">
-							<div class="product-thumb-info-badges-wrapper">
-								<span class="badge badge-ecommerce badge-success">fsfefwe</span>
-							</div>
-							<div class="addtocart-btn-wrapper">
-								<a href="shop-cart.html" class="text-decoration-none addtocart-btn" title="Add to Cart">
-									<i class="icons icon-bag"></i>
-								</a>
-							</div>
-							<a href="ajax/shop-product-quick-view.html" class="quick-view text-uppercase font-weight-semibold text-2">
-								QUICK VIEW
-							</a>
-							<a href="shop-product-sidebar-left.html">
-								<div class="product-thumb-info-image">
-									<img alt="" class="img-fluid" src="img/products/product-grey-1.jpg">
-								</div>
-							</a>
-						</div>
-						<div class="d-flex justify-content-between">
-							<div>
-								<a href="#" class="d-block text-uppercase text-decoration-none text-color-default text-color-hover-primary line-height-1 text-0 mb-1">electronics</a>
-								<h3 class="text-3-5 font-weight-medium font-alternative text-transform-none line-height-3 mb-0"><a href="shop-product-sidebar-right.html" class="text-color-dark text-color-hover-primary">Photo Camera</a></h3>
-							</div>
-							<a href="#" class="text-decoration-none text-color-default text-color-hover-dark text-4"><i class="far fa-heart"></i></a>
-						</div>
-						<div title="Rated 5 out of 5">
-							<input type="text" class="d-none" value="5" title="" data-plugin-star-rating data-plugin-options="{'displayOnly': true, 'color': 'default', 'size':'xs'}">
-						</div>
-						<p class="price text-5 mb-3">
-							<span class="sale text-color-dark font-weight-semi-bold">$69,00</span>
-							<span class="amount">$59,00</span>
-						</p>
-					</div>
-				</div>
-			</div>
-			<div class="row mt-4">
-				<div class="col">
-					<ul class="pagination float-end">
-						<li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
-						<li class="page-item active"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
-					</ul>
-				</div>
-			</div>
-		</div>-->
-	</div>
-</div>
-<!--html & css section end-->
+<!DOCTYPE html>
+<html lang="en">
+<?php include_once ('include/head.php'); ?>
+<body>
+    <script src="slick-master/slickcustom.js"></script>
+    <?php include_once ('include/menu.php');?>
 
-<?php
-        include_once("include/footer.php");
-?>
-<?php
-        include_once("include/bottom.meta.php");
-?>
-<!--js section start-->
 
-<!--js section end-->
-<?php
-        include_once("include/foot.php"); 
-?>
-<?php
-    } else if (is_post_method()) {
+    <div class="content container-fluid">
+        <div class="content__carousel row">
+            <div id="carouselExampleDark" class="col-10 m-auto carousel carousel-dark slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" class="active" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                </div>  
+                <div class="carousel-inner">
+                    <a href="#" class="carousel-item active" data-bs-interval="10000">
+                        <img src="Img/slide1.jpg" class="d-block w-100" alt="#">
+                        <div class="carousel-caption d-none d-md-block">
+                        </div>
+                    </a>
+                    <a href="#" class="carousel-item" data-bs-interval="2000">
+                        <img src="Img/slide3.png" class="d-block w-100" alt="#">
+                        <div class="carousel-caption d-none d-md-block">
+                        </div>
+                    </a>
+                    <a href="#" class="carousel-item">
+                        <img src="Img/slide2.png" class="d-block w-100" alt="#">
+                        <div class="carousel-caption d-none d-md-block">
+                        </div>
+                    </a>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>  
+        </div>
+        <div class="content__carousel2 row">
+            <div class="slick-carousel2 col-10 m-auto">
+                <div class="item">
+                   <a href="#"> <img src="img/slide1.jpg" alt="#"></a>
+                </div>
+                <div class="item">
+                   <a href="#"><img src="img/slide2.png" alt="#"></a> 
+                </div>
+                <div class="item">
+                   <a href="#"> <img src="img/slide3.png" alt="#"></a>
+                </div>
+                <div class="item">
+                   <a href="#"> <img src="img/slide4.jpg" alt="#"></a>
+                </div>
+                <div class="item">
+                   <a href="#"><img src="img/slide5.jpg" alt="#"></a> 
+                </div>
+                <div class="item">
+                   <a href="#"> <img src="img/slide6.png" alt="#"></a>
+                </div>
+            </div>
+        </div>
+        <div class="block__home flex-column row">
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">DANH MỤC SẢN PHẨM</span>
+            </div>
+            <div class="block--content col-10 m-auto">
+                <div class="content_collapse">
+                    <?php
+                        $conn = connect();
+                        $sql_product_type = "Select * from product_type where is_active like 1 and is_delete like 0 and parent_id is null";
+                        $result = mysqli_query($conn, $sql_product_type);
+                        if(mysqli_num_rows($result) > 0){
+                            while($row = mysqli_fetch_assoc($result)){
+                                $id2 = $row['id'];
+                                $link_href = "";
+                                $sql_check_parent_id = "select id from product_type where parent_id = '$id2'";
+                                // print_r($sql_check_parent_id);
+                                $result_id = mysqli_query($conn, $sql_check_parent_id);
+                                // neu no co con
+                                if($result_id) {
+                                    $link_href = "categoryProducts.php?id_loai_san_pham=" . $row['id'];
+                                } else {
+                                    // neu no ko co con
+                                    $link_href = "Products.php?id_loai_san_pham=" . $row['id'];
+                                }
+                    ?>
+                                <div class="collapse-items">
+                                    <a href="<?php echo $link_href; ?>">
+                                        <span><?php echo $row['name'];?></span>
+                                        <div class="shape" ></div>
+                                        <img src="<?php echo "../admin/" . $row['img_name']; ?>" alt="collapse1">
+                                    </a>
+                                </div>
+                    <?php
+                            }
+                        }
+                    ?>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="block__home flex-column row ">
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">PRO GAMING PC</span>
+            </div>
+            <!-- define get_product 🐛 ⬇⬇⬇⬇ -->
+            <div class="block--carousel slick-carousel slider col-10 m-auto ">
+                <?php get_product() ?>
+            </div>
+            <div class="block--button col-10 m-auto"> 
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=10">XEM THÊM</a></button>   
+            </div>
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">PRO DUCTIVITY</span>
+            </div>
+            <div class="block--featured col-10 m-auto">
+                <div class="featured_content">
+                    <div class="content-left">
+                        <div class="item"><a href="#"><img src="img/featured/featured1.jpg" alt="#"></a></div>
+                        <div class="item"><a href="#"><img src="img/featured/featured2.jpg" alt="#"></a></div>
+                        <div class="item"><a href="#"><img src="img/featured/featured3.jpg" alt="#"></a></div>
+                        <div class="item"><a href="#"><img src="img/featured/featured4.jpg" alt="#"></a></div>
+                    </div>
+                    <div class="content-right">
+                        <div class="item">
+                        <a href="#"><img src="img/featured/featured5.jpg" alt="#"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="block--button col-10 m-auto"> 
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=11">XEM THÊM</a></button>   
+            </div>
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">PRO CREATER</span>
+            </div>
+            <div class="block--carousel slick-carousel slider col-10 m-auto ">
+                <?php get_product()?>
+            </div>  
+            <div class="block--button col-10 m-auto"> 
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=14">XEM THÊM</a></button>   
+            </div>    
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">PRO WORKSTATION</span>
+            </div>
+            <div class="block--carousel slick-carousel slider col-10 m-auto ">
+                <?php get_product()?>
+            </div>  
+            <div class="block--button col-10 m-auto"> 
+                <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=13">XEM THÊM</a></button>   
+            </div>   
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">TNC CHANNEL</span>
+            </div>
+            <div class="block--channel col-10 m-auto">
+                <div class="channel_content ">
+                    <div class="content-left">
+                        <div class="item">
+                            <iframe src="https://www.youtube.com/embed/W6fdNkwRuLk" title="PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau 😱" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+                            </iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">PEWPEW MUA PC 27 TRIỆU Và Pha Chốt Đơn Nhanh Như HACK SPEED Tại TNC Store! - Mua PC Như Mua Rau </a>
+                        </div>
+                    </div>
+                    <div class="content-right">
+                        <div class="item">
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/c0wTzjjklMs" title="Cấu Hình PC Chơi Liên Minh Huyền Thoại 10 NĂM Của Nữ MC Minh Nghi" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">Cấu Hình PC Chơi Liên Minh Huyền Thoại "10 NĂM KHÔNG HỎNG" Của Nữ MC-Streamer Minh Nghi</a>
+                        </div>
+                        <div class="item">
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/Gd98kaAeXzA" title="[TNC Reaction] KHÁNH VY ĐI MUA PC BỊ PEWPEW "THUỐC ĐỒ NGON" TẠI TNC STORE NHƯ THẾ NÀO?" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">KHÁNH VY ĐI MUA PC BỊ PEWPEW "THUỐC ĐỒ NGON" TẠI TNC STORE NHƯ THẾ NÀO? [REACTION]</a>
+                        </div>
+                        <div class="item">
+                        <iframe width="980" height="550" src="https://www.youtube.com/embed/CeKZBe-kFfY" title="Khi Độ Mixi Đi Lượn Phố Vớ Được Hàng Khủng... Màn Hình Cực Nét Thì Stream Đến Bao Giờ??" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <a href="https://www.tncstore.vn/pewpew-mua-pc-tai-TNC-STORE.html" class="tnc__title">Khi Độ Mixi Đi Lượn Phố Vớ Được Hàng Khủng... Màn Hình Cực Nét Thì Stream Đến Bao Giờ??</a>
+                        </div>
+                    </div>
+                </div>    
+            </div>
+            <div class="block--button col-10 m-auto"> 
+                <button type="button" class="view-more">Xem thêm video</button>   
+            </div>  
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">GIỚI THIỆU VỀ TNC</span>
+            </div>
+            <div class="block--infoCompany col-10 m-auto">
+                 <div class="infoCompany_content">
+                    <div class="content-left">
+                        <h3>Nhà cung cấp linh kiện & dịch vụ máy tính, gaming số 1 miền Bắc.</h3>
+                        <p>
+                        Với đội ngũ nhân viên là những người trẻ đam mê và yêu thích về công nghệ, cùng kiến thức về IT tốt kèm với sự dày dặn kinh nghiệm, chúng tôi luôn sẵn sàng giải đáp bất cứ thắc mắc của các khách hàng một cách nhanh nhất có thể. Dù bạn không mua, chúng tôi vẫn tư vấn cho bạn.        
+                        </p>
+                    </div>
+                    <div class="content-right">
+                    <iframe width="980" height="524" src="https://www.youtube.com/embed/RQIz50OJvHU" title="SHOWREEL 2018-2021 | TNC Channel - Sẵn Sàng Chuyển Mình!" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>  
+                    </div>
+                 </div>                   
+            </div>
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">CÁC THƯƠNG HIỆU</span>
+            </div>
+            <div class="slick-carousel3 col-10 m-auto">
+                <div class="item">
+                    <a href="#"> <img src="img/local/acer.png" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"><img src="img/local/adata.png" alt="#"></a> 
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/aerocool.png" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/afox.jpg" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"><img src="img/local/akko.jpg" alt="#"></a> 
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/amd.jpg" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/antec.jpg" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/AOC.png" alt="#"></a>
+                </div>
+                <div class="item">
+                    <a href="#"> <img src="img/local/apple.jpg" alt="#"></a>
+                </div>
+            </div>
+            <div class="block--header col-10 m-auto ">
+                <span class="block--header_title">ĐÁNH GIÁ TỪ KHÁCH HÀNG</span>
+            </div>
+            <div class="slick-carousel4 col-10 m-auto">
+                    <div class=item>
+                        <img src="img/rate/1.jpg" alt="#">
+                    </div>
+                    <div class=item>
+                        <img src="img/rate/2.jpg" alt="#">
+                    </div>
+                    <div class=item>
+                        <img src="img/rate/3.jpg" alt="#">
+                    </div>
+                    <div class=item>
+                        <img src="img/rate/4.jpg" alt="#">
+                    </div>
+                    <div class=item>
+                        <img src="img/rate/5.jpg" alt="#">
+                    </div>
+            </div>
+        </div>
         
-        // code to be executed post method
-    }
-?>
+    </div>
+
+    <?php include_once ('include/footer.php'); ?>
+    <!-- <script src = '../js/toast.min.js' > </script> -->
+    <script type = "text/javascript" src = "//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"> </script>
+    <?php include_once ('js/js_customIndex.php'); ?>
+</body>
+</html>
