@@ -122,7 +122,7 @@
             <div class="block--header col-10 m-auto ">
                 <span class="block--header_title">PRO DUCTIVITY</span>
             </div>
-            <div class="block--featured col-10 m-auto">
+            <!-- <div class="block--featured col-10 m-auto">
                 <div class="featured_content">
                     <div class="content-left">
                         <div class="item"><a href="#"><img src="img/featured/featured1.jpg" alt="#"></a></div>
@@ -136,7 +136,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
+            <div class="block--carousel slick-carousel slider col-10 m-auto ">
+                <?php get_productindex(11)?>
+            </div>  
             <div class="block--button col-10 m-auto"> 
                 <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=11">XEM THÊM</a></button>   
             </div>
@@ -144,7 +147,7 @@
                 <span class="block--header_title">PRO CREATER</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <?php get_product()?>
+                <?php get_productindex(14)?>
             </div>  
             <div class="block--button col-10 m-auto"> 
                 <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=14">XEM THÊM</a></button>   
@@ -153,7 +156,7 @@
                 <span class="block--header_title">PRO WORKSTATION</span>
             </div>
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <?php get_product()?>
+                <?php get_productindex(13)?>
             </div>  
             <div class="block--button col-10 m-auto"> 
                 <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=13">XEM THÊM</a></button>   
