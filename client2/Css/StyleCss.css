@@ -1773,3 +1773,105 @@ a:-webkit-any-link {
     background-color: #005ec4;
     color: white;
 }
+
+
+/* style TNC_news */
+
+.container {
+    /* padding-top: 35px; */
+    width: 1400px;
+    margin: auto;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.a-center {
+    align-items: center;
+}
+
+.f-columns {
+    flex-direction: column;
+}
+
+.j-between {
+    justify-content: space-between;
+}
+
+.wp-70 {
+    width: 70%;
+}
+
+.st {
+    width: 50%;
+    margin-bottom: 15px;
+}
+
+.st img.img-1 {
+    width: 444px;
+}
+
+.st img.img-2 {
+    width: 155px;
+}
+
+.st-text-note {
+    font-size: 14px;
+    text-overflow: ellipsis;
+    line-height: 21px;
+    color: #000;
+}
+
+h2.st-title {
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 10px;
+}
+
+.st-img {
+    max-width: 100%;
+    margin-bottom: 15px;
+}
+
+.st-2 {
+    width: 100%;
+}
+
+.wp-30 {
+    width: 30%;
+}
+
+.mr-35 {
+    margin-right: 35px;
+}
+
+.st-2 {
+    width: 100% !important;
+}
+
+.st-2 p {
+    margin: 0px;
+}
+
+.ml-20 {
+    margin-left: 20px;
+}
+
+.st-ct {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 21px;
+    color: #000;
+    text-align: justify;
+    width: 100%;
+}
+
+.st-text {
+    text-align: justify;
+}
+
+
+/* end style TNC_news */

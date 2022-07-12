@@ -147,7 +147,7 @@
                                 <a class="nav-link " href="#"><img src="Img/coupon.png" alt="icon-sale">KHUYẾN MẠI HOT</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link ">TIN TỨC</a>
+                                <a href="TNC_news.php" class="nav-link ">TIN TỨC</a>
                             </li>
                         </ul>
                         <div class="icon--socialNetwork">
