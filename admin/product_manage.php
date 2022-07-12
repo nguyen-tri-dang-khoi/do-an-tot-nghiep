@@ -1481,8 +1481,8 @@
          if($(this).val() == "") {
             $(this).siblings("p").text("Không được để trống");
             test = false;    
-         } else if($(this).val().length > 1800){
-            $(this).siblings("p").text("Nội dung không được vượt quá 1800 ký tự");
+         } else if($(this).val().length > 10000){
+            $(this).siblings("p").text("Nội dung không được vượt quá 10.000 ký tự");
             test = false;
          } else {
             formData.append("ins_desc[]",$(this).val());
