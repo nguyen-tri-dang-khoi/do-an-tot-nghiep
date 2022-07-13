@@ -198,9 +198,6 @@
                 ?>
                 <div  class="product">                    
                     <div class="product__info">
-                        <!-- <div class="info--percent">
-                        
-                        </div> -->
                         <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                             <a href="javascript:void(0)" class="product__link">
                                 <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -224,7 +221,6 @@
                             <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                                 <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   
                             </div> 
-                            <?php //echo $row["description"] ;?>
                             <button onclick="addToCart(1)" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
                         </div>
                     </div>
