@@ -100,7 +100,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-2">
                         <div class="inner">
-                            <h3>150</h3>
+                            <h3>15</h3>
                             <p>Đơn chưa giao</p>
                         </div>
                         <div class="icon">
@@ -112,7 +112,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-3">
                         <div class="inner">
-                            <h3>150</h3>
+                            <h3>3</h3>
                             <p>Đơn đã giao</p>
                         </div>
                         <div class="icon">
@@ -125,8 +125,8 @@
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-4">
                         <div class="inner">
-                            <h3>150</h3>
-                            <p>Đơn hoãn giao</p>
+                            <h3>9</h3>
+                            <p>Đơn đang giao</p>
                         </div>
                         <div class="icon">
                             <i class="ion ion-person-add"></i>
@@ -138,7 +138,7 @@
                 <div class="col-lg-3 col-md-6 col-sm-12">
                     <div class="small-box bg-info-5">
                         <div class="inner">
-                            <h3>150</h3>
+                            <h3>2</h3>
                             <p>Đơn huỷ giao</p>
                         </div>
                         <div class="icon">
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            <div class="row kh-padding">
+            <!-- <div class="row kh-padding">
                 <div class="col-lg-6 col-sm-12">
                     <h3 style="font-weight:bold;color:#17a2b8;">Đơn chưa giao</h3>
                     <table class="table table-striped table-bordered" >
@@ -267,7 +267,7 @@
                         </tfoot>
                     </table>
                 </div>
-            </div>
+            </div> -->
         </div>
     </section>
 </div>

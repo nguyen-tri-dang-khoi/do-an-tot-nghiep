@@ -1,12 +1,7 @@
 <?php
-logout_session_timeout('shipper');
-check_shipper_access_token();
 if(strpos(get_url_current_page(),"login.php")){
     redirect_if_login_success("index.php","shipper");
-} else {
-    redirect_if_login_status_false();
-
-}?>
+} ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,9 +36,6 @@ if(strpos(get_url_current_page(),"login.php")){
             width: 100%;
             margin: 0 auto;
         }
-        /*.selected {
-            background-color: #fbebfaf7 !important;
-        }*/
         .bg-color-selected {
             background-color: #fbebfaf7 !important;
         }

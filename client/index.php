@@ -114,7 +114,7 @@
             </div>
             <!-- define get_product 🐛 ⬇⬇⬇⬇ -->
             <div class="block--carousel slick-carousel slider col-10 m-auto ">
-                <?php get_product() ?>
+                <?php get_productindex(10);?>
             </div>
             <div class="block--button col-10 m-auto"> 
                 <button type="button" class="view-more"><a href="Products.php?id_loai_san_pham=10">XEM THÊM</a></button>   

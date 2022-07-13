@@ -129,16 +129,16 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
                 } 
 
             function get_productindex($id_category){
-                    $conn = connect();
-                    $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1) and product_type_id like $id_category";
-                    $result = mysqli_query($conn, $getDataProduct);
+                $conn = connect();
+                $getDataProduct = "SELECT * FROM product_info  WHERE (is_delete like 0 and is_active like 1) and product_type_id like $id_category";
+                $result = mysqli_query($conn, $getDataProduct);
                     
                     if(mysqli_num_rows($result) > 0){
                         //out put data in whike loop, or out "Không có sản phẩm "
                         
                         while($row = mysqli_fetch_assoc($result)){
             ?>
-            <div  class="product">                    
+            <div class="product">                    
                 <div class="product__info">
                     <div class="info--percent">
                     <span>
@@ -156,14 +156,41 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
                         </div> 
                         <div class="bottom_rate" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                             <div class="rate-star">
-                                <?php //echo $row["rate"]; ?>
+                                <?php 
+                                    $id_product = $row['id'];
+                                    $sql_rate = "Select avg(rate) as 'avg_rate',count(rate) as 'cnt_rate' from product_comment where id = $id_product and is_active like 1 and is_delete like 0";
+                                    $result_rate = mysqli_query($conn,$sql_rate);
+                                    $row_rate = mysqli_fetch_array($result_rate);
+                                ?>
+                                <?php
+                                    for($i = 0 ; $i < round($row_rate['avg_rate']) ; $i++) {
+                                ?>
+                                        <i class="fa-solid fa-star" style="color:#ffc107;"></i>
+                                <?php
+                                    }
+                                    if($row_rate['avg_rate'] > 0){
+                                    for($i = 0 ; $i < 5 - round($row_rate['avg_rate']) ; $i++) {
+                                ?>
+                                        <i class="fa-solid fa-star"></i>
+                                <?php
+                                        }
+                                    }
+                                ?>
+                                <!-- <i class="fa-solid fa-star"></i>
                                 <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i> -->
                             </div>
-                            <div class="rate-text">0 đánh giá</div> 
+                            <?php
+                                if($row_rate['cnt_rate'] > 0){
+                            ?>
+                            <div class="rate-text"><?php echo $row_rate['cnt_rate'];?> đánh giá</div> 
+                            <?php
+                                } else {
+                            ?>  
+                            <div class="rate-text">Chưa có đánh giá</div> 
+                            <?php
+                                }
+                            ?>  
                         </div> 
                         <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                             <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   

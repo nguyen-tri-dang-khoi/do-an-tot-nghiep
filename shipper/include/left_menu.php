@@ -174,7 +174,7 @@
                 <hr style="background-color:#d9585c;">
                 <div class=" d-flex a-center">
                     <div class="image">
-                        <img style="border-radius:50%;width:40px;height:40px;" src=<?=$_SESSION["shipper_img_name"] ? "../admin/".$_SESSION["shipper_img_name"] : "upload/image.png";?> class="img-circle elevation-2" alt="">
+                        <img style="border-radius:50%;width:40px;height:40px;" src=<?=$_SESSION["shipper_img_name"] ? "../admin/".$_SESSION["shipper_img_name"] : "../admin/upload/image.png";?> class="img-circle elevation-2" alt="">
                     </div>
                     <h5 class="kh-title ml-10" style="margin-right:0px;margin-bottom:0px;"><?=$result['email']?></h5>
                 </div>
