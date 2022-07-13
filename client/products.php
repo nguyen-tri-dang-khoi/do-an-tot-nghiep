@@ -207,29 +207,7 @@
                 ?>
                 <div class="product">                    
                     <div class="product__info">
-                        <?php
-                            $row_discount = "";
-                            $sql_check_product_type = "";
-                            if($row) {
-                              $product_type_id = $row['product_type_id'];
-                              $sql_check_product_type = "select * from product_type_discount where product_type_discount.product_type_id = '$product_type_id' and is_delete like 0 and is_active like 1 limit 1";
-                              $result_discount = mysqli_query($conn, $sql_check_product_type);
-                              $row_discount = mysqli_fetch_array($result_discount);
-                            } else if($keyword) {
-
-                            }
-                        ?>
-                        <?php
-                            if($row_discount != ""){
-                        ?>
-                                <div class="info--percent">
-                                    <span><?php echo "-".$row_discount['discount_percent']."%"; ?></span>
-                                </div>
-                        <?php
-                            } else {
-                                echo "";
-                            }
-                        ?>
+                        
                         <div class="info--thumb">
                             <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link">
                                 <img src="<?php echo "../admin/".$row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -276,24 +254,8 @@
                                 ?>
                             </div> 
                             <div class="bottom_price">
-                                <?php
-                                    if($row_discount != "") {
-                                ?>
-                                <span class="price-selling"><?php echo number_format($row["price"] * (100 - $row_discount['discount_percent']) / 100,0,'.','.'). "đ";?></span> 
-                                <?php
-                                    } else {
-                                ?>
-                                <span class="price-selling"><?php echo number_format($row["price"] * (100) / 100,0,'.','.'). "đ";?></span> 
-                                <?php
-                                    }
-                                ?>
-                                <?php
-                                    if($row_discount != "") {
-                                ?>
-                                <span class="price-root" name="price"><?php echo number_format($row["price"],0,'.','.'). "đ";?></span>
-                                <?php
-                                    }
-                                ?>
+                                <span class="price-selling"><?php echo number_format($row["price"],0,'.','.'). "đ";?></span> 
+                               
                             </div> 
                             <?php //echo $row["description"] ;?>
                             <button onclick="addToCart()" type="button" data-img="<?php echo $row["img_name"];?>" class="add-to-cart" data-name="<?php echo $row["name"];?>" data-price="<?php echo $row["price"];?>" data-id="<?php echo $row['id'] ?>">Mua ngay</button>
