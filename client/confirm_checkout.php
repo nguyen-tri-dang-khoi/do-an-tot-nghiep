@@ -82,7 +82,7 @@
                     <p id="phone_err" class="text-danger"></p>
                 </div>
                 <div class="col-12 m-auto  mt-2 p-0 ">
-                    <label for="inputAddress" class="form-label">Địa chỉ</label>
+                    <label for="inputAddress" class="form-label">Địa chỉ giao hàng</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
                     <p id="address_err" class="text-danger"></p>
                 </div>

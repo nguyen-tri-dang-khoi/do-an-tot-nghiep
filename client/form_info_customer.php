@@ -23,7 +23,7 @@
     ?>
             <div class="col-10 m-auto p-0 mt-0 mb-4 row d-flex">
                 <form action="form_info_customer_process.php" method="post" onsubmit="return validate()" class="row d-flex col-6 mt-4 m-auto p-0">
-                    <h3 class="p-0">Thông tin khách hàng</h3>    
+                    <h3 class="p-0">Thông tin cá nhân</h3>    
                     <div class="col-12 mb-1 m-auto p-0">
                         <label for="full_name2" class="form-label">Họ và Tên</label>
                         <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
@@ -39,13 +39,13 @@
                         <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
                         <p id="phone_err" class="text-danger"></p>
                     </div>
-                    <div class="col-md-12 mb-1  m-auto p-0">
+                    <!-- <div class="col-md-12 mb-1  m-auto p-0">
                         <label for="inputcontact" class="form-label">Giới tính</label>
                         <form>
                             <input type="checkbox" name="vehicle1" value="Female"> Female<br>
                             <input type="checkbox" name="vehicle2" value="male"> male
                         </form> 
-                    </div>
+                    </div> -->
                     <!-- <div class="col-md-12 mb-1  m-auto p-0">
                         <label for="inputcontact" class="form-label">Ngày sinh</label>
                         <form>

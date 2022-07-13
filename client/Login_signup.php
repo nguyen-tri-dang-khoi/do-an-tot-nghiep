@@ -33,6 +33,12 @@
             <span id="register_full_name_err" class="text-danger"></span>
             <input type="email" id="register_email" name="email" placeholder="Email" />
             <span id="register_email_err" class="text-danger"></span>
+            <input name="phone" type="text" value="<?php //echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
+            <span id="register_email_err" class="text-danger"></span> 
+            <!-- ////nhớ xem lại  -->
+            <input type="date" id="register_email" name="email" placeholder="Ngày sinh" />
+            <span id="register_email_err" class="text-danger"></span> 
+            <!-- /// nhớ xem lại -->
             <input type="password" id="register_password" name="password" placeholder="Mật Khẩu" />
             <span id="register_password_err" class="text-danger"></span>
             <input type="hidden" name="thao_tac" value="SignUp">
