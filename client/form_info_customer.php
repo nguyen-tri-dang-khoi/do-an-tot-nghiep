@@ -40,10 +40,19 @@
                         <p id="phone_err" class="text-danger"></p>
                     </div>
                     <div class="col-md-12 mb-1  m-auto p-0">
-                        <label for="inputcontact" class="form-label">Ngày sinh</label>
-                        <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
-                        <p id="phone_err" class="text-danger"></p>
+                        <label for="inputcontact" class="form-label">Giới tính</label>
+                        <form>
+                            <input type="checkbox" name="vehicle1" value="Female"> Female<br>
+                            <input type="checkbox" name="vehicle2" value="male"> male
+                        </form> 
                     </div>
+                    <!-- <div class="col-md-12 mb-1  m-auto p-0">
+                        <label for="inputcontact" class="form-label">Ngày sinh</label>
+                        <form>
+                            <input type="checkbox" name="vehicle1" value="Female"> Female<br>
+                            <input type="checkbox" name="vehicle2" value="male"> male
+                        </form> 
+                    </div> -->
                     <div class="col-12 m-auto mb-1 p-0">
                         <label for="inputAddress" class="form-label">Địa chỉ</label>
                         <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
