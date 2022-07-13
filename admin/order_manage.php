@@ -160,8 +160,6 @@
                                 <select onchange="choose_type_search()" class="form-control" name="search_option2">
                                     <option value="">Bộ lọc tìm kiếm</option>
                                     <option value="keyword">Từ khoá</option>
-                                    <option value="payment_status_id2">Tình trạng thanh toán</option>
-                                    <option value="payment_method2">Phương thức thanh toán</option>
                                     <option value="total2">Khoảng tổng tiền</option>
                                     <option value="date2">Ngày tạo đơn hàng</option>
                                     <option value="all2">Tất cả</option>
@@ -223,13 +221,6 @@
                                 </div>
                               </div>
                               <input type="hidden" name="is_search" value="true">
-                              <div id="s-payment_status_id2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
-                                <select name="select_payment_status_id" class="form-control">
-                                  <option value="">Tình trạng thanh toán</option>
-                                  <option value="payment_completed" <?=$select_payment_status_id == 'payment_completed' ? 'selected="selected"' : '' ?>>Đã thanh toán</option>
-                                  <option value="payment_not_completed" <?=$select_payment_status_id == 'payment_not_completed' ? 'selected="selected"' : '' ?>>Chưa thanh toán</option>
-                                </select>
-                              </div>
                               <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
                                 <select name="select_payment_method" class="form-control">
                                   <option value="">Phương thức thanh toán</option>
@@ -242,34 +233,14 @@
                                   <?php } ?>
                                   <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
                                 </select>
-                              </div>
+                              </div> -->
                               <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
                               <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
-                            </div>
-                            <div class="col-12" style="padding-left:0;padding-right:0;display:flex;margin-top:15px;">
-                              <div style="" class="form-group row" style="flex-direction:row;align-items:center;">
-                                <!--<label for="">Sắp xếp:</label>-->
-                                <select name="orderByColumn" class="ml-10 form-control col-5">
-                                  <option value="">Sắp xếp theo cột</option>
-                                  <option value="orders_code" <?=$orderByColumn == "orders_code" ? "selected" : "";?>>Mã hoá đơn</option>
-                                  <option value="full_name" <?=$orderByColumn == "full_name" ? "selected" : "";?>>Tên khách hàng</option>
-                                  <option value="o.address" <?=$orderByColumn == "o.address" ? "selected" : "";?>>Địa chỉ nhận hàng</option>
-                                  <option value="o.total" <?=$orderByColumn == "o.total" ? "selected" : "";?>>Tổng tiền</option>
-                                  <option value="o.payment_status_id" <?=$orderByColumn == "o.payment_status_id" ? "selected" : "";?>>Tình trạng thanh toán</option>
-                                  <option value="o.created_at" <?=$orderByColumn == "o.created_at" ? "selected" : "";?>>Ngày tạo kiện hàng</option>
-                                </select>
-                                <select name="orderStatus" class="ml-10 form-control col-5">
-                                  <option value="">Thao tác sắp xếp</option>
-                                  <option value="asc" <?=$orderStatus == "asc" ? "selected" : "";?>>Tăng dần (a - z) (1 - 9)</option>
-                                  <option value="desc" <?=$orderStatus == "desc" ? "selected" : "";?>>Giảm dần (z - a) (9 - 1)</option>
-                                </select>
-                                <button type="submit" class="btn btn-default ml-10"><i class="fas fa-sort"></i></button>
-                              </div>       
                             </div>
                         </form>
                       </div>
                       <div class="mb-3 col-12 d-flex j-between" style="padding-left:0;padding-right:0;">
-                        <div class="">
+                        <div class="mt-15">
                           <!-- <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button> -->
                           <?php
                             if($allow_read) {
@@ -286,13 +257,13 @@
                             <th style="width:20px !important;">
                                 <input style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                             </th>
-                            <th class="th-so-thu-tu w-120">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-ma-hoa-don w-170">Mã hoá đơn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-ten-khach-hang w-200">Tên khách hàng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-so-thu-tu" style='width:100px'>Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-ma-hoa-don w-120">Mã hoá đơn <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-ten-khach-hang w-150">Tên khách hàng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                             <th class="th-dia-chi-nhan-hang w-300">Địa chỉ nhận hàng <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-tong-tien w-150">Tổng tiền <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-tinh-trang-thanh-toan w-200">Tình trạng thanh toán <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                            <th class="th-ngay-tao w-120">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-tong-tien w-100">Tổng tiền <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-tinh-trang-thanh-toan" style="width:250px;">Trạng thái <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                            <th class="th-ngay-tao w-100">Ngày tạo <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                             <th class="w-200">Thao tác</th>
                           </tr>
                         </thead>
@@ -327,7 +298,11 @@
                                 <?php
                                   $sql_get_payment_status = "select * from payment_status where id = " . $row['payment_status_id'];
                                   $res = fetch(sql_query($sql_get_payment_status));
-                                  echo $res['payment_status_name'];
+                                  //
+                                  $sql_get_payment_status = "select * from delivery_status where id = " . $row['o_delivery_status_id'];
+                                  $res2 = fetch(sql_query($sql_get_payment_status));
+                                  echo $res['payment_status_name'] . " - " . $res2['delivery_status_name'];
+                                  
                                 ?>
                               </td>
                               <td class="ngay-tao"><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
@@ -393,7 +368,7 @@
                             <th>Tên người dùng</th>
                             <th>Địa chỉ nhận hàng</th>
                             <th>Tổng tiền</th>
-                            <th>Tình trạng thanh toán</th>
+                            <th>Trạng thái</th>
                             <th>Ngày tạo</th>
                             <th>Thao tác</th>
                           </tr>
@@ -549,17 +524,6 @@
   function select_remove_child(_class){
     $(event.currentTarget).closest(_class).remove();
   }
-  /*function activePayment(){
-    let status = $("select[name='select_payment_status_id'] > option:selected").val();
-    if(status == "payment_completed") {
-      $("select[name='select_payment_method']").prop("disabled",false);
-      $("select[name='select_payment_method']").css({"cursor":"pointer"});
-    } else {
-      $("select[name='select_payment_method']").prop("disabled",true);
-      $("select[name='select_payment_method']").css({"cursor":"not-allowed"});
-      $("select[name='select_payment_method'] > option[value='']").prop('selected',true);
-    }
-  }*/
 
   function showListPayment(){
     $('#form-payment').load(`ajax_order_manage.php?status=show_list_payment`,() => {
