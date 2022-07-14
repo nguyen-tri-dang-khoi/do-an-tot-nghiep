@@ -81,6 +81,11 @@
                     <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
                     <p id="phone_err" class="text-danger"></p>
                 </div>
+                <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
+                        <label for="inputBirth" class="form-label">Ngày sinh</label>
+                        <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
+                        <span id="register_birthday_err" class="text-danger"></span> 
+                    </div>
                 <div class="col-12 m-auto  mt-2 p-0 ">
                     <label for="inputAddress" class="form-label">Địa chỉ giao hàng</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
