@@ -1,6 +1,7 @@
 <?php
     include_once 'db.php';
     $_SESSION['login_error']= isset($_SESSION['login_error']) ? $_SESSION['login_error'] : "";
+    $_SESSION['register_error'] = isset($_SESSION['register_error']) ? $_SESSION['register_error'] : "";
     if(isset($_SESSION['customer_id'])) {
         header("Location:index.php");
     }
@@ -22,26 +23,32 @@
 </head>
 <body>
     
-<div class="container" id="container">
-    <div class="form-container sign-up-container">
+<div class="container <?=$_SESSION['register_error'] ? "right-panel-active" : "";?>" id="container">
+    <div class="form-container sign-up-container ">
         <form id="form-register" action="Login_signup_process.php" method="post" onsubmit="return validateRegister()">
             <div class="social-container">
                 <h1>Đăng ký</h1>
             </div>
             <span>Sử dụng email của bạn để đăng ký </span>
-            <input type="text" id="register_full_name" name="full_name" placeholder="Tên" />
+        
+            <input type="text" id="register_full_name" name="full_name" placeholder="Tên đầy đủ" />
             <span id="register_full_name_err" class="text-danger"></span>
+           
             <input type="email" id="register_email" name="email" placeholder="Email" />
             <span id="register_email_err" class="text-danger"></span>
-            <input name="phone" type="text" value="<?php //echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
-            <span id="register_email_err" class="text-danger"></span> 
-            <!-- ////nhớ xem lại  -->
-            <input type="date" id="register_email" name="email" placeholder="Ngày sinh" />
-            <span id="register_email_err" class="text-danger"></span> 
-            <!-- /// nhớ xem lại -->
+            
+            <input name="phone" id="register_phone" type="text" value="" class="form-control"  placeholder="Số điện thoại">
+            <span id="register_phone_err" class="text-danger"></span> 
+            
+            <input type="date" id="register_birthday" name="birthday" placeholder="Ngày sinh" />
+            <span id="register_birthday_err" class="text-danger"></span> 
+            
             <input type="password" id="register_password" name="password" placeholder="Mật Khẩu" />
+
             <span id="register_password_err" class="text-danger"></span>
             <input type="hidden" name="thao_tac" value="SignUp">
+            <?php echo $_SESSION['register_error'];?>
+            
             <button type="submit">Đăng ký</button>
         </form>
     </div>
@@ -57,9 +64,6 @@
             <span id="login_password_err" class="text-danger"></span>
             <input type="hidden" name="thao_tac" value="Login">
             <p><?php echo $_SESSION['login_error'];?></p>
-            <?php
-                $_SESSION['login_error'] = "";
-            ?>
             <a href="reset_password.php">Quên mật khẩu?</a>
             <button type="submit">Đăng nhập</button>
         </form>
@@ -98,6 +102,7 @@
             let phone_reg = /^\d{10}$/;
             let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
             let email = $('#login_email').val();
+            
             let password = $('#login_password').val();
             if(email == "") {
                 $('#login_email_err').text("Vui lòng không để trống email");
@@ -105,7 +110,8 @@
             } else if(!email.match(email_reg)) {
                 $('#login_email_err').text("Email không đúng đinh dạng");
                 test = false;
-            } 
+            }
+
             
             if(password == ""){
                 $('#login_password_err').text("Vui lòng không để trống mật khẩu");
@@ -121,13 +127,41 @@
             let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
             let full_name = $('#register_full_name').val();
             let email = $('#register_email').val();
+            let phone = $('#register_phone').val();
+            let birthday = $('#register_birthday').val();
             let password = $('#register_password').val();
+            console.log(full_name);
+            console.log(email);
+            console.log(phone);
+            console.log(birthday);
+            console.log(password);
             if(full_name == "") {
-                $('#register_full_name_err').text("Email không đúng đinh dạng");
+                $('#register_full_name_err').text("Tên đầy đủ không được để trống");
                 test = false;
             } else if(full_name.length > 200) {
-                $('#register_full_name_err').text("Email có độ dài 200 ký tự trở lên");
+                $('#register_full_name_err').text("Tên đầy đủ phải có độ dài bé hơn 200");
                 test = false;
+            } 
+            
+            if(phone == "") {
+                $('#register_phone_err').text("Số điện thoại không được để trống");
+                test = false;
+            } else if(!phone.match(phone_reg)) {
+                $('#register_phone_err').text("Số điện thoại phải có 10 số");
+                test = false;
+            }
+
+            if(birthday == "") {
+                $('#register_birthday_err').text("Ngày sinh không được để trống");
+                test = false;
+            } else {
+                let year_18_to_milisecond = 568024668000; //18year = 568024668000 milisecond
+                birthday = birthday.split('/');
+                birthday = `${birthday[2]}-${birthday[1]}-${birthday[0]}`;
+                if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(birthday) < year_18_to_milisecond){
+                    $('#register_birthday_err').text("Khách hàng phải có độ tuổi từ 18 trở lên");
+                    test = false;
+                }
             }
 
             if(email == "") {
@@ -141,9 +175,16 @@
             if(password == "") {
                 $('#register_password_err').text("Vui lòng không để trống mật khẩu");
                 test = false;
+            } else if(password < 4){
+                $('#register_password_err').text("Mật khẩu từ 4 ký tự trở lên");
+                test = false;
             }
             return test;
         }
     </script>
 </body>
 </html>
+<?php
+    $_SESSION['register_error'] = "";
+    $_SESSION['login_error'] = "";
+?>

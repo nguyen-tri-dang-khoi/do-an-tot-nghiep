@@ -126,17 +126,7 @@
                 </thead>
                 
                 <tbody>
-                    <?php
-                        $sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',o.note_payment as 'o_note_payment',p.created_at as 'p_created_at' from order_payment_history o inner join payment_status p on o.payment_status_id = p.id where o.order_id = '$order_id'";
-                        $ress = fetch_all(sql_query($sql_payment_history));
-                        foreach($ress as $res) {
-                    ?>
-                    <tr>
-                        <td><?=$res['p_payment_status_name'];?></td>
-                        <td><?=$res['o_note_payment'] ? $res['o_note_payment'] : "Không có";?></td>
-                        <td><?=Date("d-m-Y H:i:s",strtotime($res['p_created_at']))?></td>
-                    </tr>
-                    <?php } ?>
+                    
                 </tbody>
             </table>
         </div>
@@ -253,21 +243,7 @@
                         </tr>
                     </thead>
                     
-                    <tbody>
-                        <?php
-                        $sql_payment_history = "select p.payment_status_name as 'p_payment_status_name',o.note_payment as 'o_note_payment',p.created_at as 'p_created_at' from order_payment_history o inner join payment_status p on o.payment_status_id = p.id where o.order_id = '$order_id'";                            
-                        $ress = fetch_all(sql_query($sql_payment_history));
-                            foreach($ress as $res) {
-                        ?>
-                        <tr>
-                            <td><?=$res['p_payment_status_name'];?></td>
-                            <td><?=$res['o_note_payment'] ? $res['o_note_payment'] : "Không có";?></td>
-                            <td><?=Date("d-m-Y H:i:s",strtotime($res['p_created_at']))?></td>
-                        </tr>
-                        <?php
-                            }
-                        ?>
-                    </tbody>
+                    <!--  -->
                 </table>
             </div>
         </div>
