@@ -396,31 +396,9 @@
                                 "title":"Thông báo",
                                 "content":"Bạn đã gửi phản hồi sản phẩm cho chúng tôi thành công",
                             });
-                            // let html_rate = '';
-                            // for(let i = 0 ; i < rate ; i++) {
-                            //     html_rate += `<i class="fas fa-star rate-yellow"></i>`;
-                            // }
-                            // for(let i = 0 ; i < 5 - rate ; i++) {
-                            //     html_rate += `<i class="fas fa-star"></i>`;
-                            // }
-                            // let html_baby = `
-                            // <div class="content mt-3">
-                            //     <div class="avatar_user">
-                            //         <img src="img/avatar/img_placeholder_avatar.jpg" alt="avatar ngừời dùng">
-                            //     </div>
-                            //     <div class="rateOf_user">
-                            //         <div>
-                            //             ${html_rate}
-                            //         </div>
-                            //         <div class="nameUser_cmt">${data.customer_name}</div>
-                            //         <div class="content_cmt">${comment}</div>
-                            //         <div class="d-flex" style="justify-content:space-between;">
-                            //             <a href="javascript:void(0)">Trả lời</a> <span>${data.date}</span>
-                            //         </div>
-                            //     </div>
-                            // </div>`;
-                            // $(html_baby).appendTo('#comment--product');
                         }
+                        $('textarea[name="comment"]').val('');
+                        $('.rate-yellow').removeClass('rate-yellow');
                     }
                 })
             }
