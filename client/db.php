@@ -76,7 +76,7 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
 
             function get_product(){
                     $conn = connect();
-                    $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1)";
+                    $getDataProduct = "SELECT * FROM product_info WHERE (is_delete like 0 and is_active like 1 and count > 0)";
                     $result = mysqli_query($conn, $getDataProduct);
                     
                     if(mysqli_num_rows($result) > 0){
@@ -130,7 +130,7 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
 
             function get_productindex($id_category){
                 $conn = connect();
-                $getDataProduct = "SELECT * FROM product_info  WHERE (is_delete like 0 and is_active like 1) and product_type_id like $id_category";
+                $getDataProduct = "SELECT * FROM product_info  WHERE (is_delete like 0 and is_active like 1 and count > 0) and product_type_id like $id_category";
                 $result = mysqli_query($conn, $getDataProduct);
                     
                     if(mysqli_num_rows($result) > 0){

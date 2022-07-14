@@ -85,14 +85,16 @@
                             <div>
                                 <?php
                                     $sql_average_rate = "select product_info_id,avg(rate) as 'avg_rate',count(rate) as 'cnt_rate' from product_comment where product_info_id = '$id' and is_delete like 0 and is_active like 1 group by product_info_id";
+                                    //print_r($sql_average_rate);
                                     $rates = mysqli_query($conn,$sql_average_rate);
                                     $rate = mysqli_fetch_array($rates);
+                                    if(isset($rate['avg_rate']))
                                     for($i = 0 ; $i < round($rate['avg_rate']) ; $i++) {
                                 ?>
                                         <i class="fas fa-star rate-yellow2"></i> 
                                 <?php
                                     }
-                                    if($rate['avg_rate'] > 0) {
+                                    if(isset($rate['avg_rate']) && $rate['avg_rate'] > 0) {
                                     for($i = 0 ; $i < 5 - round($rate['avg_rate']) ; $i++) {
                                 ?>
                                         <i class="fas fa-star "></i>
@@ -103,13 +105,13 @@
                                     }
                                 ?>
                                 <?php
-                                if($rate['cnt_rate'] == 0) {
+                                if(isset($rate['avg_rate']) && $rate['cnt_rate'] == 0) {
                                 ?>
                                         <span>Chưa có đánh giá</span>
                                 <?php
                                     } else {
                                 ?>  
-                                        <span><?php echo $rate['cnt_rate'];?> đánh giá</span>
+                                        <span><?php echo isset($rate['avg_rate']) ? $rate['cnt_rate'] : "";?> đánh giá</span>
                                 <?php
                                     }
                                 ?>

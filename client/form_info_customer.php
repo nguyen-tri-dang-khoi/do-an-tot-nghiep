@@ -67,7 +67,7 @@
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
                     <?php
                         $sql_order = "select o.id as 'id_don_hang', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where o.customer_id = '$customer_id'";
-                        //print_r($sql_order);
+                        print_r($sql_order);
                         $result = mysqli_query($conn,$sql_order);
                         while($row11 = mysqli_fetch_assoc($result)) {
                            
