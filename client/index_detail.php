@@ -211,14 +211,41 @@
                             </div> 
                             <div class="bottom_rate" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                                 <div class="rate-star">
-                                    <?php //echo $row["rate"]; ?>
+                                    <?php 
+                                        $id_product = $row['id'];
+                                        $sql_rate = "Select avg(rate) as 'avg_rate',count(rate) as 'cnt_rate' from product_comment where id = $id_product and is_active like 1 and is_delete like 0";
+                                        $result_rate = mysqli_query($conn,$sql_rate);
+                                        $row_rate = mysqli_fetch_array($result_rate);
+                                    ?>
+                                    <?php
+                                        for($i = 0 ; $i < round($row_rate['avg_rate']) ; $i++) {
+                                    ?>
+                                            <i class="fa-solid fa-star" style="color:#ffc107;"></i>
+                                    <?php
+                                        }
+                                        if($row_rate['avg_rate'] > 0){
+                                        for($i = 0 ; $i < 5 - round($row_rate['avg_rate']) ; $i++) {
+                                    ?>
+                                            <i class="fa-solid fa-star"></i>
+                                    <?php
+                                            }
+                                        }
+                                    ?>
+                                    <?php
+                                        if($row_rate['cnt_rate'] > 0){
+                                    ?>
+                                    <div class="rate-text"><?php echo $row_rate['cnt_rate'];?> đánh giá</div> 
+                                    <?php
+                                        } else {
+                                    ?>  
+                                    <div class="rate-text">Chưa có đánh giá</div> 
+                                    <?php
+                                        }
+                                    ?>  
+                                    <!-- <i class="fa-solid fa-star"></i>
                                     <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
+                                    <i class="fa-solid fa-star"></i> -->
                                 </div>
-                                <div class="rate-text">0 đánh giá</div> 
                             </div> 
                             <div class="bottom_price" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                                 <span class="price-selling"><?php echo number_format($row["price"],0,".","."). "đ";?></span>   
@@ -258,13 +285,22 @@
                                         <i class="fas fa-star rate-yellow2" ></i> 
                                     <?php
                                         }
+                                        if($rate > 0) {
                                         for($i = 0 ; $i < 5 - $rate ; $i++) {
                                     ?>
                                             <i class="fas fa-star"></i> 
                                     <?php
+                                            }
+                                        } else {
+                                    ?>
+                                    <span>Chưa có đánh giá</span>
+                                    <?php
                                         }
                                     ?>
                                 </div>
+                                <?php
+
+                                ?>
                                 <div class="content_cmt"><?php echo $row_comment['comment'];?></div>
                                 
                             </div>

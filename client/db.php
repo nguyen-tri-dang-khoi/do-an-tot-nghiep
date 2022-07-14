@@ -86,11 +86,11 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
             ?>
             <div  class="product">                    
                 <div class="product__info">
-                    <div class="info--percent">
+                    <!-- <div class="info--percent">
                     <span>
                         <?php //echo "-".$row["discount"]."%"; ?>0 %
                     </span>
-                    </div>
+                    </div> -->
                     <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                         <a href="javascript:void(0)" class="product__link">
                             <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -140,11 +140,8 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
             ?>
             <div class="product">                    
                 <div class="product__info">
-                    <div class="info--percent">
-                    <span>
-                        <?php //echo "-".$row["discount"]."%"; ?>0 %
-                    </span>
-                    </div>
+                    <!-- <div class="info--percent">
+                    </div> -->
                     <div class="info--thumb" onclick="location.href='index_detail.php?id=<?php echo $row['id']; ?>'">
                         <a href="javascript:void(0)" class="product__link">
                             <img src="<?php echo "../admin/". $row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -176,9 +173,6 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
                                         }
                                     }
                                 ?>
-                                <!-- <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i>
-                                <i class="fa-solid fa-star"></i> -->
                             </div>
                             <?php
                                 if($row_rate['cnt_rate'] > 0){

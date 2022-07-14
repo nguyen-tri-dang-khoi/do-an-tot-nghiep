@@ -557,8 +557,8 @@
       if(content2.trim() == "<p><br></p>") {
          $('#content_err').text('Nội dung bảng tin không được để trống');
          test = false;
-      }  else if(content2.trim().length > 10000) {
-         $('#content_err').text('Nội dung bảng tin không được quá 10.000 ký tự');
+      }  else if(content2.trim().length > 65000) {
+         $('#content_err').text('Nội dung bảng tin không được quá 65.000 ký tự');
          test = false;
       }
       return test;

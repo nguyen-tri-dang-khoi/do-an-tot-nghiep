@@ -1,6 +1,16 @@
 <?php 
     include_once 'db.php';
     //session_start();
+    $conn = connect();
+    $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
+    $limit = 8;
+    $start_page = $limit * ($page - 1);
+    $sql_get_count = "select count(*) as 'countt' from notification where is_delete like 0 limit 1";
+    $result = mysqli_query($conn, $sql_get_count);
+    $row2 = mysqli_fetch_assoc($result);
+    $total = $row2['countt'];
+    unset($_GET['page']);
+    $str_get = http_build_query($_GET);
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +29,7 @@
                 <?php
                     $i_flex = 0;
                     $conn = connect();
-                    $img = "select * from notification where is_delete like 0";
+                    $img = "select * from notification where is_delete like 0 limit $start_page,$limit";
                     $result = mysqli_query($conn, $img);
                     while ($row = mysqli_fetch_array($result)){
                         if($i_flex % 2 == 0) {
@@ -32,7 +42,6 @@
                             </div>
                             <div class="st-text">
                                 <h2 class="st-title"><?php echo $row['title'];?></h2>
-                                <p class="st-text-note"><?php echo $row['content'];?></p>
                             </div>
                         </div>
                 <?php
@@ -42,30 +51,18 @@
                         }
                     }
                 ?>
-                    <!-- <div class="d-flex">
-                        <div class="st mr-35">
-                            <div class="st-img">
-                                <img class="img-1" src="Img/khoi/anh_3.png" alt="">
-                            </div>
-                            <div class="st-text">
-                                <h2 class="st-title">LỰA CHỌN LAPTOP CHO SINH VIÊN VỪA HỌC VỪA CHƠI 2022</h2>
-                                <p class="st-text-note">
-                                Laptop không chỉ dùng để học tập và làm việc mà còn là công cụ giải trí hữu hiệu của các bạn học sinh, sinh viên. Cùng TNC tìm kiếm chiếc laptop chân ái dành cho bạn trong bài viết này nhé!
-                                </p>
-                            </div>
-                        </div>
-                        <div class="st">
-                            <div class="st-img">
-                                <img class="img-1" src="Img/khoi/anh_4.png" alt="">
-                            </div>
-                            <div class="st-text">
-                                <h2 class="st-title">LỰA CHỌN LAPTOP CHO SINH VIÊN VỪA HỌC VỪA CHƠI 2022</h2>
-                                <p class="st-text-note">
-                                Laptop không chỉ dùng để học tập và làm việc mà còn là công cụ giải trí hữu hiệu của các bạn học sinh, sinh viên. Cùng TNC tìm kiếm chiếc laptop chân ái dành cho bạn trong bài viết này nhé!
-                                </p>
-                            </div>
-                        </div>
-                    </div> -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <?php
+                                $pagination = ceil($total / $limit) + 1; 
+                                for($i = 1 ; $i < $pagination ; $i++) {
+                            ?>
+                                    <li class="page-item <?=$i == $page ? 'active' : '';?>"><a class="page-link" href="TNC_news.php?page=<?php echo $i;?>&<?php echo $str_get;?>"><?php echo $i;?></a></li>
+                            <?php
+                                }
+                            ?>
+                        </ul>
+                    </nav>
                 </div>
                 <div class="wp-30">
                     <div class="block--header col-10 m-auto ">
@@ -88,22 +85,6 @@
                         <?php
                             }
                         ?>
-                        <!-- <div class="st st-2 d-flex j-between a-start">
-                            <div class="st-img">
-                                <img class="img-2" src="Img/khoi/anh_6.jpg" alt="">
-                            </div>
-                            <div class="st-text ml-20">
-                                <p class="st-ct">Đập hộp dàn Mainboard Z490 siêu khủng của ASUS - Phổ cập Thunderbolt 3 đến mọi nhà</p>
-                            </div>
-                        </div>
-                        <div class="st st-2 d-flex j-between a-start">
-                            <div class="st-img">
-                                <img class="img-2" src="Img/khoi/anh_7.png" alt="">
-                            </div>
-                            <div class="st-text ml-20">
-                                <p class="st-ct">G.SKILL Trident Z Royal đạt kỷ lục thế giới DDR4-6666Mhz  với ASUS ROG</p>
-                            </div>
-                        </div> -->
                     </div>
                 </div>
             </div>

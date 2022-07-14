@@ -181,7 +181,6 @@
                     </div>
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
-                            <!-- <li class="page-item"><a class="page-link" href="#" tabindex="-1"><<</a></li> -->
                             <?php
                                 $pagination = ceil($total / $limit) + 1; 
                                 for($i = 1 ; $i < $pagination ; $i++) {
@@ -190,9 +189,6 @@
                             <?php
                                 }
                             ?>
-                            <!-- <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li> -->
-                            <!-- <li class="page-item"><a class="page-link" href="#">>></a></li> -->
                         </ul>
                     </nav>
                     </form>
@@ -207,7 +203,6 @@
                 ?>
                 <div class="product">                    
                     <div class="product__info">
-                        
                         <div class="info--thumb">
                             <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link">
                                 <img src="<?php echo "../admin/".$row["img_name"]; ?>" alt="Sentinel 3090Ti - i9 12900K/ Z690/ 32GB/ 2TB/ RTX 3090Ti/ 1200W">
@@ -215,7 +210,7 @@
                         </div> 
                         <div class="info--bottom">
                             <div class="bottom_title">
-                                    <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link"><?php echo $row["name"]; ?></a>
+                                <a href="index_detail.php?id=<?php echo $row['id'];?>" class="product__link"><?php echo $row["name"]; ?></a>
                             </div> 
                             <div class="bottom_rate">
                                 <div class="rate-star">
@@ -237,9 +232,6 @@
                                             }
                                         }
                                     ?>
-                                    <!-- <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i>
-                                    <i class="fa-solid fa-star"></i> -->
                                 </div> 
                                 <?php
                                     if($row_load_rate['cnt_rate'] > 0) {
