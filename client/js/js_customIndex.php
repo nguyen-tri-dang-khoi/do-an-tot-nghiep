@@ -76,11 +76,12 @@
 
     }
 
-    function updateInfoCart(thaotac,id_san_pham = "") {
+    function updateInfoCart(thaotac) {
         let count = $(event.currentTarget).siblings('input[name="count"]').val();
-        let totalProduct = $('.totalProduct > span').text();
-        let price = $(event.currentTarget).closest('.change_product').siblings('.info_products').find('.Price_products p').text();
-        let totalPrice = $('.totalPrice > span').text();
+        let totalProduct = $('.totalProduct > span').eq(0).text();
+        totalProduct = totalProduct.replace(/\.|đ/g, "");
+        let price = $(event.currentTarget).closest('.change_product').siblings('.info_products').find('.Price_products p').eq(0).text();
+        let totalPrice = $('.totalPrice > span').eq(0).text();
         price = price.replace(/\.|đ/g, "");
         totalPrice = totalPrice.replace(/\.|đ/g, "");
 
@@ -135,45 +136,25 @@
             }
         } else if (thaotac == "+") {
             count++;
-
             $('.totalProduct > span').text(parseInt(totalProduct) + 1);
             $(event.currentTarget).siblings('input[name="count"]').val(count);
             $('.totalPrice span').text((parseInt(totalPrice) + parseInt(price)).toLocaleString().replace(/\,/g, ".") + "đ");
             cartamount++;
             $('.cart--amount').text(cartamount);
         }
-        if(id_san_pham == "") {
-            $.ajax({
-                url: `cart_ok.php`,
-                type: "POST",
-                data: {
-                    "id": id,
-                    "count": count,
-                    "price": price,
-                    "thao_tac": "updateInfoCart",
-                },
-                success: function(data) {
-                    $('#exampleModal').modal('show');
-                }
-            });
-        } else {
-            $.ajax({
-                url: `cart_ok.php`,
-                type: "POST",
-                data: {
-                    "id": id_san_pham,
-                    "count": count,
-                    "price": price,
-                    "thao_tac": "updateInfoCart",
-                },
-                success: function(data) {
-                    $('#exampleModal').modal('show');
-                }
-            });
-        }
-       
-
-
+        $.ajax({
+            url: `cart_ok.php`,
+            type: "POST",
+            data: {
+                "id": id,
+                "count": count,
+                "price": price,
+                "thao_tac": "updateInfoCart",
+            },
+            success: function(data) {
+                $('#exampleModal').modal('show');
+            }
+        });
     }
 
     function deleteCart() {

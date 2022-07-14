@@ -1,6 +1,6 @@
 <!-- Button trigger modal -->
 <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <i class="fa-solid fa-cart-shopping"></i>
+    <i class="fa-solid fa-cart-shopping"></i>
 </button>
 
 <!-- Modal -->

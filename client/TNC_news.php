@@ -1,6 +1,5 @@
 <?php 
     include_once 'db.php';
-    //session_start();
     $conn = connect();
     $page = isset($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0 ? $_REQUEST['page'] : 1; 
     $limit = 8;
