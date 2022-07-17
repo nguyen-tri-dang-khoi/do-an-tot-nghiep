@@ -115,9 +115,11 @@
                      <table id="m-product-info" class="table table-bordered table-striped">
                         <thead>
                            <tr>
-                              <th class="w-20-imp" ></th>
+                              <th class="w-20-imp"></th>
                               <th class="w-100">Số thứ tự</th>
                               <th>Tên sản phẩm</th>
+                              <th>Đã duyệt</th>
+                              <th>Chưa duyệt</th>
                               <th class="w-200-imp">Thao tác</th>
                            </tr>
                         </thead>
@@ -130,7 +132,6 @@
                            $sql_get_total = "select count(*) as 'countt' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where";
                            $total = fetch(sql_query($sql_get_total))['countt'];
                            $sql_get_product = "select pi.id,pi.is_active, pi.name as 'pi_name',pi.price,pi.count,pi.img_name as 'pi_img_name',pi.created_at,pt.name as 'pt_name',pi.product_type_id as 'pt_id' from product_info pi left join product_type pt on pi.product_type_id = pt.id $where limit $start_page,$limit";
-                           //print_r($sql_get_product);
                            $rows = fetch_all(sql_query($sql_get_product));
                            foreach($rows as $row) {
                            ?>
@@ -138,6 +139,30 @@
                                  <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
                                  <td><?=$row['pi_name'];?></td>
+                                 <td>
+                                    <?php
+                                       $product_info_id = $row['id'];
+                                       $sql_duyet = "select count(*) as 'cnt' from product_comment where is_active = 1 and product_info_id = '$product_info_id' and is_delete = 0 group by product_info_id";
+                                       $row_cnt_active = fetch(sql_query($sql_duyet));
+                                       if(isset($row_cnt_active['cnt']) && $row_cnt_active['cnt'] > 0){
+                                          echo $row_cnt_active['cnt'];
+                                       } else {
+                                          echo "0";
+                                       }
+                                    ?>
+                                 </td>
+                                 <td>
+                                    <?php
+                                       $product_info_id = $row['id'];
+                                       $sql_chua_duyet = "select count(*) as 'cnt' from product_comment where is_active = 0 and product_info_id = '$product_info_id' and is_delete = 0 group by product_info_id";
+                                       $row_cnt_no_active = fetch(sql_query($sql_chua_duyet));
+                                       if(isset($row_cnt_no_active['cnt']) && $row_cnt_no_active['cnt'] > 0){
+                                          echo $row_cnt_no_active['cnt'];
+                                       } else {
+                                          echo "0";
+                                       }
+                                    ?>
+                                 </td>
                                  <td>
                                      <button onclick='showListComment("<?=$row["id"];?>")' class="dt-button button-grey">Xem bình luận</button>
                                  </td>
@@ -152,6 +177,8 @@
                               <th></th>
                               <th>Số thứ tự</th>
                               <th>Tên sản phẩm</th>
+                              <th>Đã duyệt</th>
+                              <th>Chưa duyệt</th>
                               <th>Thao tác</th>
                            </tr>
                         </tfoot>

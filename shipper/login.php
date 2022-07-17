@@ -1,8 +1,9 @@
 <?php
+    
     include_once("../lib/database.php");
     if(is_get_method()) {
+        include_once("include/login_redirect.php"); 
         include_once("include/head.meta.php");
-        // code to be executed get method
 ?>
 <!--html & css section start-->
 <style>
@@ -62,7 +63,7 @@
                 </div>
                 <div style="display:flex;justify-content:space-between;">
                     <div class="input-group mb-3">
-                        <a href="forgive_password.php" style="color:#d9585c;font-weight:bold;">Quên mật khẩu</a>
+                        <!-- <a href="forgive_password.php" style="color:#d9585c;font-weight:bold;">Quên mật khẩu</a> -->
                     </div>
                     <div style="justify-content:end;" class="input-group mb-3">
                         <div class="icheck-primary">
@@ -149,8 +150,8 @@
                     "expire_at" => time()
                 ]);
                 
-                $access_token = encrypt_decrypt($user_data_json,"encrypt");
-                setcookie("shipper_access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
+                // $access_token = encrypt_decrypt($user_data_json,"encrypt");
+                // setcookie("shipper_access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
                 if($remember) {
                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
                     setcookie("shipper_co_remember","y",time() + 3600 * 24 * 30,"/","",false,true);
@@ -167,7 +168,7 @@
                         setcookie("shipper_co_remember","",time() - 3600,"/");
                     }
                 }
-                redirect_if_login_success("information.php","shipper");
+                header("Location:index.php");
             } else {
                 $_SESSION["error"] = "Tài khoản hoặc mật khẩu bạn đăng nhập không chính xác";
             }

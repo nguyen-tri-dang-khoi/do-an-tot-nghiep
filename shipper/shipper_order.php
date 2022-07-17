@@ -1,5 +1,6 @@
 <?php
     include_once("../lib/database.php");
+    include_once("include/login_fail_redirect.php");
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
@@ -111,13 +112,9 @@
                             <tr>
                                 <th>Số thứ tự</th>
                                 <th>Mã hoá đơn</th>
-                                <th>Địa chỉ khách hàng</th>
-                                <th>Tên khách hàng</th>
-                                <th>Số điện thoại khách hàng</th>
-                                <th>Ngày bắt đầu giao hàng</th>
-                                <th>Ngày hoàn tất giao hàng</th>
+                               
                                 <th>Ngày tạo</th>
-                                <th>Thao tác</th>
+                                <th class="w-300">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,14 +125,10 @@
                                 <tr>
                                     <td><?=$total - ($cnt + $start_page);?></td>
                                     <td><?=$row['o_orders_code'];?></td>
-                                    <td><?=$row['o_address'];?></td>
-                                    <td><?=$row['u_full_name'];?></td>
-                                    <td><?=$row['u_phone'];?></td>
-                                    <td><?=Date("d-m-Y",strtotime($row['o_delivery_date']));?></td>
-                                    <td><?=$row['o_delivery_complete_date'] ? Date("d-m-Y",strtotime($row['o_delivery_complete_date'])) : "Chưa có thông tin";?></td>
+                                    
                                     <td><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
                                     <td>
-                                        <button class="dt-button button-grey">Cập nhật trạng thái đơn hàng</button>
+                                        <button class="dt-button button-grey"><i class="fa fa-eye" aria-hidden="true"></i></button>
                                     </td>
                                 </tr>
                             <?php
@@ -148,11 +141,11 @@
                             <tr>
                                 <th>Số thứ tự</th>
                                 <th>Mã hoá đơn</th>
-                                <th>Địa chỉ khách hàng</th>
+                                <!-- <th>Địa chỉ khách hàng</th>
                                 <th>Tên khách hàng</th>
                                 <th>Số điện thoại khách hàng</th>
                                 <th>Ngày giao hàng</th>
-                                <th>Ngày hoàn tất giao hàng</th>
+                                <th>Ngày hoàn tất giao hàng</th> -->
                                 <th>Ngày tạo</th>
                                 <th>Thao tác</th>
                             </tr>

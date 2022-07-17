@@ -29,7 +29,7 @@
                 <label class="custom-file-label" for="fileInput">Chọn ảnh</label>
             </div>
             <div class="img-fluid" id="where-replace">
-                <img src="<?=$result['img_name'] ? "../admin/".$result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
+                <img src="<?=$result['img_name'] ? "../admin/".$result['img_name'] : "../admin/upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
             </div>
         </div>
     </div>

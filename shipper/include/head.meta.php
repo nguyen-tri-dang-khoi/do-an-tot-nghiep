@@ -1,7 +1,4 @@
-<?php
-if(strpos(get_url_current_page(),"login.php")){
-    redirect_if_login_success("index.php","shipper");
-} ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

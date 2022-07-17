@@ -233,7 +233,7 @@
                                   <?php } ?>
                                   <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
                                 </select>
-                              </div> -->
+                              </div>
                               <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
                               <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                             </div>
@@ -322,11 +322,8 @@
                                   data-id="<?=$row["o_id"];?>" >
                                   <i class="fas fa-shipping-fast"></i>
                                   </button>
-                                <?php } else {?>
-                                  <button class="dt-button button-grey">
-                                  Đã xác nhận vận chuyển
-                                  </button>
-                                <?php }?>
+                                <?php } ?>
+                                  
                                 <?php if($row['o_delivery_status_id'] > 1) {?>
 
                                 <?php } else if($row['o_is_cancel'] == 0) {?>
@@ -524,7 +521,29 @@
   function select_remove_child(_class){
     $(event.currentTarget).closest(_class).remove();
   }
-
+  function updatePaymentStatus(order_id){
+    let payment_status_id = $('select[name="update-payment-status"] > option:selected').val();
+    if(payment_status_id != "") {
+      $.ajax({
+        url:window.location.href,
+        type:"POST",
+        data: {
+          "order_id": order_id,
+          "status": "update_payment_status",
+          "payment_status_id": payment_status_id,
+        },success:function(data){
+          console.log(data);
+          data = JSON.parse(data);
+          if(data.msg == "ok") {
+            $.alert({
+              title: "Thông báo",
+              content: "Bạn đã thay đổi trạng thái thanh toán đơn hàng thành công",
+            })
+          }
+        }
+      })
+    }
+  }
   function showListPayment(){
     $('#form-payment').load(`ajax_order_manage.php?status=show_list_payment`,() => {
       $('#modal-xl2').modal({backdrop: 'static', keyboard: false});
@@ -795,6 +814,12 @@
           $new_tab_name = isset($_REQUEST['new_tab_name']) ? $_REQUEST['new_tab_name'] : null;
           $_SESSION['order_manage_tab'][$index]['tab_name'] = $new_tab_name;
           echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['order_manage_tab'][$index]['tab_urlencode']]);
+       } else if($status == "update_payment_status") {
+        $payment_status_id = isset($_REQUEST["payment_status_id"]) ? $_REQUEST["payment_status_id"] : null;
+        $order_id = isset($_REQUEST["order_id"]) ? $_REQUEST["order_id"] : null;
+        $sql_update_payment_status = "Update orders set payment_status_id = $payment_status_id where id = $order_id";
+        sql_query($sql_update_payment_status);
+        echo_json(["msg" => "ok"]);
        }
     }
 ?>

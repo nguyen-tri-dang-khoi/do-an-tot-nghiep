@@ -1,8 +1,12 @@
 <?php
     include_once("../lib/database.php");
+    //print_r($_SESSION['isShipperLoggedIn']);
+    include_once("include/login_fail_redirect.php");
+    
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
+        
         // code to be executed get method
 ?>
 <!--html & css section start-->
@@ -148,6 +152,7 @@
                     </div>
                 </div>
             </div>
+            
             <!-- <div class="row kh-padding">
                 <div class="col-lg-6 col-sm-12">
                     <h3 style="font-weight:bold;color:#17a2b8;">Đơn chưa giao</h3>
@@ -281,6 +286,7 @@
 
 <!--js section end-->
 <?php
+   
         include_once("include/footer.php"); 
 ?>
 <?php

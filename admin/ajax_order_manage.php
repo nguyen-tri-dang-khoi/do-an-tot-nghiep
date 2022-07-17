@@ -40,7 +40,7 @@
 </table>
 <?php
     } else if($status == "show_order_detail") {
-        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
+        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.id as 'o_id',o.orders_code,o.payment_status_id,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
         c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
         $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
         $client_order = fetch(sql_query($sql_get_client_order));
@@ -92,10 +92,20 @@
                     <th>Tình trạng thanh toán</th>
                     <td>
                         <?php
-                            $sql_get_payment_status = "select * from payment_status where id = " . $client_order['o_payment_status_id'];
-                            $res = fetch(sql_query($sql_get_payment_status));
+                            $o_id = $client_order['o_id'];
                         ?>
-                        <?=$res['payment_status_name'];?>
+                        <select onchange="updatePaymentStatus('<?=$o_id;?>')" name="update-payment-status" class="form-control" >
+                        <?php
+                            
+                            $sql_pay = "select * from payment_status";
+                            $rows_pay = fetch_all(sql_query($sql_pay));
+                            foreach($rows_pay as $pay) {
+                        ?>
+                            <option <?=$pay['id'] == $client_order['payment_status_id'] ? "selected" : "";?> value="<?=$pay['id'];?>"><?=$pay['payment_status_name'];?></option>
+                        <?php
+                            }
+                        ?>
+                        </select>
                     </td>
                 </tr>
                 <tr>
@@ -110,24 +120,6 @@
                     <th>Ngày tạo</th>
                     <td><?=$client_order['o_created_at']?></td>
                 </tr>
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <h4>Lịch sử thanh toán</h4>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Tình trạng thanh toán</th>
-                        <th>Ghi chú</th>
-                        <th>Ngày tạo</th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                    
-                </tbody>
             </table>
         </div>
     </div>
@@ -163,7 +155,7 @@
         $arr = explode(",",$str_arr_upt);
         $i = 1;
         foreach($arr as $order_id) {
-            $sql_get_client_order = "select u.full_name as 'u_full_name',u.phone,u.email,u.birthday, u.address as 'u_address',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
+            $sql_get_client_order = "select u.full_name as 'u_full_name',u.phone,u.email,u.birthday, u.address as 'u_address',o.id as 'o_id',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
             u.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' and u.type = 'customer' limit 1";
             $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
             $client_order = fetch(sql_query($sql_get_client_order));
@@ -213,8 +205,28 @@
                         <td><?=number_format($client_order['total'],0,"",".") . "đ";?></td>
                     </tr>
                     <tr>
+                        
+                            
+                        
                         <th>Tình trạng thanh toán</th>
-                        <td><?=$client_order['payment_status_id'] == 1 ? "Đã thanh toán" : "Chưa thanh toán";?></td>
+                        
+                        <td>
+                            <?php
+                                $o_id = $client_order['o_id'];
+                            ?>
+                            <select onchange="updatePaymentStatus('<?=$o_id;?>')" name="update-payment-status" class="form-control" >
+                            <?php
+                                
+                                $sql_pay = "select * from payment_status";
+                                $rows_pay = fetch_all(sql_query($sql_pay));
+                                foreach($rows_pay as $pay) {
+                            ?>
+                                <option <?=$pay['id'] == $client_order['payment_status_id'] ? "selected" : "";?> value="<?=$pay['id'];?>"><?=$pay['payment_status_name'];?></option>
+                            <?php
+                                }
+                            ?>
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <th>Phương thức thanh toán</th>
@@ -228,22 +240,6 @@
                         <th>Ngày tạo</th>
                         <td><?=Date('d-m-Y h:i:s',strtotime($client_order['o_created_at']))?></td>
                     </tr>
-                </table>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <h4>Lịch sử thanh toán</h4>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Tình trạng thanh toán</th>
-                            <th>Ghi chú</th>
-                            <th>Ngày tạo</th>
-                        </tr>
-                    </thead>
-                    
-                    <!--  -->
                 </table>
             </div>
         </div>

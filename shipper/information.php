@@ -1,5 +1,6 @@
 <?php
     include_once("../lib/database.php");
+    include_once("include/login_fail_redirect.php");
     if(is_get_method()) {
         include_once("include/head.meta.php");
         include_once("include/left_menu.php");
