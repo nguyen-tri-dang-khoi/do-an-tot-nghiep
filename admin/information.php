@@ -237,10 +237,15 @@
                   }
                 }
               });
-            } else {
+            } else if(res_json.msg == "phone_exist"){
               $.alert({
-                title: "Thông báo",
-                content: res_json.error
+                  title: "Thông báo",
+                  content: "Số điện thoại này đã tồn tại",
+              });
+            } else if(res_json.msg == "email_exist") {
+              $.alert({
+                  title: "Thông báo",
+                  content: "Email này đã tồn tại",
               });
             }
           },
@@ -279,12 +284,7 @@
                   }
                 }
               });
-            } else {
-              $.alert({
-                title: "Thông báo",
-                content: res_json.error
-              });
-            }
+            } 
           },
           error: function (data) {
               console.log('Error:', data);
@@ -343,31 +343,25 @@
       $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
       $full_name = isset($_REQUEST["full_name"]) ? $_REQUEST["full_name"] : null;
       $email = isset($_REQUEST["email"]) ? $_REQUEST["email"] : null;
-      $birthday = isset($_REQUEST["birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["birthday"])) : nuldl;
+      $birthday = isset($_REQUEST["birthday"]) ? Date("Y-m-d",strtotime($_REQUEST["birthday"])) : null;
       $phone = isset($_REQUEST["phone"]) ? $_REQUEST["phone"] : null;
       $address = isset($_REQUEST["address"]) ? $_REQUEST["address"] : null;
       $old_pass = isset($_REQUEST["old_pass"]) ? $_REQUEST["old_pass"] : null;
       $img_admin_file = isset($_REQUEST["img_admin_file"]) ? $_REQUEST["img_admin_file"] : null;
-      /*if($status == "create_token_email") {
-        $time = Date("d-m-Y h:i:s",time());
-        $hidden_key = "&!239yhf98@";
-        $rand = rand(0,999999);
-        $token_email = md5($email.$time.$rand.$hidden_key);
-        $sql_update_token = "Update user set email_verify_token = '$token_email' where id = '$session_id'";
-        $pdo_email_token = sql_query($sql_update_token);
-        if($pdo_email_token->rowCount() > 0) {
-          $link = "http://localhost/project/admin/email_verify.php?token=$token_email";
-          // send email
-          //
-          echo_json(["msg" => "ok","link" => $link]);
-        } else {
-          echo_json(["msg" => "not_ok","link" => ""]);
-        }
-      } else if($status == "auth_token_email") {
-      } else*/ 
+
       if($status == "change_info") {
         $success = "Bạn đã cập nhật thông tin cá nhân thành công";
         $error = "Đã có lỗi xảy ra, vui lòng tải lại trang.";
+        $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and (type <> 'customer') and id <> ?";
+        $res_11= fetch(sql_query($sql_get_email,[$email,$session_id]));
+        if($res_11['cnt'] == 1) {
+          echo_json(['msg' => 'email_exist']);
+        }
+        $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and (type <> 'customer') and id <> ?";
+        $res_11= fetch(sql_query($sql_get_phone,[$phone,$session_id]));
+        if($res_11['cnt'] == 1) {
+          echo_json(['msg' => 'phone_exist']);
+        }
         $img_admin = "";
         $dir = "upload/user/";
         if(!file_exists($dir)) {

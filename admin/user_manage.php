@@ -823,13 +823,19 @@
                                 },
                             }
                         });
-                    } else {
+                        $('#modal-xl').modal('hide');
+                    } else if(data.msg == "phone_exist"){
                         $.alert({
                             title: "Thông báo",
-                            content: data.error
+                            content: "Số điện thoại này đã tồn tại",
+                        });
+                    } else if(data.msg == "email_exist") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Email này đã tồn tại",
                         });
                     }
-                    $('#modal-xl').modal('hide');
+                    
                 },
                 error:function(data) {
                     console.log("Error:",data);
@@ -859,38 +865,43 @@
             }
             if(validate()) {
                 $.ajax({
-                url:window.location.href,
-                type: "POST",
-                cache:false,
-                dataType:"json",
-                contentType: false,
-                processData: false,
-                data: formData,
-                success:function(data){
-                    //data = JSON.parse(data);
-                    console.log(data);
-                    if(data.msg == "ok") {
-                        $.alert({
-                            title: "Thông báo",
-                            content: data.success,
-                            buttons: {
-                                "Ok": function(){
-                                    loadDataComplete();
-                                },
-                            }
-                        });
-                    } else {
-                        $.alert({
-                            title: "Thông báo",
-                            content: data.error
-                        });
+                    url:window.location.href,
+                    type: "POST",
+                    cache:false,
+                    dataType:"json",
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success:function(data){
+                        console.log(data);
+                        if(data.msg == "ok") {
+                            $.alert({
+                                title: "Thông báo",
+                                content: data.success,
+                                buttons: {
+                                    "Ok": function(){
+                                        loadDataComplete();
+                                    },
+                                }
+                            });
+                            $('#modal-xl').modal('hide');
+                        } else if(data.msg == "phone_exist"){
+                            $.alert({
+                                title: "Thông báo",
+                                content: "Số điện thoại này đã tồn tại",
+                            });
+                        } else if(data.msg == "email_exist") {
+                            $.alert({
+                                title: "Thông báo",
+                                content: "Email này đã tồn tại",
+                            });
+                        }
+                       
+                    },
+                    error:function(data) {
+                        console.log("Error:",data);
                     }
-                    $('#modal-xl').modal('hide');
-                },
-                error:function(data) {
-                    console.log("Error:",data);
-                }
-            });
+                });
             }
             
         }
@@ -1048,7 +1059,7 @@
                             content: "Bạn đã sửa dữ liệu thành công",
                         })
                         //loadDataComplete();
-                    }
+                    } 
                 },
                 error: function(data) {
                     console.log("Error: " + data);
@@ -1162,115 +1173,136 @@
         }
     }
     function insAll(){
-      let test = true;
-      let formData = new FormData();
-      let phone_reg = /^\d{10}$/;
-      let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
-      let len = $('[data-plus]').attr('data-plus');
-      let count = $('td input[name="ins_fullname"]').length;
-      $('td input[name="ins_fullname"]').each(function(){
-        if($(this).val() != ""){
-          formData.append("ins_fullname[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;
-        }
-      });
-      $('td input[name="ins_email"]').each(function(){
-        
-        if($(this).val() == ""){
-            $(this).siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else if(!$(this).val().match(email_reg)){
-            $(this).siblings("p.text-danger").text("Email không đúng định dạng");
-            test = false;
-        } else {
-            formData.append("ins_email[]",$(this).val());
-            $(this).siblings("p.text-danger").text("");
-        }
-      });
-      $('td input[name="ins_phone"]').each(function(){
-        if($(this).val() == "") {
-            $(this).siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else if(!$(this).val().match(phone_reg)){
-            $(this).siblings("p.text-danger").text("Số điện thoại không đúng định dạng");
-            test = false;
-        } else {    
-          formData.append("ins_phone[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        }
-      });
-      $('td textarea[name="ins_address"]').each(function(){
-        if($(this).val() != "") {
-          formData.append("ins_address[]",$(this).val());
-          $(this).siblings("p.text-danger").text("");
-        } else {
-          $(this).siblings("p.text-danger").text("Không được để trống");
-          test = false;  
-        }
-      });
-      $('td input[name="ins_birthday"]').each(function(){
-        if($(this).val() == ""){
-            $(this).siblings("p.text-danger").text("Không được để trống");
-            test = false;
-        } else {
-            let date_temp = $(this).val();
-            date_temp = date_temp.split('-');
-            date_temp = date_temp[2] + "-" + date_temp[1] + "-" + date_temp[0];
-            if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(date_temp) < 568024668000) {
-                $(this).siblings("p.text-danger").text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+        let test = true;
+        let formData = new FormData();
+        let phone_reg = /^\d{10}$/;
+        let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
+        let len = $('[data-plus]').attr('data-plus');
+        let count = $('td input[name="ins_fullname"]').length;
+        $('td input[name="ins_fullname"]').each(function(){
+            if($(this).val() != ""){
+                formData.append("ins_fullname[]",$(this).val());
+                $(this).siblings("p.text-danger").text("");
+            } else {
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;
+            }
+        });
+        let object_email_ok = {};
+        let arr_email_ok = [];
+        $('td input[name="ins_email"]').each(function(){
+            if($(this).val().trim() == ""){
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;
+            } else if(!$(this).val().match(email_reg)){
+                $(this).siblings("p.text-danger").text("Email không đúng định dạng");
                 test = false;
             } else {
-                formData.append("ins_birthday[]",date_temp);
+                arr_email_ok.push($(this).val().trim());
+                object_email_ok[$(this).val().trim()] = "";
+                formData.append("ins_email[]",$(this).val().trim());
                 $(this).siblings("p.text-danger").text("");
             }
-        } 
-      });
-      $('td select[name="ins_type"]').each(function(){
-        if($(this).find('option:selected').val() != "") {
-          formData.append("ins_type[]",$(this).val());
-          $(this).parent().find("p.text-danger").text("");
-        } else {
-          $(this).parent().find("p.text-danger").text("Không được để trống");
-          test = false;
+        });
+        if(Object.keys(object_email_ok).length != arr_email_ok.length) {
+            $.alert({
+                'title':"Thông báo",
+                'content':"Dữ liệu email bạn thêm bị trùng",
+            });
+            return;
         }
-      });
-      formData.append("status","ins_all");
-      formData.append("len",len);
-      if(count == 0) {
-        $.alert({
-            title:"Thông báo",
-            content:"Vui lòng tạo input"
-        })
-        test = false;
-      }
-      if(test) {
-        $.ajax({
-            url: window.location.href,
-            type: "POST",
-            data: formData,
-            cache: false,
-            contentType: false,
-            processData: false,
-            success: function(data){
-                console.log(data);
-                data = JSON.parse(data);
-                if(data.msg == "ok") {
-                    $.alert({
-                        title: "Thông báo",
-                        content: "Bạn đã thêm dữ liệu thành công",
-                    });
-                    $('#modal-xl3').modal('hide');
-                    loadDataComplete('Insert');
-                }
-            },
-            error: function(data){
-                console.log("Error: " + data);
+        let object_phone_ok = {};
+        let arr_phone_ok = [];
+        $('td input[name="ins_phone"]').each(function(){
+            if($(this).val().trim() == "") {
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;
+            } else if(!$(this).val().match(phone_reg)){
+                $(this).siblings("p.text-danger").text("Số điện thoại không đúng định dạng");
+                test = false;
+            } else {    
+                arr_phone_ok.push($(this).val().trim());
+                object_phone_ok[$(this).val().trim()] = "";
+                formData.append("ins_phone[]",$(this).val().trim());
+                $(this).siblings("p.text-danger").text("");
             }
-        })
-      }
+        });
+        if(Object.keys(object_phone_ok).length != arr_phone_ok.length) {
+        $.alert({
+            'title':"Thông báo",
+            'content':"Dữ liệu số điện thoại bạn thêm bị trùng",
+        });
+        return;
+        }
+        $('td textarea[name="ins_address"]').each(function(){
+            if($(this).val() != "") {
+                formData.append("ins_address[]",$(this).val());
+                $(this).siblings("p.text-danger").text("");
+            } else {
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;  
+            }
+        });
+        $('td input[name="ins_birthday"]').each(function(){
+            if($(this).val() == ""){
+                $(this).siblings("p.text-danger").text("Không được để trống");
+                test = false;
+            } else {
+                let date_temp = $(this).val();
+                date_temp = date_temp.split('-');
+                date_temp = date_temp[2] + "-" + date_temp[1] + "-" + date_temp[0];
+                if(Date.parse(new Date().toISOString().slice(0,10)) - Date.parse(date_temp) < 568024668000) {
+                    $(this).siblings("p.text-danger").text("Nhân viên phải có độ tuổi từ 18 tuổi trở lên");
+                    test = false;
+                } else {
+                    formData.append("ins_birthday[]",date_temp);
+                    $(this).siblings("p.text-danger").text("");
+                }
+            } 
+        });
+        $('td select[name="ins_type"]').each(function(){
+        if($(this).find('option:selected').val() != "") {
+            formData.append("ins_type[]",$(this).val());
+            $(this).parent().find("p.text-danger").text("");
+        } else {
+            $(this).parent().find("p.text-danger").text("Không được để trống");
+            test = false;
+        }
+        });
+        formData.append("status","ins_all");
+        formData.append("len",len);
+        if(count == 0) {
+            $.alert({
+                title:"Thông báo",
+                content:"Vui lòng tạo input"
+            })
+            test = false;
+        }
+        if(test) {
+            $.ajax({
+                url: window.location.href,
+                type: "POST",
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Bạn đã thêm dữ liệu thành công",
+                        });
+                        $('#modal-xl3').modal('hide');
+                        loadDataComplete('Insert');
+                    }
+                },
+                error: function(data){
+                    console.log("Error: " + data);
+                }
+            })
+        }
       
     }
     function uptAll(){
@@ -1652,6 +1684,16 @@
             sql_query($sql,[1,$id]);
             echo_json(['msg' => 'ok',"success" => $success]);
         } else if($status == "Update") {
+            $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and type <> 'customer' and id <> ?";
+            $res_11= fetch(sql_query($sql_get_email,[$email,$id]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'email_exist']);
+            }
+            $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and type <> 'customer' and id <> ?";
+            $res_11= fetch(sql_query($sql_get_phone,[$phone,$id]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'phone_exist']);
+            }
             $success = "Bạn đã sửa dữ liệu thành công";
             $dir = "upload/user/";
             if(!file_exists($dir)) {
@@ -1684,6 +1726,16 @@
         } else if($status == "Insert") {
             $success = "Bạn đã thêm dữ liệu thành công";
             $password = password_hash($_POST["password"],PASSWORD_DEFAULT);
+            $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and type <> 'customer'";
+            $res_11= fetch(sql_query($sql_get_email,[$email]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'email_exist']);
+            }
+            $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and type <> 'customer'";
+            $res_11= fetch(sql_query($sql_get_phone,[$phone]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'phone_exist']);
+            }
             $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
             sql_query($sql,[$full_name,$type,$email,$phone,$address,$birthday,$password]);
             $insert = ins_id();
@@ -1797,6 +1849,16 @@
             $ins_birthday = isset($_REQUEST["ins_birthday"]) ? Date('Y-m-d',strtotime($_REQUEST["ins_birthday"])) : null;
             $password = '1234';
             $password = password_hash($password,PASSWORD_DEFAULT);
+            $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and type <> 'customer'";
+            $res_11= fetch(sql_query($sql_get_email,[$email]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'email_exist']);
+            }
+            $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and type <> 'customer'";
+            $res_11= fetch(sql_query($sql_get_phone,[$phone]));
+            if($res_11['cnt'] == 1) {
+                echo_json(['msg' => 'phone_exist']);
+            }
             $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
             sql_query($sql,[$ins_fullname,$ins_type,$ins_email,$ins_phone,$ins_address,$ins_birthday,$password]);
             echo_json(["msg" => "ok"]);
@@ -1813,6 +1875,16 @@
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {
                     $birth = $ins_birthday[$i] ? Date('Y-m-d',strtotime($ins_birthday[$i])) : null;
+                    $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and type <> 'customer'";
+                    $res_11= fetch(sql_query($sql_get_email,[$ins_email[$i]]));
+                    if($res_11['cnt'] == 1) {
+                        echo_json(['msg' => 'email_exist']);
+                    }
+                    $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and type <> 'customer'";
+                    $res_11= fetch(sql_query($sql_get_phone,[$ins_phone[$i]]));
+                    if($res_11['cnt'] == 1) {
+                        echo_json(['msg' => 'phone_exist']);
+                    }
                     $sql = "Insert into user(full_name,type,email,phone,address,birthday,password) values(?,?,?,?,?,?,?)";
                     sql_query($sql,[$ins_fullname[$i],$ins_type[$i],$ins_email[$i],$ins_phone[$i],$ins_address[$i],$birth,$password]);
                 }
@@ -1828,6 +1900,16 @@
             $upt_birthday = isset($_REQUEST["upt_birthday"]) ? $_REQUEST["upt_birthday"]  : null;
             if($len) {
                 for($i = 0 ; $i < $len ; $i++) {  
+                    $sql_get_email = "Select count(*) as 'cnt' from user where email = ? and is_delete = 0 and type <> 'customer' and id <> ?";
+                    $res_11= fetch(sql_query($sql_get_email,[$upt_email[$i],$upt_id[$i]]));
+                    if($res_11['cnt'] == 1) {
+                        echo_json(['msg' => 'email_exist']);
+                    }
+                    $sql_get_phone = "Select count(*) as 'cnt' from user where phone = ? and is_delete = 0 and type <> 'customer' and id <> ?";
+                    $res_11= fetch(sql_query($sql_get_phone,[$upt_phone[$i],$upt_id[$i]]));
+                    if($res_11['cnt'] == 1) {
+                        echo_json(['msg' => 'phone_exist']);
+                    }
                     $birth = $upt_birthday[$i] ? Date('Y-m-d',strtotime($upt_birthday[$i])) : null;                 
                     $sql = "Update user set full_name=?,email=?,phone=?,address=?,birthday=? where id = ?";
                     sql_query($sql,[$upt_fullname[$i],$upt_email[$i],$upt_phone[$i],$upt_address[$i],$birth,$upt_id[$i]]);
