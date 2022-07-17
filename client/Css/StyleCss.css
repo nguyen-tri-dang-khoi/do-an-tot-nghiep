@@ -545,7 +545,7 @@ li:hover .dropdown {
     margin-bottom: 50px !important;
 }
 
-.block__home .block--header {
+.block--header {
     margin-top: 35px !important;
     margin-bottom: 45px !important;
     background: #dddfe6;
@@ -557,7 +557,7 @@ li:hover .dropdown {
     align-items: center;
 }
 
-.block__home .block--header .block--header_title {
+.block--header_title {
     background: #fff;
     font-weight: 700;
     font-size: 24px;
@@ -568,7 +568,18 @@ li:hover .dropdown {
     position: relative;
 }
 
-.block .block--header {
+.block--header_titles {
+    background: #fff;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+    color: #29324e;
+    padding-left: 22px;
+    padding-right: 22px;
+    position: relative;
+}
+
+.block--header {
     text-align: center;
     background-color: #dddfe6;
 }
@@ -758,7 +769,7 @@ li:hover .dropdown {
 .info--bottom button {
     position: absolute;
     visibility: hidden;
-    bottom: 7%;
+    bottom: 5%;
     left: 5%;
     background-color: #f9495f;
     color: white;
@@ -1532,13 +1543,13 @@ td {
 .sortss .sortss_product .product {
     border: 1px solid grey;
     margin-bottom: 5px;
-    margin-right: 5PX ;
+    margin-right: 5PX;
     width: 24%;
 }
 
 .sortss .sortss_product {
     display: flex;
-    justify-content:  flex-start;
+    justify-content: flex-start;
     flex-wrap: wrap;
 }
 

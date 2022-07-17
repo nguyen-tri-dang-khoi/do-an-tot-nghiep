@@ -39,20 +39,11 @@
                         <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
                         <p id="phone_err" class="text-danger"></p>
                     </div>
-                    <!-- <div class="col-md-12 mb-1  m-auto p-0">
-                        <label for="inputcontact" class="form-label">Giới tính</label>
-                        <form>
-                            <input type="checkbox" name="vehicle1" value="Female"> Female<br>
-                            <input type="checkbox" name="vehicle2" value="male"> male
-                        </form> 
-                    </div> -->
-                    <!-- <div class="col-md-12 mb-1  m-auto p-0">
-                        <label for="inputcontact" class="form-label">Ngày sinh</label>
-                        <form>
-                            <input type="checkbox" name="vehicle1" value="Female"> Female<br>
-                            <input type="checkbox" name="vehicle2" value="male"> male
-                        </form> 
-                    </div> -->
+                    <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
+                        <label for="inputBirth" class="form-label">Ngày sinh</label>
+                        <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
+                        <span id="register_birthday_err" class="text-danger"></span> 
+                    </div>
                     <div class="col-12 m-auto mb-1 p-0">
                         <label for="inputAddress" class="form-label">Địa chỉ</label>
                         <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
@@ -67,7 +58,7 @@
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
                     <?php
                         $sql_order = "select o.id as 'id_don_hang', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where o.customer_id = '$customer_id'";
-                        print_r($sql_order);
+                        // print_r($sql_order);
                         $result = mysqli_query($conn,$sql_order);
                         while($row11 = mysqli_fetch_assoc($result)) {
                            

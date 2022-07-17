@@ -17,9 +17,9 @@
 <?php include_once ('include/head.php'); ?>
 <body>
     <?php include_once ('include/menu.php');?>
-    <div class="news__content row col-10 m-auto mt-5 mb-5">
+    <div class="news__content row col-10 m-auto mt-3 mb-3">
         <div class="container p-0">
-            <div class="block--header col-10 m-auto ">
+            <div class="block--header col-12 m-auto ">
                 <span class="block--header_title">Tin tức TNC</span>
             </div>
             <div class="ok-content d-flex">
@@ -59,13 +59,14 @@
                                     <li class="page-item <?=$i == $page ? 'active' : '';?>"><a class="page-link" href="TNC_news.php?page=<?php echo $i;?>&<?php echo $str_get;?>"><?php echo $i;?></a></li>
                             <?php
                                 }
+                                echo '</div>';
                             ?>
                         </ul>
                     </nav>
                 </div>
                 <div class="wp-30">
-                    <div class="block--header col-10 m-auto ">
-                        <span class="block--header_title">Top 3 bài viết xem nhiều nhất</span>
+                    <div class="block--header col-12 m-auto ">
+                        <span class="block--header_titles">Top 3 bài viết xem nhiều nhất</span>
                     </div>
                     <div class="st-2 d-flex f-columns j-between">
                         <?php

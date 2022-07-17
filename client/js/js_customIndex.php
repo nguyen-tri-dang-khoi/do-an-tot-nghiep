@@ -218,7 +218,7 @@
             },
             success: function(data) {
                 $('.cart--amount').text(0);
-                $("#view_cart  div").remove();
+                $("#view_cart  .items_cart").remove();
                 $("#exampleModalLabel > span").text(0);
                 $(".totalProduct  > span").text(0);
                 $(".totalPrice  > span").text(0 + "đ");
