@@ -62,6 +62,7 @@
     <!-- Sidebar Menu -->
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="">
+      <?php if(check_permission_link("order_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="company_info.php" class="nav-link <?=strpos($url,"company_info.php") ? "kh-active" : "";?>">
             <img src="img/company.png" alt="">
@@ -70,6 +71,7 @@
             </p>
           </a>
         </li>
+        <?php } ?>
         <li class="nav-item " >
           <a tabindex="-1" href="information.php" class="nav-link <?=strpos($url,"information.php") ? "kh-active" : "";?>">
             <img src="img/user.png" alt="">
@@ -126,6 +128,7 @@
           </a>
         </li>
         <?php } ?>
+        <?php if(check_permission_link("product_comment_manage.php")){?>
         <li class="nav-item " >
           <a tabindex="-1" href="product_comment_manage.php" class="nav-link <?=strpos($url,"product_comment_manage.php") ? "kh-active" : "";?>">
             <img style="" src="img/message.png" alt="">
@@ -134,6 +137,7 @@
             </p>
           </a>
         </li>
+        <?php } ?>
         <!-- <li class="nav-item " >
           <a tabindex="-1" href="coupon_manage.php" class="nav-link <?=strpos($url,"coupon_manage.php") ? "kh-active" : "";?>">
             <img src="img/voucher.png" alt="">

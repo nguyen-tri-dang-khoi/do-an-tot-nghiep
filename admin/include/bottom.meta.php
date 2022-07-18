@@ -25,6 +25,8 @@
             if(!isNaN(n)){
                 $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
             }
-        } 
+        } else {
+            event.preventDefault();
+        }
     }
 </script>

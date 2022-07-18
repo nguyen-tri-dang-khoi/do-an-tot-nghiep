@@ -1,6 +1,6 @@
 <?php
     include_once("../lib/database.php");
-    //print_r($_SESSION['isShipperLoggedIn']);
+    //
     include_once("include/login_fail_redirect.php");
     
     if(is_get_method()) {
@@ -286,8 +286,7 @@
 
 <!--js section end-->
 <?php
-   
-        include_once("include/footer.php"); 
+    include_once("include/footer.php"); 
 ?>
 <?php
     } else if (is_post_method()) {

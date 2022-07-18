@@ -28,7 +28,7 @@
           if($search_option == "all") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(o.orders_code) like lower('%$key%') or lower(c.full_name) like lower('%$key%') or lower(o.address) like lower('%$key%') or lower(total) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(o.orders_code) like lower('%$key%') or lower(u.full_name) like lower('%$key%') or lower(o.address) like lower('%$key%') or lower(total) like lower('%$key%'))");
                 }
               }
           } else if($search_option == "orders_code") {
@@ -40,7 +40,7 @@
           } else if($search_option == "full_name") {
               foreach($keyword as $key) {
                 if($key != "") {
-                    array_push($wh_child,"(lower(c.full_name) like lower('%$key%'))");
+                    array_push($wh_child,"(lower(u.full_name) like lower('%$key%'))");
                 }
               }
           } else if($search_option == "o_address") {
@@ -86,7 +86,7 @@
           }
         }
         if($select_payment_method) {
-          $where .= " and o.payment_method_id='$select_payment_method'";
+          //$where .= " and o.payment_method_id='$select_payment_method'";
         }
         if($orderByColumn && $orderStatus) {
           $order_by = "ORDER BY $orderByColumn $orderStatus";
@@ -280,6 +280,7 @@
                           
                           $sql_get_order = "select o.id as 'o_id',o.is_cancel as 'o_is_cancel',o.delivery_status_id as 'o_delivery_status_id',o.address as 'o_address', o.orders_code,o.total,o.payment_status_id,
                           o.created_at as 'o_created_at',o.customer_id as 'o_customer_id',u.full_name,u.phone from orders o inner join user u on o.customer_id = u.id and u.type='customer' $where limit $start_page,$limit";
+                          //print_r($sql_get_order);
                           $rows = fetch_all(sql_query($sql_get_order));
                           $i = 0;
                           $cnt = 0;
@@ -781,6 +782,8 @@
           $delivery_date = isset($_REQUEST["delivery_date"]) ? Date("Y-m-d",strtotime($_REQUEST["delivery_date"])) : null;
           $sql_give_order_to_shipper = "Update orders set shipper_id = '$shipper_id',delivery_date = '$delivery_date',delivery_status_id = '2' where id = '$id'";
           sql_query($sql_give_order_to_shipper);
+          $sql_ins_history = "Insert into orders_delivery_status(order_id,delivery_status_id,reason) values(?,?,?)";
+          sql_query($sql_ins_history,[$id,2,"Đơn hàng đã được chuyển cho shipper giao hàng ở trạng thái đã xác nhận"]);
           echo_json(["msg" => "ok","success" => "Đơn hàng đã được chuyển cho shipper xử lý thành công ở trạng thái đã xác nhận"]);
         } else if($status == "saveTabFilter") {
           $_SESSION['order_tab_id'] = isset($_SESSION['order_tab_id']) ? $_SESSION['order_tab_id'] + 1 : 1;

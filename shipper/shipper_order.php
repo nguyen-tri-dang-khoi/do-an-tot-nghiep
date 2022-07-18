@@ -103,7 +103,7 @@
                         $start_page = $limit * ($page - 1);
                         $sql_get_total = "select count(*) as 'countt' from orders o inner join user u on o.customer_id = u.id $where";
                         $total = fetch(sql_query($sql_get_total))['countt'];
-                        $sql_get_shipping_orders = "select o.orders_code as 'o_orders_code',o.address as 'o_address',o.delivery_date as 'o_delivery_date',o.delivery_complete_date as 'o_delivery_complete_date',u.full_name as 'u_full_name',u.phone as 'u_phone',o.created_at as 'o_created_at' from orders o inner join user u on o.customer_id = u.id $where limit $start_page,$limit";
+                        $sql_get_shipping_orders = "select o.id as 'o_id',o.delivery_status_id as 'o_delivery_status_id', o.orders_code as 'o_orders_code',o.address as 'o_address',o.delivery_date as 'o_delivery_date',o.delivery_complete_date as 'o_delivery_complete_date',u.full_name as 'u_full_name',u.phone as 'u_phone',o.created_at as 'o_created_at' from orders o inner join user u on o.customer_id = u.id $where limit $start_page,$limit";
                         $cnt=0;
                         $rows = fetch_all(sql_query($sql_get_shipping_orders));
                     ?>
@@ -112,7 +112,8 @@
                             <tr>
                                 <th>Số thứ tự</th>
                                 <th>Mã hoá đơn</th>
-                               
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th class="w-300">Thao tác</th>
                             </tr>
@@ -125,10 +126,25 @@
                                 <tr>
                                     <td><?=$total - ($cnt + $start_page);?></td>
                                     <td><?=$row['o_orders_code'];?></td>
-                                    
+                                    <td>
+                                        <?=$row['o_address'];?>
+                                    </td>
+                                    <td>
+                                    <?php
+                                        $delivery_status_id = $row['o_delivery_status_id'];
+                                        $sql_get_delivery_status = "select * from delivery_status where id = $delivery_status_id limit 1";
+                                        $delivery_status = fetch(sql_query($sql_get_delivery_status));
+                                        echo $delivery_status['delivery_status_name'];
+                                        if($delivery_status['id'] < 7) {
+                                    ?>
+                                    <button class="ml-10 dt-button" onclick="openModalDeliveryStatus('<?=$row['o_id'];?>')">Cập nhật</button>
+                                    <?php
+                                        }
+                                    ?>
+                                    </td>
                                     <td><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
                                     <td>
-                                        <button class="dt-button button-grey"><i class="fa fa-eye" aria-hidden="true"></i></button>
+                                        <button onclick="openModalRead('<?=$row['o_id'];?>')" class="dt-button button-grey"><i class="fa fa-eye" aria-hidden="true"></i></button>
                                     </td>
                                 </tr>
                             <?php
@@ -141,11 +157,8 @@
                             <tr>
                                 <th>Số thứ tự</th>
                                 <th>Mã hoá đơn</th>
-                                <!-- <th>Địa chỉ khách hàng</th>
-                                <th>Tên khách hàng</th>
-                                <th>Số điện thoại khách hàng</th>
-                                <th>Ngày giao hàng</th>
-                                <th>Ngày hoàn tất giao hàng</th> -->
+                                <th>Địa chỉ giao hàng</th>
+                                <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th>Thao tác</th>
                             </tr>
@@ -161,6 +174,40 @@
         </div>
     </section>
 </div>
+<div class="modal fade" id="modal-xl" >
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="msg-del" class="modal-title">Thông tin đơn hàng</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 ship">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal-xl2" >
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="msg-del" class="modal-title">Cập nhật trạng thái vận chuyển</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="col-12 ship-status">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <!--html & css section end-->
 
 
@@ -168,6 +215,59 @@
         include_once("include/bottom.meta.php");
 ?>
 <!--js section start-->
+<script>
+    function openModalRead(id){
+        $('.ship').load(`ajax_shipper_order.php?status=load_order&order_id=${id}`,function(){
+            $('#modal-xl').modal('show');
+        })
+    }
+    function openModalDeliveryStatus(id) {
+        $('.ship-status').load(`ajax_shipper_order.php?status=update_delivery_status&order_id=${id}`,function(){
+            $('#modal-xl2').modal('show');
+        })
+    }
+    function updateOrderStatus(id){
+        $('p.text-danger').text("");
+        let test = true;
+        let delivery_status_id = $('select[name="delivery_status_id"] > option:selected').val();
+        let reason = $('textarea[name="reason"]').val();
+        if(delivery_status_id == "") {
+            $('#delivery_status_id_err').text("Không để trống trạng thái vận chuyển");
+            test = false;
+        } 
+        if(reason == "") {
+            $('#reason_err').text("Không để trống ghi chú đơn hàng");
+            test = false;
+        }
+        if(test) {
+            $.ajax({
+                url:window.location.href,
+                type:"POST",
+                data:{
+                    status:"update_delivery_status",
+                    order_id:id,
+                    reason:reason,
+                    delivery_status_id:delivery_status_id,
+                },success:function(data){
+                    console.log(data);
+                    data = JSON.parse(data);
+                    
+                    if(data.msg == "ok") {
+                        $.alert({
+                            title:"Thông báo",
+                            content:"Xử lý thành công",
+                            "buttons":{
+                                "Ok":function(){
+                                    location.reload();
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        }
+    }
+</script>
 <script>
     $(".kh-datepicker").datepicker({
         changeMonth: true,
@@ -195,11 +295,31 @@
 
 <!--js section end-->
 <?php
-        include_once("include/footer.php"); 
+    include_once("include/footer.php"); 
 ?>
 <?php
     } else if (is_post_method()) {
-        
+        $order_id = isset($_REQUEST["order_id"]) ? $_REQUEST["order_id"] : null;
+        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+        $delivery_status_id = isset($_REQUEST["delivery_status_id"]) ? $_REQUEST["delivery_status_id"] : null;
+        $reason = isset($_REQUEST["reason"]) ? $_REQUEST["reason"] : null;
+        if($status == "update_delivery_status") {
+            //7: thanh cong,8:huy don
+            if($delivery_status_id == 7) {
+                $delivery_complete_date = Date('Y-m-d h:i:s',time());
+                $sql_upt_complete_date = "Update orders set delivery_complete_date = ?,payment_status_id = ? where id = $order_id";
+                sql_query($sql_upt_complete_date,[$delivery_complete_date,1]);
+            } else if($delivery_status_id == 8) {
+
+            }
+            $sql_ins_history = "Insert into orders_delivery_status(order_id,delivery_status_id,reason) values(?,?,?)";
+            sql_query($sql_ins_history,[$order_id,$delivery_status_id,$reason]);
+            //
+            $sql_upt_order = "Update orders set delivery_status_id = ? where id = ?";
+            sql_query($sql_upt_order,[$delivery_status_id,$order_id]);
+            //
+            echo_json(["msg" => "ok"]);
+        }
         // code to be executed post method
     }
 ?>
