@@ -12,7 +12,7 @@
     });
 
 
-    $('.history_order >.table_order').click(function() {
+    $('.history_order >.table_order .theadd').click(function() {
         let temp = $(this).siblings('class');
         $(this).find('tbody').toggleClass('hidden_table');
     });

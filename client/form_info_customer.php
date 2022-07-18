@@ -41,7 +41,7 @@
                     </div>
                     <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
                         <label for="inputBirth" class="form-label">Ngày sinh</label>
-                        <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
+                        <input placeholder="dd-mm-yyyy" value="<?php echo ($row['birthday'] ? Date("Y-m-d",strtotime($row['birthday'])) : ""); ?>" disabled  style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" />
                         <span id="register_birthday_err" class="text-danger"></span> 
                     </div>
                     <div class="col-12 m-auto mb-1 p-0">
@@ -65,7 +65,7 @@
                     ?>
                     <div class="history_order">
                         <table class="table table_order">
-                            <thead style="cursor:pointer;">
+                            <thead class="theadd" style="cursor:pointer;">
                                 <tr>
                                     <th scope="col">Mã đơn hàng</th>
                                     <th scope="col"><?php echo $row11['orders_code'];?></th>
@@ -75,29 +75,29 @@
                                 <tr>
                                     <th scope="row">Tổng tiền thanh toán</th>
                                     <td><?php echo number_format($row11['total'],0,".",".");?>đ</td>
-                                    <td></td>
+                                    <!-- <td></td> -->
                                 </tr>
                                 <tr>
                                     <th scope="row">Trạng thái thanh toán</th>
                                     <td><?php echo $row11['trang_thai_thanh_toan'];?></td>
-                                    <td></td>
+                                    <!-- <td></td> -->
                                 </tr>
                                 <tr>
                                     <th scope="row">Ghi chú đơn hàng</th>
                                     <td><?php echo $row11['note'];?></td>
-                                    <td></td>
+                                    <!-- <td></td> -->
                                 </tr>
                                 <tr>
                                     <th scope="row">Ngày đặt hàng</th>
                                     <td><?php echo Date("d-m-Y",strtotime($row11['created_at']));?></td>
-                                    <td></td>
+                                    <!-- <td></td> -->
                                 </tr>
                                 <tr>
                                     <th scope="row">Người mua hàng</th>
                                     <td><?php echo $name;?></td>
-                                    <td></td>
+                                    <!-- <td></td> -->
                                 </tr>
-                                <tr></tr>
+                                <tr><th scope="col"><button class="w-100">Hủy đơn hàng</button></th></tr>
                                 <tr>
                                     <tr style="color:red;">
                                         <th style="width:400px;">Tên sản phẩm</th>

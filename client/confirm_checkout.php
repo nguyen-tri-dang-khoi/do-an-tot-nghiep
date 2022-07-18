@@ -81,11 +81,13 @@
                     <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
                     <p id="phone_err" class="text-danger"></p>
                 </div>
-                <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
-                        <label for="inputBirth" class="form-label">Ngày sinh</label>
-                        <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
+                <!-- <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
+                    <label for="inputBirth" class="form-label">Ngày sinh</label>
+                    <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
+                    <span id="register_birthday_err" class="text-danger"></span> 
                         <span id="register_birthday_err" class="text-danger"></span> 
-                    </div>
+                    <span id="register_birthday_err" class="text-danger"></span> 
+                </div> -->
                 <div class="col-12 m-auto  mt-2 p-0 ">
                     <label for="inputAddress" class="form-label">Địa chỉ giao hàng</label>
                     <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
@@ -100,13 +102,13 @@
                 <h4 class="p-0" style="font-weight: 700;margin-top:15px;">Hình thức thanh toán</h4>
                 <hr>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault1" value="cod">
+                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault1" value="cod" checked>
                         <label class="form-check-label" for="flexRadioDefault1">
                             Thanh toán tại nơi giao hàng
                         </label>
                 </div>
                     <div class="form-check">
-                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault2" value="vnpay" checked>
+                    <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault2" value="vnpay" >
                     <label class="form-check-label" for="flexRadioDefault2">
                         Thanh toán bằng VNPay
                     </label>
@@ -170,7 +172,7 @@
                                 }
                             ?>
                         </div>
-                        <button onclick="submitForm()" class="go-cart mt-4 disable">Thanh toán</button>
+                        <button onclick="submitForm()" name="redirect" id="redirect" class="go-cart mt-4 disable">Thanh toán</button>
                     </div>
                 </div>
             </div>

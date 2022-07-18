@@ -195,12 +195,12 @@ function generate_multilevel_menus($connection, $parent_id = NULL){
                     </div>
                 </div>
             </div>
-        <?php
-                }
+    <?php
             }
-            else {
-                echo "Không có sản phẩm";
-            }
-        } 
+        }
+        else {
+            echo "Không có sản phẩm";
+        }
+    } 
 
-        ?>
+    ?>
