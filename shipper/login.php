@@ -1,5 +1,4 @@
 <?php
-    
     include_once("../lib/database.php");
     if(is_get_method()) {
         include_once("include/login_redirect.php"); 
@@ -13,7 +12,6 @@
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
-        
     }
 </style>
 <body class="shipper-page center">

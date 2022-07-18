@@ -40,7 +40,7 @@
 </table>
 <?php
     } else if($status == "show_order_detail") {
-        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.id as 'o_id',o.orders_code,o.payment_status_id,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
+        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.id as 'o_id',o.orders_code,o.payment_status_id,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.delivery_status_id as 'o_delivery_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
         c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
         $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
         $client_order = fetch(sql_query($sql_get_client_order));
@@ -93,19 +93,24 @@
                     <td>
                         <?php
                             $o_id = $client_order['o_id'];
+                            $o_payment_status_id = $client_order['o_payment_status_id'];
+                            $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
+                            $rows_pay = fetch(sql_query($sql_pay));
+                            echo $rows_pay['payment_status_name'];
                         ?>
-                        <select onchange="updatePaymentStatus('<?=$o_id;?>')" name="update-payment-status" class="form-control" >
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <th>Trạng thái giao hàng</th>
+                    <td>
                         <?php
-                            
-                            $sql_pay = "select * from payment_status";
-                            $rows_pay = fetch_all(sql_query($sql_pay));
-                            foreach($rows_pay as $pay) {
+                            $id_delivery_status = $client_order['o_delivery_status_id'];
+                            $sql_delivery_status = "select * from delivery_status where id = $id_delivery_status limit 1";
+                            $row_ok = fetch(sql_query($sql_delivery_status));
+                            echo $row_ok['delivery_status_name'];
                         ?>
-                            <option <?=$pay['id'] == $client_order['payment_status_id'] ? "selected" : "";?> value="<?=$pay['id'];?>"><?=$pay['payment_status_name'];?></option>
-                        <?php
-                            }
-                        ?>
-                        </select>
+
                     </td>
                 </tr>
                 <tr>
@@ -146,6 +151,35 @@
                         <td><?=number_format($row['od_count'] * $row['od_price'],0,"",".") . "đ"?></td>
                     </tr>
                     <?php } ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12">
+            <?php
+                $sql_get_history_shipping = "select ds.delivery_status_name,odss.reason as 'odss_reason' ,ds.created_at as 'ds_created_at' from orders ods inner join orders_delivery_status odss on ods.id = odss.order_id  inner join delivery_status ds on odss.delivery_status_id = ds.id where ods.id = ?";
+                $rows_history_shipping = fetch_all(sql_query($sql_get_history_shipping,[$order_id]));
+            ?>
+            <h4>Lịch sử đơn hàng</h4>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Trạng thái đơn hàng</th>
+                        <th>Ghi chú đơn hàng</th>
+                        <th>Ngày tạo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    foreach($rows_history_shipping as $row){
+                ?>
+                    <tr>
+                        <td><?=$row['delivery_status_name']?></td>
+                        <td><?=$row['odss_reason']?></td>
+                        <td><?=Date("d-m-Y h:i:s",strtotime($row['ds_created_at']))?></td>
+                    </tr>
+                <?php
+                    }
+                ?>
                 </tbody>
             </table>
         </div>
@@ -205,27 +239,15 @@
                         <td><?=number_format($client_order['total'],0,"",".") . "đ";?></td>
                     </tr>
                     <tr>
-                        
-                            
-                        
                         <th>Tình trạng thanh toán</th>
-                        
                         <td>
-                            <?php
-                                $o_id = $client_order['o_id'];
-                            ?>
-                            <select onchange="updatePaymentStatus('<?=$o_id;?>')" name="update-payment-status" class="form-control" >
-                            <?php
-                                
-                                $sql_pay = "select * from payment_status";
-                                $rows_pay = fetch_all(sql_query($sql_pay));
-                                foreach($rows_pay as $pay) {
-                            ?>
-                                <option <?=$pay['id'] == $client_order['payment_status_id'] ? "selected" : "";?> value="<?=$pay['id'];?>"><?=$pay['payment_status_name'];?></option>
-                            <?php
-                                }
-                            ?>
-                            </select>
+                        <?php
+                            $o_id = $client_order['o_id'];
+                            $o_payment_status_id = $client_order['payment_status_id'];
+                            $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
+                            $rows_pay = fetch(sql_query($sql_pay));
+                            echo $rows_pay['payment_status_name'];
+                        ?>
                         </td>
                     </tr>
                     <tr>
@@ -266,6 +288,35 @@
                             <td><?=number_format($row['od_count'] * $row['od_price'],0,"",".") . "đ"?></td>
                         </tr>
                         <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12">
+            <?php
+                $sql_get_history_shipping = "select ds.delivery_status_name,odss.reason as 'odss_reason' ,ds.created_at as 'ds_created_at' from orders ods inner join orders_delivery_status odss on ods.id = odss.order_id  inner join delivery_status ds on odss.delivery_status_id = ds.id where ods.id = ?";
+                $rows_history_shipping = fetch_all(sql_query($sql_get_history_shipping,[$order_id]));
+            ?>
+            <h4>Lịch sử đơn hàng</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Trạng thái đơn hàng</th>
+                            <th>Ghi chú đơn hàng</th>
+                            <th>Ngày tạo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                        foreach($rows_history_shipping as $row){
+                    ?>
+                        <tr>
+                            <td><?=$row['delivery_status_name']?></td>
+                            <td><?=$row['odss_reason']?></td>
+                            <td><?=Date("d-m-Y h:i:s",strtotime($row['ds_created_at']))?></td>
+                        </tr>
+                    <?php
+                        }
+                    ?>
                     </tbody>
                 </table>
             </div>

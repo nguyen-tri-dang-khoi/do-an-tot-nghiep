@@ -781,6 +781,8 @@
           $delivery_date = isset($_REQUEST["delivery_date"]) ? Date("Y-m-d",strtotime($_REQUEST["delivery_date"])) : null;
           $sql_give_order_to_shipper = "Update orders set shipper_id = '$shipper_id',delivery_date = '$delivery_date',delivery_status_id = '2' where id = '$id'";
           sql_query($sql_give_order_to_shipper);
+          $sql_ins_history = "Insert into orders_delivery_status(order_id,delivery_status_id,reason) values(?,?,?)";
+          sql_query($sql_ins_history,[$id,2,"Đơn hàng đã được chuyển cho shipper giao hàng ở trạng thái đã xác nhận"]);
           echo_json(["msg" => "ok","success" => "Đơn hàng đã được chuyển cho shipper xử lý thành công ở trạng thái đã xác nhận"]);
         } else if($status == "saveTabFilter") {
           $_SESSION['order_tab_id'] = isset($_SESSION['order_tab_id']) ? $_SESSION['order_tab_id'] + 1 : 1;
