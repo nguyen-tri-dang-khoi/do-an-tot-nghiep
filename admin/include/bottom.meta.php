@@ -18,10 +18,11 @@
         }
     }
     function allow_zero_to_nine(){
-        let phim_unicode = event.which == "undefined" ? event.keyCode : event.which;
+        let phim_unicode = event.keyCode;
         let convert_phim_unicode = String.fromCharCode(phim_unicode);
-        if(convert_phim_unicode.match(/^[0-9]+$/) || phim_unicode == "8" || phim_unicode == "46") {
-            let n = parseInt($(event.currentTarget).val().replace(/\./g, ",").replace(/\,/g,''),10);
+        if(convert_phim_unicode == ".") event.preventDefault();
+        if(convert_phim_unicode.match(/^\d+$/) || phim_unicode == "8" || phim_unicode == "46") {
+            let n = parseInt($(event.currentTarget).val().replace(/\./g, ""),10);
             if(!isNaN(n)){
                 $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
             }

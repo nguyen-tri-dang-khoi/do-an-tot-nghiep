@@ -796,34 +796,29 @@
          });
       }
    }
-	console.log(arr_input_file);
 	function readURLChange(input,key) {
       let target = event.currentTarget;
-      console.log(input.files);
       if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      if(arr_input_file.has(key)) {
-         if(arr_input_file.get(key).indexOf("_has") == -1) {
-            if(arr_input_file.get(key).indexOf("_del") > 0) {
-               arr_input_file.set(key,key + "_upt");
+         var reader = new FileReader();
+         if(arr_input_file.has(key)) {
+            if(arr_input_file.get(key).indexOf("_has") == -1) {
+               if(arr_input_file.get(key).indexOf("_del") > 0) {
+                  arr_input_file.set(key,key + "_upt");
+               }
             } else {
-               console.log("aaaa");
+               arr_input_file.set(key,key + "_upt");
             }
          } else {
-            arr_input_file.set(key,key + "_upt");
+            arr_input_file.set(key,key + "_ins");
          }
-      } else {
-         arr_input_file.set(key,key + "_ins");
-         console.log(arr_input_file);
-      }
-      reader.onload = function (e) {
-         $(target).parent().css({
-         'background-image' : 'url("' + e.target.result + '")',
-         'background-size': 'cover',
-         'background-position': '50%'
-         });
-      }
-      reader.readAsDataURL(input.files[0]);
+         reader.onload = function (e) {
+            $(target).parent().css({
+            'background-image' : 'url("' + e.target.result + '")',
+            'background-size': 'cover',
+            'background-position': '50%'
+            });
+         }
+         reader.readAsDataURL(input.files[0]);
       }
 	}
 	function removeImageChange(input,key){
@@ -835,7 +830,6 @@
 		$(input).parent().css({'display':'none'});
 		$(input).closest('.kh-custom-file').remove();
 		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
-		console.log(arr_input_file.get(key));
 		if(arr_input_file.has(key)) {
 			if(arr_input_file.get(key).indexOf("_has") == -1) {
 				if(arr_input_file.get(key).indexOf("_upt") > 0){
@@ -850,11 +844,9 @@
 	}
 	function gameChange(){
 		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
-		console.log(Array.from(arr_input_file.values()).join(","));
 	}
 	function readURL(input,key) {
       let target = event.currentTarget;
-      console.log(input.files);
       if (input.files && input.files[0]) {
          var reader = new FileReader();
          arr_input_file.set(key,key);
@@ -868,7 +860,7 @@
          }
          reader.readAsDataURL(input.files[0]);
       }
-	 }
+	}
    function removeImage(input,key){
       $(input).parent().css({'display':'none'});
       $(input).closest('.kh-custom-file').remove();
@@ -876,7 +868,6 @@
    }
    function game() {
       $('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
-      console.log(Array.from(arr_input_file.keys()).join(","));
    }
    function addFileInput(parent){
       let game_start = $(".kh-custom-file").last().attr('data-id');
@@ -895,7 +886,6 @@
       if(isNaN(game_start)) {
          game_start = 1;
       }
-
       let file_html = `
       <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
          <input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
@@ -912,38 +902,38 @@
       }
       
    }
-      function addFileInputChange(parent){
-         let game_start = $(".kh-custom-file").last().attr('data-id');
-         let count = $(".kh-file-list:last-child > .kh-custom-file").length;
-         console.log(count);
-         game_start = parseInt(game_start) + 1;
-         if(isNaN(game_start)) {
-            game_start = 1;
-         }
-         let count2 = $(".kh-custom-file").length;
-         // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
-         if(count2 > 11) {
-            $.alert({
-               'title':'Thông báo',
-               'content':'Bạn chỉ được phép thêm tối đa 12 hình',
-            });
-            return;
-         }
-         let file_html = `
-         <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
-            <input type="hidden" name="image" value="">
-            <div class="kh-custom-remove-img" style="display:block;">
-               <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
-            </div>
-         </div>`;
-         if(count % 6 == 0){
-            file_html = `<div class="kh-file-list">${file_html}</div>`;
-            $(file_html).appendTo('.kh-file-lists');
-         } else {
-            $(file_html).appendTo(parent);
-         }
+   function addFileInputChange(parent){
+      let game_start = $(".kh-custom-file").last().attr('data-id');
+      let count = $(".kh-file-list:last-child > .kh-custom-file").length;
+      console.log(count);
+      game_start = parseInt(game_start) + 1;
+      if(isNaN(game_start)) {
+         game_start = 1;
       }
+      let count2 = $(".kh-custom-file").length;
+      // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
+      if(count2 > 11) {
+         $.alert({
+            'title':'Thông báo',
+            'content':'Bạn chỉ được phép thêm tối đa 12 hình',
+         });
+         return;
+      }
+      let file_html = `
+      <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+         <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'${game_start}')">
+         <input type="hidden" name="image" value="">
+         <div class="kh-custom-remove-img" style="display:block;">
+            <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'${game_start}')"></span>
+         </div>
+      </div>`;
+      if(count % 6 == 0){
+         file_html = `<div class="kh-file-list">${file_html}</div>`;
+         $(file_html).appendTo('.kh-file-lists');
+      } else {
+         $(file_html).appendTo(parent);
+      }
+   }
 </script>
 <script>
    function readURLok(input){
@@ -1155,9 +1145,6 @@
                         content: msg,
                      });
                      loadDataComplete('Insert');
-                     if($('#display-image').length){
-                        $('#display-image').replaceWith('<div data-img="" class="img-fluid" id="where-replace">' + "<span></span>" + "</div>");
-                     }
                   } else if(status == "Update") {
                      msg = "Sửa dữ liệu thành công.";
                      $.alert({
@@ -1166,9 +1153,6 @@
                      });
                      loadDataComplete();
                   }
-                  $('#form-san-pham').trigger('reset');
-                  $("#msg_style").removeAttr('style');
-                  $("#msg").text(msg);
                   $('#modal-xl').modal('hide');
                } else if(res_json.msg == 'not_ok') {
                   $.alert({
@@ -1580,7 +1564,7 @@
          formData.append("upt_id[]",all_checkbox[i]);
       }
       $('tr.selected input[name="upt_name"]').each(function(){
-         if($(this).val() != "") {
+         if($(this).val() == "") {
             $(this).siblings("span.text-danger").text("Không được để trống");
             test = false;    
          } else if($(this).val().length > 200) {
@@ -1593,12 +1577,18 @@
          
       });
       $('tr.selected input[name="upt_count"]').each(function(){
-         if($(this).val() != "") {
-            formData.append("upt_count[]",$(this).val());
-            $(this).siblings("span.text-danger").text("");
-         } else {
+         if($(this).val() == "") {
             $(this).siblings("span.text-danger").text("Không được để trống");
-            test = false;
+            test = false;    
+         } else {
+            let cnt = $(this).val().replace(/\./g,'');
+            if(cnt > 1000000000) {
+               $(this).siblings("span.text-danger").text("Số lượng sản phẩm phải nhỏ hơn 1.000.000.000");
+               test = false;    
+            } else {
+               formData.append("upt_count[]",$(this).val());
+               $(this).siblings("span.text-danger").text("");
+            }
          }
       });
       let cost_price_length = $('td input[name="upt_cost"]').length;
