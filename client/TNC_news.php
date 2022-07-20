@@ -74,7 +74,7 @@
                             $result = mysqli_query($conn, $img_top_3);
                             while($row = mysqli_fetch_array($result)) {
                         ?>
-                        <div class="st st-2 d-flex j-between a-start">
+                        <div style="cursor:pointer;" onclick="location.href='TNC_news_detail.php?id=<?php echo $row['id'];?>'" class="st st-2 d-flex j-between a-start">
                             <div class="st-img" style="width:">
                                 <img class="img-2" src="<?php echo "../admin/" . $row['img_name'];?>" alt="">
                             </div>
