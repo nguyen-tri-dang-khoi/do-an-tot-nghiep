@@ -115,7 +115,6 @@
                      <table id="m-product-info" class="table table-bordered table-striped">
                         <thead>
                            <tr>
-                              <th class="w-20-imp"></th>
                               <th class="w-100">Số thứ tự</th>
                               <th>Tên sản phẩm</th>
                               <th>Đã duyệt</th>
@@ -136,7 +135,6 @@
                            foreach($rows as $row) {
                            ?>
                               <tr id="<?=$row["id"];?>">
-                                 <td></td>
                                  <td><?=$total - ($start_page + $cnt);?></td>
                                  <td><?=$row['pi_name'];?></td>
                                  <td>
@@ -174,7 +172,6 @@
                         </tbody>
                         <tfoot>
                            <tr>
-                              <th></th>
                               <th>Số thứ tự</th>
                               <th>Tên sản phẩm</th>
                               <th>Đã duyệt</th>

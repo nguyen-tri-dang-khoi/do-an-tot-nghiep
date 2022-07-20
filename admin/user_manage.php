@@ -324,8 +324,8 @@
                                                     <input <?=$upt_more == 1 ? "checked":"";?> style="width:16px;height:16px;cursor:pointer" type="checkbox" name="check_all" id="" onchange="checkedAll()">
                                                 </th>
                                                 <th class="w-120 th-so-thu-tu">Số thứ tự <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                                <th class="th-ten-day-du">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
-                                                <th class="w-170 th-email">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="th-ten-day-du w-170">Tên đầy đủ <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
+                                                <th class="w-300 th-email">Email <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-170 th-so-dien-thoai">Số điện thoại <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
                                                 <th class="w-300">Địa chỉ</th>
                                                 <th class="w-150 th-ngay-sinh">Ngày sinh <span class="sort ml-10"><i class="sort-asc fas fa-arrow-up"></i><i class="sort-desc fas fa-arrow-down"></i></span></th>
@@ -693,7 +693,7 @@
             test = false;
         }
         if(file.length == 0) {
-            if($('#where-replace > img').length == 0) {
+            if($('#where-replace > img[src*="noimage"]').length > 0) {
                 $('#img_name_err').text("Ảnh đại diện không được để trống.");
                 test = false;
             }

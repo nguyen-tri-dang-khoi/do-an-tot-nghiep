@@ -133,6 +133,7 @@
   function validateInfo(){
     $('p.text-danger').text('');
     let test = true;
+    let file = $('input[name="img_admin_file"]')[0].files;
     let full_name = $('input[name=full_name]').val();
     let phone_reg = /^\d{10}$/;
     let email_reg = /^[A-Za-z0-9+_.-]+@(.+)/;
@@ -177,6 +178,12 @@
         test = false;
       }
     }
+    if(file.length == 0) {
+        if($('#where-replace > img[src*="noimage"]').length > 0) {
+            $('#img_name_err').text("Ảnh đại diện không được để trống.");
+            test = false;
+        }
+    } 
     //
     if(address == "") {
       $('#address_err').text('Không để trống địa chỉ');

@@ -14,12 +14,12 @@
         <section class="content mt-10">
             <div class="row ml-5">
                 <div class="col-6 area-filter" style="flex-direction:column">
-                    <p style="font-weight:bold;margin:0">Chức năng thống kê: </p>
+                    <p style="font-weight:bold;margin:0">Chức năng hiển thị dữ liệu trên biểu đồ: </p>
                     <div class="row mb-20">
                         <select onchange="activeSelect()" class="list-statistic form-control col-6" name="type_statistic">
-                            <option value="">Chọn chức năng thống kê</option>
-                            <option value="1">Thống kê doanh thu</option>
-                            <option value="2">Thống kê số lượng đơn hàng</option>
+                            <option value="">Chọn chức năng hiển thị biểu đồ</option>
+                            <option value="1">Biểu đồ doanh thu</option>
+                            <option value="2">Biểu đồ số lượng đơn hàng</option>
                         </select>
                     </div>
                     <p style="font-weight:bold;margin:0">Mốc thời gian: </p>
@@ -45,7 +45,7 @@
                         </select>
                     </div>
                     <div class="row">
-                        <button onclick="showDataStatistic('statistic_excel_download')" class="dt-button button-blue">Xuất file excel báo cáo</button>
+                        <button onclick="showDataStatistic('statistic_excel_download')" class="dt-button button-blue">Xuất file excel báo cáo doanh thu và lợi nhuận</button>
                     </div>
                 </div>
                 <div class="col-6">

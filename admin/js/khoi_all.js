@@ -39,23 +39,6 @@ var html_config = {
                 <td><input class='kh-inp-ctrl' name='ins_name' type='text' value=''><p class='text-danger'></p></td>
                 <td><button onclick="insMore2('category_manage')" class='dt-button button-blue'>Thêm</button></td>
             `,
-            "ins_more": {
-                "ins_name": {
-                    'not_null': "Tên danh mục không được để trống",
-                }
-            },
-            "ins_all": {
-
-            }
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_name': {
-                    'not_null': 'Tên danh mục không được để trống',
-                }
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-product',
         },
         "read_fast": {
             'modal_read': '#form-product-type3',
@@ -124,53 +107,12 @@ var html_config = {
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
-            "ins_more": {
-                'ins_name': {
-                    'not_null': 'Tên sản phẩm không được để trống',
-                },
-                'product_type_id': {
-                    'not_null': 'Tên danh mục không được để trống',
-                },
-                'ins_count': {
-                    'not_null': 'Số lượng sản phẩm không được để trống',
-                },
-                'ins_cost': {
-                    'not_null': 'Giá gốc không được để trống',
-                },
-                'ins_price': {
-                    'not_null': 'Đơn giá không được để trống',
-                },
-                'ins_img': {
-                    'not_null': 'Ảnh đại diện không được để trống',
-                },
-                'ins_desc': {
-                    'not_null': 'Mô tả sản phẩm không được để trống',
-                }
-            }
         },
         "read_fast": {
             'modal_read': '#form-product',
             'modal_xl': '#modal-xl',
             'tbody_read': '.list-product',
             'link_read': 'ajax_product_info',
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_name': {
-                    'not_null': 'Tên sản phẩm không được để trống',
-                },
-                'upt_count': {
-                    'not_null': 'Số lượng sản phẩm không được để trống',
-                },
-                'upt_cost': {
-                    'not_null': 'Giá gốc không được để trống',
-                },
-                'upt_price': {
-                    'not_null': 'Đơn giá không được để trống',
-                },
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-product',
         },
         "del_fast": {
             'tbody_read': '.list-product',
@@ -185,108 +127,6 @@ var html_config = {
                 '.gia-goc': '.th-gia-goc|number',
                 '.don-gia': '.th-don-gia|number',
                 '.ngay-dang': '.th-ngay-dang|date',
-            }
-        }
-    },
-    "coupon_manage": {
-        "load": {
-            'tbody_read': '.list-coupon',
-        },
-        "ins_fast": {
-            "thead": `
-                <table class='table table-bordered' style="height:auto;">
-                    <thead>
-                    <tr>
-                        <th>Số thứ tự</th>
-                        <th>Mã khuyến mãi</th>
-                        <th>Nội dung khuyến mãi</th>
-                        <th>Khuyến mãi (%)</th>
-                        <th>Giá trị tối thiểu</th>
-                        <th>Giá trị tối đa</th>
-                        <th>Ngày bắt đầu</th>
-                        <th>Ngày hết hạn</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    </thead>
-            `,
-            "tbody": `
-                <td><input class='kh-inp-ctrl' name='ins_code' type='text' value='' ><p class='text-danger'></p></td>
-                <td><textarea type='textarea' class='kh-inp-ctrl' name='ins_content' type='text' value=''></textarea><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name='ins_discount_percent' type='text' value='' ><p class='text-danger'></p></td>
-                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_min' type='text' value=''><p class='text-danger'></p></td>
-                <td><input onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" class='kh-inp-ctrl' name='ins_if_subtotal_max' type='text' value='' ><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' value='' readonly><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' value='' readonly><p class='text-danger'></p></td>
-                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-            `,
-            'ins_more': {
-                'ins_code': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_discount_percent': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_content': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_if_subtotal_min': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_if_subtotal_max': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_date_start': {
-                    'not_null': 'Không được để trống',
-                },
-                'ins_date_end': {
-                    'not_null': 'Không được để trống',
-                }
-            }
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_code': {
-                    'not_null': 'Không được để trống',
-                },
-                'upt_discount_percent': {
-                    'not_null': 'Không được để trống',
-                },
-                'upt_if_subtotal_min': {
-                    'not_null': 'Không được để trống',
-                },
-                'upt_if_subtotal_max': {
-                    'not_null': 'Không được để trống',
-                },
-                'upt_date_start': {
-                    'not_null': 'Không được để trống',
-                },
-                'upt_date_end': {
-                    'not_null': 'Không được để trống',
-                }
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-coupon',
-        },
-        "read_fast": {
-            'modal_read': '#form-khuyen-mai',
-            'modal_xl': '#modal-xl',
-            'tbody_read': '.list-coupon',
-            'link_read': 'ajax_coupon_manage',
-        },
-        "del_fast": {
-            'tbody_read': '.list-coupon',
-        },
-        "sort_table": {
-            'tbody_read': '.list-coupon',
-            'thead_read': {
-                '.so-thu-tu': '.th-so-thu-tu|number',
-                '.ma-khuyen-mai': '.th-ma-khuyen-mai|string',
-                '.khuyen-mai': '.th-khuyen-mai|number',
-                '.gia-tri-toi-thieu': '.th-gia-tri-toi-thieu|number',
-                '.gia-tri-toi-da': '.th-gia-tri-toi-da|number',
-                '.ngay-bat-dau': '.th-ngay-bat-dau|date',
-                '.ngay-het-han': '.th-ngay-het-han|date',
-                '.ngay-tao': '.th-ngay-tao|date',
             }
         }
     },
@@ -318,26 +158,6 @@ var html_config = {
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
-            "ins_more": {
-                'ins_title': {
-                    'not_null': 'Tiêu đề bảng tin không được để trống',
-                },
-                'ins_content': {
-                    'not_null': 'Nội dung bảng tin không được để trống',
-                },
-                'ins_img': {
-                    'not_null': 'Ảnh đại diện bảng tin không được để trống',
-                },
-            }
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_title': {
-                    'not_null': 'Tiêu đề bảng tin không được để trống',
-                },
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-product',
         },
         "read_fast": {
             'modal_read': '#form-bang-tin',
@@ -394,47 +214,6 @@ var html_config = {
                 </td>
                 <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
             `,
-            "ins_more": {
-                'ins_fullname': {
-                    "not_null": "Tên đầy đủ không được để trống",
-                },
-                'ins_email': {
-                    "not_null": "Email không được để trống",
-                },
-                'ins_phone': {
-                    "not_null": "Số điện thoại không được để trống",
-                },
-                'ins_address': {
-                    "not_null": "Địa chỉ không được để trống",
-                },
-                'ins_birthday': {
-                    "not_null": "Ngày sinh không được để trống",
-                },
-                'ins_type': {
-                    "not_null": "Chức vụ không được để trống",
-                },
-            }
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_fullname': {
-                    "not_null": "Tên đầy đủ không được để trống",
-                },
-                'upt_email': {
-                    "not_null": "Email không được để trống",
-                },
-                'upt_phone': {
-                    "not_null": "Số điện thoại không được để trống",
-                },
-                'upt_address': {
-                    "not_null": "Địa chỉ không được để trống",
-                },
-                'upt_birthday': {
-                    "not_null": "Ngày sinh không được để trống",
-                },
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-product',
         },
         "read_fast": {
             'modal_read': '#manage_user',
@@ -454,100 +233,6 @@ var html_config = {
                 '.so-dien-thoai': '.th-so-dien-thoai|string',
                 '.dia-chi': '.th-dia-chi|string',
                 '.ngay-sinh': '.th-ngay-sinh|date',
-                '.ngay-tao': '.th-ngay-tao|date',
-            }
-        }
-    },
-    "category_discount_manage": {
-        "load": {
-            'tbody_read': '.list-category-discount',
-        },
-        "ins_fast": {
-            "thead": `
-                <table class='table table-bordered' style="height:auto;">
-                <thead>
-                <tr>
-                    <th>Số thứ tự</th>
-                    <th>Danh mục khuyến mãi</th>
-                    <th>Nội dung khuyến mãi</th>
-                    <th>Khuyến mãi (%)</th>
-                    <th>Ngày bắt đầu</th>
-                    <th>Ngày hết hạn</th>
-                    <th>Thao tác</th>
-                </tr>
-                </thead>
-            `,
-            "tbody": `
-                <td>
-                    <div style="display:flex;flex-direction:column;outline:none !important;">
-                        <ul tabindex="1" class="col-md-12 ul_menu" style="padding-left:0px;height: 65px;outline:none !important;" id="menu">
-                            <li onmouseover="load_menu()" class="parent" style="border: 1px solid #dce1e5;position:relative;">
-                                <a href="javascript:void(0)">Chọn danh mục</a>
-                                <ul class="child aaab">
-                                </ul>
-                                <input type="hidden" name="product_type_id">
-                            </li>
-                        </ul>
-                        <nav style='padding-left:0px;' class="col-md-12" aria-label="breadcrumb"></nav>
-                        <p class='text-danger'></p>
-                    </div>
-                </td>
-                <td><textarea type="textarea" name="ins_discount_content" class="kh-inp-ctrl"></textarea><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_discount_percent' type='text' onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" placeholder="Nhập giá trị khuyến mãi..."><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_start' type='text' readonly><p class='text-danger'></p></td>
-                <td><input class='kh-inp-ctrl' name='ins_date_end' type='text' readonly><p class='text-danger'></p></td>
-                <td><button onclick='insMore2()' class='dt-button button-blue'>Thêm</button></td>
-            `,
-            "ins_more": {
-                "product_type_id": {
-                    "not_null": "Không được để trống",
-                },
-                'ins_discount_content': {
-                    "not_null": "Không được để trống",
-                },
-                'ins_discount_percent': {
-                    "not_null": "Không được để trống",
-                },
-                'ins_date_start': {
-                    "not_null": "Không được để trống",
-                },
-                'ins_date_end': {
-                    "not_null": "Không được để trống",
-                }
-            }
-        },
-        "upt_fast": {
-            'upt_more': {
-                'upt_discount_percent': {
-                    "not_null": "Không được để trống",
-                },
-                'upt_date_start': {
-                    "not_null": "Không được để trống",
-                },
-                'upt_date_end': {
-                    "not_null": "Không được để trống",
-                }
-            },
-            'upt_more_id': 'upt_id',
-            'upt_all': '.list-product',
-        },
-        "read_fast": {
-            'modal_read': '#form-danh-muc-khuyen-mai',
-            'modal_xl': '#modal-xl',
-            'tbody_read': '.list-category-discount',
-            'link_read': 'ajax_category_discount_manage',
-        },
-        "del_fast": {
-            'tbody_read': '.list-category-discount',
-        },
-        "sort_table": {
-            'tbody_read': '.list-category-discount',
-            'thead_read': {
-                '.khuyen-mai': '.th-khuyen-mai|number',
-                '.so-thu-tu': '.th-so-thu-tu|number',
-                '.danh-muc-khuyen-mai': '.th-danh-muc-khuyen-mai|string',
-                '.ngay-bat-dau': '.th-ngay-bat-dau|date',
-                '.ngay-het-han': '.th-ngay-het-han|date',
                 '.ngay-tao': '.th-ngay-tao|date',
             }
         }

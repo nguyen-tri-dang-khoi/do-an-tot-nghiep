@@ -37,7 +37,7 @@
                 </div>
                 <p id="img_name_err" class="text-danger"></p>
                 <div class="img-fluid" id="where-replace">
-                    <img src="<?=$result['img_name'];?>" class="img-fluid" id="display-image"/>
+                    <img src="<?=$result['img_name'] ? $result['img_name'] : "upload/noimage.jpg";?>" class="img-fluid" id="display-image"/>
                 </div>
             </div>
         </div>
@@ -59,9 +59,8 @@
             <div class="col-md-6 form-group">
                 <label for="type">Chức vụ</label>
                 <select name="type" class="form-control">
-                    <option value="">Chọn chức vụ</option>
-                    <option value="officer" <?=$result['type'] == 'officer' ? "selected" : "";?>>Nhân viên văn phòng</option>
-                    <option value="shipper" <?=$result['type'] == 'shipper' ? "selected" : "";?>>Nhân viên giao hàng</option>
+                    <option value="officer" <?=$result['type'] == 'officer' ? "selected" : "style='display:none;'";?>>Nhân viên văn phòng</option>
+                    <option value="shipper" <?=$result['type'] == 'shipper' ? "selected" : "style='display:none;'";?>>Nhân viên giao hàng</option>
                 </select>
                 <p id="type_err" class="text-danger"></p>
             </div>

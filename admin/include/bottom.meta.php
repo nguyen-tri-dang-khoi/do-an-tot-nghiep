@@ -5,7 +5,6 @@
 <script src="js/boostrap.bundle.min.js"></script>
 <script src="js/adminlte.js"></script>
 <script src="js/jquery-confirm.min.js"></script>
-<script src="js/jquery.validate.min.js"></script>
 <script>
     $('.ui-icon.ui-icon-circle-triangle-w').removeClass('.ui-icon.ui-icon-circle-triangle-w');
     $("input[type='number']").attr("min",0);
