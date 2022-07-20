@@ -57,7 +57,7 @@
                 <div class="col-6 mt-4">
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
                     <?php
-                        $sql_order = "select o.id as 'id_don_hang',o.is_cancel,pm.payment_name as 'pm_payment_name', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id inner join payment_method pm on o.payment_method_id =  pm.id where o.customer_id = '$customer_id'";
+                        $sql_order = "select o.id as 'id_don_hang',o.delivery_status_id as 'o_delivery_status_id' ,o.is_cancel,pm.payment_name as 'pm_payment_name', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id inner join payment_method pm on o.payment_method_id =  pm.id where o.customer_id = '$customer_id'";
                        // print_r($sql_order);
                         $result = mysqli_query($conn,$sql_order);
                         while($row11 = mysqli_fetch_assoc($result)) {
@@ -89,12 +89,25 @@
                                 </tr>
                                 <tr>
                                     <th scope="row">Ghi chú đơn hàng</th>
-                                    <td><?php echo $row11['note'];?></td>
+                                    <td><?php echo $row11['note'] ? $row11['note'] : "Không có ghi chú";?></td>
                                     <!-- <td></td> -->
                                 </tr>
                                 <tr>
-                                <th scope="row">Trạng thái đơn hàng</th>
-                                    <td><?php echo ($row11['is_cancel'] == 1 ? "Đã huỷ":"");?></td>
+                                <th scope="row">Trạng thái đơn hàng mới nhất</th>
+                                    <td>
+                                        <?php
+                                            $order_id_delivery = $row11['o_delivery_status_id'];
+                                            if($row11['is_cancel'] == 1) {
+                                                echo "Đã huỷ";
+                                            } else if($row11['is_cancel'] == 0) {
+                                                $sql_order_delivery = "select * from delivery_status where id = $order_id_delivery limit 1";
+                                                $row_delivery = mysqli_query($conn,$sql_order_delivery);
+                                                $row_delivery = mysqli_fetch_array($row_delivery);
+                                                echo $row_delivery['delivery_status_name'];
+                                            }
+                                        ?>
+                                       
+                                    </td>
                                     <!-- <td></td> -->
                                 </tr>
                                 <tr>

@@ -40,7 +40,7 @@
 </table>
 <?php
     } else if($status == "show_order_detail") {
-        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.id as 'o_id',o.orders_code,o.payment_status_id,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.delivery_status_id as 'o_delivery_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
+        $sql_get_client_order = "select c.full_name,c.phone,c.email,c.birthday, c.address as 'c_address',o.id as 'o_id',o.is_cancel as 'o_is_cancel',o.orders_code,o.payment_status_id,o.address as 'o_address', o.total,o.payment_status_id as 'o_payment_status_id',o.delivery_status_id as 'o_delivery_status_id',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user c on
         c.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' limit 1";
         $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
         $client_order = fetch(sql_query($sql_get_client_order));
@@ -92,11 +92,11 @@
                     <th>Tình trạng thanh toán</th>
                     <td>
                         <?php
-                            $o_id = $client_order['o_id'];
-                            $o_payment_status_id = $client_order['o_payment_status_id'];
-                            $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
-                            $rows_pay = fetch(sql_query($sql_pay));
-                            echo $rows_pay['payment_status_name'];
+                        $o_id = $client_order['o_id'];
+                        $o_payment_status_id = $client_order['o_payment_status_id'];
+                        $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
+                        $rows_pay = fetch(sql_query($sql_pay));
+                        echo $rows_pay['payment_status_name'];
                         ?>
                         
                     </td>
@@ -105,10 +105,14 @@
                     <th>Trạng thái giao hàng</th>
                     <td>
                         <?php
+                        if($client_order['o_is_cancel'] == 0) {
                             $id_delivery_status = $client_order['o_delivery_status_id'];
                             $sql_delivery_status = "select * from delivery_status where id = $id_delivery_status limit 1";
                             $row_ok = fetch(sql_query($sql_delivery_status));
                             echo $row_ok['delivery_status_name'];
+                        } else {
+                            echo 'Đơn hàng đã huỷ';
+                        }
                         ?>
 
                     </td>
@@ -189,7 +193,7 @@
         $arr = explode(",",$str_arr_upt);
         $i = 1;
         foreach($arr as $order_id) {
-            $sql_get_client_order = "select u.full_name as 'u_full_name',u.phone,u.email,u.birthday, u.address as 'u_address',o.id as 'o_id',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
+            $sql_get_client_order = "select u.full_name as 'u_full_name',u.phone,u.email,u.birthday, u.address as 'u_address',o.delivery_status_id as 'o_delivery_status_id',o.id as 'o_id',o.orders_code,o.address as 'o_address', o.total,o.payment_status_id,o.is_cancel as 'o_is_cancel',o.note,o.created_at as 'o_created_at',pm.payment_name from orders o inner join user u on
             u.id = o.customer_id inner join payment_method pm on o.payment_method_id = pm.id where o.id = '$order_id' and u.type = 'customer' limit 1";
             $sql_get_detail_order = "select pi.name as 'pi_name', od.count as 'od_count', od.price as 'od_price' from order_detail od inner join product_info pi on od.product_info_id = pi.id where od.order_id = '$order_id'";
             $client_order = fetch(sql_query($sql_get_client_order));
@@ -250,6 +254,22 @@
                         ?>
                         </td>
                     </tr>
+                    <tr>
+                    <th>Trạng thái giao hàng</th>
+                    <td>
+                        <?php
+                        if($client_order['o_is_cancel'] == 0) {
+                            $id_delivery_status = $client_order['o_delivery_status_id'];
+                            $sql_delivery_status = "select * from delivery_status where id = $id_delivery_status limit 1";
+                            $row_ok = fetch(sql_query($sql_delivery_status));
+                            echo $row_ok['delivery_status_name'];
+                        } else {
+                            echo 'Đơn hàng đã huỷ';
+                        }
+                        ?>
+
+                    </td>
+                </tr>
                     <tr>
                         <th>Phương thức thanh toán</th>
                         <td><?=$client_order['payment_name']?></td>
