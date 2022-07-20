@@ -57,8 +57,8 @@
                 <div class="col-6 mt-4">
                     <h3 class="p-0">Lịch sử mua hàng</h3>    
                     <?php
-                        $sql_order = "select o.id as 'id_don_hang', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id where o.customer_id = '$customer_id'";
-                        // print_r($sql_order);
+                        $sql_order = "select o.id as 'id_don_hang',o.is_cancel,pm.payment_name as 'pm_payment_name', orders_code,note,o.created_at,total,ps.payment_status_name as 'trang_thai_thanh_toan' from orders o inner join payment_status ps on o.payment_status_id = ps.id inner join payment_method pm on o.payment_method_id =  pm.id where o.customer_id = '$customer_id'";
+                       // print_r($sql_order);
                         $result = mysqli_query($conn,$sql_order);
                         while($row11 = mysqli_fetch_assoc($result)) {
                            
@@ -83,8 +83,18 @@
                                     <!-- <td></td> -->
                                 </tr>
                                 <tr>
+                                    <th scope="row">Phương thức thanh toán</th>
+                                    <td><?php echo $row11['pm_payment_name'];?></td>
+                                    <!-- <td></td> -->
+                                </tr>
+                                <tr>
                                     <th scope="row">Ghi chú đơn hàng</th>
                                     <td><?php echo $row11['note'];?></td>
+                                    <!-- <td></td> -->
+                                </tr>
+                                <tr>
+                                <th scope="row">Trạng thái đơn hàng</th>
+                                    <td><?php echo ($row11['is_cancel'] == 1 ? "Đã huỷ":"");?></td>
                                     <!-- <td></td> -->
                                 </tr>
                                 <tr>
@@ -97,7 +107,7 @@
                                     <td><?php echo $name;?></td>
                                     <!-- <td></td> -->
                                 </tr>
-                                <tr><th scope="col"><button class="w-100">Hủy đơn hàng</button></th></tr>
+                                <tr><th scope="col"><button class="w-100" onclick="cancelOrder('<?php echo $row11['id_don_hang'];?>')">Hủy đơn hàng</button></th></tr>
                                 <tr>
                                     <tr style="color:red;">
                                         <th style="width:400px;">Tên sản phẩm</th>
@@ -109,7 +119,7 @@
                                     <?php
                                         $customer_id = $_SESSION['customer_id'];
                                         $order_id = $row11['id_don_hang'];
-                                        $sql_order_history = "Select pi.name as 'ten_san_pham',pi.img_name as 'pi_img', od.count as 'so_luong_mua', od.price as 'gia_mua' from orders o inner join order_detail od on o.id = od.order_id inner join product_info pi on od.product_info_id = pi.id where o.customer_id = '$customer_id' and o.id = $order_id and o.is_cancel = 0";
+                                        $sql_order_history = "Select pi.name as 'ten_san_pham',pi.img_name as 'pi_img', od.count as 'so_luong_mua', od.price as 'gia_mua' from orders o inner join order_detail od on o.id = od.order_id inner join product_info pi on od.product_info_id = pi.id where o.customer_id = '$customer_id' and o.id = $order_id";
                                         $result2 = mysqli_query($conn,$sql_order_history);
                                         while($row = mysqli_fetch_array($result2)) {
                                     ?>
@@ -177,6 +187,21 @@
                 test = false;
             }
             return test;
+        }
+        function cancelOrder(id){
+            $.ajax({
+                url:"cancel_order.php",
+                type:"POST",
+                data:{
+                    thao_tac:"huy_don_hang",
+                    "order_id": id,
+                },success:function(data){
+                    data = JSON.parse(data);
+                    if(data.msg == "ok") {
+                        location.reload();
+                    }
+                }
+            })
         }
     </script>
     <?php include_once ('js/js_customIndex.php'); ?>

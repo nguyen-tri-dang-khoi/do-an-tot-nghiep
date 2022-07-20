@@ -4,6 +4,7 @@
     $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
     $phone = isset($_REQUEST['phone']) ? $_REQUEST['phone'] : null;
     $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
+    $address = isset($_REQUEST['address']) ? $_REQUEST['address'] : null;
     $birthday = isset($_REQUEST['birthday']) ? Date("Y-m-d",strtotime($_REQUEST['birthday'])) : null;
     // print_r($birthday);
     // exit();
@@ -40,7 +41,7 @@
             header("location: Login_signup.php");
             exit();
         }
-        $sql_signup = "Insert into user(type,full_name,email,phone,birthday,password) values('customer','$full_name','$email','$phone','$birthday','$password')";
+        $sql_signup = "Insert into user(type,full_name,email,phone,address,birthday,password) values('customer','$full_name','$email','$phone','$address','$birthday','$password')";
         $result = mysqli_query($conn, $sql_signup);
         header("location: Login_signup.php");
         exit();

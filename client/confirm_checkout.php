@@ -46,7 +46,7 @@
             <div class="modal-body row ">
                 <div class="body_products col-7 ">
                     <div id="view_cart" class="content-products-cart cart" style="border:none;">
-                    <div class="modal-target">      
+                        <div class="modal-target">      
                             <div><h5>1. Chọn sản phẩm</h5></div>
                             <div><h5>2. Xác nhận đơn hàng</h5></div>
                             <div><h5>3. Thanh toán</h5></div>
@@ -68,46 +68,39 @@
             <form id="infoCustomer_Checkout" action="form_info_customer_process.php" onsubmit="return validate()"method="post" class="row col-12 m-auto p-0">
                 <div class="col-12 m-auto mt-2 p-0 ">
                     <label for="inputAddress2" class="form-label">Họ và Tên</label>
-                    <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên ">
+                    <input name="full_name" type="text" value="<?php echo $row['full_name']; ?>" class="form-control" placeholder="Họ và tên " readonly>
                     <p id="full_name_err" class="text-danger"></p>
                 </div>
                 <div class="col-md-12 m-auto mt-2 p-0 ">
                     <label for="inputEmail4" class="form-label">Email</label>
-                    <input name="email" type="email" value="<?php echo $row['email']; ?>" class="form-control"  placeholder="abc@email.com">
+                    <input name="email" type="email" value="<?php echo $row['email']; ?>" class="form-control"  placeholder="abc@email.com" readonly>
                     <p id="email_err" class="text-danger"></p>
                 </div>
                 <div class="col-md-12 m-auto mt-2 p-0">
                     <label for="inputcontact" class="form-label">Số điện thoại</label>
-                    <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx">
+                    <input name="phone" type="text" value="<?php echo ($row['phone'] ? $row['phone'] : "");?>" class="form-control"  placeholder="0123456xxx" readonly>
                     <p id="phone_err" class="text-danger"></p>
                 </div>
-                <!-- <div class="col-12 m-auto mb-1 p-0 d-flex flex-column">
-                    <label for="inputBirth" class="form-label">Ngày sinh</label>
-                    <input style="border-radius: 5px;border: 1px solid #ced4da;padding: 2px 5px;" type="date" id="birthday" name="birthday" placeholder="Ngày sinh" />
-                    <span id="register_birthday_err" class="text-danger"></span> 
-                        <span id="register_birthday_err" class="text-danger"></span> 
-                    <span id="register_birthday_err" class="text-danger"></span> 
-                </div> -->
                 <div class="col-12 m-auto  mt-2 p-0 ">
                     <label for="inputAddress" class="form-label">Địa chỉ giao hàng</label>
-                    <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM">
+                    <input name="address" type="text" value="<?php echo ($row['address'] ? $row['address'] : ""); ?>" class="form-control" placeholder="xxx Trần Xuân Soạn - Tân Thuận Tây - Quận 7 - HCM" readonly>
                     <p id="address_err" class="text-danger"></p>
                 </div>
+                <input type="hidden" name="thao_tac" value="tao_don_hang">
                 
-                <input type="hidden" name="thao_tac" value="updateInfoConfirmCheckout">
                 <div class="col-12 mt-2 p-0 m-auto">
-                    <button type="submit" class="btn btn-primary">Cập nhật thông tin khác hàng</button>
+                    <a href="form_info_customer.php?id=<?php echo $customer_id;?>" class="btn btn-primary">Cập nhật thông tin khác hàng</a>
                 </div>
                 
                 <h4 class="p-0" style="font-weight: 700;margin-top:15px;">Hình thức thanh toán</h4>
                 <hr>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault1" value="cod" checked>
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Thanh toán tại nơi giao hàng
-                        </label>
+                    <label class="form-check-label" for="flexRadioDefault1">
+                        Thanh toán bằng chuyển khoản
+                    </label>
                 </div>
-                    <div class="form-check">
+                <div class="form-check">
                     <input class="form-check-input" type="radio" name="payment_method_id" id="flexRadioDefault2" value="vnpay" >
                     <label class="form-check-label" for="flexRadioDefault2">
                         Thanh toán bằng VNPay
@@ -115,16 +108,16 @@
                 </div>
                 <div class="col-12 m-auto mt-2  p-0">
                     <label for="inputAddress" class="form-label">Ghi chú</label>
-                    <textarea name="note" value="" class="form-control" placeholder="Bỏ tạm address đó sửa sau"></textarea>
+                    <textarea name="note" value="" class="form-control" placeholder="Ghi chú..."></textarea>
                 </div>
             </form>
     <?php
             }
         }
     ?>
-                    </div>
                 </div>
-                <div class="body_Price col-5 pr-0">
+            </div>
+            <div class="body_Price col-5 pr-0">
                     <div class="allPrice">
                         <h5>Thông tin giỏ hàng</h5>
                         <div class="totalProduct">
@@ -148,7 +141,7 @@
                                     $totalPrice = 0;
                                     
                                         foreach($_SESSION['cart'] as $cart){
-                                           $totalPrice += $cart['price'] * $cart['count'];
+                                            $totalPrice += $cart['price'] * $cart['count'];
                                         }$totalPrice = number_format($totalPrice,"0",".",".");
                                         echo $totalPrice. " đ";
                                 ?>
@@ -172,8 +165,9 @@
                                 }
                             ?>
                         </div>
-                        <button onclick="submitForm()" name="redirect" id="redirect" class="go-cart mt-4 disable">Thanh toán</button>
+                        <button type="button" onclick="submitForm()" name="redirect" id="redirect" class="go-cart mt-4 disable">Thanh toán</button>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -182,12 +176,11 @@
     <script type = "text/javascript" src = "//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"> </script>
     <?php include_once ('js/js_customIndex.php'); ?>
     <script>
-        function submitForm(){
-            event.preventDefault();
-            $('input[name="thao_tac"]').val('tao_don_hang');
-            $('#infoCustomer_Checkout').attr('action','confirm_checkout_process.php');
-            $('#infoCustomer_Checkout').submit();
-        }
+         function submitForm(){
+             event.preventDefault();
+             $('#infoCustomer_Checkout').attr('action','confirm_checkout_process.php');
+             $('#infoCustomer_Checkout').submit();
+         }
         function validate(){
             let test = true;
             $('p.text-danger').text("");

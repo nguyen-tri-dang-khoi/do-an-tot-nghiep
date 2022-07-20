@@ -69,6 +69,7 @@
             mysqli_query($conn,$sql_update_total);
             // echo json_encode(["msg" => "ok"]);
             // exit();
+            $_SESSION['cart'] = [];
             header("Location:form_info_customer.php");
         } else if($payment_method_id == 'vnpay'){ 
             $payment_method_id = 4;

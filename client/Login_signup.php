@@ -42,6 +42,9 @@
             
             <input type="date" id="register_birthday" name="birthday" placeholder="Ngày sinh" />
             <span id="register_birthday_err" class="text-danger"></span> 
+
+            <input type="text" id="register_address" name="address" placeholder="Địa chỉ" />
+            <span id="register_address_err" class="text-danger"></span>
             
             <input type="password" id="register_password" name="password" placeholder="Mật Khẩu" />
 
@@ -130,11 +133,13 @@
             let phone = $('#register_phone').val();
             let birthday = $('#register_birthday').val();
             let password = $('#register_password').val();
+            let address = $('#register_address').val();
             console.log(full_name);
             console.log(email);
             console.log(phone);
             console.log(birthday);
             console.log(password);
+            console.log(address);
             if(full_name == "") {
                 $('#register_full_name_err').text("Tên đầy đủ không được để trống");
                 test = false;
@@ -177,6 +182,11 @@
                 test = false;
             } else if(password < 4){
                 $('#register_password_err').text("Mật khẩu từ 4 ký tự trở lên");
+                test = false;
+            }
+
+            if(address == "") {
+                $('#register_address_err').text("Địa chỉ không được để trống");
                 test = false;
             }
             return test;
