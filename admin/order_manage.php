@@ -320,7 +320,8 @@
                                 </button>
                                 <?php } ?>
                                 <?php
-                                  if($row['o_delivery_status_id'] == 1 && $row['o_is_cancel'] == 0) {
+                                // da thanh toan
+                                  if($row['o_delivery_status_id'] == 1 && $row['o_is_cancel'] == 0 && $row['payment_status_id'] == 1) {
                                 ?>
                                   <button onclick="showModalShipOrder('<?=$row['o_id'];?>')" class="dt-button button-grey"
                                   data-id="<?=$row["o_id"];?>" >
@@ -512,27 +513,39 @@
     $(event.currentTarget).closest(_class).remove();
   }
   function updatePaymentStatus(order_id){
-    let payment_status_id = $('select[name="update-payment-status"] > option:selected').val();
-    if(payment_status_id != "") {
-      $.ajax({
-        url:window.location.href,
-        type:"POST",
-        data: {
-          "order_id": order_id,
-          "status": "update_payment_status",
-          "payment_status_id": payment_status_id,
-        },success:function(data){
-          console.log(data);
-          data = JSON.parse(data);
-          if(data.msg == "ok") {
-            $.alert({
-              title: "Thông báo",
-              content: "Bạn đã thay đổi trạng thái thanh toán đơn hàng thành công",
-            })
-          }
+    $.confirm({
+      title:"Thông báo",
+      content:"Bạn có chắc chắn muốn cập nhật đơn hàng này là 'đã thanh toán'. Sau khi cập nhật xong, bạn sẽ không thể chỉnh sửa ?",
+      buttons: {
+        "Có":function(){
+          $.ajax({
+            url:window.location.href,
+            type:"POST",
+            data: {
+              "order_id": order_id,
+              "status": "update_payment_status",
+            },success:function(data){
+              console.log(data);
+              data = JSON.parse(data);
+              if(data.msg == "ok") {
+                $.alert({
+                  title: "Thông báo",
+                  content: "Bạn đã thay đổi trạng thái thanh toán đơn hàng thành công",
+                  buttons:{
+                    "Ok":function(){
+                      location.reload();
+                    }
+                  }
+                })
+              }
+            }
+          })
+        },"Không":function(){
+
         }
-      })
-    }
+      }
+    })
+   
   }
   function showListPayment(){
     $('#form-payment').load(`ajax_order_manage.php?status=show_list_payment`,() => {
@@ -807,9 +820,8 @@
           $_SESSION['order_manage_tab'][$index]['tab_name'] = $new_tab_name;
           echo_json(["msg" => "ok","tab_urlencode" => $_SESSION['order_manage_tab'][$index]['tab_urlencode']]);
        } else if($status == "update_payment_status") {
-        $payment_status_id = isset($_REQUEST["payment_status_id"]) ? $_REQUEST["payment_status_id"] : null;
         $order_id = isset($_REQUEST["order_id"]) ? $_REQUEST["order_id"] : null;
-        $sql_update_payment_status = "Update orders set payment_status_id = $payment_status_id where id = $order_id";
+        $sql_update_payment_status = "Update orders set payment_status_id = 1 where id = $order_id"; // da thanh toan
         sql_query($sql_update_payment_status);
         echo_json(["msg" => "ok"]);
        }

@@ -97,6 +97,11 @@
                         $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
                         $rows_pay = fetch(sql_query($sql_pay));
                         echo $rows_pay['payment_status_name'];
+                        if($rows_pay['payment_status_name'] == "Chưa thanh toán" && $client_order['o_is_cancel'] == 0) {
+                        ?>
+                                <button onclick="updatePaymentStatus('<?=$o_id;?>')" class="btn btn-secondary">Cập nhật đã thanh toán</button>
+                        <?php
+                            }
                         ?>
                         
                     </td>
@@ -251,6 +256,11 @@
                             $sql_pay = "select * from payment_status where id = $o_payment_status_id limit 1";
                             $rows_pay = fetch(sql_query($sql_pay));
                             echo $rows_pay['payment_status_name'];
+                            if($rows_pay['payment_status_name'] == "Chưa thanh toán") {
+                        ?>
+                                <button onclick="updatePaymentStatus('<?=$o_id;?>')" class="btn btn-secondary">Cập nhật đã thanh toán</button>
+                        <?php
+                            }
                         ?>
                         </td>
                     </tr>
@@ -406,6 +416,7 @@
                             <?php
                                 $sql_get_payment_status = "select * from payment_status where id = " . $client_order['o_payment_status_id'];
                                 $res = fetch(sql_query($sql_get_payment_status));
+                                
                             ?>
                             <?=$res['payment_status_name'];?>
                         </td>
