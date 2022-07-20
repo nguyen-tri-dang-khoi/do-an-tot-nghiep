@@ -762,7 +762,7 @@ td,button,label,option,input,select,.select2-selection__rendered {
     font-size:17px !important;
     font-weight: 700 !important;
 }
-td,th,tr,thead,tbody,tfoot{
+td,th,tr,thead,tbody,tfoot,textarea.kh-inp-ctrl{
     border:1px solid black !important;
 }
 button.kh-btn-append-file {
@@ -771,7 +771,7 @@ button.kh-btn-append-file {
 .ui-icon {
     color:black !important;
 }
-h1,h2,h3,h4,h5,h6,li{
+h1,h2,h3,h4,h5,h6,li,textarea.kh-inp-ctrl{
     color:black !important;
     font-weight: bold;
 }
@@ -804,3 +804,7 @@ option:hover {
 input.form-control,input.kh-inp-ctrl,select {
     border: 2px solid !important;
 } 
+input::placeholder {
+    color:black !important;
+    font-weight: normal !important;
+}
