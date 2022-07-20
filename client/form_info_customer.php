@@ -107,7 +107,13 @@
                                     <td><?php echo $name;?></td>
                                     <!-- <td></td> -->
                                 </tr>
+                                <?php
+                                    if($row11['is_cancel'] == 0) {
+                                ?>
                                 <tr><th scope="col"><button class="w-100" onclick="cancelOrder('<?php echo $row11['id_don_hang'];?>')">Hủy đơn hàng</button></th></tr>
+                                <?php
+                                    }
+                                ?>
                                 <tr>
                                     <tr style="color:red;">
                                         <th style="width:400px;">Tên sản phẩm</th>
