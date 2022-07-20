@@ -4,7 +4,7 @@
             <div class="info-general">
                 <div class="item">
                     <h5>Thông tin chung</h4>
-                    <a href="#">Giới thiệu TNC Store</a>
+                    <a href="#">Giới thiệu TNC Huy Khôi</a>
                     <a href="#">Tuyển dụng</a>
                     <a href="#">Tin tức</a>
                     <a href="#">Ý kiến khách hàng</a>

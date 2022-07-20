@@ -12,9 +12,9 @@
     });
 
 
-    $('.history_order >.table_order .theadd').click(function() {
+    $('.history_order >.table_order > .theadd').click(function() {
         let temp = $(this).siblings('class');
-        $(this).find('tbody').toggleClass('hidden_table');
+        $(this).siblings('tbody').toggleClass('hidden_table');
     });
 
     $('#exampleModal').on('shown.bs.modal',function() {

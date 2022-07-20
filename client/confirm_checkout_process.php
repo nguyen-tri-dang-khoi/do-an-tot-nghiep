@@ -158,9 +158,9 @@
                 $vnpSecureHash =   hash_hmac('sha512', $hashdata, $vnp_HashSecret);//  
                 $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
             }
-            $returnData = array('code' => '00'
-                , 'message' => 'success'
-                , 'data' => $vnp_Url);
+            // $returnData = array('code' => '00'
+            //     , 'message' => 'success'
+            //     , 'data' => $vnp_Url);
             if (isset($_POST['redirect'])) {
                 header('Location: ' . $vnp_Url);
                 die();

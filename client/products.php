@@ -195,9 +195,10 @@
                     <div class="sortss_product">
                     <?php 
                     $conn = connect();
+
                     $get_data_product = "SELECT * FROM product_info WHERE $where limit $start_page,$limit $order_by";
                     $result = mysqli_query($conn, $get_data_product);
-                    
+                    if(!is_bool($result)) 
                     if(mysqli_num_rows($result) > 0){
                         while($row = mysqli_fetch_assoc($result)){
                 ?>

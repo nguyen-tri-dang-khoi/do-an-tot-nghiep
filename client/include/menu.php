@@ -41,9 +41,8 @@
                             
                             <li><a onclick="setText('Tất cả danh mục','')" class="dropdown-item" href="javascript:void(0);">Tất cả danh mục</a><hr></li>
                             <?php
-                                
                                 $sql_no_child = "select distinct pi.product_type_id as 'pr_type_id',pt.name as 'pt_name' from product_info pi inner join product_type pt on pi.product_type_id = pt.id 
-                                where pt.is_delete like 0 and pi.is_delete like 0 and pt.is_active and pi.is_active like 1";
+                                where pt.is_delete like 0 and pi.is_delete like 0 and pt.is_active like 1 and pi.is_active like 1";
                                 $result22 = mysqli_query($conn,$sql_no_child);
                                 while($row22 = mysqli_fetch_array($result22)) {
                             ?>
