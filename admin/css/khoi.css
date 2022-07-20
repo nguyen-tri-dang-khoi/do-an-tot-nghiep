@@ -278,13 +278,6 @@
     margin: 0 auto;
 }
 
-table.dataTable tr th.select-checkbox.selected::after {
-    content: "\2713";
-    margin-top: -11px;
-    margin-left: -4px;
-    text-align: center;
-    color: #9900ff;
-}
 
 .dt-buttons {
     float: left !important;
@@ -765,3 +758,49 @@ form .error {
     color: red !important;
     font-weight: normal !important;
 }
+td,button,label,option,input,select,.select2-selection__rendered {
+    font-size:17px !important;
+    font-weight: 700 !important;
+}
+td,th,tr,thead,tbody,tfoot{
+    border:1px solid black !important;
+}
+button.kh-btn-append-file {
+    font-size:45px !important;
+}
+.ui-icon {
+    color:black !important;
+}
+h1,h2,h3,h4,h5,h6,li{
+    color:black !important;
+    font-weight: bold;
+}
+li.nav-item p{
+    font-weight: normal;
+    font-size:18px !important;
+}
+h3.card-title {
+    font-size:22px;
+    font-weight: bold;
+    
+}
+p {
+    font-size:18px;
+}
+[data-dismiss='modal'] span {
+    font-size:42px;
+    font-weight: bold;
+}
+ol.breadcrumb {
+    border: 4px solid #9c27b0 !important;
+}
+.page-link,.current {
+    font-size:23px !important;
+    padding:8px;
+}
+option:hover {
+    color:#fff !important;
+}
+input.form-control,input.kh-inp-ctrl,select {
+    border: 2px solid !important;
+} 

@@ -1591,7 +1591,7 @@
             }
          }
       });
-      let cost_price_length = $('td input[name="upt_cost"]').length;
+      let cost_price_length = $('tr.selected input[name="upt_cost"]').length;
       for(let i = 0 ; i < cost_price_length ; i++) {
          $('tr.selected input[name="upt_cost"]').eq(i).siblings("span").text("");
          $('tr.selected input[name="upt_price"]').eq(i).siblings("span").text("");

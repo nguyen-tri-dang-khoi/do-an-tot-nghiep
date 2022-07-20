@@ -16,8 +16,7 @@
         $upt_more = isset($_REQUEST['upt_more']) ? $_REQUEST['upt_more'] : null;
         $date_min = isset($_REQUEST['date_min']) ? $_REQUEST['date_min'] : null;
         $date_max = isset($_REQUEST['date_max']) ? $_REQUEST['date_max'] : null;
-        $select_payment_status_id = isset($_REQUEST['select_payment_status_id']) ? $_REQUEST['select_payment_status_id'] : null;
-        $select_payment_method = isset($_REQUEST['select_payment_method']) ? $_REQUEST['select_payment_method'] : null;
+        $payment_status_id = isset($_REQUEST['payment_status_id']) ? $_REQUEST['payment_status_id'] : null;
         $str = isset($_REQUEST['str']) ? $_REQUEST['str'] : null;
         $where = "where 1=1 and u.type='customer' ";
         $order_by = "Order by o.id desc";
@@ -77,16 +76,6 @@
         if($date_max) {
           $date_max = Date("Y-m-d",strtotime($date_max));
           $where .= " and (o.created_at <= '$date_max 23:59:59')";
-        }
-        if($select_payment_status_id) {
-          if($select_payment_status_id == "payment_completed"){
-            $where .= " and o.payment_status_id='1'";
-          } else if($select_payment_status_id == "payment_not_completed"){
-            $where .= " and o.payment_status_id='0'";
-          }
-        }
-        if($select_payment_method) {
-          //$where .= " and o.payment_method_id='$select_payment_method'";
         }
         if($orderByColumn && $orderStatus) {
           $order_by = "ORDER BY $orderByColumn $orderStatus";
@@ -220,20 +209,8 @@
                                     </div>
                                 </div>
                               </div>
-                              <input type="hidden" name="is_search" value="true">
-                              <div id="s-payment_method2" class="k-select-opt ml-10 col-2 s-all2" style="border:1px dashed blue !important;<?=$select_payment_status_id ? "display:block;" : "display:none;";?>">
-                                <select name="select_payment_method" class="form-control">
-                                  <option value="">Phương thức thanh toán</option>
-                                  <?php
-                                    $sql = "select * from payment_method";
-                                    $payment = fetch_all(sql_query($sql));
-                                    foreach($payment as $pay) {
-                                  ?>
-                                      <option value="<?=$pay['id']?>" <?=$select_payment_method == $pay['id'] ? 'selected="selected"' : '' ?>><?=$pay['payment_name']?></option>
-                                  <?php } ?>
-                                  <option value="all" <?=$search_option == 'all' ? 'selected="selected"' : '' ?>>Tất cả</option>
-                                </select>
-                              </div>
+                             
+                              
                               <input type="hidden" name="tab_unique" value="<?=$tab_unique;?>">
                               <button type="submit" class="btn btn-default ml-10" style="margin-top:5px;"><i class="fas fa-search"></i></button>
                             </div>
@@ -241,7 +218,7 @@
                       </div>
                       <div class="mb-3 col-12 d-flex j-between" style="padding-left:0;padding-right:0;">
                         <div class="mt-15">
-                          <!-- <button tabindex="-1" onclick="showListPayment()" class="dt-button button-red">Thanh toán online</button> -->
+                         
                           <?php
                             if($allow_read) {
                           ?>
@@ -556,41 +533,6 @@
     let order_id = $(event.currentTarget).attr('data-order-id');
     $('#form-order-detail').load(`ajax_order_manage.php?status=show_order_detail&order_id=${order_id}`,() => {
       $('#modal-xl').modal({backdrop: 'static', keyboard: false});
-    });
-  }
-  function changeActivePayment(){
-    let id = $(event.currentTarget).attr('data-id');
-    let yn = $(event.currentTarget).attr('data-active');
-    let this2 = $(event.currentTarget);
-    $.ajax({
-      url: window.location.href,
-      type: "POST",
-      data: {
-        status: "active_payment",
-        yn: yn,
-        payment_id: id,
-      },
-      success: function(data) {
-        console.log(data);
-        data = JSON.parse(data);
-        if(data.msg == "ok") {
-          if(data.yn == "y") {
-            this2.removeClass("button-red");
-            this2.addClass("button-green");
-            this2.attr("data-active",'n');
-            this2.text("Active");
-            this2.closest("tr").find("td").eq(2).text("Ngưng Hoạt động");
-          } else if(data.yn == "n") {
-            this2.removeClass("button-green");
-            this2.addClass("button-red");
-            this2.attr("data-active",'y');
-            this2.text("Inactive");
-            this2.closest("tr").find("td").eq(2).text("Hoạt động");
-          }
-        }
-      },error:function(data) {
-        console.log("Error: " + data);
-      }
     });
   }
 </script>

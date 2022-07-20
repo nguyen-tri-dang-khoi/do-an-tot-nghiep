@@ -112,47 +112,47 @@
         $menu = implode("",$__arr);
         return $menu ;
     }
-    function generate_multilevel_menus_2($connection,$parent_id = NULL){
-        $sql = "";
-        $menu = "";
-        if(is_null($parent_id)) {
-            $sql = "select * from product_type where parent_id is NULL and is_delete = 0";
-        } else {
-            $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0";
-        }
-        $stmt = $connection->prepare($sql);
-        $stmt->execute();
-        while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $menu .= "<li class='dropdown-submenu' data-id='" ."{$result["id"]}".  "'><a class='dropdown-item' href='#'>" . $result["name"] . "</a>";
-            $menu .= "<ul class='dropdown-menu'>" . generate_multilevel_menus_2($connection,$result["id"]) . "</ul>";
-            $menu .= "</li>";
-        }
-        return $menu;
-    }
-    function find_branch_by_root($id){
-        $branch = "";
-        $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
-        $id = fetch(sql_query($sql,[$id]));
-        while($id['countt'] > 0) {
-            $branch = $id['id'];
-            $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
-            $id = fetch(sql_query($sql,[$id['id']]));
-        }
-        return $branch;
-    }
-    function find_root_menu($id = NULL){
-        $root_id = "";
-        $sql = "";
-        $__arr = [];
-        $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-        $id = fetch(sql_query($sql_get_product_type,[$id]));
-        while($id["countt"] > 0) {
-            $root_id = $id['id'];
-            $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
-            $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
-        }
-        return $root_id;
-    }
+    // function generate_multilevel_menus_2($connection,$parent_id = NULL){
+    //     $sql = "";
+    //     $menu = "";
+    //     if(is_null($parent_id)) {
+    //         $sql = "select * from product_type where parent_id is NULL and is_delete = 0";
+    //     } else {
+    //         $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0";
+    //     }
+    //     $stmt = $connection->prepare($sql);
+    //     $stmt->execute();
+    //     while($result = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    //         $menu .= "<li class='dropdown-submenu' data-id='" ."{$result["id"]}".  "'><a class='dropdown-item' href='#'>" . $result["name"] . "</a>";
+    //         $menu .= "<ul class='dropdown-menu'>" . generate_multilevel_menus_2($connection,$result["id"]) . "</ul>";
+    //         $menu .= "</li>";
+    //     }
+    //     return $menu;
+    // }
+    // function find_branch_by_root($id){
+    //     $branch = "";
+    //     $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
+    //     $id = fetch(sql_query($sql,[$id]));
+    //     while($id['countt'] > 0) {
+    //         $branch = $id['id'];
+    //         $sql = "select *,count(*) as 'countt' from product_type where parent_id = ? and is_delete = 0";
+    //         $id = fetch(sql_query($sql,[$id['id']]));
+    //     }
+    //     return $branch;
+    // }
+    // function find_root_menu($id = NULL){
+    //     $root_id = "";
+    //     $sql = "";
+    //     $__arr = [];
+    //     $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+    //     $id = fetch(sql_query($sql_get_product_type,[$id]));
+    //     while($id["countt"] > 0) {
+    //         $root_id = $id['id'];
+    //         $sql_get_product_type = "select *,count(*) as 'countt' from product_type where id = ? and is_delete = 0";
+    //         $id = fetch(sql_query($sql_get_product_type,[$id['parent_id']]));
+    //     }
+    //     return $root_id;
+    // }
     function confirm_when_del_pt($connection,$parent_id = NULL) {
         $sql = "";
         $sum = 0;
@@ -174,22 +174,6 @@
         }
         return $sum;
     }
-    function menu22($connection = NULL,$parent_id = NULL){
-        if(!$connection) {
-            $connection = $GLOBALS['link'];
-        }
-        $res = iterateMenu($connection,$parent_id);
-        return $res;
-    }
-    function iterateMenu($connection,$parent_id) {
-        $sql = "select * from product_type where parent_id = $parent_id and is_delete = 0 limit 1";
-        $stmt = $connection->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if($result) return $parent_id . " - " . iterateMenu($connection,$result['id']);
-        return $parent_id . " - NULL";
-    }
-    //
     function show_confirm_when_del_pt($connection = NULL,$parent_id = NULL) {
         if(!$connection) {
             $connection = $GLOBALS['link'];
@@ -389,7 +373,6 @@
         $test = false;
         $sql_get_role = "select m.name as 'm_name',m.link as 'm_link',u.permission as 'u_role' from user_role u inner join menus m on u.menu_id = m.id where user_id = '$_SESSION[id]'";
         $result_role = fetch_all(sql_query($sql_get_role));
-        // if this is admin, we set admin full access role
         $sql_check_admin = "select type from user where id = '$_SESSION[id]'";
         $check_ad = fetch(sql_query($sql_check_admin));
         if($check_ad['type'] == "admin") {
