@@ -297,13 +297,16 @@
                               <td class="tong-tien"><?=number_format($row['total'],0,"",".")."đ";?></td>
                               <td class="tinh-trang-thanh-toan">
                                 <?php
-                                  $sql_get_payment_status = "select * from payment_status where id = " . $row['payment_status_id'];
-                                  $res = fetch(sql_query($sql_get_payment_status));
-                                  //
-                                  $sql_get_payment_status = "select * from delivery_status where id = " . $row['o_delivery_status_id'];
-                                  $res2 = fetch(sql_query($sql_get_payment_status));
-                                  echo $res['payment_status_name'] . " - " . $res2['delivery_status_name'];
-                                  
+                                  if($row['o_is_cancel'] == 1){
+                                    echo "Đơn hàng đã huỷ";
+                                  } else {
+                                    $sql_get_payment_status = "select * from payment_status where id = " . $row['payment_status_id'];
+                                    $res = fetch(sql_query($sql_get_payment_status));
+                                    //
+                                    $sql_get_payment_status = "select * from delivery_status where id = " . $row['o_delivery_status_id'];
+                                    $res2 = fetch(sql_query($sql_get_payment_status));
+                                    echo $res['payment_status_name'] . " - " . $res2['delivery_status_name'];
+                                  }
                                 ?>
                               </td>
                               <td class="ngay-tao"><?=Date("d-m-Y",strtotime($row['o_created_at']));?></td>
@@ -317,28 +320,14 @@
                                 </button>
                                 <?php } ?>
                                 <?php
-                                  if($row['o_delivery_status_id'] == 1) {
+                                  if($row['o_delivery_status_id'] == 1 && $row['o_is_cancel'] == 0) {
                                 ?>
                                   <button onclick="showModalShipOrder('<?=$row['o_id'];?>')" class="dt-button button-grey"
                                   data-id="<?=$row["o_id"];?>" >
                                   <i class="fas fa-shipping-fast"></i>
                                   </button>
-                                <?php } ?>
+                               <?php } ?>
                                   
-                                <?php if($row['o_delivery_status_id'] > 1) {?>
-
-                                <?php } else if($row['o_is_cancel'] == 0) {?>
-                                  <button onclick="cancelOrder('<?=$row['o_id'];?>')" class="dt-button button-red"
-                                  data-id="<?=$row["o_id"];?>" >
-                                  Huỷ đơn hàng
-                                  </button>
-                                <?php
-                                  } else if($row['o_is_cancel'] != 0){
-                                ?>
-                                  <button class="dt-button button-red">
-                                  Đơn hàng đã huý
-                                  </button>
-                                <?php } ?>
                               </td>
                           </tr>
                         <?php
