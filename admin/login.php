@@ -49,9 +49,9 @@
                     <div class="text-danger"></div>
                 </div>
                 <div style="display:flex;justify-content:space-between;">
-                    <div class="input-group mb-3">
+                    <!-- <div class="input-group mb-3">
                         <a href="forgive_password.php">Quên mật khẩu</a>
-                    </div>
+                    </div> -->
                     <div style="justify-content:end;" class="input-group mb-3">
                         <div class="icheck-primary">
                             <label for="remember">
@@ -124,35 +124,35 @@
                 $_SESSION["email"] = $row["email"];
                 $_SESSION["img_name"] = $row["img_name"];
                 $_SESSION["paging"] = $row["paging"];
-                $user_data_json = json_encode([
-                    "id" => $row["id"],
-                    "type" => $row['type'],
-                    "email" => $row["email"],
-                    "img_name" => $row["img_name"],
-                    "paging" => $row["paging"],
-                    "rand" => rand(1,1000000),
-                    "expire_at" => time()
-                ]);
+                // $user_data_json = json_encode([
+                //     "id" => $row["id"],
+                //     "type" => $row['type'],
+                //     "email" => $row["email"],
+                //     "img_name" => $row["img_name"],
+                //     "paging" => $row["paging"],
+                //     "rand" => rand(1,1000000),
+                //     "expire_at" => time()
+                // ]);
                 
-                $access_token = encrypt_decrypt($user_data_json,"encrypt");
-                setcookie("access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
-                if($remember) {
-                    $pass_encrypt = encrypt_decrypt($password,'encrypt');
-                    setcookie("co_remember","y",time() + 3600 * 24 * 30,"/","",false,true);
-                    setcookie("co_email",$row["email"],time() + 3600 * 24 * 30,"/","",false,true);
-                    setcookie("co_password",$pass_encrypt,time() + 3600 * 24 * 30,"/","",false,true);
-                } else {
-                    if(isset($_COOKIE['co_email']) ) {
-                        setcookie("co_email","",time() - 3600,"/");
-                    }
-                    if(isset($_COOKIE['co_password']) ) {
-                        setcookie("co_password","",time() - 3600,"/");
-                    }
-                    if(isset($_COOKIE['co_remember']) ) {
-                        setcookie("co_remember","",time() - 3600,"/");
-                    }
-                }
-                redirect_if_login_success("information.php");
+                // $access_token = encrypt_decrypt($user_data_json,"encrypt");
+                // setcookie("access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
+                 if($remember) {
+                     $pass_encrypt = encrypt_decrypt($password,'encrypt');
+                     setcookie("co_remember","y",time() + 3600 * 24 * 30,"/","",false,true);
+                     setcookie("co_email",$row["email"],time() + 3600 * 24 * 30,"/","",false,true);
+                     setcookie("co_password",$pass_encrypt,time() + 3600 * 24 * 30,"/","",false,true);
+                 } else {
+                     if(isset($_COOKIE['co_email']) ) {
+                         setcookie("co_email","",time() - 3600,"/");
+                     }
+                     if(isset($_COOKIE['co_password']) ) {
+                         setcookie("co_password","",time() - 3600,"/");
+                     }
+                     if(isset($_COOKIE['co_remember']) ) {
+                         setcookie("co_remember","",time() - 3600,"/");
+                     }
+                 }
+                 redirect_if_login_success("information.php");
             } else {
                 $_SESSION["error"] = "Tài khoản hoặc mật khẩu bạn đăng nhập không chính xác";
             }

@@ -1,13 +1,11 @@
 <?php
-    logout_session_timeout();
-    check_access_token();
-    if(strpos(get_url_current_page(),"login.php")){
+    // logout_session_timeout();
+    // check_access_token();
+     if(strpos(get_url_current_page(),"login.php")){
         redirect_if_login_success();
-
-    } else {
+     } else {
         redirect_if_login_status_false();
-
-    }
+     }
 ?>
 <!DOCTYPE html>
 <html lang="en">

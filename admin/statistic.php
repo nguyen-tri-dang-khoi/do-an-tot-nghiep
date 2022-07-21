@@ -1,7 +1,7 @@
 <?php
     include_once("../lib/database.php");
-    logout_session_timeout();
-    check_access_token();
+    // logout_session_timeout();
+    // check_access_token();
     redirect_if_login_status_false();
     if(is_get_method()) {
         include_once("include/head.meta.php");
