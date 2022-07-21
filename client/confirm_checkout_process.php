@@ -109,7 +109,7 @@
             //vnpay start
             $_SESSION['order_pm_history_id'] = $order_id_insert;
 
-            $vnp_Returnurl = "http://localhost:8080/project/client/include/camon.php?order_id=$order_id_insert";
+            $vnp_Returnurl = "http://localhost:8080/project/client/include/camon.php";
             $vnp_TxnRef = $orders_code; //Mã đơn hàng. Trong thực tế Merchant cần insert đơn hàng vào DB và gửi mã này sang VNPAY
             $vnp_OrderInfo = 'Thanh toán đơn hàng đặt tại web TNC';
             $vnp_OrderType = 'billpayment';
