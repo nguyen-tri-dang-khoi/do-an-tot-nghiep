@@ -1,30 +1,30 @@
 <?php
-    function check_access_token(){
-        if(isset($_COOKIE['access_token'])) {
-            $user_data_json = encrypt_decrypt($_COOKIE['access_token'],"decrypt");
-            $user_data = (array)json_decode($user_data_json);
-            if($user_data['type'] == 'admin' || $user_data['type'] == 'officer') {
-                $_SESSION["isLoggedIn"] = true;
-                $_SESSION["id"] = $user_data["id"];
-                $_SESSION["email"] = $user_data["email"];
-                $_SESSION["img_name"] = $user_data["img_name"];
-                $_SESSION["paging"] = $user_data["paging"];
-            } 
-        }
-    }
-    function check_shipper_access_token(){
-        if(isset($_COOKIE['shipper_access_token'])) {
-            $user_data_json = encrypt_decrypt($_COOKIE['shipper_access_token'],"decrypt");
-            $user_data = (array)json_decode($user_data_json);
-            if($user_data_json['type'] == 'shipper'){
-                $_SESSION["isShipperLoggedIn"] = true;
-                $_SESSION["shipper_id"] = $user_data["id"];
-                $_SESSION["shipper_email"] = $user_data["email"];
-                $_SESSION["shipper_img_name"] = $user_data["img_name"];
-                $_SESSION["shipper_paging"] = $user_data["paging"];
-            } 
-        }
-    }
+    // function check_access_token(){
+    //     if(isset($_COOKIE['access_token'])) {
+    //         $user_data_json = encrypt_decrypt($_COOKIE['access_token'],"decrypt");
+    //         $user_data = (array)json_decode($user_data_json);
+    //         if($user_data['type'] == 'admin' || $user_data['type'] == 'officer') {
+    //             $_SESSION["isLoggedIn"] = true;
+    //             $_SESSION["id"] = $user_data["id"];
+    //             $_SESSION["email"] = $user_data["email"];
+    //             $_SESSION["img_name"] = $user_data["img_name"];
+    //             $_SESSION["paging"] = $user_data["paging"];
+    //         } 
+    //     }
+    // }
+    // function check_shipper_access_token(){
+    //     if(isset($_COOKIE['shipper_access_token'])) {
+    //         $user_data_json = encrypt_decrypt($_COOKIE['shipper_access_token'],"decrypt");
+    //         $user_data = (array)json_decode($user_data_json);
+    //         if($user_data_json['type'] == 'shipper'){
+    //             $_SESSION["isShipperLoggedIn"] = true;
+    //             $_SESSION["shipper_id"] = $user_data["id"];
+    //             $_SESSION["shipper_email"] = $user_data["email"];
+    //             $_SESSION["shipper_img_name"] = $user_data["img_name"];
+    //             $_SESSION["shipper_paging"] = $user_data["paging"];
+    //         } 
+    //     }
+    // }
     function echo_token(){
         echo "123";
     }
@@ -93,7 +93,7 @@
     {
         $encrypt_method = "AES-256-CBC";
         $secret_key = 'AA@!74C@DCC2BBR!@B63$C27'; // user define private key
-        $secret_iv = 'khoi_dep_trai24324@#2'; // user define secret key
+        $secret_iv = 'khoi_24324@#2'; // user define secret key
         $key = hash('sha256', $secret_key);
         $iv = substr(hash('sha256', $secret_iv), 0, 16); // sha256 is hash_hmac_algo
         if ($action == 'encrypt') {

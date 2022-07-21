@@ -1,7 +1,7 @@
 <?php
    include_once("../lib/database.php");
-   logout_session_timeout();
-   check_access_token();
+   // logout_session_timeout();
+   // check_access_token();
    redirect_if_login_status_false();
    if(is_get_method()) {
       // permission crud for user
@@ -893,9 +893,12 @@
                   $.alert({
                      title: "Thông báo",
                      content: "Bạn đã thêm dữ liệu thành công",
+                     buttons:{
+                        "Ok":function(){
+                           location.reload();
+                        }
+                     }
                   });
-                  loadDataComplete("Insert");
-                  $('#modal-xl2').modal('hide');
                }
             },
             error: function(data){
@@ -946,9 +949,13 @@
                   $.alert({
                      title: "Thông báo",
                      content: "Bạn đã sửa dữ liệu thành công",
+                     buttons:{
+                        "Ok":function(){
+                           location.reload();
+                        }
+                     }
                   });
-                  loadDataComplete();
-                  $('.section-save').hide();
+                
                }
             },
             error: function(data){

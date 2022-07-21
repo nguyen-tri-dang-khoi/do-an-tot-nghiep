@@ -357,67 +357,68 @@ function loadDataInTab(url, pushState = true) {
 }
 
 function loadDataComplete(status = "") {
-    let parameters = new URLSearchParams(location.search);
-    let page = parameters.get('page');
-    let tab_unique = parameters.get('tab_unique');
-    if (tab_unique == null) tab_unique = '';
-    let parent_id = parameters.get('parent_id');
-    let location_ok = window.location.href;
-    let tbody_read = html_config[file_name_config]['load']['tbody_read'];
-    if (status == "page") {
-        if (page > 1) {
-            page = page - 1;
-        } else {
-            page = 1;
-        }
-        location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
-    }
+    location.reload();
+    // let parameters = new URLSearchParams(location.search);
+    // let page = parameters.get('page');
+    // let tab_unique = parameters.get('tab_unique');
+    // if (tab_unique == null) tab_unique = '';
+    // let parent_id = parameters.get('parent_id');
+    // let location_ok = window.location.href;
+    // let tbody_read = html_config[file_name_config]['load']['tbody_read'];
+    // if (status == "page") {
+    //     if (page > 1) {
+    //         page = page - 1;
+    //     } else {
+    //         page = 1;
+    //     }
+    //     location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
+    // }
 
-    if ($('input[name=check_all]').is(':checked') && status != "page") {
-        if (page > 1) {
-            page = page - 1;
-        } else {
-            page = 1;
-        }
-        location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
-    } else if (status == "Insert") {
-        if (parent_id != null) {
-            location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}&parent_id=${parent_id}`;
-        } else {
-            location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}`;
-        }
+    // if ($('input[name=check_all]').is(':checked') && status != "page") {
+    //     if (page > 1) {
+    //         page = page - 1;
+    //     } else {
+    //         page = 1;
+    //     }
+    //     location_ok = `${file_name_config}.php?page=${page}&tab_unique=${tab_unique}`;
+    // } else if (status == "Insert") {
+    //     if (parent_id != null) {
+    //         location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}&parent_id=${parent_id}`;
+    //     } else {
+    //         location_ok = `${file_name_config}.php?page=1&tab_unique=${tab_unique}`;
+    //     }
 
-    }
-    $(`.table-game-start`).load(`${location_ok} #table-${file_name_config}`, () => {
-        console.log($(`#table-${file_name_config} tbody tr`).length);
-        if ($(`#table-${file_name_config} tbody tr`).length == 0) {
-            loadDataComplete("page");
-        } else {
-            $('#select-type2').select2();
-            $('#pagination').pagination({
-                items: $('[dt-items]').attr('dt-items'),
-                itemsOnPage: $('[dt-limit]').attr('dt-limit'),
-                currentPage: $('[dt-page]').attr('dt-page'),
-                hrefTextPrefix: "?page=",
-                hrefTextSuffix: `&` + $('[dt-url]').attr('dt-url'),
-                prevText: "<",
-                nextText: ">",
-                onPageClick: function(pageNumber, event) {
-                    event.preventDefault();
-                    let url = new URLSearchParams(window.location.search);
-                    if (url.has('page')) url.delete('page');
-                    url.set('page', pageNumber);
-                    loadDataInTab(`${file_name_config}.php?${url.toString()}`);
-                },
-                cssStyle: 'light-theme'
-            });
-            setSortTable(file_name_config);
-            showPicker();
-            $('[class*=select-type]').select2();
-            window.history.pushState('ok', 'ok', `${location_ok}`);
-        }
+    // }
+    // $(`.table-game-start`).load(`${location_ok} #table-${file_name_config}`, () => {
+    //     console.log($(`#table-${file_name_config} tbody tr`).length);
+    //     if ($(`#table-${file_name_config} tbody tr`).length == 0) {
+    //         loadDataComplete("page");
+    //     } else {
+    //         $('#select-type2').select2();
+    //         $('#pagination').pagination({
+    //             items: $('[dt-items]').attr('dt-items'),
+    //             itemsOnPage: $('[dt-limit]').attr('dt-limit'),
+    //             currentPage: $('[dt-page]').attr('dt-page'),
+    //             hrefTextPrefix: "?page=",
+    //             hrefTextSuffix: `&` + $('[dt-url]').attr('dt-url'),
+    //             prevText: "<",
+    //             nextText: ">",
+    //             onPageClick: function(pageNumber, event) {
+    //                 event.preventDefault();
+    //                 let url = new URLSearchParams(window.location.search);
+    //                 if (url.has('page')) url.delete('page');
+    //                 url.set('page', pageNumber);
+    //                 loadDataInTab(`${file_name_config}.php?${url.toString()}`);
+    //             },
+    //             cssStyle: 'light-theme'
+    //         });
+    //         setSortTable(file_name_config);
+    //         showPicker();
+    //         $('[class*=select-type]').select2();
+    //         window.history.pushState('ok', 'ok', `${location_ok}`);
+    //     }
 
-    })
+    // })
 }
 
 function searchTabLoad(form_id) {

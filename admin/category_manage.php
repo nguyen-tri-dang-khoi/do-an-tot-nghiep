@@ -569,6 +569,11 @@
             $.alert({
               title: "Thông báo",
               content: "Bạn đã sửa dữ liệu thành công",
+              buttons:{
+                "Ok":function(){
+                  location.reload();
+                }
+              }
             })
           }
         },
@@ -625,6 +630,11 @@
                   $.alert({
                     title: "Thông báo",
                     content: "Bạn đã thêm dữ liệu thành công",
+                    buttons:{
+                      "Ok":function(){
+                        location.reload();
+                      }
+                    }
                   });
                   loadDataComplete('Insert');
                   $('#modal-xl2').modal('hide');

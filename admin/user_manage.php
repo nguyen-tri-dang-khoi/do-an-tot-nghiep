@@ -813,6 +813,7 @@
                 processData: false,
                 data: formData,
                 success:function(data){
+                    
                     if(data.msg == "ok") {
                         $.alert({
                             title: "Thông báo",
@@ -1293,9 +1294,14 @@
                         $.alert({
                             title: "Thông báo",
                             content: "Bạn đã thêm dữ liệu thành công",
+                            buttons: {
+                                "Ok":function(){
+                                    location.reload();
+                                }
+                            }
                         });
-                        $('#modal-xl3').modal('hide');
-                        loadDataComplete('Insert');
+                        // $('#modal-xl3').modal('hide');
+                        // loadDataComplete('Insert');
                     }
                 },
                 error: function(data){
@@ -1406,9 +1412,32 @@
                         $.alert({
                             title: "Thông báo",
                             content: "Bạn đã sửa dữ liệu thành công",
+                            buttons: {
+                                "Ok":function(){
+                                    location.reload();
+                                }
+                            }
                         });
-                        loadDataComplete();
-                        $('.section-save').hide();
+                    } else if(data.msg == "phone_exist") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Số điện thoại tồn tại",
+                            buttons: {
+                                "Ok":function(){
+                                    location.reload();
+                                }
+                            }
+                        });
+                    } else if(data.msg == "email_exist") {
+                        $.alert({
+                            title: "Thông báo",
+                            content: "Email bạn nhập đã tồn tại",
+                            buttons: {
+                                "Ok":function(){
+                                    location.reload();
+                                }
+                            }
+                        });
                     }
                 },
                 error: function(data){
@@ -1559,7 +1588,6 @@
                 user_id : user_id,
                 role: role,
                 menu: menu,
-                
             },
             success: function(data){
                 console.log(data);
