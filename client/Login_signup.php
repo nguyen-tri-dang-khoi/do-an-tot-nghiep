@@ -134,12 +134,12 @@
             let birthday = $('#register_birthday').val();
             let password = $('#register_password').val();
             let address = $('#register_address').val();
-            console.log(full_name);
-            console.log(email);
-            console.log(phone);
-            console.log(birthday);
-            console.log(password);
-            console.log(address);
+            // console.log(full_name);
+            // console.log(email);
+            // console.log(phone);
+            // console.log(birthday);
+            // console.log(password);
+            // console.log(address);
             if(full_name == "") {
                 $('#register_full_name_err').text("Tên đầy đủ không được để trống");
                 test = false;

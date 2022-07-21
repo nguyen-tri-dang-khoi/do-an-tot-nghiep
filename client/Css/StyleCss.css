@@ -433,7 +433,7 @@ li:hover .dropdown {
     min-height: 361px;
     max-height: 362px;
     flex-wrap: wrap;
-    min-width: 494.5px;
+    min-width: 470.5px;
 }
 
 .ul-list-element li:hover>.dropdown-menu div {
@@ -730,6 +730,7 @@ li:hover .dropdown {
 .product__info {
     position: relative;
     overflow: hidden;
+    /* min-height: 350px; */
 }
 
 .info--percent {
@@ -818,6 +819,7 @@ li:hover .dropdown {
 
 .product:hover .info--bottom {
     background-color: #29324e;
+    /* min-height: 162px; */
 }
 
 .slick-track .product:hover .info--bottom .bottom_title a {
@@ -1066,7 +1068,7 @@ li:hover .dropdown {
 }
 
 .logo-footer .logo {
-    width: 35%;
+    width: 37%;
 }
 
 .logo-footer span {

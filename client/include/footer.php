@@ -27,9 +27,9 @@
                 <div class="item itemFollow">
                     <h5>Follow us!</h4>
                     <div class="icon-follow">
-                        <a href="https://www.facebook.com/vttruc2410"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href=""><i class="fa-brands fa-facebook-f"></i></a>
                         <a href="#"><i class="fa-brands fa-youtube"></i></a>
-                        <a href="https://www.instagram.com/chupachups.vtt/?fbclid=IwAR3TznXtPnS-lEhCOgdgxPn9RdFlgzUQIh5UQw2icWiKRV3ibYxVGYOwYuI"><i class="fa-brands fa-instagram"></i></a>
+                        <a href=""><i class="fa-brands fa-instagram"></i></a>
                         <a href="#"><i class="fa-brands fa-twitter"></i></a>
                     </div>
                 </div>                    
