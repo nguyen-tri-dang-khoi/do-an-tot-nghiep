@@ -427,8 +427,8 @@ function searchTabLoad(form_id) {
 }
 
 function saveTabFilter() {
-    //let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
-    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
+    let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
+    //let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
     $.ajax({
         url: window.location.href,
         type: "POST",
@@ -972,9 +972,9 @@ function insRow() {
     let is_ok_row = $('[data-plus]').attr('data-plus');
     num_of_row_insert = $('input[name="count3"]').val();
     is_ok_row = parseInt(is_ok_row) + parseInt(num_of_row_insert);
-    if(is_ok_row > 20) {
+    if (is_ok_row > 20) {
         $.alert({
-            title:"Thông báo",
+            title: "Thông báo",
             content: "Bạn chỉ được phép có tối đa 20 dòng trong bảng",
         });
         return;
