@@ -858,13 +858,15 @@
         }
         echo_json(["msg" => "ok"]);
       } else if($status == "Insert") {
-          if($parent_id) {
+          //print_r($parent_id);
+          if($parent_id && $parent_id != "undefined") {
             $sql_get_active = "select is_active from product_type where id='$parent_id'";
             $row = fetch(sql_query($sql_get_active));
             $is_active = $row['is_active'] ? $row['is_active'] : 0;
             $sql = "Insert into product_type(name,parent_id,is_active) values(?,?,?)";
             sql_query($sql,[$name,$parent_id,$is_active]);
           } else {
+            
             $sql = "Insert into product_type(name,is_active) values(?,?)";
             sql_query($sql,[$name,1]);
           }

@@ -427,8 +427,8 @@ function searchTabLoad(form_id) {
 }
 
 function saveTabFilter() {
-    let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
-    //let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
+    //let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
+    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
     $.ajax({
         url: window.location.href,
         type: "POST",
