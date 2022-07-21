@@ -1,22 +1,22 @@
 <?php
    include_once("../lib/database.php");
    if(is_get_method()) {
-      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
-      if(check_permission_crud("product_manage.php","read")) {
-        $allow_read = true;
-      }
-      if(check_permission_crud("product_manage.php","update")) {
-        $allow_update = true;
-      }
-      if(check_permission_crud("product_manage.php","delete")) {
-        $allow_delete = true;
-      }
-      if(check_permission_crud("product_manage.php","insert")) {
-        $allow_insert = true;
-      }
-      if(check_permission_crud("product_manage.php","check_product")) {
-         $allow_check_product = true;
-      }
+      // $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false; 
+      // if(check_permission_crud("product_manage.php","read")) {
+      //   $allow_read = true;
+      // }
+      // if(check_permission_crud("product_manage.php","update")) {
+      //   $allow_update = true;
+      // }
+      // if(check_permission_crud("product_manage.php","delete")) {
+      //   $allow_delete = true;
+      // }
+      // if(check_permission_crud("product_manage.php","insert")) {
+      //   $allow_insert = true;
+      // }
+      // if(check_permission_crud("product_manage.php","check_product")) {
+      //    $allow_check_product = true;
+      // }
       include_once("include/head.meta.php");
       include_once("include/left_menu.php");
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;

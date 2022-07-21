@@ -715,8 +715,8 @@
         if(address == "") {
             $('#address_err').text("Địa chỉ của nhân viên không được để trống.");
             test = false;
-        } else if(address.length > 1800) {
-            $('#address_err').text("Địa chỉ của nhân viên không được vượt quá 1800 ký tự.");
+        } else if(address.length > 180) {
+            $('#address_err').text("Địa chỉ của nhân viên không được vượt quá 180 ký tự.");
             test = false;
         } 
         
@@ -930,8 +930,13 @@
                                 $.alert({
                                     title: "Thông báo",
                                     content: data.success,
+                                    buttons: {
+                                        "ok":function(){
+                                            location.reload();
+                                        }
+                                    }
                                 });
-                                loadDataComplete('Delete');
+                                
                             } else {
                                 $.alert({
                                     title: "Thông báo",
@@ -1016,8 +1021,8 @@
         if(upt_address == "") {
             target2.find('td textarea[name="upt_address"] ~ span.text-danger').text("Không được để trống");
             test = false;
-        } else if(upt_address.length > 254) {
-            target2.find('td textarea[name="upt_address"] ~ span.text-danger').text("Không được quá 254 ký tự");
+        } else if(upt_address.length > 180) {
+            target2.find('td textarea[name="upt_address"] ~ span.text-danger').text("Không được quá 180 ký tự");
             test = false;
         } 
         //
@@ -1107,8 +1112,8 @@
         if(ins_address == "") {
             target2.find('td textarea[name="ins_address"] ~ p.text-danger').text("Không được để trống");
             test = false;
-        } else if(ins_address.length > 254) {
-            target2.find('td textarea[name="ins_address"] ~ p.text-danger').text("Không được quá 254 ký tự");
+        } else if(ins_address.length > 180) {
+            target2.find('td textarea[name="ins_address"] ~ p.text-danger').text("Không được quá 180 ký tự");
             test = false;
         } 
         //
@@ -1229,11 +1234,11 @@
             }
         });
         if(Object.keys(object_phone_ok).length != arr_phone_ok.length) {
-        $.alert({
-            'title':"Thông báo",
-            'content':"Dữ liệu số điện thoại bạn thêm bị trùng",
-        });
-        return;
+            $.alert({
+                'title':"Thông báo",
+                'content':"Dữ liệu số điện thoại bạn thêm bị trùng",
+            });
+            return;
         }
         $('td textarea[name="ins_address"]').each(function(){
             if($(this).val() != "") {

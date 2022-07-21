@@ -712,8 +712,13 @@
                         $.alert({
                            title: "Thông báo",
                            content: res_json.success
+                           buttons: {
+                              "Ok":function(){
+                                 loadDataComplete();
+                              }
+                           }
                         });
-                        loadDataComplete("Delete");
+                        
                      } else {
                         $.alert({
                            title: "Thông báo",

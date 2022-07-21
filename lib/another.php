@@ -389,7 +389,6 @@
     }
     function get_permission($link) {
         $test = false;
-        // if this is admin, we set admin full access role
         $id = isset($_SESSION['id']) ? $_SESSION['id'] : null;
         if($id){
             $sql_check_admin = "select type from user where id = '$id'";
@@ -408,14 +407,10 @@
             return false;
         }
         return false;
-       
     }
     function check_permission_crud($link,$str){
         $permission = get_permission($link);
-        //log_a($permission);
         if($permission) {
-
-            // if this is admin, we set admin full access role
             if($permission == [true,true]) {
                 return true;
             }
@@ -430,7 +425,7 @@
         if($check_ad['type'] == "admin") {
             $test = true;
         }
-        if(in_array($link,['information.php','change_password.php','logout.php'])){
+        if(in_array($link,['information.php','logout.php'])){
             $test = true;
         }
         if(!$test) {

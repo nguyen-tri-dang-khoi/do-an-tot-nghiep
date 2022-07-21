@@ -575,6 +575,7 @@
       delivery_date = delivery_date.split("-");
       delivery_date = delivery_date[2] + "-" + delivery_date[1] + "-" + delivery_date[0];
       $.confirm({
+        title:"Thông báo",
         content: 'Bạn có chắc chắn muốn giao đơn hàng cho shipper này ?',
         buttons: {
           "Có":function(){

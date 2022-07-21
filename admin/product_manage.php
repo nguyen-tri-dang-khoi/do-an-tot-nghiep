@@ -3,7 +3,7 @@
    if(is_get_method()) {
       include_once("include/head.meta.php");
       include_once("include/left_menu.php"); 
-      $allow_read = $allow_update = $allow_delete = $allow_insert = $allow_check_product = false;
+      $allow_read = $allow_update = $allow_delete = $allow_insert = false;
       if(check_permission_crud("product_manage.php","read")) {
         $allow_read = true;
       }
@@ -16,9 +16,9 @@
       if(check_permission_crud("product_manage.php","insert")) {
         $allow_insert = true;
       }
-      if(check_permission_crud("product_manage.php","check_product")) {
-         $allow_check_product = true;
-      }
+      // if(check_permission_crud("product_manage.php","check_product")) {
+      //    $allow_check_product = true;
+      // }
       $search_option = isset($_REQUEST['search_option']) ? $_REQUEST['search_option'] : null;
       $price_min = isset($_REQUEST['price_min']) ? $_REQUEST['price_min'] : null;
       $price_max = isset($_REQUEST['price_max']) ? $_REQUEST['price_max'] : null;
@@ -1034,18 +1034,15 @@
             $(".parent[data-id]").click(function(e){
                let child = $(e.currentTarget).find('li').length;
                if(!child){
-                  //console.log("nufew");
                   let id = $(e.currentTarget).attr('data-id');
                   let name = $(e.currentTarget).text();
                   name = name.substr(0,name.length - 1);
                   console.log(name);
-                  //console.log(id);
                   $.get("get_breadcrumb_menu.php?id=" + id,(data) => {
                      $("input[name='product_type_id']").val(id);
                      $("input[name='category_name']").val(name);
                      $("#breadcrumb-menu").empty();
                      $("#breadcrumb-menu").append(data);
-                     /*$("#breadcrumb-menu").parent().css({"margin-top":"-25px"});*/
                   });
                }
             })
@@ -1143,15 +1140,24 @@
                      $.alert({
                         title: "Thông báo",
                         content: msg,
+                        buttons:{
+                           "Ok":function(){
+                              loadDataComplete();
+                           }
+                        }
                      });
-                     loadDataComplete('Insert');
                   } else if(status == "Update") {
                      msg = "Sửa dữ liệu thành công.";
                      $.alert({
                         title: "Thông báo",
                         content: msg,
+                        buttons: {
+                           "Ok":function(){
+                              loadDataComplete();
+                           }
+                        }
                      });
-                     loadDataComplete();
+                     
                   }
                   $('#modal-xl').modal('hide');
                } else if(res_json.msg == 'not_ok') {
@@ -1191,9 +1197,14 @@
                         arr_list_file_del = [];
                         $.alert({
                            title: "Thông báo",
-                           content: res_json.success
+                           content: res_json.success,
+                           buttons:{
+                              "Ok":function(){
+                                 loadDataComplete();
+                              }
+                           }
                         });
-                        loadDataComplete();
+                        
                      } else {
                         $.alert({
                            title: "Thông báo",
@@ -1313,7 +1324,6 @@
                            }
                         }
                      })
-                     loadDataComplete("Insert");
                }
             },
             error: function(data) {
@@ -1535,7 +1545,6 @@
                                  }
                               }
                            });
-                           $('#modal-xl2').modal('hide');
                         }
                      },
                      error: function(data){
@@ -1650,7 +1659,6 @@
                      buttons: {
                         "Ok": function(){
                            loadDataComplete();
-                           $('.section-save').hide();
                         }
                      }
                   });

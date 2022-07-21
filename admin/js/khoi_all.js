@@ -1152,8 +1152,13 @@ function delMore() {
                                 $.alert({
                                     title: "Thông báo",
                                     content: "Bạn đã xoá dữ liệu thành công",
+                                    buttons:{
+                                        "Ok":function(){
+                                            loadDataComplete();
+                                        }
+                                    }
                                 });
-                                loadDataComplete();
+                                
                             }
                         },
                         error: function(data) {
