@@ -202,8 +202,8 @@
       if(company_address == "") {
         $('#company_address_err').text('Vui lòng không để trống địa chỉ công ty');
         test = false;
-      } else if(company_address.length > 1800) {
-        $('#company_address_err').text('Địa chỉ công ty không được phép vượt quá 1800 ký tự');
+      } else if(company_address.length > 180) {
+        $('#company_address_err').text('Địa chỉ công ty không được phép vượt quá 180 ký tự');
         test = false;
       }
       if(company_tax_code == "") {
