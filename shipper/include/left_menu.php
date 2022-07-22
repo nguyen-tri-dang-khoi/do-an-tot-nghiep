@@ -182,7 +182,6 @@
             </div>
             <div class="kh-main-siderbar">
                 <ul class="ul-menu">
-                    <li class="li-menu mt-15 <?=strpos($url,'index.php') ? "li-active" :"";?>"><a href="index.php"><span class="fas fa-tachometer-alt" style="margin-right:5px;"></span> Tổng quan</a></li>
                     <li class="li-menu mt-15 <?=strpos($url,'information.php') ? "li-active" :"";?>"><a href="information.php"><span class="fas fa-address-card" style="margin-right:5px;"></span> Thông tin cá nhân</a></li>
                     <li class="li-menu mt-15 <?=strpos($url,'shipper_order.php') ? "li-active" :"";?>"><a href="shipper_order.php"><span class="fas fa-shipping-fast" style="margin-right:5px;"></span> Quản lý đơn giao hàng</a></li>
                     <li class="li-menu mt-15"><a href="logout.php"><span class="fas fa-sign-out-alt" style="margin-right:5px;"></span> Đăng xuất</a></li>
