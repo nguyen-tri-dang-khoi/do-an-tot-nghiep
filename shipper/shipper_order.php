@@ -28,7 +28,7 @@
             }
         }
         if($shipping_status) {
-            $where .= " and ods.id = '$shipping_status'";
+            $where .= " and o.delivery_status_id = '$shipping_status'";
         }
         if($delivery_date) {
             $delivery_date = Date("Y-m-d",strtotime($delivery_date));

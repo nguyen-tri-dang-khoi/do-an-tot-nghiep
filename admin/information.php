@@ -105,6 +105,7 @@
 <script>
   function validatePass(){
     $('p.text-danger').text('');
+    let test = true;
     let old_pass = $('input[name=old_pass]').val();
     let new_pass = $('input[name=new_pass]').val();
     let confirm_new_pass = $('input[name=confirm_new_pass]').val();
