@@ -138,15 +138,15 @@
                 $_SESSION["shipper_email"] = $row["email"];
                 $_SESSION["shipper_img_name"] = $row["img_name"];
                 $_SESSION["shipper_paging"] = $row["paging"];
-                $user_data_json = json_encode([
-                    "id" => $row["id"],
-                    "type" => 'shipper',
-                    "email" => $row["email"],
-                    "img_name" => $row["img_name"],
-                    "paging" => $row["paging"],
-                    "rand" => rand(1,1000000),
-                    "expire_at" => time()
-                ]);
+                // $user_data_json = json_encode([
+                //     "id" => $row["id"],
+                //     "type" => 'shipper',
+                //     "email" => $row["email"],
+                //     "img_name" => $row["img_name"],
+                //     "paging" => $row["paging"],
+                //     "rand" => rand(1,1000000),
+                //     "expire_at" => time()
+                // ]);
                 
                 // $access_token = encrypt_decrypt($user_data_json,"encrypt");
                 // setcookie("shipper_access_token",$access_token,time() + 60 * 60 * 24,"/","",false,true);
@@ -166,7 +166,7 @@
                         setcookie("shipper_co_remember","",time() - 3600,"/");
                     }
                 }
-                header("Location:index.php");
+                header("Location:shipper_order.php");
             } else {
                 $_SESSION["error"] = "Tài khoản hoặc mật khẩu bạn đăng nhập không chính xác";
             }

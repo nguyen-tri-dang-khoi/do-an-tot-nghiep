@@ -636,7 +636,7 @@
                       }
                     }
                   });
-                  loadDataComplete('Insert');
+                 
                   $('#modal-xl2').modal('hide');
                 }
               },
