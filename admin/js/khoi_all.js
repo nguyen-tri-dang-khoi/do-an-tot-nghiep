@@ -428,7 +428,7 @@ function searchTabLoad(form_id) {
 
 function saveTabFilter() {
     //let tab_urlencode = `http://localhost:8080/project/admin/${file_name_config}.php?1=1`;
-    let tab_urlencode = `http://localhost/project/admin/${file_name_config}.php?1=1`;
+    let tab_urlencode = `/project/admin/${file_name_config}.php?1=1`;
     $.ajax({
         url: window.location.href,
         type: "POST",
@@ -442,9 +442,7 @@ function saveTabFilter() {
                 $('.tab-delete').remove();
                 let html = `
             <li data-index="${data.tab_index}"  oncontextmenu="focusInputTabName(this)" class="li-tab ">
-              <button onclick="loadDataInTab('${data.tab_urlencode}')" class="tab">
-                ${data.tab_name}
-              </button>
+              <button onclick="loadDataInTab('${data.tab_urlencode}')" class="tab">${data.tab_name}</button>
               <span onclick="delTabFilter('')" class="k-tab-delete"></span>
             </li>`
                 $(html).appendTo('.ul-tab');

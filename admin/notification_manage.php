@@ -659,16 +659,26 @@
                      $.alert({
                         title: "Thông báo",
                         content: msg,
+                        buttons: {
+                           "Ok":function(){
+                              location.reload();
+                           }
+                        }
                      });
-                     loadDataComplete('Insert');
+                     // loadDataComplete('Insert');
                   } else if(status == "Update") {
                      console.log(res_json);
                      msg = "Sửa dữ liệu thành công.";
                      $.alert({
                         title: "Thông báo",
                         content: msg,
+                        buttons: {
+                           "Ok":function(){
+                              location.reload();
+                           }
+                        }
                      });
-                     loadDataComplete();
+                     // loadDataComplete();
                   }
                   // $('#form-bang-tin').trigger('reset');
                   // $("#msg_style").removeAttr('style');
@@ -707,11 +717,11 @@
                      console.log(id);
                      res_json = JSON.parse(res);
                      if(res_json.msg == "ok") {
-                        arr_input_file = new Map();
-                        arr_list_file_del = [];
+                        // arr_input_file = new Map();
+                        // arr_list_file_del = [];
                         $.alert({
                            title: "Thông báo",
-                           content: res_json.success
+                           content: res_json.success,
                            buttons: {
                               "Ok":function(){
                                  loadDataComplete();
@@ -792,7 +802,7 @@
                            }
                         }
                      })
-                     loadDataComplete("Insert");
+                    // loadDataComplete("Insert");
                }
             },
             error: function(data) {

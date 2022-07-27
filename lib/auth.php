@@ -56,7 +56,7 @@
         return ($_SERVER["REQUEST_METHOD"] == "GET");  
     }
     function get_url_current_page() {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        return "$_SERVER[REQUEST_URI]";
     }
     function redirect_if_login_status_false($uri_login_redirect = "login.php") {
         if(!isset($_SESSION["isLoggedIn"]) || $_SESSION["isLoggedIn"] !== true){

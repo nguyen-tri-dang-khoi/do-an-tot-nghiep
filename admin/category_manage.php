@@ -109,7 +109,6 @@
                             <button onclick="loadDataInTab('<?=$_SESSION['category_manage_tab'][$ik]['tab_urlencode'];?>')"  class="tab"><?=$tab['tab_name'];?></button>
                             
                             <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                            
                         </li>
                       <?php
                             $ik++;
