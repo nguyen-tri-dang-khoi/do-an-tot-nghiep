@@ -325,6 +325,7 @@ function loadDataInTab(url, pushState = true) {
     setTimeout(() => {
         $('.ok-game-start').load(`${url} #load-all`, () => {
             $('#select-type2').select2();
+            
             $('#pagination').pagination({
                 items: $('[dt-items]').attr('dt-items'),
                 itemsOnPage: $('[dt-limit]').attr('dt-limit'),
@@ -342,6 +343,7 @@ function loadDataInTab(url, pushState = true) {
                 },
                 cssStyle: 'light-theme'
             });
+            //$('.tab-active')[0].scrollIntoView();
             $("#is-load").show();
             $(".img-load").hide();
             let parameters = new URLSearchParams(window.location.search);
@@ -352,6 +354,7 @@ function loadDataInTab(url, pushState = true) {
             }
             showPicker();
             $('[class*=select-type]').select2();
+            
         })
     }, 100);
 }
@@ -424,6 +427,7 @@ function loadDataComplete(status = "") {
 function searchTabLoad(form_id) {
     event.preventDefault();
     loadDataInTab(window.location.protocol + window.location.pathname + "?" + $(`${form_id}`).serialize());
+    $('.tab-active')[0][0].scrollIntoView();
 }
 
 function saveTabFilter() {
