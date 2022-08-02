@@ -7,6 +7,17 @@
    min-height: min-content;
    
 }
+#ul-tab-id {
+   width:1456px !important;
+   overflow-x: hidden;
+   overflow-y: hidden;
+   padding-right:0px;
+   padding-left:0px;
+   list-style-type:none;
+   /* margin-bottom:0px; */
+   scroll-behavior: smooth; 
+   margin:0px 5px;
+}
 #ul-tab-id::-webkit-scrollbar-track
 {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);

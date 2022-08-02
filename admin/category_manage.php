@@ -85,37 +85,74 @@
               </div>
             </div>
             <div class="card-body ok-game-start">
+              
               <div id="load-all">
-                <link rel="stylesheet" href="css/tab.css">         
-                <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-start j-between">
-                  <ul style="width:1456px !important;overflow-x: auto;overflow-y: hidden;padding-right:0px;padding-left:0px;list-style-type:none;" id="ul-tab-id" class="d-flex ul-tab">
-                      <?php
-                        $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
-                        $_SESSION['category_manage_tab'] = isset($_SESSION['category_manage_tab']) ? $_SESSION['category_manage_tab'] : [];
-                        $_SESSION['category_tab_id'] = isset($_SESSION['category_tab_id']) ? $_SESSION['category_tab_id'] : 0;
-                      ?>
-                      <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php')" class="tab tab-1">Tất cả</button></li>
+                <link rel="stylesheet" href="css/tab.css">     
+                <style>
+                .k-arrow-left,.k-arrow-right{
+                  display:block;
+                  position: relative;
+                  /* border:1px solid #2196f3; */
+                  width:30px;
+                  
+                  height:30px;
 
-                      <?php
-                        $ik = 0;
-                        $is_active = false;
-                        if(count($_SESSION['category_manage_tab']) > 0) {
-                            foreach($_SESSION['category_manage_tab'] as $tab) {
-                              if($tab['tab_unique'] == $tab_unique) {
-                                $_SESSION['category_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
-                              }
-                      ?>
-                        <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
-                            <button onclick="loadDataInTab('<?=$_SESSION['category_manage_tab'][$ik]['tab_urlencode'];?>')"  class="tab"><?=$tab['tab_name'];?></button>
-                            
-                            <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
-                        </li>
-                      <?php
-                            $ik++;
+                }
+                .k-arrow-left::before,.k-arrow-right::after{
+                  font-size:40px;
+                  font-weight:bold;
+                  position: absolute;
+                  display:flex;
+                  align-items:center;
+
+                  cursor:pointer;
+                  color:#2196f3;
+                }
+                .k-arrow-left::before{
+                  content:'\2190';
+                  position: absolute;
+                  top: -15px;
+                }
+                .k-arrow-right::after{
+                  content:'\2192';
+                  position: absolute;
+                  top: -15px;
+                }
+              </style>    
+                <div style="padding-right:0px;padding-left:0px;" class="col-12 mb-20 d-flex a-start j-between">
+                  <div class="d-flex a-center j-center">
+                    <span onclick="leftScroll()" class="k-arrow-left"></span>
+                    <ul id="ul-tab-id" class="d-flex ul-tab">
+                        <?php
+                          $tab_unique = isset($_REQUEST['tab_unique']) ? $_REQUEST['tab_unique'] : null;
+                          $_SESSION['category_manage_tab'] = isset($_SESSION['category_manage_tab']) ? $_SESSION['category_manage_tab'] : [];
+                          $_SESSION['category_tab_id'] = isset($_SESSION['category_tab_id']) ? $_SESSION['category_tab_id'] : 0;
+                        ?>
+                        <li class="li-tab <?=$tab_unique == 'all' ||  $tab_unique == null ? 'tab-active' : ''?>"><button onclick="loadDataInTab('category_manage.php')" class="tab tab-1">Tất cả</button></li>
+
+                        <?php
+                          $ik = 0;
+                          $is_active = false;
+                          if(count($_SESSION['category_manage_tab']) > 0) {
+                              foreach($_SESSION['category_manage_tab'] as $tab) {
+                                if($tab['tab_unique'] == $tab_unique) {
+                                  $_SESSION['category_manage_tab'][$ik]['tab_urlencode'] = get_url_current_page();
+                                }
+                        ?>
+                          <li data-index='<?=$ik;?>' oncontextmenu="focusInputTabName(this)" class="li-tab <?=$tab['tab_unique'] == $tab_unique ? 'tab-active' : '';?>">
+                              <button onclick="loadDataInTab('<?=$_SESSION['category_manage_tab'][$ik]['tab_urlencode'];?>')"  class="tab"><?=$tab['tab_name'];?></button>
+                              
+                              <span onclick="delTabFilter('<?=($tab['tab_unique'] == $tab_unique);?>')" class="k-tab-delete"></span>
+                          </li>
+                        <?php
+                              $ik++;
+                          }
                         }
-                      }
-                      ?>
-                  </ul>
+                        ?>
+                    </ul>
+                    <span onclick="rightScroll()" class="k-arrow-right"></span>
+                  </div>
+                 
                   <div class="d-flex j-center a-center" style="position:relative;">
                     <div onclick="saveTabFilter()" style="" class="add-tab">
                         <button class="btn-add-tab"><span class="add-tab-plus">+</span></button>
@@ -429,7 +466,19 @@
 
 <script src="js/khoi_all.js"></script>
 <script>
+  //$('.tab-active')[0].scrollIntoView();
   <?=$upt_more != 1 && $count_row_table != 0 ? 'setSortTable();' : null;?>
+  function leftScroll(){
+    document.getElementById('ul-tab-id').scrollLeft -= 125;
+   // if($('#ul-tab-id')[0].getBoun)
+    //$('#ul-tab-id').css({"transform":"translateX(-220px)"});
+    //console.log($('#ul-tab-id')[0].getBoundingClientRect());
+  }
+  function rightScroll(){
+    document.getElementById('ul-tab-id').scrollLeft += 125;
+    //$('#ul-tab-id')[0].css({"translateX":"220px"});
+    //console.log($('#ul-tab-id')[0].getBoundingClientRect());
+  }
   $('#select-type2').select2();
   function readURLok(input){
     if (input.files && input.files[0]) {
