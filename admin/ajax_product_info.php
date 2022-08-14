@@ -45,13 +45,13 @@
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="don_gia">Giá gốc</label>
-                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc" value="<?=number_format($result['cost'],0,'','.')?>">
+                <input type="text" onblur="blur_number_format()" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc" value="<?=number_format($result['cost'],0,'','.')?>">
                 <div id="cost_err" class="text-danger"></div>
                 
             </div>
             <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
-                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
+                <input type="text" onblur="blur_number_format()" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia"   class="form-control" placeholder="Nhập đơn giá" value="<?=number_format($result['price'],0,'','.')?>">
                 <div id="price_err" class="text-danger"></div>
             </div>
             
@@ -175,12 +175,12 @@
         <div class="row">
             <div class="col-md-3 form-group">
                 <label for="don_gia">Giá gốc</label>
-                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
+                <input type="text" onblur="blur_number_format()" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="gia_goc" class="form-control" placeholder="Nhập giá gốc">
                 <p id="cost_err" class="text-danger"></p>
             </div>
             <div class="col-md-3 form-group">
                 <label for="don_gia">Đơn giá</label>
-                <input type="text" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia" class="form-control" placeholder="Nhập đơn giá">
+                <input type="text" onblur="blur_number_format()" onpaste="pasteAutoFormat(event)" onkeyup="allow_zero_to_nine(event)" onkeypress="allow_zero_to_nine(event)" name="don_gia" class="form-control" placeholder="Nhập đơn giá">
                 <p id="price_err" class="text-danger"></p>
             </div>
             <div class="col-md-6 form-group">

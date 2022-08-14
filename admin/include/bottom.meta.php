@@ -20,13 +20,67 @@
         let phim_unicode = event.keyCode;
         let convert_phim_unicode = String.fromCharCode(phim_unicode);
         if(convert_phim_unicode == ".") event.preventDefault();
-        if(convert_phim_unicode.match(/^\d+$/) || phim_unicode == "8" || phim_unicode == "46") {
-            let n = parseInt($(event.currentTarget).val().replace(/\./g, ""),10);
-            if(!isNaN(n)){
-                $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
-            }
+        if(convert_phim_unicode == "," || $(event.currentTarget).val().indexOf(",") > -1) {
+            return;
         } else {
-            event.preventDefault();
+            if(convert_phim_unicode.match(/^\d+$/) || phim_unicode == "8" || phim_unicode == "46") {
+                let n = parseInt($(event.currentTarget).val().replace(/\./g, ""),10);
+                if(!isNaN(n)){
+                    // let aaa = n.toLocaleString().replace(/\,/g, ".");
+                    // if(aaa < 10 && phim_unicode != "8" && phim_unicode != "46") {
+                    //     aaa = aaa * 1000;
+                    //     $(event.currentTarget).val(aaa.toLocaleString().replace(/\,/g, "."));
+                    // } else {
+                    //     $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
+                    // }
+                    $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
+                    
+                }
+            } else {
+                event.preventDefault();
+            }
         }
+    }
+    function blur_number_format(){
+        let aka = 6;
+        let number2 = $(event.currentTarget).val();
+        if(number2 != "") {
+            if(number2.indexOf(",") > -1) {
+                number2 = number2.replace(/\,/, ".");
+            } else {
+                number2 = number2.replace(/\./g, "");
+            }
+            
+            let length_aaa = number2.length;
+            let length_bbb = aka - length_aaa;
+            if(length_bbb > 0) {
+                number2 = number2 * Math.pow(10,aka);
+            }
+            number2 = parseInt(number2,10);
+            $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
+        }
+        
+        // if(number2.indexOf(",") > -1) {
+        //     number2 = number2.replace(/\,/, ".");
+        //     let length_aaa = number2.length;
+        //     let length_bbb = aka - length_aaa;
+        //     if(length_bbb > 0) {
+        //         number2 = number2 * Math.pow(10,aka);
+        //     }
+        //     number2 = parseInt(number2,10);
+        //     $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
+        // } else {
+        //     if(number2 != "") {
+        //         number2 = number2.replace(/\./g, "");
+        //         let length_aaa = number2.length;
+        //         let length_bbb = aka - length_aaa;
+        //         if(length_bbb > 0) {
+        //             number2 = number2 * Math.pow(10,aka);
+        //         }
+        //         number2 = parseInt(number2,10);
+        //         $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
+        //     }
+        // }
+        
     }
 </script>

@@ -708,6 +708,10 @@
 <script>
    $('.select-type2').select2();
 </script>
+<script>
+   // drop file
+   
+</script>
 <!--searching filter-->
 <script>
    function choose_type_search(){
