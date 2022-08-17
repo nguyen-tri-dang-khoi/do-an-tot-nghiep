@@ -50,7 +50,6 @@
             } else {
                 number2 = number2.replace(/\./g, "");
             }
-            
             let length_aaa = number2.length;
             let length_bbb = aka - length_aaa;
             if(length_bbb > 0) {
@@ -59,28 +58,5 @@
             number2 = parseInt(number2,10);
             $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
         }
-        
-        // if(number2.indexOf(",") > -1) {
-        //     number2 = number2.replace(/\,/, ".");
-        //     let length_aaa = number2.length;
-        //     let length_bbb = aka - length_aaa;
-        //     if(length_bbb > 0) {
-        //         number2 = number2 * Math.pow(10,aka);
-        //     }
-        //     number2 = parseInt(number2,10);
-        //     $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
-        // } else {
-        //     if(number2 != "") {
-        //         number2 = number2.replace(/\./g, "");
-        //         let length_aaa = number2.length;
-        //         let length_bbb = aka - length_aaa;
-        //         if(length_bbb > 0) {
-        //             number2 = number2 * Math.pow(10,aka);
-        //         }
-        //         number2 = parseInt(number2,10);
-        //         $(event.currentTarget).val(number2.toLocaleString().replace(/\,/g, "."));
-        //     }
-        // }
-        
     }
 </script>

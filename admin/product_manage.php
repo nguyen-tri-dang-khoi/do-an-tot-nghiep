@@ -709,8 +709,7 @@
    $('.select-type2').select2();
 </script>
 <script>
-   // drop file
-   
+    
 </script>
 <!--searching filter-->
 <script>
@@ -789,6 +788,7 @@
 <script>
    var arr_list_file_del = [];
 	var arr_input_file = new Map();
+   let frmSanPham = new FormData();
    function init_map_file(){
       if($('input[name="list_file_del"]').val() != "") {
          arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
@@ -817,11 +817,12 @@
          }
          reader.onload = function (e) {
             $(target).parent().css({
-            'background-image' : 'url("' + e.target.result + '")',
-            'background-size': 'cover',
-            'background-position': '50%'
+               'background-image' : 'url("' + e.target.result + '")',
+               'background-size': 'cover',
+               'background-position': '50%'
             });
          }
+         frmSanPham.append('img[]',input.files[0]);
          reader.readAsDataURL(input.files[0]);
       }
 	}
@@ -849,64 +850,64 @@
 	function gameChange(){
 		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
 	}
-	function readURL(input,key) {
-      let target = event.currentTarget;
-      if (input.files && input.files[0]) {
-         var reader = new FileReader();
-         arr_input_file.set(key,key);
-         console.log(arr_input_file);
-         reader.onload = function (e) {
-            $(target).parent().css({
-            'background-image' : 'url("' + e.target.result + '")',
-            'background-size': 'cover',
-            'background-position': '50%'
-            });
-         }
-         reader.readAsDataURL(input.files[0]);
-      }
-	}
-   function removeImage(input,key){
-      $(input).parent().css({'display':'none'});
-      $(input).closest('.kh-custom-file').remove();
-      arr_input_file.delete(key);
-   }
-   function game() {
-      $('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
-   }
-   function addFileInput(parent){
-      let game_start = $(".kh-custom-file").last().attr('data-id');
-      let count = $(".kh-file-list:last-child .kh-custom-file").length;
-      let count2 = $(".kh-custom-file").length;
-      console.log(count2);
-      // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
-      if(count2 > 11) {
-         $.alert({
-            'title':'Thông báo',
-            'content':'Bạn chỉ được phép thêm tối đa 12 hình',
-         });
-         return;
-      }
-      game_start = parseInt(game_start) + 1;
-      if(isNaN(game_start)) {
-         game_start = 1;
-      }
-      let file_html = `
-      <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-         <input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
-         <input type="hidden" name="image" value="">
-         <div class="kh-custom-remove-img" style="display:block;">
-            <span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
-         </div>
-      </div>`;
-      if(count % 6 == 0){
-         file_html = `<div class="kh-file-list">${file_html}</div>`;
-         $(file_html).appendTo('.kh-file-lists');
-      } else {
-         $(file_html).appendTo(parent);
-      }
+	// function readURL(input,key) {
+   //    let target = event.currentTarget;
+   //    if (input.files && input.files[0]) {
+   //       var reader = new FileReader();
+   //       arr_input_file.set(key,key);
+   //       console.log(arr_input_file);
+   //       reader.onload = function (e) {
+   //          $(target).parent().css({
+   //             'background-image' : 'url("' + e.target.result + '")',
+   //             'background-size': 'cover',
+   //             'background-position': '50%'
+   //          });
+   //       }
+   //       console.log(input.files[0]);
+   //       reader.readAsDataURL(input.files[0]);
+   //    }
+	// }
+   // function removeImage(input,key){
+   //    $(input).parent().css({'display':'none'});
+   //    $(input).closest('.kh-custom-file').remove();
+   //    arr_input_file.delete(key);
+   // }
+   // function game() {
+   //    $('input[name="list_file_del"]').val(Array.from(arr_input_file.keys()).join(","));
+   // }
+   // function addFileInput(){
+   //    let game_start = $(".kh-custom-file").last().attr('data-id');
+   //    let count = $(".kh-file-list:last-child .kh-custom-file").length;
+   //    let count2 = $(".kh-custom-file").length;
+   //    console.log(count2);
+   //    // khi chua them hinh tao se dem so luong hinh truoc do neu 11 hinh ma chay vao day bao loi lien
+   //    if(count2 > 11) {
+   //       $.alert({
+   //          'title':'Thông báo',
+   //          'content':'Bạn chỉ được phép thêm tối đa 12 hình',
+   //       });
+   //       return;
+   //    }
+   //    game_start = parseInt(game_start) + 1;
+   //    if(isNaN(game_start)) {
+   //       game_start = 1;
+   //    }
+   //    let file_html = `
+   //    <div data-id=${game_start} class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
+   //       <input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'${game_start}')">
+   //       <div class="kh-custom-remove-img" style="display:block;">
+   //          <span class="kh-custom-btn-remove" onclick="removeImage(this,'${game_start}')"></span>
+   //       </div>
+   //    </div>`;
+   //    if(count % 6 == 0){
+   //       file_html = `<div class="kh-file-list">${file_html}</div>`;
+   //       $(file_html).appendTo('.kh-file-lists');
+   //    } else {
+   //       $(file_html).appendTo('.kh-file-list:last-child');
+   //    }
       
-   }
-   function addFileInputChange(parent){
+   // }
+   function addFileInputChange(){
       let game_start = $(".kh-custom-file").last().attr('data-id');
       let count = $(".kh-file-list:last-child > .kh-custom-file").length;
       console.log(count);
@@ -935,7 +936,48 @@
          file_html = `<div class="kh-file-list">${file_html}</div>`;
          $(file_html).appendTo('.kh-file-lists');
       } else {
-         $(file_html).appendTo(parent);
+         $(file_html).appendTo('.kh-file-list:last-child');
+      }
+   }
+   function allowDrop(){
+      event.preventDefault();
+   }
+   function drop(){
+      event.preventDefault();
+      if (event.dataTransfer.items) {
+         for (let i = 0; i < event.dataTransfer.items.length; i++) {
+            if (event.dataTransfer.items[i].kind === 'file') {
+               const file = event.dataTransfer.items[i].getAsFile();
+               addFileInputChange();
+               var reader = new FileReader();
+               let key = parseInt(i) + 1;
+               if(arr_input_file.has(key)) {
+                  if(arr_input_file.get(key).indexOf("_has") == -1) {
+                     if(arr_input_file.get(key).indexOf("_del") > 0) {
+                        arr_input_file.set(key,key + "_upt");
+                     }
+                  } else {
+                     arr_input_file.set(key,key + "_upt");
+                  }
+               } else {
+                  arr_input_file.set(key,key + "_ins");
+               }
+               reader.onload = function (e) {
+                  $(`.kh-custom-file[data-id=${i + 1}]`).css({
+                     'background-image' : 'url("' + e.target.result + '")',
+                     'background-size': 'cover',
+                     'background-position': '50%'
+                  });
+               }
+               frmSanPham.append('img[]',file);
+               reader.readAsDataURL(file);
+            }
+         }
+      } else {
+         // Use DataTransfer interface to access the file(s)
+         for (let i = 0; i < event.dataTransfer.files.length; i++) {
+            console.log(`… file[${i}].name = ${event.dataTransfer.files[i].name}`);
+         }
       }
    }
 </script>
@@ -1106,24 +1148,24 @@
    }
    function processModalInsertUpdate(){
       event.preventDefault();
-      let formData = new FormData($('#form-san-pham')[0]);
       let number = 1;
-      formData.append('id',$('input[name=id]').val());
-      formData.append('name',$('input[name=ten_san_pham]').val());
-      formData.append('description',$('#summernote').summernote('code'));
-      formData.append('count',$('input[name=so_luong]').val());
-      formData.append('number',$('input[name=number]').val());
-      formData.append('price',$('input[name=don_gia]').val());
-      formData.append('cost',$('input[name=gia_goc]').val());
-      formData.append('product_type_id',$("input[name='product_type_id']").val());
-      formData.append('category_name',$("input[name='category_name']").val());
-      formData.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
-      if(status == "Insert"){
-         game();
-      } else {
-         gameChange();
+      frmSanPham.append('id',$('input[name=id]').val());
+      frmSanPham.append('name',$('input[name=ten_san_pham]').val());
+      frmSanPham.append('description',$('#summernote').summernote('code'));
+      frmSanPham.append('count',$('input[name=so_luong]').val());
+      frmSanPham.append('number',$('input[name=number]').val());
+      frmSanPham.append('price',$('input[name=don_gia]').val());
+      frmSanPham.append('cost',$('input[name=gia_goc]').val());
+      frmSanPham.append('product_type_id',$("input[name='product_type_id']").val());
+      frmSanPham.append('category_name',$("input[name='category_name']").val());
+      frmSanPham.append('status',$('#btn-luu-san-pham').attr('data-status').trim());
+      if($('input[name="img_sanpham_file"]')[0].files.length > 0) {
+         if($('input[name="img_sanpham_file"]')[0].files[0].size > 0) {
+            frmSanPham.append('img_sanpham_file',$('input[name="img_sanpham_file"]')[0].files[0]);
+         }
       }
-      formData.append('list_file_del',$('input[name="list_file_del"]').val());
+      gameChange();
+      frmSanPham.append('list_file_del',$('input[name="list_file_del"]').val());
       if(validate()) {
          $.ajax({
             url:window.location.href,
@@ -1132,8 +1174,9 @@
             dataType:"json",
             contentType: false,
             processData: false,
-            data:formData,
+            data:frmSanPham,
             success:function(res_json){
+               console.log(res_json);
                if(res_json.msg == 'ok'){
                   let status = $('#btn-luu-san-pham').attr('data-status').trim();
                   if(status == "Insert"){
@@ -1722,6 +1765,7 @@
 ?>
 <?php
    } else if (is_post_method()) {
+      //print_r("aaa");
       function getFileUpload($img_order,$id){
          $sql = "select img_id from product_image where product_info_id = '$id' and img_order = '$img_order' limit 1";
          $file_old_name = fetch(sql_query($sql))['img_id'];
@@ -1759,6 +1803,7 @@
             $sql_ins = "Insert into product_info(product_type_id,user_id,name,description,count,cost,price,img_name,is_active) values(?,?,?,?,?,?,?,?,?)";
             sql_query($sql_ins,[$product_type_id,$user_id,$name,$description,$count,$cost,$price,1,0]);
             $insert = ins_id();
+            $id = $insert;
             if($insert > 0) {
                $image = null;
                //
@@ -1772,9 +1817,7 @@
                   mkdir($dir, 0777); 
                   chmod($dir, 0777);
                }
-               //
-               //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$insert,$image);
-               if($_FILES['img_sanpham_file']['name'] != "") {
+               if(array_key_exists('img_sanpham_file',$_FILES)) {
                   $ext = strtolower(pathinfo($_FILES['img_sanpham_file']['name'],PATHINFO_EXTENSION));
                   $file_name = md5(rand(1,999999999)). $id . "." . $ext;
                   $file_name = str_replace("_","",$file_name);
@@ -1783,30 +1826,94 @@
                   $sql_update = "update product_info set img_name='$path' where id = '$insert'";
                   sql_query($sql_update);
                }
-               $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
-               if(count($_FILES['img']['name']) > 0) {
-                  $__arr = [];
-                  $i = 0;
-                  foreach($_FILES['img']['error'] as $key => $error) {
-                     if($error == UPLOAD_ERR_OK) {
-                        $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
-                        $file_name = md5(rand(1,999999999)) . $insert . "." . $ext;
-                        $file_name = str_replace("_","",$file_name);
-                        $path = $dir . "/" . $file_name ;
-                        move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
-                        @chmod($dir, 0777);
-                        $j = $list_file_del[$i];
-                        array_push($__arr,"('$insert','$path',$j)");
+               // $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
+               // if(count($_FILES['img']['name']) > 0) {
+               //    $__arr = [];
+               //    $i = 0;
+               //    foreach($_FILES['img']['error'] as $key => $error) {
+               //       if($error == UPLOAD_ERR_OK) {
+               //          $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
+               //          $file_name = md5(rand(1,999999999)) . $insert . "." . $ext;
+               //          $file_name = str_replace("_","",$file_name);
+               //          $path = $dir . "/" . $file_name ;
+               //          move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+               //          @chmod($dir, 0777);
+               //          $j = $list_file_del[$i];
+               //          array_push($__arr,"('$insert','$path',$j)");
+               //       }
+               //       if($error == UPLOAD_ERR_NO_FILE) {
+               //          $i--;
+               //       }
+               //       $i++;
+               //    }
+               //    if(count($__arr) > 0) {
+               //       $sql .= implode(",",$__arr);
+               //       //print_r($sql);
+               //       sql_query($sql);
+               //    }
+               // }
+               $list_file_del_length = count($list_file_del);
+               for($i = 0 ; $i < count($list_file_del) ; $i++) {
+                  if(strpos($list_file_del[$i],"_del") !== false) {
+                     $img_order = explode("_",$list_file_del[$i])[0];
+                     $file_old_name = getFileUpload($img_order,$id);
+                     if(file_exists($file_old_name)) {
+                        unlink($file_old_name);
+                        chmod($dir, 0777);
                      }
-                     if($error == UPLOAD_ERR_NO_FILE) {
-                        $i--;
-                     }
-                     $i++;
+                     $sql_delete_file = "Delete from product_image where product_info_id = '$id' and img_order = $img_order";
+                     sql_query($sql_delete_file);
+                     array_splice($list_file_del,$i, 1);
+                     $i--;
                   }
-                  if(count($__arr) > 0) {
-                     $sql .= implode(",",$__arr);
-                     //print_r($sql);
-                     sql_query($sql);
+                  else if(strpos($list_file_del[$i],"_has") !== false) {
+                     array_splice($list_file_del,$i, 1);
+                     $i--;
+                  }
+               }
+               //print_r($list_file_del);
+               if(isset($_FILES['img'])) {
+                  if(count($_FILES['img']['name']) > 0) {
+                     $file_old_name = "";
+                     $__arr = [];
+                     $i = 0;
+                     $sql = "Insert into product_image(product_info_id,img_id,img_order) values";
+                     foreach($_FILES['img']['error'] as $key => $error) {
+                        if($error == UPLOAD_ERR_OK) {
+                           $ext = strtolower(pathinfo($_FILES['img']['name'][$key],PATHINFO_EXTENSION));
+                           $file_name = md5(rand(1,999999999)). "." . $ext;
+                           $file_name = str_replace("_","",$file_name);
+                           $path = $dir . "/" . $file_name ;
+                           if(strpos($list_file_del[$i],"_ins") !== false) {
+                              move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                              @chmod($dir, 0777);
+                              $j = explode("_",$list_file_del[$i])[0];
+                              //print_r($j)
+                              array_push($__arr,"('$id','$path',$j)");
+                              //print_r($__arr);
+                           } else if(strpos($list_file_del[$i],"_upt") !== false) {
+                              $img_order = explode("_",$list_file_del[$i])[0];
+                              $file_old_name = getFileUpload($img_order,$id);
+                              if(file_exists($file_old_name)) {
+                                 unlink($file_old_name);
+                                 chmod($dir, 0777);
+                              }
+                              move_uploaded_file($_FILES['img']['tmp_name'][$key],$path);
+                              @chmod($dir, 0777);
+                              $sql_update_file = "Update product_image set img_id = '$path' where product_info_id='$id' and img_order='$img_order'";
+                              sql_query($sql_update_file);
+                           }
+                        }
+                        if($error == UPLOAD_ERR_NO_FILE) {
+                           $i--;
+                        }
+                        $i++;
+                     }
+                     if(count($__arr) > 0) {
+                        $sql .= implode(",",$__arr);
+                        //print_r($sql);
+                        sql_query($sql);
+                     }
                   }
                }
                $success = "Insert dữ liệu thành công.";
@@ -1821,7 +1928,9 @@
             chmod($dir, 0777);
          }
          //file_upload(['file' => 'img_sanpham_file'],'product_info','img_name',$dir,$id,$image);
-         if($_FILES['img_sanpham_file']['name'] != "") {
+         // print_r($_FILES);
+         // exit();
+         if(array_key_exists('img_sanpham_file',$_FILES)) {
             $sql_get_old_file = "select img_name from product_info where id = '$id'";
             $old_file = fetch(sql_query($sql_get_old_file))['img_name'];
             if(file_exists($old_file)){

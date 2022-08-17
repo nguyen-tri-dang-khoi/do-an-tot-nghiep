@@ -203,19 +203,25 @@
                 <div class="kh-file-lists">
                     <div class="kh-file-list">
                         <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                            <input class="nl-form-control" name="img[]" type="file" onchange="readURL(this,'1')">
+                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'1')">
                             <div class="kh-custom-remove-img" style="display:none;">
-                                <span class="kh-custom-btn-remove" onclick="removeImage(this,'1')"></span>
+                                <span class="kh-custom-btn-remove" onclick="removeImageChange(this,'1')"></span>
                             </div>
                         </div>
                         <input name="list_file_del" type='hidden' value="">
                     </div>
                 </div>
                 <div class="kh-div-append-file">
-                    <button type="button" class="kh-btn-append-file" onclick="addFileInput('.kh-file-list:last-child')">+</button>
+                    <button type="button" class="kh-btn-append-file" onclick="addFileInputChange()">+</button>
                 </div>
             </div>
         </div>
+        <div class="form-group">
+        <div draggable="true" ondragover="allowDrop()" ondrop="drop()" style="width:100%;height:200px;border:1px dashed red;" class="k-border">
+
+        </div>
+        </div>
+       
         <div class="form-group" style="width:100%;">
             <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
             <textarea name="mo_ta_san_pham" id="summernote"></textarea>
