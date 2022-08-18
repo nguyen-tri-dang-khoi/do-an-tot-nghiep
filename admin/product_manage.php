@@ -547,7 +547,7 @@
                                              <?php
                                                 if($allow_update) {
                                              ?>
-                                             <button onclick="openModalUpdate()" class="btn-sua-san-pham dt-button button-green" data-number="<?=$total - ($start_page + $cnt);?>"
+                                             <button onclick="openModalUpdate()" class="btn-sua-san-pham dt-button button-green"
                                              data-id="<?=$row["pi_id"];?>" >
                                              Sửa
                                              </button>
@@ -789,6 +789,8 @@
    var arr_list_file_del = [];
 	var arr_input_file = new Map();
    let frmSanPham = new FormData();
+   let arr_file = [];
+   let obj_arr_file = {};
    function init_map_file(){
       if($('input[name="list_file_del"]').val() != "") {
          arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
@@ -826,15 +828,16 @@
          reader.readAsDataURL(input.files[0]);
       }
 	}
-	function removeImageChange(input,key){
-		$(input).parent().css({'display':'none'});
-		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
-		arr_input_file.set(key,key + "_upt");
-	}
+	// function removeImageChange(input,key){
+	// 	$(input).parent().css({'display':'none'});
+	// 	$(input).closest('.kh-custom-file').css({'background-image':'url()'});
+	// 	arr_input_file.set(key,key + "_upt");
+	// }
 	function removeImageDel(input,key) {
 		$(input).parent().css({'display':'none'});
 		$(input).closest('.kh-custom-file').remove();
 		$(input).closest('.kh-custom-file').css({'background-image':'url()'});
+      key = parseInt(key);
 		if(arr_input_file.has(key)) {
 			if(arr_input_file.get(key).indexOf("_has") == -1) {
 				if(arr_input_file.get(key).indexOf("_upt") > 0){
@@ -845,7 +848,10 @@
 			} else {
 				arr_input_file.set(key,key + "_del");
 			}
+         delete obj_arr_file[`${key}`];
+         console.log(obj_arr_file);
 		}
+      
 	}
 	function gameChange(){
 		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
@@ -943,14 +949,19 @@
       event.preventDefault();
    }
    function drop(){
+      let count = $(".kh-custom-file").last().attr('data-id');
       event.preventDefault();
+      //console.log(event.dataTransfer.items);
+      console.log(count);
       if (event.dataTransfer.items) {
          for (let i = 0; i < event.dataTransfer.items.length; i++) {
             if (event.dataTransfer.items[i].kind === 'file') {
-               const file = event.dataTransfer.items[i].getAsFile();
+               let file = event.dataTransfer.items[i].getAsFile();
+               //console.log(file);
                addFileInputChange();
                var reader = new FileReader();
-               let key = parseInt(i) + 1;
+               let key = parseInt(i) + parseInt(count) + 1;
+               console.log(key);
                if(arr_input_file.has(key)) {
                   if(arr_input_file.get(key).indexOf("_has") == -1) {
                      if(arr_input_file.get(key).indexOf("_del") > 0) {
@@ -963,20 +974,19 @@
                   arr_input_file.set(key,key + "_ins");
                }
                reader.onload = function (e) {
-                  $(`.kh-custom-file[data-id=${i + 1}]`).css({
+                  $(`.kh-custom-file[data-id=${key}]`).css({
                      'background-image' : 'url("' + e.target.result + '")',
                      'background-size': 'cover',
                      'background-position': '50%'
                   });
                }
-               frmSanPham.append('img[]',file);
+               arr_file.push(file);
+               obj_arr_file[key] = file;
+               console.log(obj_arr_file);
+               //console.log(arr_file);
+               // frmSanPham.append('img[]',file);
                reader.readAsDataURL(file);
             }
-         }
-      } else {
-         // Use DataTransfer interface to access the file(s)
-         for (let i = 0; i < event.dataTransfer.files.length; i++) {
-            console.log(`… file[${i}].name = ${event.dataTransfer.files[i].name}`);
          }
       }
    }
@@ -1148,12 +1158,10 @@
    }
    function processModalInsertUpdate(){
       event.preventDefault();
-      let number = 1;
       frmSanPham.append('id',$('input[name=id]').val());
       frmSanPham.append('name',$('input[name=ten_san_pham]').val());
       frmSanPham.append('description',$('#summernote').summernote('code'));
       frmSanPham.append('count',$('input[name=so_luong]').val());
-      frmSanPham.append('number',$('input[name=number]').val());
       frmSanPham.append('price',$('input[name=don_gia]').val());
       frmSanPham.append('cost',$('input[name=gia_goc]').val());
       frmSanPham.append('product_type_id',$("input[name='product_type_id']").val());
@@ -1164,6 +1172,10 @@
             frmSanPham.append('img_sanpham_file',$('input[name="img_sanpham_file"]')[0].files[0]);
          }
       }
+      for(const [key,value] of Object.entries(obj_arr_file)) {
+         frmSanPham.append('img[]',value);
+      }
+      
       gameChange();
       frmSanPham.append('list_file_del',$('input[name="list_file_del"]').val());
       if(validate()) {
@@ -1176,7 +1188,7 @@
             processData: false,
             data:frmSanPham,
             success:function(res_json){
-               console.log(res_json);
+               frmSanPham = new FormData();
                if(res_json.msg == 'ok'){
                   let status = $('#btn-luu-san-pham').attr('data-status').trim();
                   if(status == "Insert"){
