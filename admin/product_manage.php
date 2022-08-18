@@ -803,6 +803,7 @@
       }
    }
 	function readURLChange(input,key) {
+      key = parseInt(key);
       let target = event.currentTarget;
       if (input.files && input.files[0]) {
          var reader = new FileReader();
@@ -817,6 +818,7 @@
          } else {
             arr_input_file.set(key,key + "_ins");
          }
+         obj_arr_file[key] = input.files[0];
          reader.onload = function (e) {
             $(target).parent().css({
                'background-image' : 'url("' + e.target.result + '")',
@@ -824,7 +826,6 @@
                'background-position': '50%'
             });
          }
-         frmSanPham.append('img[]',input.files[0]);
          reader.readAsDataURL(input.files[0]);
       }
 	}
@@ -848,14 +849,22 @@
 			} else {
 				arr_input_file.set(key,key + "_del");
 			}
-         delete obj_arr_file[`${key}`];
-         console.log(obj_arr_file);
+         delete obj_arr_file[key];
 		}
-      
 	}
 	function gameChange(){
-		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).join(","));
+		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).sort().join(","));
+      console.log(Array.from(arr_input_file.values()).sort());
+   
 	}
+   function showDragText(){
+      // alert("Con me no");
+      // event.preventDefault();
+      $('.k-border').show();
+   }
+   function hideDragText(){
+      $('.k-border').hide();
+   }
 	// function readURL(input,key) {
    //    let target = event.currentTarget;
    //    if (input.files && input.files[0]) {
@@ -947,12 +956,11 @@
    }
    function allowDrop(){
       event.preventDefault();
+      $('.k-border').show();
    }
    function drop(){
       let count = $(".kh-custom-file").last().attr('data-id');
       event.preventDefault();
-      //console.log(event.dataTransfer.items);
-      console.log(count);
       if (event.dataTransfer.items) {
          for (let i = 0; i < event.dataTransfer.items.length; i++) {
             if (event.dataTransfer.items[i].kind === 'file') {
@@ -961,7 +969,7 @@
                addFileInputChange();
                var reader = new FileReader();
                let key = parseInt(i) + parseInt(count) + 1;
-               console.log(key);
+               //console.log(key);
                if(arr_input_file.has(key)) {
                   if(arr_input_file.get(key).indexOf("_has") == -1) {
                      if(arr_input_file.get(key).indexOf("_del") > 0) {
@@ -980,15 +988,12 @@
                      'background-position': '50%'
                   });
                }
-               arr_file.push(file);
                obj_arr_file[key] = file;
-               console.log(obj_arr_file);
-               //console.log(arr_file);
-               // frmSanPham.append('img[]',file);
                reader.readAsDataURL(file);
             }
          }
       }
+      $('.k-border').hide();
    }
 </script>
 <script>
@@ -1085,7 +1090,7 @@
          $('#btn-luu-san-pham').text("Thêm");
          $(function(){
             setTimeout(() => {
-               $('#summernote').summernote({height: 120,lang: 'vi-VN'});
+               $('#summernote').summernote({height: 120,lang: 'vi-VN',disableDragAndDrop:true});
             },100);
             $(".parent[data-id]").click(function(e){
                let child = $(e.currentTarget).find('li').length;
@@ -1121,7 +1126,7 @@
          $('#btn-luu-san-pham').text("Sửa");
          $(function(){
             setTimeout(() => {
-               $('#summernote').summernote({height: 120,lang: 'vi-VN'});
+               $('#summernote').summernote({height: 120,lang: 'vi-VN',disableDragAndDrop:true,});
             },100);
             $(".parent[data-id]").click(function(e){
                let child = $(e.currentTarget).find('li').length;
@@ -1175,8 +1180,8 @@
       for(const [key,value] of Object.entries(obj_arr_file)) {
          frmSanPham.append('img[]',value);
       }
-      
       gameChange();
+      //return;
       frmSanPham.append('list_file_del',$('input[name="list_file_del"]').val());
       if(validate()) {
          $.ajax({

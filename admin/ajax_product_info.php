@@ -199,7 +199,7 @@
         </div>
         <div class="form-group" style="width:100%;">
             <label for="">Ảnh mô tả sản phẩm</label>
-            <div class="kh-files">
+            <div class="kh-files" ondragleave="hideDragText()" ondragover="allowDrop()" ondrop="drop()">
                 <div class="kh-file-lists">
                     <div class="kh-file-list">
                         <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
@@ -216,12 +216,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
-        <div draggable="true" ondragover="allowDrop()" ondrop="drop()" style="width:100%;height:200px;border:1px dashed red;" class="k-border">
-
-        </div>
-        </div>
-       
+        <div style="display:none;width:100%;border:none;border-bottom:4px dashed red;" class="k-border"></div>
         <div class="form-group" style="width:100%;">
             <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
             <textarea name="mo_ta_san_pham" id="summernote"></textarea>
