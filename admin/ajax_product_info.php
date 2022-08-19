@@ -86,9 +86,9 @@
                         }
                     ?>
                         <div data-id="<?=$res['img_order']?>"  class="kh-custom-file" style="background-position:50%;background-size:cover;background-image:url('<?=$res['img_id']?>');">
-                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'<?=$res['img_order'];?>')">
+                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,<?=$res['img_order'];?>)">
                             <div class="kh-custom-remove-img" style="display:block;">
-                                <span class="kh-custom-btn-remove" onclick="removeImageDel(this,'<?=$res['img_order'];?>')"></span>
+                                <span class="kh-custom-btn-remove" onclick="removeImageDel(this,<?=$res['img_order'];?>)"></span>
                             </div>
                         </div>
                     <?php

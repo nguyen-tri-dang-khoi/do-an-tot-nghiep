@@ -788,7 +788,6 @@
 <script>
    var arr_list_file_del = [];
 	var arr_input_file = new Map();
-   let frmSanPham = new FormData();
    let arr_file = [];
    let obj_arr_file = {};
    function init_map_file(){
@@ -798,7 +797,7 @@
       console.log(arr_list_file_del);
       if(arr_list_file_del != ['']) {
          arr_list_file_del.forEach((element) => {
-            arr_input_file.set(element,element + "_has");
+            arr_input_file.set(parseInt(element),element + "_has");
          });
       }
    }
@@ -1163,6 +1162,7 @@
    }
    function processModalInsertUpdate(){
       event.preventDefault();
+      let frmSanPham = new FormData();
       frmSanPham.append('id',$('input[name=id]').val());
       frmSanPham.append('name',$('input[name=ten_san_pham]').val());
       frmSanPham.append('description',$('#summernote').summernote('code'));
@@ -1181,7 +1181,6 @@
          frmSanPham.append('img[]',value);
       }
       gameChange();
-      //return;
       frmSanPham.append('list_file_del',$('input[name="list_file_del"]').val());
       if(validate()) {
          $.ajax({
