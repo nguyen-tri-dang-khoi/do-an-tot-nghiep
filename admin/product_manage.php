@@ -791,6 +791,10 @@
    let arr_file = [];
    let obj_arr_file = {};
    function init_map_file(){
+      arr_list_file_del = [];
+      arr_input_file = new Map();
+      arr_file = [];
+      obj_arr_file = {};
       if($('input[name="list_file_del"]').val() != "") {
          arr_list_file_del = $('input[name="list_file_del"]').val().split(",");
       }
@@ -818,6 +822,7 @@
             arr_input_file.set(key,key + "_ins");
          }
          obj_arr_file[key] = input.files[0];
+         console.log(arr_input_file);
          reader.onload = function (e) {
             $(target).parent().css({
                'background-image' : 'url("' + e.target.result + '")',
@@ -849,12 +854,17 @@
 				arr_input_file.set(key,key + "_del");
 			}
          delete obj_arr_file[key];
+
+         console.log(arr_input_file);
 		}
 	}
 	function gameChange(){
-		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).sort().join(","));
-      console.log(Array.from(arr_input_file.values()).sort());
-   
+		$('input[name="list_file_del"]').val(Array.from(arr_input_file.values()).sort(
+         (a,b) => {
+            return parseInt(a.split("_")[0]) - parseInt(b.split("_")[0]);
+         }
+      ).join(","));
+      //console.log($('input[name="list_file_del"]').val());
 	}
    function showDragText(){
       // alert("Con me no");
@@ -980,6 +990,7 @@
                } else {
                   arr_input_file.set(key,key + "_ins");
                }
+               
                reader.onload = function (e) {
                   $(`.kh-custom-file[data-id=${key}]`).css({
                      'background-image' : 'url("' + e.target.result + '")',
@@ -991,6 +1002,7 @@
                reader.readAsDataURL(file);
             }
          }
+         console.log(arr_input_file);
       }
       $('.k-border').hide();
    }
@@ -1181,6 +1193,7 @@
          frmSanPham.append('img[]',value);
       }
       gameChange();
+      //return;
       frmSanPham.append('list_file_del',$('input[name="list_file_del"]').val());
       if(validate()) {
          $.ajax({
