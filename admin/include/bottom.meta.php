@@ -21,21 +21,18 @@
         let convert_phim_unicode = String.fromCharCode(phim_unicode);
         if(convert_phim_unicode == ".") event.preventDefault();
         if(convert_phim_unicode == "," || $(event.currentTarget).val().indexOf(",") > -1) {
-            return;
+            if($(event.currentTarget).val().indexOf(",") != $(event.currentTarget).val().lastIndexOf(",") || $(event.currentTarget).val() == ",") {
+                $(event.currentTarget).val($(event.currentTarget).val().replace(/\,$/, ""));
+            }
         } else {
             if(convert_phim_unicode.match(/^\d+$/) || phim_unicode == "8" || phim_unicode == "46") {
+                if($(event.currentTarget).val().indexOf(",") > -1) {
+                    $(event.currentTarget).val($(event.currentTarget).val().replace(/\,$/,""));
+                }
                 let n = parseInt($(event.currentTarget).val().replace(/\./g, ""),10);
                 if(!isNaN(n)){
-                    // let aaa = n.toLocaleString().replace(/\,/g, ".");
-                    // if(aaa < 10 && phim_unicode != "8" && phim_unicode != "46") {
-                    //     aaa = aaa * 1000;
-                    //     $(event.currentTarget).val(aaa.toLocaleString().replace(/\,/g, "."));
-                    // } else {
-                    //     $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
-                    // }
                     $(event.currentTarget).val(n.toLocaleString().replace(/\,/g, "."));
-                    
-                }
+                } 
             } else {
                 event.preventDefault();
             }

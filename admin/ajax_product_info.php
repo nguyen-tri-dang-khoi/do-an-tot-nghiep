@@ -70,7 +70,7 @@
         </div>
         <div class="form-group" style="width:100%;">
             <label for="">Ảnh mô tả sản phẩm</label>
-            <div class="kh-files">
+            <div class="kh-files" ondragleave="hideDragText()" ondragover="allowDrop()" ondrop="drop()">
                 <div class="kh-file-lists">
                     <?php
                         $sql = "select * from product_image where product_info_id = '$id'";
@@ -124,6 +124,7 @@
                 </div>
             </div>
         </div>
+        <div style="display:none;width:100%;border:none;border-bottom:4px dashed red;" class="k-border"></div>
         <div class="form-group" style="width:100%;">
             <label for="mo_ta_san_pham">Mô tả sản phẩm</label>
             <textarea name="mo_ta_san_pham" id="summernote"><?=$result['description'] ? $result['description'] : ""?></textarea>
@@ -203,9 +204,9 @@
                 <div class="kh-file-lists">
                     <div class="kh-file-list">
                         <div data-id="1" class="kh-custom-file " style="background-position:50%;background-size:cover;background-image:url();">
-                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,'1')">
+                            <input class="nl-form-control" name="img[]" type="file" onchange="readURLChange(this,1)">
                             <div class="kh-custom-remove-img" style="display:none;">
-                                <span class="kh-custom-btn-remove" onclick="removeImageChange(this,'1')"></span>
+                                <span class="kh-custom-btn-remove" onclick="removeImageChange(this,1)"></span>
                             </div>
                         </div>
                         <input name="list_file_del" type='hidden' value="">
