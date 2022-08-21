@@ -124,6 +124,6 @@ font-weight: 600;
    font-size:30px;
    top: 10px;
 }
-li.li-tab:last-child > button.tab {
+/* li.li-tab:last-child > button.tab {
    border-right:1px solid #fff !important;
-}
+} */

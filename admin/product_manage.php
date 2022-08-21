@@ -512,7 +512,7 @@
                                              <input <?=$upt_more == 1 ? "checked" : "";?> style="width:16px;height:16px;cursor:pointer" value="<?=$row["pi_id"];?>" data-shift="<?=$cnt?>" onclick="shiftCheckedRange()" type="checkbox" name="check_id<?=$row["pi_id"];?>">
                                           </td>
                                           <td class="so-thu-tu w-150"><?=$total - ($start_page + $cnt);?></td>
-                                          <td class="ten-san-pham">
+                                          <td draggable="true" class="ten-san-pham">
                                              <?= ($upt_more == 1) ? "<input class='kh-inp-ctrl' type='text' name='upt_name' value='" . $row['pi_name'] . "'><span class='text-danger'></span>" : $row['pi_name'];?>
                                           </td>
                                           <td class="so-luong">
