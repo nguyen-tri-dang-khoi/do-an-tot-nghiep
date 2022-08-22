@@ -12,6 +12,8 @@
         body {
             position: relative;
             height: 100vh;
+            padding:0;
+            margin:0;
         }
         .aaa {
             height:200px;
@@ -22,46 +24,78 @@
             left:400px;
             border:5px dashed red;
         }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 200px;
+            position: absolute;
+            top:700px;
+            left:500px;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
     </style>
 </head>
-<body onmousedown="showToaDo2(event)" onmouseup="showToaDo3(event)" onmousemove="showToaDo(event)">
+<body onmousedown="showToaDo2(event,'bbb')" onmouseup="showToaDo3(event,'bbb')" onmousemove="showToaDo(event,'bbb')">
     <div id="bbb" class="aaa"></div>
+    <table>
+        <tr>
+            <th style="width:200px;">a</th>
+        </tr>
+        <tr>
+            <td>a</td>
+            
+        </tr>
+        <tr>
+            <td>a</td>
+            
+        </tr>
+        <tr>
+            <td>a</td>
+            
+        </tr>
+    </table>
     <script>
-        let bbb = document.getElementById('bbb');
+        //let bbb = document.getElementById('bbb');
         let aaa = document.getElementsByTagName('body')[0];
         let test = false;
         let count = 0;
         let x_ = "", y_ = "";
-        let current_x = 400,current_y = 200;
-        function showToaDo(e){
+        function showToaDo(e,target_id){
+            let id = document.getElementById(target_id);
             if(test) {
                 if(count == 0) {
                     count++;
-                    x_ = parseInt(e.clientX) - current_x;
-                    y_ = parseInt(e.clientY) - current_y;
+                    x_ = parseInt(e.clientX) - Math.round(id.getBoundingClientRect().left);
+                    y_ = parseInt(e.clientY) - Math.round(id.getBoundingClientRect().top);
                 } else {
                     aaa.style.cursor = "move";
                     let x = parseInt(e.clientX) - x_;
                     let y = parseInt(e.clientY) - y_;
-                    bbb.style.left = x + "px";
-                    bbb.style.top = y + "px";
-                    current_x = x;
-                    current_y = y;
+                    id.style.left = x + "px";
+                    id.style.top = y + "px";
                 }
             }
         }
-        function showToaDo2(e){
-            if(e.target.id == "bbb") {
-                bbb.style.cursor = "move";
+        function showToaDo2(e,target_id){
+            let id = document.getElementById(target_id);
+            if(e.target.id == target_id) {
+                id.style.cursor = "move";
                 test = true;
-                // let x = parseInt(e.clientX) - current_x;
-                // let y = parseInt(e.clientY) - current_y;
-                // console.log(`x: ${x}, y: ${y}`);
             }
         }
-        function showToaDo3(e) {
+        function showToaDo3(e,target_id) {
+            let id = document.getElementById(target_id);
             aaa.style.cursor = "default";
-            bbb.style.cursor = "default";
+            id.style.cursor = "default";
             test = false;
             count = 0;
         }
